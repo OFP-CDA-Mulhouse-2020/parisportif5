@@ -14,8 +14,9 @@ Tri des paris par date
 Champ de recherche (match / equipe / joueur) et affichage des prochains matchs concernés.
 Historique des paris
 Tri des paris par : gagnés/perdus/en cours
+Réglementations
 
-
+exemples:
 equipe A  1.65  -  2.40 Equipe B
 equipe A  1.10  -  9 Equipe B
 equipe A  1.88  -  1.92 Equipe B
