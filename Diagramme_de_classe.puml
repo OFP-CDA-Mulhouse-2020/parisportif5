@@ -1,4 +1,37 @@
 @startuml parisportif5
+User -- Wallet
+User -- Cart
+User -- UserStatus
+User -- BillingHistory
+BillingHistory -- Billing
+Wallet -- Amount
+Amount -- Currency
+Cart -- Bet
+Bet -- Amount
+Bet -- Odds
+Billing -- Payment
+Payment -- Amount
+Competition -- Event
+Event -- Run
+Run -- Sport
+Run -- RunStatus
+Run -- Location
+Team -- Result
+Player -- Score
+Location -- Country
+Location -- TimeZone
+Location -- DateTime
+Sport -- Period
+Sport -- Country
+Run -- Team
+Team -- Player
+Team -- TeamStatus
+Player -- PlayerStatus
+Bet -- Competition
+Bet -- Event
+Bet -- Run
+Bet -- Team
+Bet -- Player
 class User
 class Wallet
 class Currency
@@ -16,10 +49,8 @@ class Competition
 class Event
 class Race
 class Fixture
-class Date
-class Time
+class DateTime
 class Period
-class Teams
 class Score
 class Result
 class Status
