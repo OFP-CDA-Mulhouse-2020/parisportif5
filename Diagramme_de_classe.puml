@@ -1,3 +1,17 @@
 @startuml parisportif5
-
+class User
+class Wallet/Basket
+class Currency
+class Bet
+class Rate
+class Amount
+class Payment
+class PaymentArchive
+class Location
+class Contest
+class Status
+class PlayerStatus
+class Player
+class Sport
+class Team
 @enduml
