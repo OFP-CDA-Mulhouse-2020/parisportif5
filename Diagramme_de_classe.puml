@@ -1,65 +1,195 @@
 @startuml parisportif5
-User -- Wallet
-User -- Cart
-User -- UserStatus
-User -- BillingHistory
-BillingHistory -- Billing
-Amount -- Currency
-Cart -- Bet
-Bet -- Amount
-Bet -- Odds
-Bet -- Competition
-Sport -- Competition
-Country -- Competition
-Wallet -- Payment
-Payment -- Amount
-Competition -- Event
-Event -- Run
-Run -- RunStatus
-Run -- Location
-Team -- Result
-Period -- Result
-Player -- Score
-Location -- TimeZone
-Location -- DateTime
-Run -- Period
-Run -- Team
-Team -- Player
-Team -- TeamStatus
-Player -- PlayerStatus
-Country -- Team
-Competition -- Team
-Event -- Team
-Score -- Team
-Player -- Result
-Value -- Odds
-Value -- Team
-Value -- Player
-Sport -- Country
-class User
-class Wallet
-class Currency
-class Cart
-class Bet
-class Odds
-class Amount
-class Payment
-class Billing
-class History
-class Location
-class Sport
-class Country
-class Competition
-class Event
-class Race
-class Fixture
-class DateTime
-class Period
-class Score
-class Result
-class Status
-class PlayerStatus
-class Player
-class Team
-class Value
+'Relations :
+    User "1" -- "1" Wallet
+    User "1" o-- "0..N" Cart
+    User "1" -- "1" Account
+    'Account "1" -- "1" AccountStatus
+    User "1" o-- "0..N" Billing
+    'BillingHistory "1" -- "0..N" Billing
+    Payment "1" -- "1" Currency
+    Cart "0..1" o-- "0..N" Bet
+    Bet "0..1" -- "1" Payment
+    Bet "1" -- "1" Odds
+    Bet "0..N" --o "1" Competition
+    Sport "1..N" --o "0..N" Competition
+    Country "1..N" --o "0..N" Competition
+    Wallet "1" o-- "0..N" Payment
+    'Payment "1" -- "1" Amount
+    Competition "1" o-- "0..N" Event
+    Event "1" o-- "0..N" Run
+    'Run "1" -- "1" RunStatus
+    Run "1..N" -- "1" Location
+    Competitor "1" -- "1" Result
+    Period "1" -- "1" Result
+    Player "1" -- "1" Score
+    Location "1" -- "1" TimeZone
+    'Location "1" -- "1" DateTime
+    Run "1" o-- "0..N" Period
+    Run "1" o-- "0..N" Competitor
+    Team "1" o-- "0..N" Player
+    'Team "1" -- "1" TeamStatus
+    'Player "1" -- "1" PlayerStatus
+    Country "1" -- "0..1" Competitor
+    Competition "1" o-- "0..N" Competitor
+    Event "1" o-- "1..N" Competitor
+    Score "1" -- "0..1" Competitor
+    Player "0..1" -- "1" Result
+    Value "1..N" -- "1" Odds
+    Value "1" -- "1..N" Competitor
+    Value "1" -- "1..N" Player
+    Sport "1..N" -- "1..N" Country
+    Event "1" o-- "1..N" Sport
+    Competitor "1" -- "0..1" Team
+    Competitor "0..N" o-- "1..N" Sport
+    Player "0..N" o-- "1..N" Sport
+    Player "0..N" o-- "1..N" Country
+    User "0..N" o-- "1..N" Country
+    Location "0..N" -- "1" Country
+    TimeZone "1" -- "1" Country
+'Définitions des classes :
+    'Utilisateur avec un compte
+    class User {
+        #identifier
+        #name
+        #firstName
+        #postAddress
+        #postCode
+        #country
+        #birthDate
+        #emailAddress
+        #mobile
+        #account
+    }
+    'Porte-feuille de l'utilisateur avec des fonds (de l'argent gagnés)
+    class Wallet {
+        #identifier
+        #payments
+    }
+    'Une devise monétaire (Euros)
+    class Currency {
+        #identifier
+        #value
+        #symbol
+        #name
+    }
+    'Panier qui contient les paris sélectionnés
+    class Cart {
+        #identifier
+        #bets
+    }
+    'Un paris
+    class Bet {
+        #identifier
+    }
+    'La cote du paris
+    class Odds {
+        #identifier
+    }
+    'Quantité de monnaie
+    'class Amount
+    'Un paiement (crédit ou débit)
+    class Payment {
+        #identifier
+        #currency
+        #amount
+    }
+    'Factures
+    class Billing {
+        #identifier
+        #orderNumber
+        #payment
+    }
+    'Historique des factures
+    'class BillingHistory
+    'Classe mère global : Historique de quelque chose (Historique des factures)
+    'class History
+    'Lieu de la rencontre/course
+    class Location {
+        #identifier
+        #country
+        #datetime
+        #timezoneLocal
+    }
+    'Sport pratiqué
+    class Sport {
+        #identifier
+    }
+    'Pays du lieu de la rencontre/course
+    class Country {
+        #identifier
+        #dateFormat
+        #timeFormat
+        #summerTime
+        #timezoneDefault
+    }
+    'Compétition (JO,Ligue des Champions,F1 Championnat du monde)
+    class Competition {
+        #identifier
+    }
+    'Événement de la compétition (poul de qualification, Circuit F1 de france)
+    class Event {
+        #identifier
+    }
+    'Course
+    class Race
+    'Rencontre
+    class Fixture
+    'Date et heure du lieu
+    'class DateTime
+    'Fuseau horraire du lieu
+    class TimeZone {
+        #identifier
+        #timeZone
+        #utcOffset
+    }
+    'Période du match (2*mi-teamps), de la course (1*parcour)
+    class Period {
+        #identifier
+    }
+    'Classe représentant les données servant à calculé la cote de source inconnu
+    class Score {
+        #identifier
+    }
+    'Résultat du match, de la course
+    class Result {
+        #identifier
+    }
+    'Classe mère global : Status de quelque chose (Status du joueur)
+    class Status
+    'Status du joueur (blessé, remplaçant)
+    'class PlayerStatus
+    'Compte de l'utilisateur (blessé, remplaçant)
+    class Account {
+        #identifier
+        #User
+        #validation
+        #state
+    }
+    'Status du compte (actif, invalid, valid)
+    'class AccountStatus
+    'Joueur ou sportif ou pilote
+    class Player {
+        #identifier
+    }
+    'Entité qui participe à une rencontre, à une course
+    class Competitor {
+        #identifier
+    }
+    'Regroupe les personnes qui participe à la course, rencontre 
+    class Team {
+        #identifier
+    }
+    'Statut de l'équipe ()
+    ''class TeamStatus
+    'Classe mère global : Un match, une rencontre, une course
+    class Run {
+        #identifier
+    }
+    'Statut du match, de la rencontre, de la course (annulé, reporté, en cours)
+    'class RunStatus
+    '
+    class Value {
+        #identifier
+    }
+    class Log
 @enduml
