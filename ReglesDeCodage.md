@@ -24,7 +24,7 @@
     * `/**`
     * `* Description sauf si explicite par exemple dans le cas des setter et getter`
     * `* @param string $test Ce que représente ce paramètre sauf si explicite`
-    * `* @param int|null $id Le | signifie "ou" dans le cas où un paramètre est typé ?int`
+    * `* @param int|null $id Le | signifie "ou" dans le cas où un paramètre est typé "?int", c'est à dire nullable`
     * `* @throws Exception Condition de déclenchement`
     * `* @return Object[] Précision sur le retour sauf si explicite, par exemple dans le cas d'un tableau, on peut mettre "Tableau à 1 dimension indexé numériquement"`
     * `*/`
