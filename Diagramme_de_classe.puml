@@ -4,34 +4,38 @@ User -- Cart
 User -- UserStatus
 User -- BillingHistory
 BillingHistory -- Billing
-Wallet -- Amount
 Amount -- Currency
 Cart -- Bet
 Bet -- Amount
 Bet -- Odds
-Billing -- Payment
+Bet -- Competition
+Sport -- Competition
+Country -- Competition
+Wallet -- Payment
 Payment -- Amount
 Competition -- Event
 Event -- Run
-Run -- Sport
 Run -- RunStatus
 Run -- Location
 Team -- Result
+Period -- Result
 Player -- Score
-Location -- Country
 Location -- TimeZone
 Location -- DateTime
-Sport -- Period
-Sport -- Country
+Run -- Period
 Run -- Team
 Team -- Player
 Team -- TeamStatus
 Player -- PlayerStatus
-Bet -- Competition
-Bet -- Event
-Bet -- Run
-Bet -- Team
-Bet -- Player
+Country -- Team
+Competition -- Team
+Event -- Team
+Score -- Team
+Player -- Result
+Value -- Odds
+Value -- Team
+Value -- Player
+Sport -- Country
 class User
 class Wallet
 class Currency
@@ -57,4 +61,5 @@ class Status
 class PlayerStatus
 class Player
 class Team
+class Value
 @enduml
