@@ -6,7 +6,7 @@
     'Account "1" -- "1" AccountStatus
     User "1" o-- "0..N" Billing
     'BillingHistory "1" -- "0..N" Billing
-    Payment "1" -- "1" Currency
+    'Payment "1" -- "1" Currency
     Cart "0..1" o-- "0..N" Bet
     Bet "0..1" -- "1" Payment
     Bet "1" -- "1" Odds
@@ -19,37 +19,43 @@
     Event "1" o-- "0..N" Run
     'Run "1" -- "1" RunStatus
     Run "1..N" -- "1" Location
-    Competitor "1" -- "1" Result
+    Team "1" -- "1" Result
     Period "1" -- "1" Result
     Player "1" -- "1" Score
     Location "1" -- "1" TimeZone
     'Location "1" -- "1" DateTime
     Run "1" o-- "0..N" Period
-    Run "1" o-- "0..N" Competitor
+    Run "1" o-- "0..N" Team
     Team "1" o-- "0..N" Player
     'Team "1" -- "1" TeamStatus
     'Player "1" -- "1" PlayerStatus
-    Country "1" -- "0..1" Competitor
-    Competition "1" o-- "0..N" Competitor
-    Event "1" o-- "1..N" Competitor
-    Score "1" -- "0..1" Competitor
+    Country "1" -- "0..1" Team
+    Competition "1" o-- "0..N" Team
+    Event "1" o-- "1..N" Team
+    Score "1" -- "0..1" Team
     Player "0..1" -- "1" Result
     Value "1..N" -- "1" Odds
-    Value "1" -- "1..N" Competitor
+    Value "1" -- "1..N" Team
     Value "1" -- "1..N" Player
     Sport "1..N" -- "1..N" Country
     Event "1" o-- "1..N" Sport
-    Competitor "1" -- "0..1" Team
-    Competitor "0..N" o-- "1..N" Sport
+    'Competitor "1" -- "0..1" Team
+    Team "0..N" o-- "1..N" Sport
     Player "0..N" o-- "1..N" Sport
     Player "0..N" o-- "1..N" Country
     User "0..N" o-- "1..N" Country
     Location "0..N" -- "1" Country
     TimeZone "1" -- "1" Country
+    BetCategory -- Bet
+    Player -- Run
 'Définitions des classes :
+    class BetHistorique
+    class BetCategory
     'Utilisateur avec un compte
     class User {
         #identifier
+        #gender
+        #username
         #name
         #firstName
         #postAddress
@@ -66,12 +72,12 @@
         #payments
     }
     'Une devise monétaire (Euros)
-    class Currency {
-        #identifier
-        #value
-        #symbol
-        #name
-    }
+    'class Currency {
+    '    #identifier
+    '    #value
+    '    #symbol
+    '    #name
+    '}
     'Panier qui contient les paris sélectionnés
     class Cart {
         #identifier
@@ -164,6 +170,7 @@
         #User
         #validation
         #state
+        -password
     }
     'Status du compte (actif, invalid, valid)
     'class AccountStatus
@@ -172,9 +179,7 @@
         #identifier
     }
     'Entité qui participe à une rencontre, à une course
-    class Competitor {
-        #identifier
-    }
+    'class Competitor
     'Regroupe les personnes qui participe à la course, rencontre 
     class Team {
         #identifier
