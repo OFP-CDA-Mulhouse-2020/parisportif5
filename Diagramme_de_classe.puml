@@ -25,8 +25,8 @@
     Competition "1" o-- "0..*" Event
     Event "1" o-- "0..*" Run
     'Run "1" -- "1" RunStatus
-    Run "0..*" 0--> "1" Location
-    Team "1" 0-- "0..*" Result
+    Run "0..*" o--> "1" Location
+    Team "1" o-- "0..*" Result
     Period "0..1" -- "1" Result
     Player "1" -- "0..1" Score
     Location "0..1" --> "1" TimeZone
