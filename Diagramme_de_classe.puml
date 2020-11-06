@@ -1,56 +1,63 @@
 @startuml parisportif5
 'Relations :
     User "1" -- "1" Wallet
-    User "1" o-- "0..N" Cart
+    User "1" -- "1" Cart
     User "1" -- "1" Account
     'Account "1" -- "1" AccountStatus
-    User "1" o-- "0..N" Billing
-    'BillingHistory "1" -- "0..N" Billing
+    User "1" -- "1" BillingHistory
+    BillingHistory "1" o-- "0..*" Billing
     'Payment "1" -- "1" Currency
-    Cart "0..1" o-- "0..N" Bet
-    Bet "0..1" -- "1" Payment
+    Cart "0..*" o--> "0..*" Bet
+    Bet "0..1" --> "1" Payment
     Bet "1" -- "1" Odds
-    Bet "0..N" --o "1" Competition
-    Sport "1..N" --o "0..N" Competition
-    Country "1..N" --o "0..N" Competition
-    Wallet "1" o-- "0..N" Payment
+    BetCategory "0..*" <--o "0..*" Competition
+    Sport "1..*" <--* "0..*" Competition
+    Country "1..*" <--* "0..*" Competition
+    Wallet "0..1" o--> "0..*" Payment
     'Payment "1" -- "1" Amount
-    Competition "1" o-- "0..N" Event
-    Event "1" o-- "0..N" Run
+    Competition "1" o-- "0..*" Event
+    Event "1" o-- "0..*" Run
     'Run "1" -- "1" RunStatus
-    Run "1..N" -- "1" Location
-    Team "1" -- "1" Result
-    Period "1" -- "1" Result
-    Player "1" -- "1" Score
-    Location "1" -- "1" TimeZone
+    Run "0..*" 0--> "1" Location
+    Team "1" 0-- "0..*" Result
+    Period "0..1" -- "1" Result
+    Player "1" -- "0..1" Score
+    Location "0..1" --> "1" TimeZone
     'Location "1" -- "1" DateTime
-    Run "1" o-- "0..N" Period
-    Run "1" o-- "0..N" Team
-    Team "1" o-- "0..N" Player
+    Run "1" *-- "1..*" Period
+    Run "0..1" *--> "1..*" Team
+    Team "1" o-- "0..*" Player
     'Team "1" -- "1" TeamStatus
     'Player "1" -- "1" PlayerStatus
-    Country "1" -- "0..1" Team
-    Competition "1" o-- "0..N" Team
-    Event "1" o-- "1..N" Team
-    Score "1" -- "0..1" Team
+    Country "1" <--* "0..1" Team
+    Competition "0..1" o--> "0..*" Team
+    Event "0..1" o--> "0..*" Team
+    Score "1" <-- "0..1" Team
     Player "0..1" -- "1" Result
-    Value "1..N" -- "1" Odds
-    Value "1" -- "1..N" Team
-    Value "1" -- "1..N" Player
-    Sport "1..N" -- "1..N" Country
-    Event "1" o-- "1..N" Sport
-    'Competitor "1" -- "0..1" Team
-    Team "0..N" o-- "1..N" Sport
-    Player "0..N" o-- "1..N" Sport
-    Player "0..N" o-- "1..N" Country
-    User "0..N" o-- "1..N" Country
-    Location "0..N" -- "1" Country
-    TimeZone "1" -- "1" Country
-    BetCategory -- Bet
-    Player -- Run
+    Value "1" -- "1..*" Odds
+    Value "1" -- "1..*" Team
+    Value "1" -- "1..*" Player
+    Sport "0..1" --> "1" Country
+    Event "0..1" *--> "1..*" Sport
+    Team "0..*" --> "1" Sport
+    Player "0..*" *--> "1..*" Sport
+    Player "0..*" *--> "1..*" Country
+    User "0..*" *--> "1" Country
+    Location "0..*" --> "1" Country
+    TimeZone "1..*" <--* "1..*" Country
+    BetCategory "1" <-- "0..*" Bet
+    Player "0..*" <--o "0..*" Run
+    BetHistory "1" -- "1" User
+    BetHistory "0..1" o--> "0..*" Bet
 'Définitions des classes :
-    class BetHistorique
-    class BetCategory
+    'Historique des paris gagnés ou perdus
+    class BetHistory {
+        #identifier
+    }
+    'Catégorie de paris (ex: Paris sur la victoire du favoris)
+    class BetCategory {
+        #identifier
+    }
     'Utilisateur avec un compte
     class User {
         #identifier
@@ -106,7 +113,9 @@
         #payment
     }
     'Historique des factures
-    'class BillingHistory
+    class BillingHistory {
+        #identifier
+    }
     'Classe mère global : Historique de quelque chose (Historique des factures)
     'class History
     'Lieu de la rencontre/course
@@ -137,9 +146,9 @@
         #identifier
     }
     'Course
-    class Race
+    'class Race
     'Rencontre
-    class Fixture
+    'class Fixture
     'Date et heure du lieu
     'class DateTime
     'Fuseau horraire du lieu
@@ -178,14 +187,12 @@
     class Player {
         #identifier
     }
-    'Entité qui participe à une rencontre, à une course
-    'class Competitor
-    'Regroupe les personnes qui participe à la course, rencontre 
+    'Équipes qui participe à une rencontre, à une course
     class Team {
         #identifier
     }
     'Statut de l'équipe ()
-    ''class TeamStatus
+    'class TeamStatus
     'Classe mère global : Un match, une rencontre, une course
     class Run {
         #identifier
