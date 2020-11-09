@@ -4,13 +4,13 @@
 'Relations :
     User "1" -- "1" Wallet
     User "1" -- "1" Cart
-    User "1" --> "1" Account
+    User "1" -- "1" Account
     'Account "1" -- "1" AccountStatus
     User "1" -- "1" BillingHistory
     BillingHistory "1" o-- "0..*" Billing
     'Payment "1" -- "1" Currency
     Cart "0..*" o--> "0..*" Bet
-    'Bet "0..1" --> "1" Payment
+    Bet "0..1" --> "1" Payment
     Bet "1" -- "1" Odds
     BetCategory "0..*" <--o "0..*" Competition
     Bet "0..*" --> "0..1" Competition
@@ -20,7 +20,7 @@
     Bet "0..*" --> "0..1" Player
     Sport "1..*" <--* "0..*" Competition
     Country "1..*" <--* "0..*" Competition
-    'Wallet "0..1" o--> "0..*" Payment
+    Wallet "0..1" o--> "0..*" Payment
     'Payment "1" -- "1" Amount
     Competition "1" o-- "0..*" Event
     Event "1" o-- "0..*" Run
@@ -92,8 +92,8 @@
     'Porte-feuille de l'utilisateur avec des fonds (de l'argent gagnés)
     class Wallet {
         -identifier
-        -amount
         -User
+        -Payments
     }
     'Une devise monétaire (Euros)
     'class Currency (identifier,value,symbol, name)
@@ -106,9 +106,7 @@
     'Un paris
     class Bet {
         -identifier
-        -state
-        -User
-        -Billing
+        -Payment
         -BetCategory
         -Odds
         -Competition
@@ -125,14 +123,16 @@
     'Quantité de monnaie
     'class Amount
     'Un paiement (crédit ou débit)
-    'class Payment (identifier, currency, amount)
+    class Payment {
+        -identifier
+        -currency
+        -amount
+    }
     'Factures
     class Billing {
         -identifier
         -orderNumber
-        -amount
-        -currency
-        -User
+        -Payments
     }
     'Historique des factures
     class BillingHistory {
@@ -165,14 +165,7 @@
         -dateFormat
         -timeFormat
         -summerTimeOffset
-        -TimeZones
-        +getIdentifier(in void): int
-        +getDefaultTimeZone(in void): TimeZone
-        +getTimeZone(in string timezone): TimeZone
-        +hasSummerTime(in void): bool
-        +getDateFormat(in void): string
-        +getTimeFormat(in void): string
-        +getDateTimeFormat(in void): string
+        -timezoneDefault
     }
     'Compétition (JO, Ligue des Champions, F1 Championnat du monde)
     class Competition {
@@ -207,11 +200,8 @@
         -identifier
         -timeZone
         -utcOffset
-        +getIdentifier(in void): int
-        +getTimeZone(in void): string
-        +getUtcOffset(in void): int
     }
-    'Période du match (mi-teamps), de la course (parcour)
+    'Période du match (2*mi-teamps), de la course (1*parcour)
     class Period {
         -identifier
         -order
@@ -243,9 +233,8 @@
     class Account {
         -identifier
         -validation
-        -status
-        +isValid(in void): bool
-        +getStatus(in void): AccountStatus
+        -state
+        -User
     }
     'Status du compte (actif, invalid, valid)
     'class AccountStatus
@@ -283,7 +272,6 @@
     }
     'Statut du match, de la rencontre, de la course (annulé, reporté, en cours)
     'class RunStatus
-    '
     class Value {
         -identifier
         -number
