@@ -11,13 +11,13 @@
     'Payment "1" -- "1" Currency
     Cart "0..*" o--> "0..*" Bet
     'Bet "0..1" --> "1" Payment
-    Bet "1" -- "1" Odds
+    'Bet "1" -- "1" Odds
     BetCategory "0..*" <--o "0..*" Competition
     Bet "0..*" --> "0..1" Competition
     Bet "0..*" --> "0..1" Event
     Bet "0..*" --> "0..1" Run
     Bet "0..*" --> "0..1" Team
-    Bet "0..*" --> "0..1" Player
+    Bet "0..*" --> "0..1" Member
     Sport "1..*" <--* "0..*" Competition
     Country "1..*" <--* "0..*" Competition
     'Wallet "0..1" o--> "0..*" Payment
@@ -28,173 +28,180 @@
     Run "0..*" o--> "1" Location
     Team "1" o-- "0..*" Result
     Period "0..1" -- "1" Result
-    Player "1" -- "0..1" Score
-    Location "0..1" --> "1" TimeZone
+    Member "1" -- "0..1" Score
+    Location "0..1" --> "1" CountryTimeZone
     'Location "1" -- "1" DateTime
     Run "1" *-- "1..*" Period
     Run "0..1" *--> "1..*" Team
-    Team "1" o-- "0..*" Player
+    Team "1" o-- "0..*" Member
     'Team "1" -- "1" TeamStatus
-    'Player "1" -- "1" PlayerStatus
+    'Member "1" -- "1" MemberStatus
     Country "1" <--* "0..1" Team
     Competition "0..1" o--> "0..*" Team
     Event "0..1" o--> "0..*" Team
     Score "1" <-- "0..1" Team
-    Player "0..1" -- "1" Result
-    Value "1" -- "1..*" Odds
+    Member "0..1" -- "1" Result
+    'Value "1" -- "1..*" Odds
     Value "1" -- "1..*" Team
-    Value "1" -- "1..*" Player
+    Value "1" -- "1..*" Member
     Sport "0..1" --> "1" Country
     Event "0..1" *--> "1..*" Sport
     Team "0..*" --> "1" Sport
-    Player "0..*" *--> "1..*" Sport
-    Player "0..*" *--> "1..*" Country
+    Member "0..*" *--> "1..*" Sport
+    Member "0..*" *--> "1..*" Country
     User "0..*" *--> "1" Country
     Location "0..*" --> "1" Country
-    TimeZone "1..*" <--* "1..*" Country
+    CountryTimeZone "1..*" <--* "1..*" Country
     BetCategory "1" <-- "0..*" Bet
-    Player "0..*" <--o "0..*" Run
+    Member "0..*" <--o "0..*" Run
     BetHistory "1" -- "1" User
     BetHistory "0..1" o--> "0..*" Bet
 'Définitions des classes :
     'Historique des paris gagnés ou perdus
     class BetHistory {
-        -identifier
-        -User
-        -Bets
+        -identifier : int
+        -user : User
+        -bets : Bet[*]
     }
     'Catégorie de paris (ex: Paris sur la victoire du favoris)
     class BetCategory {
-        -identifier
-        -name
-        -description
+        -identifier : int
+        -name : string
+        -description : string
     }
     'Utilisateur avec un compte
     class User {
-        -identifier
-        -password
-        -gender
-        -username
-        -name
-        -firstName
-        -billingAddress
-        -billingPostCode
-        -billingCountry
-        -birthDate
-        -emailAddress
-        -mobile
-        -Account
-        -Wallet
-        -Cart
-        -BillingHistory
-        -BetHistory
+        -identifier : int
+        -password : string
+        -gender : string
+        -username : string
+        -name : string
+        -firstName : string
+        -billingAddress : string
+        -billingPostCode : string
+        -billingCountry : string
+        -birthDate : DateTime
+        -emailAddress : string
+        -mobile : string
+        -account : Account
+        -wallet : Wallet
+        -cart : Cart
+        -billingsHistory : BillingHistory
+        -betsHistory : BetHistory
     }
     'Porte-feuille de l'utilisateur avec des fonds (de l'argent gagnés)
     class Wallet {
-        -identifier
-        -amount
-        -User
+        -identifier : int
+        -amount : float
+        -user : User
     }
     'Une devise monétaire (Euros)
     'class Currency (identifier,value,symbol, name)
     'Panier qui contient les paris sélectionnés
     class Cart {
-        -identifier
-        -User
-        -Bets
+        -identifier : int
+        -user : User
+        -bets : Bet[*]
     }
-    'Un paris
+    'Un paris ("/" <=> dérivé <=> calculé)
     class Bet {
-        -identifier
-        -state
-        -User
-        -Billing
-        -BetCategory
-        -Odds
-        -Competition
-        -Event
-        -Run
-        -Team
-        -Player
+        -identifier : int
+        -state : BetState
+        -type : BetType
+        -user : User
+        -billing : Billing
+        -categories : BetCategory[*]
+        -/odds : float
+        -competition : Competition
+        -event : Event
+        -run : Run
+        -team : Team
+        -member : Member
     }
+    'Type de paris (combiné ou simple)
+    'class BetType
     'La cote du paris
-    class Odds {
-        -identifier
-        -number
-    }
+    'class Odds {
+    '    -identifier : int
+    '    -number : float
+    '}
     'Quantité de monnaie
     'class Amount
     'Un paiement (crédit ou débit)
     'class Payment (identifier, currency, amount)
     'Factures
     class Billing {
-        -identifier
-        -orderNumber
-        -amount
-        -currency
-        -User
+        -identifier : int
+        -orderNumber  : int
+        -amount : float
+        -currency : string
+        -user : User
     }
     'Historique des factures
     class BillingHistory {
         -identifier
-        -User
-        -Billings
+        -user : User
+        -billings : Billing[*]
     }
     'Classe mère global : Historique de quelque chose (Historique des factures)
     'class History
     'Lieu de la rencontre/course
     class Location {
-        -identifier
-        -datetime
-        -timezoneLocal
-        -Country
-        -Run
+        -identifier : int
+        -datetime : DateTime
+        -timezoneLocal : CountryTimeZone
+        -country : Country
+        -run : Run
     }
     'Sport pratiqué
     class Sport {
-        -identifier
-        -name
-        -individualSport
-        -competitorNumber
-        -Periods
-        -Country
+        -identifier : int
+        -name : string
+        -individualSport : bool
+        -competitorNumber : int
+        -statutes : MemberStatus[*]
+        -roles : MemberRole[*]
+        -periods : Period[*]
+        -country : Country
     }
     'Pays du lieu de la rencontre/course
     class Country {
-        -identifier
-        -dateFormat
-        -timeFormat
-        -summerTimeOffset
-        -TimeZones
-        +getIdentifier(in void): int
-        +getDefaultTimeZone(in void): TimeZone
-        +getTimeZone(in string timezone): TimeZone
-        +hasSummerTime(in void): bool
-        +getDateFormat(in void): string
-        +getTimeFormat(in void): string
-        +getDateTimeFormat(in void): string
+        -identifier : int
+        -dateFormat : string
+        -timeFormat : string
+        -summerTimeOffset : int
+        -TimeZones : CountryTimeZone[*]
+        +getIdentifier() : int
+        +getDefaultTimeZone() : CountryTimeZone
+        +getTimeZone(in string timezone) : CountryTimeZone
+        +hasSummerTime() : bool
+        +getDateFormat() : string
+        +getTimeFormat() : string
+        +getDateTimeFormat() : string
     }
     'Compétition (JO, Ligue des Champions, F1 Championnat du monde)
     class Competition {
-        -identifier
-        -name
-        -beginAt
-        -endAt
-        -Sports
-        -BetCategories
-        -Teams
-        -Events
-        -Countries
+        -identifier : int
+        -name : string
+        -beginAt : DateTime
+        -endAt : DateTime
+        -odds : float
+        -sports : Sport[*]
+        -betCategories : BetCategory[*]
+        -teams : Team[*]
+        -events : Event[*]
+        -countries : Country[*]
     }
     'Événement de la compétition (poul de qualification, Circuit F1 de france)
     class Event {
-        -identifier
-        -name
-        -beginAt
-        -endAt
-        -Sports
-        -Teams
-        -Runs
+        -identifier : int
+        -name : string
+        -beginAt : DateTime
+        -endAt : DateTime
+        -odds : float
+        -sports : Sport[*]
+        -teams : Team[*]
+        -runs : Run[*]
     }
     'Course
     'class Race
@@ -203,90 +210,95 @@
     'Date et heure du lieu
     'class DateTime
     'Fuseau horraire du lieu
-    class TimeZone {
-        -identifier
-        -timeZone
-        -utcOffset
-        +getIdentifier(in void): int
-        +getTimeZone(in void): string
-        +getUtcOffset(in void): int
+    class CountryTimeZone {
+        -identifier : int
+        -timeZone : TimeZone
+        -utcOffset : int
+        +getIdentifier() : int
+        +getTimeZone() : TimeZone
+        +getUtcOffset() : int
     }
     'Période du match (mi-teamps), de la course (parcour)
     class Period {
-        -identifier
-        -order
-        -time
-        -Result
+        -identifier : int
+        -order : int
+        -time : float
+        -result : Result
     }
     'Classe représentant les données servant à calculé la cote de source inconnu
     class Score {
-        -identifier
-        -number
-        -level
-        -Team
-        -Player
+        -identifier : int
+        -number : float
+        -level : int
+        -team : Team
+        -member : Member
     }
     'Résultat du match, de la course
     class Result {
-        -identifier
-        -rank
-        -number
-        -Team
-        -Player
-        -Period
+        -identifier : int
+        -rank : int
+        -number : float
+        -team : Team
+        -member : Member
+        -period : Period
     }
     'Classe mère global : Status de quelque chose (Status du joueur)
     'class Status
     'Status du joueur (blessé, remplaçant)
-    'class PlayerStatus
+    'class MemberStatus
     'Compte de l'utilisateur (blessé, remplaçant)
     class Account {
-        -identifier
-        -validation
-        -status
-        +isValid(in void): bool
-        +getStatus(in void): AccountStatus
+        -identifier : int
+        -validation : bool
+        -status : AccountStatus
+        +isValid() : bool
+        +getStatus() : AccountStatus
     }
     'Status du compte (actif, invalid, valid)
     'class AccountStatus
     'Joueur ou sportif ou pilote
-    class Player {
-        -identifier
-        -Sports
-        -Teams
-        -Score
-        -Result
-        -Countries
-        -Value
+    class Member {
+        -identifier : int
+        -status : MemberStatus
+        -role : MemberRole
+        -odds : float
+        -sports : Sport[*]
+        -teams : Team[*]
+        -score : Score
+        -result : Result
+        -countries : Country[*]
+        -value : Value
     }
     'Équipes qui participe à une rencontre, à une course
     class Team {
-        -identifier
-        -Country
-        -Sport
-        -Value
-        -Score
-        -Players
+        -identifier : int
+        -odds : float
+        -country : Country
+        -sport : Sport
+        -value : Value
+        -score : Score
+        -members : Member[*]
     }
     'Statut de l'équipe ()
     'class TeamStatus
     'Classe mère global : Un match, une rencontre, une course
     class Run {
-        -identifier
-        -name
-        -beginAt
-        -endAt
-        -Location
-        -Teams
-        -Players
-        -Periods
+        -identifier : int
+        -name : string
+        -beginAt : DateTime
+        -endAt : DateTime
+        -odds : float
+        -location : Location
+        -teams : Team[*]
+        -members : Member[*]
+        -periods : Period[*]
     }
     'Statut du match, de la rencontre, de la course (annulé, reporté, en cours)
     'class RunStatus
     '
     class Value {
-        -identifier
-        -number
+        -identifier : int
+        -number : float
     }
     'class Log
 
