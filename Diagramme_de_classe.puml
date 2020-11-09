@@ -8,42 +8,36 @@
     'Account "1" -- "1" AccountStatus
     User "1" -- "1" BillingHistory
     BillingHistory "1" o-- "0..*" Billing
-    'Payment "1" -- "1" Currency
     Cart "0..*" o--> "0..*" Bet
     'Bet "0..1" --> "1" Payment
-    'Bet "1" -- "1" Odds
     BetCategory "0..*" <--o "0..*" Competition
-    Bet "0..*" --> "0..1" Competition
-    Bet "0..*" --> "0..1" Event
-    Bet "0..*" --> "0..1" Run
-    Bet "0..*" --> "0..1" Team
-    Bet "0..*" --> "0..1" Member
+    'Bet "0..*" --> "0..1" Competition
+    'Bet "0..*" --> "0..1" Event
+    'Bet "0..*" --> "0..1" AbstractRun
+    'Bet "0..*" --> "0..1" Team
+    'Bet "0..*" --> "0..1" Member
     Sport "1..*" <--* "0..*" Competition
     Country "1..*" <--* "0..*" Competition
     'Wallet "0..1" o--> "0..*" Payment
-    'Payment "1" -- "1" Amount
     Competition "1" o-- "0..*" Event
-    Event "1" o-- "0..*" Run
-    'Run "1" -- "1" RunStatus
-    Run "0..*" o--> "1" Location
-    Team "1" o-- "0..*" Result
-    Period "0..1" -- "1" Result
-    Member "1" -- "0..1" Score
-    Location "0..1" --> "1" CountryTimeZone
-    'Location "1" -- "1" DateTime
-    Run "1" *-- "1..*" Period
-    Run "0..1" *--> "1..*" Team
+    Event "1" o-- "0..*" AbstractRun
+    'AbstractRun "1" -- "1" RunStatus
+    AbstractRun "0..*" o--> "1" Location
+    Team "1" o-- "0..*" AbstractScore
+    Period "0..1" -- "1" AbstractScore
+    'Member "1" -- "0..1" Score
+    AbstractRun "1" *-- "1..*" Period
+    AbstractRun "0..1" *--> "1..*" Team
     Team "1" o-- "0..*" Member
     'Team "1" -- "1" TeamStatus
     'Member "1" -- "1" MemberStatus
     Country "1" <--* "0..1" Team
     Competition "0..1" o--> "0..*" Team
     Event "0..1" o--> "0..*" Team
-    Score "1" <-- "0..1" Team
-    Member "0..1" -- "1" Result
-    'Value "1" -- "1..*" Odds
-    Value "1" -- "1..*" Team
-    Value "1" -- "1..*" Member
+    'Score "1" <-- "0..1" Team
+    Member "0..1" -- "0..*" AbstractScore
+    'Value "1" -- "1..*" Team
+    'Value "1" -- "1..*" Member
     Sport "0..1" --> "1" Country
     Event "0..1" *--> "1..*" Sport
     Team "0..*" --> "1" Sport
@@ -51,12 +45,30 @@
     Member "0..*" *--> "1..*" Country
     User "0..*" *--> "1" Country
     Location "0..*" --> "1" Country
-    CountryTimeZone "1..*" <--* "1..*" Country
     BetCategory "1" <-- "0..*" Bet
-    Member "0..*" <--o "0..*" Run
+    Member "0..*" <--o "0..*" AbstractRun
     BetHistory "1" -- "1" User
     BetHistory "0..1" o--> "0..*" Bet
+    AbstractRun <|-- Race
+    AbstractRun <|-- Fixture
+    CanBeBetInterface <|.. Competition
+    CanBeBetInterface <|.. Event
+    CanBeBetInterface <|.. AbstractRun
+    CanBeBetInterface <|.. Team
+    CanBeBetInterface <|.. Member
+    PointScoreInterface <|.. PointScore
+    TimeScoreInterface <|.. TimeScore
+    'TimeResult ..|> ResultInterface
+    'PointResult ..|> ResultInterface
+    TimeScore --|> AbstractScore
+    PointScore --|> AbstractScore
+    AbstractScore ..|> ScoreInterface
 'Définitions des classes :
+    'interface de généralisation pour les classes autorisé à être parié
+    interface CanBeBetInterface {
+        +getOdds() : float
+    }
+    'class BetCollection
     'Historique des paris gagnés ou perdus
     class BetHistory {
         -identifier : int
@@ -95,40 +107,26 @@
         -amount : float
         -user : User
     }
-    'Une devise monétaire (Euros)
-    'class Currency (identifier,value,symbol, name)
     'Panier qui contient les paris sélectionnés
     class Cart {
         -identifier : int
         -user : User
         -bets : Bet[*]
     }
-    'Un paris ("/" <=> dérivé <=> calculé)
+    'Un paris ("/" <=> dérivé <=> calculé) => pour paris combiné
     class Bet {
         -identifier : int
+        -amount : float
         -state : BetState
         -type : BetType
         -user : User
         -billing : Billing
         -categories : BetCategory[*]
         -/odds : float
-        -competition : Competition
-        -event : Event
-        -run : Run
-        -team : Team
-        -member : Member
+        -items : CanBeBetInterface[*]
     }
     'Type de paris (combiné ou simple)
     'class BetType
-    'La cote du paris
-    'class Odds {
-    '    -identifier : int
-    '    -number : float
-    '}
-    'Quantité de monnaie
-    'class Amount
-    'Un paiement (crédit ou débit)
-    'class Payment (identifier, currency, amount)
     'Factures
     class Billing {
         -identifier : int
@@ -149,7 +147,7 @@
     class Location {
         -identifier : int
         -datetime : DateTime
-        -timezoneLocal : CountryTimeZone
+        -timezoneLocal : DateTimeZone
         -country : Country
         -run : Run
     }
@@ -162,6 +160,7 @@
         -statutes : MemberStatus[*]
         -roles : MemberRole[*]
         -periods : Period[*]
+        -resultsType : ResultType[*]
         -country : Country
     }
     'Pays du lieu de la rencontre/course
@@ -170,10 +169,10 @@
         -dateFormat : string
         -timeFormat : string
         -summerTimeOffset : int
-        -TimeZones : CountryTimeZone[*]
+        -TimeZones : DateTimeZone[*]
         +getIdentifier() : int
-        +getDefaultTimeZone() : CountryTimeZone
-        +getTimeZone(in string timezone) : CountryTimeZone
+        +getDefaultTimeZone() : DateTimeZone
+        +getTimeZone(in string timezone) : DateTimeZone
         +hasSummerTime() : bool
         +getDateFormat() : string
         +getTimeFormat() : string
@@ -191,6 +190,7 @@
         -teams : Team[*]
         -events : Event[*]
         -countries : Country[*]
+        -result : ResultType
     }
     'Événement de la compétition (poul de qualification, Circuit F1 de france)
     class Event {
@@ -202,45 +202,80 @@
         -sports : Sport[*]
         -teams : Team[*]
         -runs : Run[*]
+        -result : ResultType
     }
     'Course
-    'class Race
-    'Rencontre
-    'class Fixture
-    'Date et heure du lieu
-    'class DateTime
-    'Fuseau horraire du lieu
-    class CountryTimeZone {
+    class Race {
         -identifier : int
-        -timeZone : TimeZone
-        -utcOffset : int
-        +getIdentifier() : int
-        +getTimeZone() : TimeZone
-        +getUtcOffset() : int
     }
+    'Rencontre
+    class Fixture {
+        -identifier : int
+    }
+    'Fuseau horraire du lieu
+    'class CountryTimeZone {
+    '    -identifier : int
+    '    -timeZone : TimeZone
+    '    -utcOffset : int
+    '    +getIdentifier() : int
+    '    +getTimeZone() : TimeZone
+    '    +getUtcOffset() : int
+    '}
     'Période du match (mi-teamps), de la course (parcour)
     class Period {
         -identifier : int
         -order : int
         -time : float
-        -result : Result
-    }
-    'Classe représentant les données servant à calculé la cote de source inconnu
-    class Score {
-        -identifier : int
-        -number : float
-        -level : int
-        -team : Team
-        -member : Member
+        -scores : ScoreInterface[*]
     }
     'Résultat du match, de la course
-    class Result {
+    'class Result {
+    '    -identifier : int
+    '    -rank : int
+    '    -number : float
+    '    -team : Team
+    '    -member : Member
+    '    -period : Period
+    '}
+    'Classe représentant les données servant à calculé la cote de source inconnu
+    'class Score {
+    '    -identifier : int
+    '    -number : float
+    '    -level : int
+    '    -team : Team
+    '    -member : Member
+    '}
+    'interface pour Score en temps
+    interface TimeScoreInterface {
+        +getTime() : float
+    }
+    'interface pour Score en points
+    interface PointScoreInterface {
+        +getPoint() : int
+    }
+    'interface de généralisation pour un Score
+    interface ScoreInterface {
+        +getScore() : mixed
+    }
+    'Type de Score (par période, par match, par course, par saison pour team, par épreuve pour team)
+    class ScoreType {
         -identifier : int
-        -rank : int
-        -number : float
-        -team : Team
-        -member : Member
-        -period : Period
+    }
+    'Score de l'équipe ou du membre de l'équipe
+    abstract class AbstractScore {
+        #identifier : int
+        #type : ScoreType
+        +getScore() : mixed
+    }
+    'Score en temps
+    class TimeScore {
+        #value : float
+        +getTime() : float
+    }
+    'Score en points
+    class PointScore {
+        #value : int
+        +getPoint() : int
     }
     'Classe mère global : Status de quelque chose (Status du joueur)
     'class Status
@@ -259,47 +294,47 @@
     'Joueur ou sportif ou pilote
     class Member {
         -identifier : int
+        -name : string
+        -firstName : string
+        -runIdentification : string
         -status : MemberStatus
+        -result : ResultType
         -role : MemberRole
         -odds : float
         -sports : Sport[*]
         -teams : Team[*]
-        -score : Score
-        -result : Result
+        -scores : ScoreInterface[*]
         -countries : Country[*]
-        -value : Value
     }
     'Équipes qui participe à une rencontre, à une course
     class Team {
         -identifier : int
+        -name : string
+        -result : ResultType
         -odds : float
         -country : Country
         -sport : Sport
-        -value : Value
-        -score : Score
+        -scores : ScoreInterface[*]
         -members : Member[*]
     }
     'Statut de l'équipe ()
     'class TeamStatus
     'Classe mère global : Un match, une rencontre, une course
-    class Run {
-        -identifier : int
-        -name : string
-        -beginAt : DateTime
-        -endAt : DateTime
-        -odds : float
-        -location : Location
-        -teams : Team[*]
-        -members : Member[*]
-        -periods : Period[*]
+    abstract class AbstractRun {
+        #identifier : int
+        #name : string
+        #beginAt : DateTime
+        #endAt : DateTime
+        #odds : float
+        #location : Location
+        #teams : Team[*]
+        #members : Member[*]
+        #periods : Period[*]
+        #result : ResultType
     }
     'Statut du match, de la rencontre, de la course (annulé, reporté, en cours)
     'class RunStatus
-    '
-    class Value {
-        -identifier : int
-        -number : float
-    }
+    'class Value
     'class Log
 
 @enduml
