@@ -3,37 +3,29 @@
 'plantuml
 'Relations :
     User --|> Account
-    'User "1" -- "1" BillingHistory
-    'BillingHistory "1" o-- "0..*" Billing
     BetCategory "1" <-- "0..*" Bet
-    User -- Bet
-
-    BetCategory "0..*" <--o "0..*" AbstractSport
+    User "1" -- "0..*" Bet
+    BetCategory "0..*" --> "1" AbstractSport
     AbstractSport "1..*" <--* "0..*" Competition
     Country "1..*" <--* "0..*" Competition
     Competition "1" o-- "0..*" Event
-    Event "1" o-- "0..*" AbstractRun
-    AbstractRun "0..*" o--> "1" Location
+    Event "1" o-- "0..*" Run
+    Run "1" -- "1" Location
     Team "1" o-- "0..*" AbstractScore
-    AbstractRun "0..1" *--> "1..*" Team
-    Team "1" o-- "0..*" Member
-    Country "1" <--* "0..1" Team
+    Run "1" *--> "1..*" Team
+    Team "1" *-- "1..*" Member
+    Country "1" <-- "0..1" Team
     Competition "0..1" o--> "0..*" Team
     Event "0..1" o--> "0..*" Team
-    Member "0..1" -- "0..*" AbstractScore
     AbstractSport "0..1" --> "1" Country
-    Event "0..1" *--> "1..*" AbstractSport
     Team "0..*" --> "1" AbstractSport
     Member "0..*" *--> "1..*" AbstractSport
     Member "0..*" *--> "1..*" Country
     Location "0..*" --> "1" Country
-    Member "0..*" <--o "0..*" AbstractRun
-
-    AbstractRun <|-- Race
-    AbstractRun <|-- Fixture
+    User "1" -- "0..*" Billing
     BetTargetInterface <|.. Competition
     BetTargetInterface <|.. Event
-    BetTargetInterface <|.. AbstractRun
+    BetTargetInterface <|.. Run
     BetTargetInterface <|.. Team
     BetTargetInterface <|.. Member
     PointScoreInterface <|.. PointScore
@@ -42,7 +34,6 @@
     PointScore --|> AbstractScore
     TimeScore ..|> ScoreInterface
     PointScore ..|> ScoreInterface
-
     Football ..|> SportInterface
     Football ..|> SportInterface
     Handball ..|> SportInterface
@@ -60,8 +51,6 @@
     FormulaOne  ..|> IndividualSportInterface
     TableTennis ..|> CollectiveSportInterface
     TableTennis ..|> IndividualSportInterface
-    Fixture ..|> RunInterface
-    Race ..|> RunInterface
 'Définitions des classes :
     'interface de généralisation pour les classes autorisé à être parié
     interface BetTargetInterface {
@@ -80,31 +69,38 @@
     class User {
         -identifier : int
         -name : string
-        -LastName : string
+        -lastName : string
         -billingAddress : string
         -billingPostCode : string
         -billingCountry : string
         -birthDate : DateTime
         -wallet : float
         -cart : Bet[*]
-        '-billingsHistory : BillingHistory
-        -betsHistory : Bet[*]
+        -billings : Billing[*]
+        -betList : Bet[*]
     }
-    note left : Propriété mobile pour notification
-    'Factures
+    note left : Possible propriété mobile pour notification
+    'Factures (type=débit ou crédit)
     class Billing {
         -identifier : int
         -orderNumber  : int
         -amount : float
         -currency : string
         -user : User
-        -bet : Bet
+        -type : int
     }
-    'Historique des factures
+    'Historique des factures (type=débit ou crédit)
     class BillingHistory {
-        -identifier
-        -user : User
-        -billings : Billing[*]
+        -identifier : int
+        -name : string
+        -lastName : string
+        -billingAddress : string
+        -billingPostCode : string
+        -billingCountry : string
+        -orderNumber  : int
+        -amount : float
+        -currency : string
+        -type : int
     }
     'Un paris
     class Bet {
@@ -126,71 +122,62 @@
     'Lieu de la rencontre/course
     class Location {
         -identifier : int
-        -datetime : DateTime
+        -place : string
         -timezoneLocal : DateTimeZone
         -country : Country
         -run : Run
     }
-    'Sport pratiqué
+    'Sport pratiqué (runtype = fixture, race)
     abstract class AbstractSport {
         #identifier : int
-        #nameTranslate : string
-        #competitorNumber : int
-        #statutes : MemberStatus[*]
-        #roles : MemberRole[*]
-        #resultsType : ResultType[*]
+        #name : string
+        #numberOfCompetitor : int
+        #runType : string
         #country : Country
     }
+    'interface de généralisation pour un Sport
     interface SportInterface {
-        +getNameTranslate() : string
         +getClassName() : string
-    }
-    interface IndividualSportInterface {
         +isIndividual() : bool
-    }
-    interface CollectiveSportInterface {
         +isCollective() : bool
     }
+    'interface pour différencier sport individuel
+    interface IndividualSportInterface
+    'interface pour différencier sport collectif
+    interface CollectiveSportInterface
+    'Liste de sports
     class Football {
-        +getNameTranslate() : string
         +getClassName() : string
+        +isIndividual() : bool
         +isCollective() : bool
     }
     class Handball {
-        +getNameTranslate() : string
         +getClassName() : string
+        +isIndividual() : bool
         +isCollective() : bool
     }
     class Tennis {
-        +getNameTranslate() : string
         +getClassName() : string
         +isIndividual() : bool
+        +isCollective() : bool
     }
     class FormulaOne {
-        +getNameTranslate() : string
         +getClassName() : string
         +isIndividual() : bool
+        +isCollective() : bool
     }
     class TableTennis {
-        +getNameTranslate() : string
         +getClassName() : string
-        +isCollective() : bool
         +isIndividual() : bool
+        +isCollective() : bool
     }
     'Pays du lieu de la rencontre/course
     class Country {
         -identifier : int
-        -dateFormat : string
-        -timeFormat : string
-        -summerTimeOffset : int
+        -name : string
         -TimeZones : DateTimeZone[*]
-        +getIdentifier() : int
         +getDefaultTimeZone() : DateTimeZone
         +getTimeZone(in string timezone) : DateTimeZone
-        +hasSummerTime() : bool
-        +getDateFormat() : string
-        +getTimeFormat() : string
-        +getDateTimeFormat() : string
     }
     'Compétition (JO, Ligue des Champions, F1 Championnat du monde)
     class Competition {
@@ -204,6 +191,7 @@
         -events : Event[*]
         -countries : Country[*]
         -winner : Team
+        +getOdds() : float
     }
     'Événement de la compétition (poul de qualification, Circuit F1 de france)
     class Event {
@@ -214,33 +202,26 @@
         -odds : float
         -competition : Competition
         -teams : Team[*]
-        -runs : RunInterface[*]
-        '-results : Result[*]
+        -runs : Run[*]
+        +getOdds() : float
     }
     'Classe mère global : Un match, une rencontre, une course
-    abstract class AbstractRun {
-        #identifier : int
-        #name : string
-        #startDate : DateTime
-        #endDate : DateTime
-        #odds : float
-        #location : Location
-        #event : Event
-        #teams : Team[*]
-        #members : Member[*]
-        #result : ResultType
-    }
-    note left: Extension possible en plus de Team : "Competitor" 
-    'interface
-    interface RunInterface
-    'Course
-    class Race {
+    class Run {
         -identifier : int
+        -name : string
+        -startDate : DateTime
+        -endDate : DateTime
+        -odds : float
+        -location : Location
+        -event : Event
+        -teams : Team[*]
+        -result : Team|null
+        +getOdds() : float
     }
-    'Rencontre
-    class Fixture {
-        -identifier : int
-    }
+    note left of Run
+    Extension possible en plus de Team : "Competitor".
+    Futur amélioration possible de Result en un classement.
+    end note
     'interface pour Score en temps
     interface TimeScoreInterface {
         +getTime() : float
@@ -253,12 +234,11 @@
     interface ScoreInterface {
         +getScore() : float
     }
-    'Type de Score (par période, par match, par course, par saison pour team, par épreuve pour team)
-    'class ScoreType
     'Score de l'équipe ou du membre de l'équipe
     abstract class AbstractScore {
         #identifier : int
-        #type : ScoreType
+        #type : string
+        #team : Team
     }
     'Score en temps
     class TimeScore {
@@ -277,27 +257,28 @@
         -identifier : int
         -name : string
         -firstName : string
-        -runIdentification : string
         -status : MemberStatus
         -result : ResultType
         -role : MemberRole
         -odds : float
+        -team : Team
         -sports : Sport[*]
         -teams : Team[*]
-        -scores : ScoreInterface[*]
         -countries : Country[*]
+        +getOdds() : float
     }
     'Équipes qui participe à une rencontre, à une course
     class Team {
         -identifier : int
         -name : string
-        -result : ResultType
         -odds : float
         -country : Country
         -sport : Sport
+        -result : ResultType
         -scores : ScoreInterface[*]
         -members : Member[*]
+        +getOdds() : float
     }
-    note right: Peut implémenter une interface ContextantInterface
+    note right: Peut implémenter une interface ContestantInterface
 
 @enduml
