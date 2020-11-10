@@ -3,16 +3,12 @@
 'plantuml
 'Relations :
     User --|> Account
-    User "1" -- "1" Wallet
-    User "1" -- "1" Cart
-    User "1" -- "1" BillingHistory
-    BillingHistory "1" o-- "0..*" Billing
-    BetHistory "1" -- "1" User
-    BetHistory "0..1" o--> "0..*" Bet
+    'User "1" -- "1" BillingHistory
+    'BillingHistory "1" o-- "0..*" Billing
     BetCategory "1" <-- "0..*" Bet
-    Cart "0..*" o--> "0..*" Bet
+    User -- Bet
 
-    BetCategory "0..*" <--o "0..*" Competition
+    BetCategory "0..*" <--o "0..*" AbstractSport
     AbstractSport "1..*" <--* "0..*" Competition
     Country "1..*" <--* "0..*" Competition
     Competition "1" o-- "0..*" Event
@@ -35,11 +31,11 @@
 
     AbstractRun <|-- Race
     AbstractRun <|-- Fixture
-    CanBeBetInterface <|.. Competition
-    CanBeBetInterface <|.. Event
-    CanBeBetInterface <|.. AbstractRun
-    CanBeBetInterface <|.. Team
-    CanBeBetInterface <|.. Member
+    BetTargetInterface <|.. Competition
+    BetTargetInterface <|.. Event
+    BetTargetInterface <|.. AbstractRun
+    BetTargetInterface <|.. Team
+    BetTargetInterface <|.. Member
     PointScoreInterface <|.. PointScore
     TimeScoreInterface <|.. TimeScore
     TimeScore --|> AbstractScore
@@ -68,7 +64,7 @@
     Race ..|> RunInterface
 'Définitions des classes :
     'interface de généralisation pour les classes autorisé à être parié
-    interface CanBeBetInterface {
+    interface BetTargetInterface {
         +getOdds() : float
     }
     'Compte (sert à ce connecter)
@@ -77,27 +73,24 @@
         -validation : bool
         -password : string
         -emailAddress : string
-        -status : AccountStatus
-        -user : User
-        +isValid() : bool
+        -status : bool
+        +isValidate() : bool
     }
     'Utilisateur avec un compte
     class User {
         -identifier : int
-        -username : string
         -name : string
-        -firstName : string
+        -LastName : string
         -billingAddress : string
         -billingPostCode : string
         -billingCountry : string
         -birthDate : DateTime
-        -mobile : string
-        -account : Account
-        -wallet : Wallet
-        -cart : Cart
-        -billingsHistory : BillingHistory
-        -betsHistory : BetHistory
+        -wallet : float
+        -cart : Bet[*]
+        '-billingsHistory : BillingHistory
+        -betsHistory : Bet[*]
     }
+    note left : Propriété mobile pour notification
     'Factures
     class Billing {
         -identifier : int
@@ -113,42 +106,22 @@
         -user : User
         -billings : Billing[*]
     }
-    'Porte-feuille de l'utilisateur avec des fonds (de l'argent gagnés)
-    class Wallet {
-        -identifier : int
-        -amount : float
-        -currency : string
-        -user : User
-    }
-    'Panier qui contient les paris sélectionnés
-    class Cart {
-        -identifier : int
-        -user : User
-        -bets : Bet[*]
-    }
     'Un paris
     class Bet {
         -identifier : int
         -amount : float
         -state : BetState
-        -type : BetType
         -user : User
-        -billing : Billing
         -category : BetCategory
         -odds : float
-        -items : CanBeBetInterface
-    }
-    'Historique des paris gagnés ou perdus
-    class BetHistory {
-        -identifier : int
-        -user : User
-        -bets : Bet[*]
+        -items : BetTargetInterface
     }
     'Catégorie de paris (ex: Paris sur la victoire du favoris)
     class BetCategory {
         -identifier : int
         -name : string
         -description : string
+        -sport : SportInterface
     }
     'Lieu de la rencontre/course
     class Location {
@@ -223,28 +196,43 @@
     class Competition {
         -identifier : int
         -name : string
-        -beginAt : DateTime
-        -endAt : DateTime
+        -startDate : DateTime
+        -endDate : DateTime
         -odds : float
         -sports : Sport[*]
-        -betCategories : BetCategory[*]
         -teams : Team[*]
         -events : Event[*]
         -countries : Country[*]
-        -result : ResultType
+        -winner : Team
     }
     'Événement de la compétition (poul de qualification, Circuit F1 de france)
     class Event {
         -identifier : int
         -name : string
-        -beginAt : DateTime
-        -endAt : DateTime
+        -startDate : DateTime
+        -endDate : DateTime
         -odds : float
-        -sports : Sport[*]
+        -competition : Competition
         -teams : Team[*]
-        -runs : Run[*]
-        -result : ResultType
+        -runs : RunInterface[*]
+        '-results : Result[*]
     }
+    'Classe mère global : Un match, une rencontre, une course
+    abstract class AbstractRun {
+        #identifier : int
+        #name : string
+        #startDate : DateTime
+        #endDate : DateTime
+        #odds : float
+        #location : Location
+        #event : Event
+        #teams : Team[*]
+        #members : Member[*]
+        #result : ResultType
+    }
+    note left: Extension possible en plus de Team : "Competitor" 
+    'interface
+    interface RunInterface
     'Course
     class Race {
         -identifier : int
@@ -266,9 +254,7 @@
         +getScore() : float
     }
     'Type de Score (par période, par match, par course, par saison pour team, par épreuve pour team)
-    class ScoreType {
-        -identifier : int
-    }
+    'class ScoreType
     'Score de l'équipe ou du membre de l'équipe
     abstract class AbstractScore {
         #identifier : int
@@ -312,19 +298,6 @@
         -scores : ScoreInterface[*]
         -members : Member[*]
     }
-    'Classe mère global : Un match, une rencontre, une course
-    abstract class AbstractRun {
-        #identifier : int
-        #name : string
-        #beginAt : DateTime
-        #endAt : DateTime
-        #odds : float
-        #location : Location
-        #teams : Team[*]
-        #members : Member[*]
-        #result : ResultType
-    }
-    'interface
-    interface RunInterface
+    note right: Peut implémenter une interface ContextantInterface
 
 @enduml
