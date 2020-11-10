@@ -4,65 +4,57 @@
 'Relations :
     User --|> Account
     BetCategory "1" <-- "0..*" Bet
-    User "1" -- "0..*" Bet
-    BetCategory "0..*" --> "1" AbstractSport
-    AbstractSport "1..*" <--* "0..*" Competition
-    Country "1..*" <--* "0..*" Competition
+    User "1" -- "1" BettingHistory
+    User "1" -- "1" Wallet
+    User "1" -- "1" Cart
+    Bet "0..*" -- "0..*" Cart
+    BettingHistory "0..1" -- "0..*" Bet
+    BetCategory "0..*" --> "1" Sport
     Competition "1" o-- "0..*" Event
     Event "1" o-- "0..*" Run
     Run "1" -- "1" Location
-    Team "1" o-- "0..*" AbstractScore
+    Team "1" o-- "0..*" Score
     Run "1" *--> "1..*" Team
     Team "1" *-- "1..*" Member
-    Country "1" <-- "0..1" Team
-    Competition "0..1" o--> "0..*" Team
-    Event "0..1" o--> "0..*" Team
-    AbstractSport "0..1" --> "1" Country
-    Team "0..*" --> "1" AbstractSport
-    Member "0..*" *--> "1..*" AbstractSport
-    Member "0..*" *--> "1..*" Country
+    Sport "0..1" --> "1" Country
     Location "0..*" --> "1" Country
-    User "1" -- "0..*" Billing
+    Wallet "1" -- "0..*" Billing
     BetTargetInterface <|.. Competition
     BetTargetInterface <|.. Event
     BetTargetInterface <|.. Run
     BetTargetInterface <|.. Team
     BetTargetInterface <|.. Member
-    PointScoreInterface <|.. PointScore
-    TimeScoreInterface <|.. TimeScore
-    TimeScore --|> AbstractScore
-    PointScore --|> AbstractScore
-    TimeScore ..|> ScoreInterface
-    PointScore ..|> ScoreInterface
-    Football ..|> SportInterface
-    Football ..|> SportInterface
-    Handball ..|> SportInterface
-    Tennis ..|> SportInterface
-    FormulaOne  ..|> SportInterface
-    TableTennis ..|> SportInterface
-    Football --|> AbstractSport
-    Handball --|> AbstractSport
-    Tennis --|> AbstractSport
-    FormulaOne --|> AbstractSport
-    TableTennis --|> AbstractSport
-    Football ..|> CollectiveSportInterface
-    Handball ..|> CollectiveSportInterface
-    Tennis ..|> IndividualSportInterface
-    FormulaOne  ..|> IndividualSportInterface
-    TableTennis ..|> CollectiveSportInterface
-    TableTennis ..|> IndividualSportInterface
 'Définitions des classes :
+    'Porte-feuille de l'utilisateur avec des fonds (de l'argent gagnés)
+    class Wallet {
+        -identifier : int
+        -user : User
+        -amount : float
+        -billings : Billing[*]
+    }
+    'Panier qui contient les paris sélectionnés
+    class Cart {
+        -identifier : int
+        -user : User
+        -betsList : Bet[*]
+    }
+    'Historique des paris gagnés ou perdus
+    class BettingHistory {
+        -identifier : int
+        -user : User
+        -betsList : Bet[*]
+    }
     'interface de généralisation pour les classes autorisé à être parié
     interface BetTargetInterface {
         +getOdds() : float
     }
     'Compte (sert à ce connecter)
     class Account {
-        -identifier : int
-        -validation : bool
-        -password : string
-        -emailAddress : string
-        -status : bool
+        #identifier : int
+        #validation : bool
+        #password : string
+        #emailAddress : string
+        #status : bool
         +isValidate() : bool
     }
     'Utilisateur avec un compte
@@ -74,10 +66,9 @@
         -billingPostCode : string
         -billingCountry : string
         -birthDate : DateTime
-        -wallet : float
-        -cart : Bet[*]
-        -billings : Billing[*]
-        -betList : Bet[*]
+        -wallet : Wallet
+        -cart : Cart
+        -bettingHistory : BettingHistory
     }
     note left : Possible propriété mobile pour notification
     'Factures (type=débit ou crédit)
@@ -117,7 +108,7 @@
         -identifier : int
         -name : string
         -description : string
-        -sport : SportInterface
+        -sport : Sport
     }
     'Lieu de la rencontre/course
     class Location {
@@ -127,49 +118,14 @@
         -country : Country
         -run : Run
     }
-    'Sport pratiqué (runtype = fixture, race)
-    abstract class AbstractSport {
-        #identifier : int
-        #name : string
-        #numberOfCompetitor : int
-        #runType : string
-        #country : Country
-    }
-    'interface de généralisation pour un Sport
-    interface SportInterface {
-        +getClassName() : string
-        +isIndividual() : bool
-        +isCollective() : bool
-    }
-    'interface pour différencier sport individuel
-    interface IndividualSportInterface
-    'interface pour différencier sport collectif
-    interface CollectiveSportInterface
-    'Liste de sports
-    class Football {
-        +getClassName() : string
-        +isIndividual() : bool
-        +isCollective() : bool
-    }
-    class Handball {
-        +getClassName() : string
-        +isIndividual() : bool
-        +isCollective() : bool
-    }
-    class Tennis {
-        +getClassName() : string
-        +isIndividual() : bool
-        +isCollective() : bool
-    }
-    class FormulaOne {
-        +getClassName() : string
-        +isIndividual() : bool
-        +isCollective() : bool
-    }
-    class TableTennis {
-        +getClassName() : string
-        +isIndividual() : bool
-        +isCollective() : bool
+    'Sport pratiqué (runtype = fixture, race) (type = collectif ou individuel ou les deux)
+    class Sport {
+        -identifier : int
+        -name : string
+        -numberOfCompetitor : int
+        -type : SportType[*]
+        -runType : string
+        -country : Country
     }
     'Pays du lieu de la rencontre/course
     class Country {
@@ -186,10 +142,7 @@
         -startDate : DateTime
         -endDate : DateTime
         -odds : float
-        -sports : Sport[*]
-        -teams : Team[*]
         -events : Event[*]
-        -countries : Country[*]
         -winner : Team
         +getOdds() : float
     }
@@ -201,7 +154,6 @@
         -endDate : DateTime
         -odds : float
         -competition : Competition
-        -teams : Team[*]
         -runs : Run[*]
         +getOdds() : float
     }
@@ -218,39 +170,17 @@
         -result : Team|null
         +getOdds() : float
     }
-    note left of Run
+    note top of Run
     Extension possible en plus de Team : "Competitor".
     Futur amélioration possible de Result en un classement.
     end note
-    'interface pour Score en temps
-    interface TimeScoreInterface {
-        +getTime() : float
-    }
-    'interface pour Score en points
-    interface PointScoreInterface {
-        +getPoint() : int
-    }
-    'interface de généralisation pour un Score
-    interface ScoreInterface {
-        +getScore() : float
-    }
     'Score de l'équipe ou du membre de l'équipe
-    abstract class AbstractScore {
-        #identifier : int
-        #type : string
-        #team : Team
-    }
-    'Score en temps
-    class TimeScore {
-        #value : float
-        +getTime() : float
-        +getScore() : float
-    }
-    'Score en points
-    class PointScore {
-        #value : int
-        +getPoint() : int
-        +getScore() : float
+    class Score {
+        -identifier : int
+        -value : int
+        -type : string
+        -team : Team
+        +getScore() : int
     }
     'Joueur ou sportif ou pilote
     class Member {
@@ -262,9 +192,6 @@
         -role : MemberRole
         -odds : float
         -team : Team
-        -sports : Sport[*]
-        -teams : Team[*]
-        -countries : Country[*]
         +getOdds() : float
     }
     'Équipes qui participe à une rencontre, à une course
@@ -272,10 +199,8 @@
         -identifier : int
         -name : string
         -odds : float
-        -country : Country
-        -sport : Sport
         -result : ResultType
-        -scores : ScoreInterface[*]
+        -scores : Score[*]
         -members : Member[*]
         +getOdds() : float
     }
