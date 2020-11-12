@@ -1,5 +1,5 @@
 @startuml parisportif5
-
+skinparam linetype ortho
 'plantuml
 'Relations :
     User --|> Account
@@ -26,12 +26,17 @@
         -identifier : int
         -user : User
         -amount : float
+        +add(in float value)
+        +subtract(in float value)
+        +isEmpty() : bool
     }
     'Panier qui contient les paris sélectionnés
     class Cart {
         -identifier : int
         -user : User
         -betsList : Bet[*]
+        +isEmpty() : bool
+        +getBetsCount() : int
     }
     'interface de généralisation pour les classes autorisé à être parié
     interface BetTargetInterface {
@@ -49,7 +54,8 @@
     'Utilisateur avec un compte
     class User {
         -identifier : int
-        -name : string
+        -civility : string
+        -firstName : string
         -lastName : string
         -billingAddress : string
         -billingPostCode : string
@@ -57,13 +63,15 @@
         -birthDate : DateTime
         -wallet : Wallet
         -cart : Cart
+        +getName() : string
+        +getAddress() : string
     }
     note left : Possible propriété mobile pour notification
     'Factures (type=débit ou crédit)
     class Billing {
         -identifier : int
         -user : User|null
-        -name : string
+        -firstName : string
         -lastName : string
         -billingAddress : string
         -billingPostCode : string
@@ -72,6 +80,9 @@
         -amount : float
         -currency : string
         -type : int
+        +getName() : string
+        +getAddress() : string
+        +deleteUser() : void
     }
     'Un paris
     class Bet {
@@ -107,6 +118,9 @@
         -individualType : bool
         -runType : string
         -country : string
+        +isCollective() : bool
+        +isIndividual() : bool
+        +isBothIndividualAndCollective : bool
     }
     'Compétition (JO, Ligue des Champions, F1 Championnat du monde)
     class Competition {
@@ -119,6 +133,10 @@
         -events : Event[*]
         -winner : Team
         +getOdds() : float
+        +hasWinner() : bool
+        +hasEvents() : bool
+        +isBegin() : bool
+        +getEventsCount() : int
     }
     'Événement de la compétition (poul de qualification, Circuit F1 de france)
     class Event {
@@ -131,6 +149,9 @@
         -competition : Competition
         -runs : Run[*]
         +getOdds() : float
+        +hasRuns() : bool
+        +isBegin() : bool
+        +getRunsCount() : int
     }
     'Classe mère global : Un match, une rencontre, une course
     class Run {
@@ -144,6 +165,10 @@
         -teams : Team[*]
         -result : Team|null
         +getOdds() : float
+        +isBegin() : bool
+        +hasTeams() : bool
+        +hasResult() : bool
+        +getTeamsCount() : int
     }
     note left of Run
     Extension possible en plus de Team : "Competitor".
@@ -160,7 +185,7 @@
     'Joueur ou sportif ou pilote
     class Member {
         -identifier : int
-        -name : string
+        -lastName : string
         -firstName : string
         -status : MemberStatus
         -result : ResultType
@@ -168,6 +193,7 @@
         -odds : float
         -team : Team
         +getOdds() : float
+        +hasResult() : bool
     }
     'Équipes qui participe à une rencontre, à une course
     class Team {
@@ -178,7 +204,11 @@
         -scores : Score[*]
         -members : Member[*]
         +getOdds() : float
+        +hasResult() : bool
+        +hasMembers() : bool
+        +hasScores() : bool
+        +getMembersCount() : int
+        +getScoresCount() : int
     }
     note right: Peut implémenter une interface ContestantInterface
-
 @enduml
