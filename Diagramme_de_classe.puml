@@ -4,21 +4,17 @@
 'Relations :
     User --|> Account
     BetCategory "1" <-- "0..*" Bet
-    User "1" -- "1" BettingHistory
     User "1" -- "1" Wallet
     User "1" -- "1" Cart
     Bet "0..*" -- "0..*" Cart
-    BettingHistory "0..1" -- "0..*" Bet
     BetCategory "0..*" --> "1" Sport
     Competition "1" o-- "0..*" Event
+    Competition --> Team
     Event "1" o-- "0..*" Run
     Run "1" -- "1" Location
     Team "1" o-- "0..*" Score
-    Run "1" *--> "1..*" Team
+    Run "1" o--> "0..*" Team
     Team "1" *-- "1..*" Member
-    Sport "0..1" --> "1" Country
-    Location "0..*" --> "1" Country
-    Wallet "1" -- "0..*" Billing
     BetTargetInterface <|.. Competition
     BetTargetInterface <|.. Event
     BetTargetInterface <|.. Run
@@ -30,16 +26,9 @@
         -identifier : int
         -user : User
         -amount : float
-        -billings : Billing[*]
     }
     'Panier qui contient les paris sélectionnés
     class Cart {
-        -identifier : int
-        -user : User
-        -betsList : Bet[*]
-    }
-    'Historique des paris gagnés ou perdus
-    class BettingHistory {
         -identifier : int
         -user : User
         -betsList : Bet[*]
@@ -68,21 +57,12 @@
         -birthDate : DateTime
         -wallet : Wallet
         -cart : Cart
-        -bettingHistory : BettingHistory
     }
     note left : Possible propriété mobile pour notification
     'Factures (type=débit ou crédit)
     class Billing {
         -identifier : int
-        -orderNumber  : int
-        -amount : float
-        -currency : string
-        -user : User
-        -type : int
-    }
-    'Historique des factures (type=débit ou crédit)
-    class BillingHistory {
-        -identifier : int
+        -user : User|null
         -name : string
         -lastName : string
         -billingAddress : string
@@ -114,8 +94,8 @@
     class Location {
         -identifier : int
         -place : string
-        -timezoneLocal : DateTimeZone
-        -country : Country
+        -timezone : DateTimeZone
+        -country : string
         -run : Run
     }
     'Sport pratiqué (runtype = fixture, race) (type = collectif ou individuel ou les deux)
@@ -123,17 +103,10 @@
         -identifier : int
         -name : string
         -numberOfCompetitor : int
-        -type : SportType[*]
+        -collectiveType : bool
+        -individualType : bool
         -runType : string
-        -country : Country
-    }
-    'Pays du lieu de la rencontre/course
-    class Country {
-        -identifier : int
-        -name : string
-        -TimeZones : DateTimeZone[*]
-        +getDefaultTimeZone() : DateTimeZone
-        +getTimeZone(in string timezone) : DateTimeZone
+        -country : string
     }
     'Compétition (JO, Ligue des Champions, F1 Championnat du monde)
     class Competition {
@@ -142,6 +115,7 @@
         -startDate : DateTime
         -endDate : DateTime
         -odds : float
+        -country : string
         -events : Event[*]
         -winner : Team
         +getOdds() : float
@@ -153,6 +127,7 @@
         -startDate : DateTime
         -endDate : DateTime
         -odds : float
+        -country : string
         -competition : Competition
         -runs : Run[*]
         +getOdds() : float
@@ -170,7 +145,7 @@
         -result : Team|null
         +getOdds() : float
     }
-    note top of Run
+    note left of Run
     Extension possible en plus de Team : "Competitor".
     Futur amélioration possible de Result en un classement.
     end note

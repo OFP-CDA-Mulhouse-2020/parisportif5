@@ -3,6 +3,7 @@
 ## Générale
 - PSR-12
 - PSR-4
+- l'application sera uniquement en français
 - typage des variables et méthodes (paramètres et retour)
 - codage de type défensif
 - les interfaces se termine par "Interface"
