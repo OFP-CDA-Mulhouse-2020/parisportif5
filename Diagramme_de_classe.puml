@@ -3,24 +3,52 @@ skinparam linetype ortho
 'plantuml
 'Relations :
     User --|> Account
+    User <.. Billing
     BetCategory "1" <-- "0..*" Bet
     User "1" -- "1" Wallet
     User "1" -- "1" Cart
     Bet "0..*" -- "0..*" Cart
     BetCategory "0..*" --> "1" Sport
     Competition "1" o-- "0..*" Event
-    Competition --> Team
+    Competition "1" --> "0..1" Team
     Event "1" o-- "0..*" Run
     Run "1" -- "1" Location
     Team "1" o-- "0..*" Score
     Run "1" o--> "0..*" Team
     Team "1" *-- "1..*" Member
+    BetState "1" <-- "0..*" Bet
+    ResultType "0..1" <-- "0..*" Team
+    ResultType "0..1" <-- "0..*" Member
+    MemberRole "1" <-- "0..*" Member
+    MemberStatus "1" <-- "0..*" Member
+    BetTargetInterface .. Bet
     BetTargetInterface <|.. Competition
     BetTargetInterface <|.. Event
     BetTargetInterface <|.. Run
     BetTargetInterface <|.. Team
     BetTargetInterface <|.. Member
 'Définitions des classes :
+    'Rôle du membre (pilote, co-pilote, joueur)
+    class MemberRole {
+        -identifier : int
+        -name : string
+    }
+    'Statut du membre (blessé, remplaçant, titulaire)
+    class MemberStatus {
+        -identifier : int
+        -name : string
+    }
+    'Type de résultat (gagnant, perdant, ex aequo)
+    class ResultType {
+        -identifier : int
+        -name : string
+    }
+    'État du paris (en cours, validé, finis)
+    class BetState {
+        -identifier : int
+        -name : string
+        -description : string
+    }
     'Porte-feuille de l'utilisateur avec des fonds (de l'argent gagnés)
     class Wallet {
         -identifier : int
@@ -122,7 +150,7 @@ skinparam linetype ortho
         -country : string
         +isCollective() : bool
         +isIndividual() : bool
-        +isBothIndividualAndCollective : bool
+        +isBothIndividualAndCollective() : bool
     }
     'Compétition (JO, Ligue des Champions, F1 Championnat du monde)
     class Competition {
@@ -212,5 +240,5 @@ skinparam linetype ortho
         +getMembersCount() : int
         +getScoresCount() : int
     }
-    note right: Peut implémenter une interface ContestantInterface
+    note left: Peut implémenter une interface ContestantInterface
 @enduml
