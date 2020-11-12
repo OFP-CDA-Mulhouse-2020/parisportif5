@@ -26,9 +26,10 @@ skinparam linetype ortho
         -identifier : int
         -user : User
         -amount : float
-        +add(in float value)
-        +subtract(in float value)
+        +add(in float value) : void
+        +subtract(in float value) : void
         +isEmpty() : bool
+        +isAuthorizedSubtraction(in float value) : bool
     }
     'Panier qui contient les paris sélectionnés
     class Cart {
@@ -48,6 +49,7 @@ skinparam linetype ortho
         #validation : bool
         #password : string
         #emailAddress : string
+        #creationDate : DateTime
         #status : bool
         +isValidate() : bool
     }
