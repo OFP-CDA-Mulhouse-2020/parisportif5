@@ -1,8 +1,0 @@
-uml : 
-moins de liens
-regrouper les sports dans une seule table
-moins d'interfaces
-modéliser le cart & wallet
-pas de relation entre user et bet (cart)
-moins de classes abstraites et d'interfaces
-GENERALISER	
