@@ -27,7 +27,11 @@ skinparam linetype ortho
     BetTargetInterface <|.. Run
     BetTargetInterface <|.. Team
     BetTargetInterface <|.. Member
+    'Run -- Competitor
+    'ContestantInterface <|.. Competitor
+    'ContestantInterface <|.. Team
 'Définitions des classes :
+    'interface ContestantInterface
     'Rôle du membre (pilote, co-pilote, joueur)
     class MemberRole {
         -identifier : int
