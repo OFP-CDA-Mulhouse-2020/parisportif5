@@ -43,19 +43,19 @@ skinparam linetype ortho
     'Liaison potentiel entre un paris et une compétition
     Bet "0..*" -- "0..1" Competition
     'Classe d'association entre paris et compétition
-    (Bet, Competition) .. CompetitionBet
+    (Bet, Competition) .. CompetitionBets
     'Liaison potentiel entre un paris et une rencontre ou course
     Bet "0..*" -- "0..1" Run
     'Classe d'association entre un paris et une rencontre ou course
-    (Bet, Run) .. RunBet
+    (Bet, Run) .. RunBets
     'Liaison potentiel entre un paris et une équipe
     Bet "0..*" -- "0..1" Team
     'Classe d'association entre un paris et une équipe
-    (Bet, Team) .. TeamBet
+    (Bet, Team) .. TeamBets
     'Liaison potentiel entre un paris et un membre
     Bet "0..*" -- "0..1" Member
     'Classe d'association entre un paris et un membre
-    (Bet, Member) .. MemberBet
+    (Bet, Member) .. MemberBets
 'Définitions des classes :
     'Rôle du membre (pilote, co-pilote, joueur)
     class MemberRole {
