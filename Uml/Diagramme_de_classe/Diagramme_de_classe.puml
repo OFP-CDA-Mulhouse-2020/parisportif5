@@ -2,36 +2,61 @@
 skinparam linetype ortho
 'plantuml
 'Relations :
-    User --|> Account
-    User <.. Billing
-    BetCategory "1" <-- "0..*" Bet
+    'Un utilisateur a un compte
+    User "1" -- "1" Account
+    'Une facture n'est pas pas forcément lié à un utilisateur existant
+    User "0..1" <-- "0..*" Billing
+    'Un paris a un type
+    BetType "1" <-- "0..*" Bet
+    'Un utilisateur a un porte-feuille
     User "1" -- "1" Wallet
-    User "1" -- "1" Cart
-    Bet "0..*" -- "0..*" Cart
-    BetCategory "0..*" --> "1" Sport
+    'Un utilisateur a une liste des paris en cours (validé)
+    User "1" -- "1" OngoingBets
+    'Un paris (validé) est lié à une liste de paris en cours
+    Bet "0..*" --o "1" OngoingBets
+    'Un type de paris est lié à un sport
+    BetType "0..*" --> "1" Sport
+    'Une compétition a des événements
     Competition "1" o-- "0..*" Event
+    'La compétition a une équipe gagnante
     Competition "1" --> "0..1" Team
+    'Un événement a plusieurs rencontre ou course
     Event "1" o-- "0..*" Run
+    'Une rencontre ou une course a un lieu
     Run "1" -- "1" Location
+    'Une équipe a des scores (des matchs, des courses)
     Team "1" o-- "0..*" Score
+    'Une rencontre ou une course a plusieurs équipes
     Run "1" o--> "0..*" Team
+    'Une équipe a plusieurs membre
     Team "1" *-- "1..*" Member
+    'Un paris a un état (en cours ou passé)
     BetState "1" <-- "0..*" Bet
+    'Une équipe a un résultat (gagnant, perdant) même dans le cas de sport individuel
     ResultType "0..1" <-- "0..*" Team
+    'Un membre a un résultat dans le cas de sport individuel (gagnant, perdant)
     ResultType "0..1" <-- "0..*" Member
+    'Un membre a un rôle (fonction) tel que pilote, joueur
     MemberRole "1" <-- "0..*" Member
+    'Un membre a un status (blessé, titulaire)
     MemberStatus "1" <-- "0..*" Member
-    BetTargetInterface .. Bet
-    BetTargetInterface <|.. Competition
-    BetTargetInterface <|.. Event
-    BetTargetInterface <|.. Run
-    BetTargetInterface <|.. Team
-    BetTargetInterface <|.. Member
-    'Run -- Competitor
-    'ContestantInterface <|.. Competitor
-    'ContestantInterface <|.. Team
+    'Liaison potentiel entre un paris et une compétition
+    Bet "0..*" -- "0..1" Competition
+    'Classe d'association entre paris et compétition
+    (Bet, Competition) .. CompetitionBet
+    'Liaison potentiel entre un paris et une rencontre ou course
+    Bet "0..*" -- "0..1" Run
+    'Classe d'association entre un paris et une rencontre ou course
+    (Bet, Run) .. RunBet
+    'Liaison potentiel entre un paris et une équipe
+    Bet "0..*" -- "0..1" Team
+    'Classe d'association entre un paris et une équipe
+    (Bet, Team) .. TeamBet
+    'Liaison potentiel entre un paris et un membre
+    Bet "0..*" -- "0..1" Member
+    'Classe d'association entre un paris et un membre
+    (Bet, Member) .. MemberBet
 'Définitions des classes :
-    'interface ContestantInterface
     'Rôle du membre (pilote, co-pilote, joueur)
     class MemberRole {
         -identifier : int
@@ -56,33 +81,26 @@ skinparam linetype ortho
     'Porte-feuille de l'utilisateur avec des fonds (de l'argent gagnés)
     class Wallet {
         -identifier : int
-        -user : User
         -amount : float
         +add(in float value) : void
         +subtract(in float value) : void
         +isEmpty() : bool
         +isAuthorizedSubtraction(in float value) : bool
     }
-    'Panier qui contient les paris sélectionnés
-    class Cart {
+    'Liste qui contient les paris validés et en cours
+    class OngoingBets {
         -identifier : int
-        -user : User
-        -betsList : Bet[*]
         +isEmpty() : bool
         +getBetsCount() : int
     }
-    'interface de généralisation pour les classes autorisé à être parié
-    interface BetTargetInterface {
-        +getOdds() : float
-    }
     'Compte (sert à ce connecter)
     class Account {
-        #identifier : int
-        #validation : bool
-        #password : string
-        #emailAddress : string
-        #creationDate : DateTime
-        #status : bool
+        -identifier : int
+        -validation : bool
+        -password : string
+        -emailAddress : string
+        -creationDate : DateTime
+        -status : bool
         +isValidate() : bool
     }
     'Utilisateur avec un compte
@@ -95,16 +113,12 @@ skinparam linetype ortho
         -billingPostCode : string
         -billingCountry : string
         -birthDate : DateTime
-        -wallet : Wallet
-        -cart : Cart
         +getName() : string
         +getAddress() : string
     }
-    note left : Possible propriété mobile pour notification
     'Factures (type=débit ou crédit)
     class Billing {
         -identifier : int
-        -user : User|null
         -firstName : string
         -lastName : string
         -billingAddress : string
@@ -122,18 +136,15 @@ skinparam linetype ortho
     class Bet {
         -identifier : int
         -amount : float
-        -state : BetState
-        -user : User
-        -category : BetCategory
         -odds : float
-        -items : BetTargetInterface
+        -betSubject : string
+        +getOdds() : float
     }
     'Catégorie de paris (ex: Paris sur la victoire du favoris)
-    class BetCategory {
+    class BetType {
         -identifier : int
         -name : string
         -description : string
-        -sport : Sport
     }
     'Lieu de la rencontre/course
     class Location {
@@ -141,7 +152,6 @@ skinparam linetype ortho
         -place : string
         -timezone : DateTimeZone
         -country : string
-        -run : Run
     }
     'Sport pratiqué (runtype = fixture, race) (type = collectif ou individuel ou les deux)
     class Sport {
@@ -162,11 +172,7 @@ skinparam linetype ortho
         -name : string
         -startDate : DateTime
         -endDate : DateTime
-        -odds : float
         -country : string
-        -events : Event[*]
-        -winner : Team
-        +getOdds() : float
         +hasWinner() : bool
         +hasEvents() : bool
         +isBegin() : bool
@@ -176,44 +182,26 @@ skinparam linetype ortho
     class Event {
         -identifier : int
         -name : string
-        -startDate : DateTime
-        -endDate : DateTime
-        -odds : float
-        -country : string
-        -competition : Competition
-        -runs : Run[*]
-        +getOdds() : float
         +hasRuns() : bool
-        +isBegin() : bool
         +getRunsCount() : int
     }
-    'Classe mère global : Un match, une rencontre, une course
+    'Un match, une rencontre, une course
     class Run {
         -identifier : int
         -name : string
         -startDate : DateTime
         -endDate : DateTime
-        -odds : float
-        -location : Location
-        -event : Event
-        -teams : Team[*]
         -result : Team|null
-        +getOdds() : float
         +isBegin() : bool
         +hasTeams() : bool
         +hasResult() : bool
         +getTeamsCount() : int
     }
-    note left of Run
-    Extension possible en plus de Team : "Competitor".
-    Futur amélioration possible de Result en un classement.
-    end note
     'Score de l'équipe ou du membre de l'équipe
     class Score {
         -identifier : int
         -value : int
         -type : string
-        -team : Team
         +getScore() : int
     }
     'Joueur ou sportif ou pilote
@@ -221,28 +209,16 @@ skinparam linetype ortho
         -identifier : int
         -lastName : string
         -firstName : string
-        -status : MemberStatus
-        -result : ResultType
-        -role : MemberRole
-        -odds : float
-        -team : Team
-        +getOdds() : float
         +hasResult() : bool
     }
     'Équipes qui participe à une rencontre, à une course
     class Team {
         -identifier : int
         -name : string
-        -odds : float
-        -result : ResultType
-        -scores : Score[*]
-        -members : Member[*]
-        +getOdds() : float
         +hasResult() : bool
         +hasMembers() : bool
         +hasScores() : bool
         +getMembersCount() : int
         +getScoresCount() : int
     }
-    note left: Peut implémenter une interface ContestantInterface
 @enduml
