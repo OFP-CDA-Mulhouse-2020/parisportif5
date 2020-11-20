@@ -9,7 +9,7 @@ services:
     ports:
       - "8100:80"
     volumes:
-      - ./code/webApp:/var/www/html/
+      - ./webApp:/var/www/html/
       - ./docker/config/php/php.ini:/usr/local/etc/php/php.ini
       # - ./config/php.ini:/var/www/config/php.ini 
     labels: 
