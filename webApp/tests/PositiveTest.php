@@ -11,7 +11,7 @@ class PositiveTest extends TestCase
 
     public function testIsPositive()
     {
-        $nombrePositif = new Positive();
+        $nombrePositif = new Positive;
         $this->assertIsInt($nombrePositif->getNumber());
     }
 
