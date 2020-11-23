@@ -20,10 +20,12 @@ services:
     volumes:
     - ./database/:/var/www/mysql/
     environment:
-      MYSQL_DATABASE: test
+      MYSQL_DATABASE: parisportif_dev
       MYSQL_USER: root
       MYSQL_PASSWORD: 
       MYSQL_ROOT_PASSWORD: test
+    labels: 
+      - "traefik.http.routers.mysql.rule=Host(`mysql.docker.localhost`)"
   
   phpmyadmin:
     container_name: parisportif5_phpmyadmin
