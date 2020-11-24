@@ -15,12 +15,12 @@ class Positive
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private $id;
+    private int $id;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $number;
+    private int $number;
 
     public function getId(): ?int
     {
