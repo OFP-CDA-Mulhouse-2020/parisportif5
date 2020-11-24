@@ -35,5 +35,5 @@ ignore="vendor,automatisation,bin,config,database,docker,docs,migrations,templat
 phpcbf="vendor/bin/phpcbf --report=code --colors --report-width=80 --standard=PSR12 --encoding=utf-8 --ignore=${ignore} -n -p"
 phpcs="vendor/bin/phpcs --report=code --colors --report-width=80 --standard=PSR12 --encoding=utf-8 --ignore=${ignore} -n -p"
 
-__run "1/2" "Code Sniffer : Correct PSR12 coding standard violations" "${modified} | xargs -r ${phpcbf}"
-__run "2/2" "Code Sniffer : Detect last violations of PSR12 coding standard" "${modified} | xargs -r ${phpcs}"
+__run "1/2" "Code Sniffer : Corrects PSR12 code styling standards" "${modified} | xargs -r ${phpcbf}"
+__run "2/2" "Code Sniffer : Detects violations of PSR12 coding standard" "${modified} | xargs -r ${phpcs}"
