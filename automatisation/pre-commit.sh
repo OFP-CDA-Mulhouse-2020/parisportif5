@@ -31,7 +31,7 @@ function __run() #(step, name, cmd)
 }
 
 modified="git diff --diff-filter=M --name-only --cached  | grep \".php$\""
-ignore="vendor,automatisation,bin,config,database,docker,docs,migrations,templates,translations,var"
+ignore="vendor,automatisation,bin,config,docker,docs,migrations,templates,translations,var"
 phpcbf="vendor/bin/phpcbf --report=code --colors --report-width=80 --standard=PSR12 --encoding=utf-8 --ignore=${ignore} -n -p"
 phpcs="vendor/bin/phpcs --report=code --colors --report-width=80 --standard=PSR12 --encoding=utf-8 --ignore=${ignore} -n -p"
 

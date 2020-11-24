@@ -18,7 +18,7 @@ services:
     image: mysql:8.0.22
     restart: always
     volumes:
-    - ./database/:/var/lib/mysql/
+    - database:/var/lib/mysql/
     environment:
       MYSQL_DATABASE: parisportif_dev
       MYSQL_USER: root
@@ -59,3 +59,6 @@ services:
       - 8080:8080
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
+volumes: 
+  database:
