@@ -25,9 +25,9 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@v2
       - name: Install composer dependencies
-        run: php-actions/composer@master
+        uses: php-actions/composer@master
       - name: Installs phpunit latest version
-        run: php-actions/phpunit@latest
+        uses: php-actions/phpunit@latest
         with:
           bootstrap: vendor/autoload.php
           configuration: tests/phpunit.xml.dist
