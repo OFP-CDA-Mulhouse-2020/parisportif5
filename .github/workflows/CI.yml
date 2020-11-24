@@ -26,5 +26,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Install composer dependencies
         run: composer install
+      - name: Regenerate conf
+        run: php bin/phpunit --generate-configuartion
       - name: Run Testsuite
         run: php bin/phpunit tests
