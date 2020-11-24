@@ -32,4 +32,4 @@ jobs:
           bootstrap: vendor/autoload.php
           configuration: tests/phpunit.xml.dist
       - name: Runs phpunit tests
-        run: php bin/phpunit tests
+        run: php bin/phpunit --configuration 'tests/phpunit.xml.dist' --bootstrap 'vendor/autoload.php' --test-suffix 'Test.php,.phpt' tests
