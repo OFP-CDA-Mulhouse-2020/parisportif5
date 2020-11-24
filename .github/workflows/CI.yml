@@ -31,3 +31,4 @@ jobs:
         with:
           bootstrap: vendor/autoload.php
           configuration: tests/phpunit.xml.dist
+          command: php bin/phpunit tests
