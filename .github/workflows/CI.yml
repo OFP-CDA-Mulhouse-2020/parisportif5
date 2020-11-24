@@ -27,7 +27,7 @@ jobs:
       - name: Install composer dependencies
         uses: php-actions/composer@master
       - name: Installs phpunit latest version
-        uses: php-actions/phpunit@latest
+        uses: php-actions/phpunit@v8.3
         with:
           bootstrap: vendor/autoload.php
           configuration: tests/phpunit.xml.dist
