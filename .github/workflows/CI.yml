@@ -27,6 +27,6 @@ jobs:
       - name: Install composer dependencies
         run: composer install
       - name: Regenerate conf
-        run: php bin/phpunit --generate-configuartion
+        run: php bin/phpunit --generate-configuration
       - name: Run Testsuite
         run: php bin/phpunit tests
