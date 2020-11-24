@@ -15,42 +15,42 @@ class User
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private $id;
+    private int $id;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $civility;
+    private string $civility;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $firstName;
+    private string $firstName;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $lastName;
+    private string $lastName;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $billingAddress;
+    private string $billingAddress;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $billingPostcode;
+    private string $billingPostcode;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $billingCountry;
+    private string $billingCountry;
 
     /**
      * @ORM\Column(type="date")
      */
-    private $birthDate;
+    private \DateTime $birthDate;
 
     public function getId(): ?int
     {
@@ -129,12 +129,12 @@ class User
         return $this;
     }
 
-    public function getBirthDate(): ?\DateTimeInterface
+    public function getBirthDate(): ?\DateTime
     {
         return $this->birthDate;
     }
 
-    public function setBirthDate(\DateTimeInterface $birthDate): self
+    public function setBirthDate(\DateTime $birthDate): self
     {
         $this->birthDate = $birthDate;
 

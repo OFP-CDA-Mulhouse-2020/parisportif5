@@ -21,7 +21,7 @@ function __run() #(step, name, cmd)
     if [[ 0 == $exitcode || 130 == $exitcode ]]; then
         echo -e " - Status : ${C_GREEN} OK !${C_RESET}"
     else
-        if [ $1 == "1/2" ]; then
+        if [ $1 == "1/3" ]; then
             echo -e " - Status : ${C_YELLOW} SAVE MODIFICATION !${C_RESET}\n\n$output"
         else
             echo -e " - Status : ${C_RED} ERROR DETECTED !${C_RESET}\n\n$output"
@@ -31,9 +31,10 @@ function __run() #(step, name, cmd)
 }
 
 modified="git diff --diff-filter=M --name-only --cached  | grep \".php$\""
-ignore="vendor,automatisation,bin,config,docker,docs,migrations,public,tests,templates,translations,var"
+ignore="vendor,automatisation,bin,config,docker,docs,migrations,public,tests/bootstrap.php,templates,translations,var"
 phpcbf="vendor/bin/phpcbf --report=code --colors --report-width=80 --standard=PSR12 --encoding=utf-8 --ignore=${ignore} -n -p"
 phpcs="vendor/bin/phpcs --report=code --colors --report-width=80 --standard=PSR12 --encoding=utf-8 --ignore=${ignore} -n -p"
 
-__run "1/2" "Code Sniffer : Corrects PSR12 code styling standards" "${modified} | xargs -r ${phpcbf}"
-__run "2/2" "Code Sniffer : Detects violations of PSR12 coding standard" "${modified} | xargs -r ${phpcs}"
+__run "1/3" "Code Sniffer : Corrects PSR12 code styling standards" "${modified} | xargs -r ${phpcbf}"
+__run "2/3" "Code Sniffer : Detects violations of PSR12 coding standard" "${modified} | xargs -r ${phpcs}"
+__run "3/3" "PhpStan : Analyse the code" "${modified} | xargs -r vendor/bin/phpstan analyse -c phpstan.neon"

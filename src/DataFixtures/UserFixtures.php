@@ -9,9 +9,9 @@ use Doctrine\Persistence\ObjectManager;
 
 class UserFixtures extends Fixture
 {
-    public function load(ObjectManager $manager)
+    public function load(ObjectManager $manager): void
     {
-        
+
         for ($count = 0; $count < 20; $count++) {
             $user = new User();
             $user->setCivility("Civilité : " . $count . "Monsieur");
@@ -19,7 +19,7 @@ class UserFixtures extends Fixture
             $user->setLastName("Nom de Famille : " . "Dupond" . $count);
             $user->setBillingAddress("Adresse : " . $count . " Rue de Champignac");
             $user->setBillingPostcode("Code postal : 90" . $count);
-            $user->setBillingCountry("Pays : " .$count);
+            $user->setBillingCountry("Pays : " . $count);
             $user->setBirthDate(new DateTime());
             $manager->persist($user);
         }
