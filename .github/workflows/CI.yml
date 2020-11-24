@@ -27,4 +27,4 @@ jobs:
       - name: Install composer dependencies
         run: composer install
       - name: Run Testsuite
-        run: php bin/phpunit
+        run: vendor/bin/phpunit
