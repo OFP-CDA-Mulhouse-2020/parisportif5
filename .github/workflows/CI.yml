@@ -44,6 +44,16 @@ jobs:
         with:
           path: vendor
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+  
+  code-check-tests:
+    name: Tests de conformité du code
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      -name: Detects violations of PSR12 coding standard
+      -run: vendor/bin/phpcs src --extensions=php --report=code --colors --report-width=80 --standard=PSR12
         
   syntax-tests:
     name: Tests de syntaxe
