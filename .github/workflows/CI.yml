@@ -57,6 +57,7 @@ jobs:
         with:
           standard: PSR12
           target_directory: src
+      - run: vendor/bin/phpcs src --extensions=php --report=code --colors --report-width=80 --standard=PSR12
         
   syntax-tests:
     name: Tests de syntaxe
