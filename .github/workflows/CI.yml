@@ -85,8 +85,11 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@v2
 
-      - name: Install dependencies
-        run: composer install --prefer-dist --no-progress --no-suggest
+      - name: Install composer
+        uses: php-actions/composer@v1
+        with:
+          php_version: 7.4
+          composer_version: 1
         
       - name: PHPStan
         uses: chindit/actions-phpstan@master
