@@ -15,8 +15,46 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   
+  composer-caching:
+    name: Mise en cache de composer
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - uses: actions/checkout@v2
+
+      - name: Validate composer.json and composer.lock
+        run: composer validate
+      
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - name: Cache Composer Downloads
+        uses: actions/cache@v2
+        with:
+          path: vendor/
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+        
+      - name: Cache PHP dependencies
+        uses: actions/cache@v2
+        with:
+          path: vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+      
+      - name: Install composer
+        uses: php-actions/composer@v1
+        with:
+          php_version: 7.4
+          composer_version: 1
+  
   syntax-tests:
     name: Tests de syntaxe
+
+    needs: composer-caching
 
     runs-on: ubuntu-latest
 
@@ -25,22 +63,19 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@v2
 
-      - name: Install composer dependencies
-        uses: php-actions/composer@v1
-        with:
-          php_version: 7.4
-          composer_version: 1
-
       - name: Installs phpstan latest version
         uses: php-actions/phpstan@master
         with:
-          configuration: ./phpstan.neon
+          configuration: phpstan.neon
 
       - name: Runs phpunit tests
-        run: vendor/bin/phpstan analyse --configuration './phpstan.neon'
+        run: vendor/bin/phpstan analyse --configuration 'phpstan.neon'
    
   unit-tests:
     name: Tests unitaires
+    
+    needs: composer-caching
+    
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
@@ -49,8 +84,6 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Checkout project
         uses: actions/checkout@v2
-      - name: Install composer dependencies
-        uses: php-actions/composer@master
       - name: Installs phpunit latest version
         uses: php-actions/phpunit@17-php-versions
         with:
