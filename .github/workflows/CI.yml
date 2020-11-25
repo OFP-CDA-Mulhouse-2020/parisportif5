@@ -14,6 +14,31 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
+  
+  syntax-tests:
+    name: Tests de syntaxe
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout project
+        uses: actions/checkout@v2
+
+      - name: Install composer dependencies
+        uses: php-actions/composer
+        with:
+          php_version: 7.4
+          composer_version: 1
+
+      - name: Installs phpstan latest version
+        uses: php-actions/phpstan@17-php-versions
+        with:
+          configuration: phpstan.neon
+
+      - name: Runs phpunit tests
+        run: vendor/bin/phpstan analyse --configuration 'phpstan.neon'
+   
   unit-tests:
     name: Tests unitaires
     # The type of runner that the job will run on
@@ -31,5 +56,6 @@ jobs:
         with:
           bootstrap: vendor/autoload.php
           configuration: tests/phpunit.xml.dist
+          args: --coverage-text
       - name: Runs phpunit tests
-        run: php bin/phpunit --configuration 'tests/phpunit.xml.dist' --bootstrap 'vendor/autoload.php' --test-suffix 'Test.php,.phpt' tests
+        run: php bin/phpunit --configuration 'tests/phpunit.xml.dist' --bootstrap 'vendor/autoload.php' --coverage-text --test-suffix 'Test.php,.phpt' tests
