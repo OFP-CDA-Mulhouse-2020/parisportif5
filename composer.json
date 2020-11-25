@@ -1,4 +1,5 @@
 {
+    "name": "Symfony Project",
     "description": "projet de site de paris sportif à but éducatif",
     "type": "project",
     "license": "proprietary",
