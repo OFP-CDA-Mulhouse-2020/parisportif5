@@ -31,7 +31,7 @@ jobs:
           php_version: 7.4
 
       - name: Installs phpstan latest version
-        uses: php-actions/phpstan@17-php-versions
+        uses: php-actions/phpstan@master
         with:
           configuration: phpstan.neon
 
