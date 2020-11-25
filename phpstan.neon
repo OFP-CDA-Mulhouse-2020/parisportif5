@@ -1,6 +1,4 @@
 parameters:
-    bootstrapFiles:
-        - bin/.phpunit/phpunit-7.5-0/vendor/autoload.php
+    level: 8
     paths:
         - src
-    level: 8
