@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 class PositiveTest extends TestCase
 {
 
-    public function testIsPositive()
+    public function testIsPositive(): void
     {
         $nombrePositif = new Positive();
         $nombrePositif->setNumber(8);
