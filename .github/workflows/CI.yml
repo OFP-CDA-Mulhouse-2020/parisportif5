@@ -85,19 +85,14 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@v2
 
-      - name: Install composer
-        uses: php-actions/composer@v1
+      - name: PHPStan
+        uses: chindit/actions-phpstan@master
         with:
-          php_version: 7.4
-          composer_version: 1
-
-      - name: Installs phpstan latest version
-        uses: php-actions/phpstan@v1
-        with:
-            configuration: phpstan.neon.dist
+          # Arguments to add to PHPStan
+          arguments: '-c phpstan.neon.dist'
           
-      - name: Runs phpstan tests
-        run: ./vendor/bin/phpstan --no-interaction --no-progress analyse -c phpstan.neon.dist
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest
 
   unit-tests:
     name: Tests unitaires
