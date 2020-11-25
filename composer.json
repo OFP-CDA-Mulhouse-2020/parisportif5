@@ -1,4 +1,5 @@
 {
+    "name": "symfony_project/parisportif5",
     "description": "projet de site de paris sportif à but éducatif",
     "type": "project",
     "license": "proprietary",
