@@ -14,15 +14,49 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  
-  tests:
-    name: Tests
+
+  composer-caching:
+    name: Mise en cache de composer
 
     runs-on: ubuntu-latest
 
     steps:
 
-      - uses: actions/checkout@v2
+      - name: Checkout project
+        uses: actions/checkout@v2
+
+      - name: Validate composer.json and composer.lock
+        run: composer validate
+      
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - name: Cache Composer Downloads
+        uses: actions/cache@v2
+        with:
+          path: vendor/
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+        
+      - name: Cache PHP dependencies
+        uses: actions/cache@v2
+        with:
+          path: vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+  
+  code-check-tests:
+    name: Tests de conformité du code
+
+    needs: composer-caching
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout project
+        uses: actions/checkout@v2
 
       - name: Install composer
         uses: php-actions/composer@v1
@@ -30,22 +64,62 @@ jobs:
           php_version: 7.4
           composer_version: 1
 
-      # Tests de conformité du code
-      - uses: hrysd/action-php_codesniffer@v1
+      - name: Install php_codesniffer
+        uses: hrysd/action-php_codesniffer@v1
         with:
           standard: PSR12
           target_directory: src
+          
+      - name: Run php_codesniffer
+        run: ./vendor/bin/phpcs src --extensions=php --ignore=src/Kernel.php --report=code --colors --report-width=80 --standard=PSR12
+        
+  syntax-tests:
+    name: Tests de syntaxe
 
-      - run: ./vendor/bin/phpcs src --extensions=php --report=code --colors --report-width=80 --standard=PSR12 --ignore=src/Kernel.php
+    needs: composer-caching
 
-      # Tests de syntaxe
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout project
+        uses: actions/checkout@v2
+
+      - name: Install composer
+        uses: php-actions/composer@v1
+        with:
+          php_version: 7.4
+          composer_version: 1
+
       - name: Installs phpstan latest version
         uses: php-actions/phpstan@v1
+        with:
+            configuration: phpstan.neon.dist
           
       - name: Runs phpstan tests
         run: ./vendor/bin/phpstan --no-interaction --no-progress analyse -c phpstan.neon.dist
 
-      # Tests unitaires
+  unit-tests:
+    name: Tests unitaires
+
+    needs: composer-caching
+
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout project
+        uses: actions/checkout@v2
+
+      - name: Install composer
+        uses: php-actions/composer@v1
+        with:
+          php_version: 7.4
+          composer_version: 1
+
       - name: Installs phpunit latest version
         uses: php-actions/phpunit@17-php-versions
         with:
