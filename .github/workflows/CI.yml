@@ -65,8 +65,6 @@ jobs:
 
       - name: Installs phpstan latest version
         uses: php-actions/phpstan@master
-        with:
-          configuration: phpstan.neon
 
       - name: Runs phpstan tests
         run: ./vendor/bin/phpstan analyse --level 8 src/
