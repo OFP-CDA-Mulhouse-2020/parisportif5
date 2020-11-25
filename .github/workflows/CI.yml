@@ -85,14 +85,14 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@v2
 
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest
+        
       - name: PHPStan
         uses: chindit/actions-phpstan@master
         with:
           # Arguments to add to PHPStan
           arguments: '-c phpstan.neon.dist'
-          
-      - name: Install dependencies
-        run: composer install --prefer-dist --no-progress --no-suggest
 
   unit-tests:
     name: Tests unitaires
