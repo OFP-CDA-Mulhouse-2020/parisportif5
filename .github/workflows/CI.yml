@@ -29,14 +29,15 @@ jobs:
         uses: php-actions/composer@v1
         with:
           php_version: 7.4
+          composer_version: 1
 
       - name: Installs phpstan latest version
         uses: php-actions/phpstan@master
         with:
-          configuration: phpstan.neon
+          configuration: ./phpstan.neon
 
       - name: Runs phpunit tests
-        run: vendor/bin/phpstan analyse --configuration 'phpstan.neon'
+        run: vendor/bin/phpstan analyse --configuration './phpstan.neon'
    
   unit-tests:
     name: Tests unitaires
