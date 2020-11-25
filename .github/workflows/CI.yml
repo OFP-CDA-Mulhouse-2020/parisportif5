@@ -57,7 +57,7 @@ jobs:
         with:
           standard: PSR12
           target_directory: src
-      - run: vendor/bin/phpcs src --extensions=php --report=code --colors --report-width=80 --standard=PSR12
+      - run: phpcs src/ --extensions=php --report=code --colors --report-width=80 --standard=PSR12
         
   syntax-tests:
     name: Tests de syntaxe
@@ -83,7 +83,7 @@ jobs:
           configuration: phpstan.neon.dist
           
       - name: Runs phpstan tests
-        run: ./vendor/bin/phpstan --no-interaction --no-progress analyse -c phpstan.neon.dist
+        run: phpstan --no-interaction --no-progress analyse -c phpstan.neon.dist
 
   unit-tests:
     name: Tests unitaires
