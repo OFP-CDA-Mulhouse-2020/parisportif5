@@ -53,7 +53,7 @@ jobs:
     steps:
 
       -name: Detects violations of PSR12 coding standard
-      -run: vendor/bin/phpcs src --extensions=php --report=code --colors --report-width=80 --standard=PSR12
+      run: vendor/bin/phpcs src --extensions=php --report=code --colors --report-width=80 --standard=PSR12
         
   syntax-tests:
     name: Tests de syntaxe
