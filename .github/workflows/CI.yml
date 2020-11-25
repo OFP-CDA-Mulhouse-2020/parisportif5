@@ -56,7 +56,7 @@ jobs:
           configuration: phpstan.neon
 
       - name: Runs phpstan tests
-        run: vendor/bin/phpstan --no-interaction --no-progress analyse --configuration='phpstan.neon' --level 8 src/
+        run: vendor/bin/phpstan --no-interaction --no-progress analyse --configuration='phpstan.neon.dist'
       
       - name: Installs phpunit latest version
         uses: php-actions/phpunit@17-php-versions
