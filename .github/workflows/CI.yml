@@ -66,10 +66,10 @@ jobs:
       - name: Installs phpstan latest version
         uses: php-actions/phpstan@master
         with:
-          configuration: phpstan.neon
+          configuration: phpstan.neon.dist
           
       - name: Runs phpstan tests
-        run: ./vendor/bin/phpstan --no-interaction --no-progress analyse --configuration='phpstan.neon'  
+        run: ./vendor/bin/phpstan --no-interaction --no-progress analyse -c=phpstan.neon.dist
 
   unit-tests:
     name: Tests unitaires
