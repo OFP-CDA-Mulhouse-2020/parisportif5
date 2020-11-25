@@ -53,7 +53,7 @@ jobs:
       
            
       - name: Installs phpstan latest version
-        uses: php-actions/phpstan@17-php-versions
+        uses: php-actions/phpstan@v1
         with:
           configuration: phpstan.neon
 
