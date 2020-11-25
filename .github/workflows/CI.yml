@@ -45,6 +45,13 @@ jobs:
           path: vendor
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
 
+      - name: Install composer
+        uses: php-actions/composer@v1
+        with:
+          php_version: 7.4
+          composer_version: 1
+          command: composer install
+        
   syntax-tests:
     name: Tests de syntaxe
 
@@ -57,19 +64,13 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@v2
 
-      - name: Install composer
-        uses: php-actions/composer@v1
-        with:
-          php_version: 7.4
-          composer_version: 1
-
       - name: Installs phpstan latest version
         uses: php-actions/phpstan@master
         with:
           configuration: phpstan.neon
 
       - name: Runs phpstan tests
-        run: ./vendor/bin/phpstan analyse --no-interaction --no-progress  --configuration='phpstan.neon'
+        run: ./vendor/bin/phpstan analyse --configuration='phpstan.neon'
 
   unit-tests:
     name: Tests unitaires
@@ -85,12 +86,6 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Checkout project
         uses: actions/checkout@v2
-
-      - name: Install composer
-        uses: php-actions/composer@v1
-        with:
-          php_version: 7.4
-          composer_version: 1
 
       - name: Installs phpunit latest version
         uses: php-actions/phpunit@17-php-versions
