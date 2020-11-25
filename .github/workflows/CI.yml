@@ -69,7 +69,7 @@ jobs:
           configuration: phpstan.neon
 
       - name: Runs phpstan tests
-        run: ./vendor/bin/phpstan analyse --configuration='phpstan.neon'
+        run: ./vendor/bin/phpstan analyse --level 8 src/
 
   unit-tests:
     name: Tests unitaires
