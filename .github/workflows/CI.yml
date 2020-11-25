@@ -37,25 +37,8 @@ jobs:
           target_directory: src
 
       - run: ./vendor/bin/phpcs src --extensions=php --report=code --colors --report-width=80 --standard=PSR12 --ignore=src/Kernel.php
-        
-  syntax-tests:
-    name: Tests de syntaxe
 
-    needs: composer-caching
-
-    runs-on: ubuntu-latest
-
-    steps:
-
-      - name: Checkout project
-        uses: actions/checkout@v2
-
-      - name: Install composer
-        uses: php-actions/composer@v1
-        with:
-          php_version: 7.4
-          composer_version: 1
-
+      # Tests de syntaxe
       - name: Installs phpstan latest version
         uses: php-actions/phpstan@v1
           
