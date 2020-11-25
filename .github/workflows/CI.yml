@@ -50,8 +50,6 @@ jobs:
         with:
           php_version: 7.4
           composer_version: 1
-      
-      - run: composer install
         
   syntax-tests:
     name: Tests de syntaxe
