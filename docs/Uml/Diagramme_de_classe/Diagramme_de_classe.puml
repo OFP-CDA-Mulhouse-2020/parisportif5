@@ -106,11 +106,16 @@ skinparam linetype ortho
     'Utilisateur avec un compte
     class User {
         -identifier : int
+        -emailAddress : string
+        -password : string
+        -creationDate : DateTime
+        -suspensionDate : DateTime
+        -deletionDate : DateTime
         -civility : string
         -firstName : string
         -lastName : string
         -billingAddress : string
-        -billingPostCode : string
+        -billingPostcode : string
         -billingCountry : string
         -birthDate : DateTime
         +getName() : string
@@ -122,7 +127,7 @@ skinparam linetype ortho
         -firstName : string
         -lastName : string
         -billingAddress : string
-        -billingPostCode : string
+        -billingPostcode : string
         -billingCountry : string
         -orderNumber  : int
         -amount : float

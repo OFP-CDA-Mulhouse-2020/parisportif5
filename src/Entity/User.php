@@ -52,6 +52,11 @@ class User
      */
     private \DateTime $birthDate;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private string $emailAddress;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -64,7 +69,25 @@ class User
 
     public function setCivility(string $civility): self
     {
+        if ($civility != "Monsieur" && $civility != "Madame") {
+            throw new \InvalidArgumentException("La civilité doit être renseignée et être l'un des deux termes suivants : Monsieur ou Madame");
+        }
         $this->civility = $civility;
+
+        return $this;
+    }
+
+    public function getEmailAddress(): ?string
+    {
+        return $this->emailAddress;
+    }
+
+    public function setEmailAddress(string $emailAddress): self
+    {
+        if (filter_var($emailAddress, FILTER_VALIDATE_EMAIL) === false) {
+            throw new \InvalidArgumentException("L'adresse mail est invalide");
+        }
+        $this->emailAddress = $emailAddress;
 
         return $this;
     }
