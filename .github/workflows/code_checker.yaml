@@ -122,7 +122,7 @@ jobs:
         uses: php-actions/phpunit@17-php-versions
         with:
           bootstrap: vendor/autoload.php
-          configuration: tests/phpunit.xml.dist
+          configuration: phpunit.xml.dist
 
       - name: Runs phpunit tests
-        run: ./bin/phpunit --configuration 'tests/phpunit.xml.dist' --bootstrap 'vendor/autoload.php' --test-suffix 'Test.php,.phpt' tests
+        run: ./bin/phpunit --configuration 'phpunit.xml.dist' --bootstrap 'vendor/autoload.php' --test-suffix 'Test.php,.phpt' tests
