@@ -4,3 +4,5 @@ parameters:
         - src
     fileExtensions:
         - php
+    excludes_analyse:
+        -tests
