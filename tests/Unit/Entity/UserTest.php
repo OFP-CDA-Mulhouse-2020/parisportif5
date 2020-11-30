@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Entity\Unit;
+namespace App\Tests\Unit\Entity;
 
 use App\Entity\Exception\AccountNotActiveException;
 use App\Entity\Exception\BoundaryDateException;
