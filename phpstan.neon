@@ -5,4 +5,4 @@ parameters:
     fileExtensions:
         - php
     excludes_analyse:
-        -tests
+        - tests
