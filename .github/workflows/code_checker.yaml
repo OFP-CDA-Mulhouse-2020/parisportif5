@@ -69,6 +69,8 @@ jobs:
         with:
           standard: PSR12
           target_directory: src
+        env:
+          GH_BOT_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
           
       - name: Run php_codesniffer
         run: ./vendor/bin/phpcs src --extensions=php --ignore=src/Kernel.php --report=code --colors --report-width=80 --standard=PSR12
