@@ -2,6 +2,10 @@
 skinparam linetype ortho
 'plantuml
 'Relations :
+    'Un statut de l'utilisateur
+    'User "0..*"  --> "3" UserStatus
+    'Un utilisateur a une langue sélectionnée
+    User "0..*" --> "1" Language
     'Un utilisateur a un compte
     User "1" -- "1" Account
     'Une facture n'est pas pas forcément lié à un utilisateur existant
@@ -94,27 +98,54 @@ skinparam linetype ortho
         +getBetsCount() : int
     }
     'Compte (sert à ce connecter)
-    class Account {
-        -identifier : int
-        -validation : bool
-        -password : string
-        -emailAddress : string
-        -creationDate : DateTime
-        -status : bool
-        +isValidate() : bool
-    }
+    'class Account {
+    '    -identifier : int
+    '    -validation : bool
+    '    -password : string
+    '    -emailAddress : string
+    '    -creationDate : DateTime
+    '    -status : bool
+    '    +isValidate() : bool
+    '}
+    'Un statut de l'utilisateur
+    'class UserStatus {
+    '    -identifier : int
+    '    -type : string
+    '    -status : bool
+    '    -actionDate : DateTime
+    '}
     'Utilisateur avec un compte
     class User {
         -identifier : int
+        -emailAddress : string
+        -password : string
+        -activatedStatus : bool
+        -activatedDate : DateTime
+        -suspendedStatus : bool
+        -suspendedDate : DateTime
+        -deletedStatus : bool
+        -deletedDate : DateTime
         -civility : string
         -firstName : string
         -lastName : string
         -billingAddress : string
-        -billingPostCode : string
+        -billingPostcode : string
         -billingCountry : string
         -birthDate : DateTime
+        -timeZoneSelected : string
         +getName() : string
         +getAddress() : string
+    }
+    'Langue d'affichage de l'utilisateur
+    class Language {
+        -identifier : int
+        -name : string
+        -country : string
+        -countryCode : string
+        -continent : string
+        -dateFormat : string
+        -timeFormat : string
+        +getDateTimeFormat() : string
     }
     'Factures (type=débit ou crédit)
     class Billing {
@@ -122,7 +153,7 @@ skinparam linetype ortho
         -firstName : string
         -lastName : string
         -billingAddress : string
-        -billingPostCode : string
+        -billingPostcode : string
         -billingCountry : string
         -orderNumber  : int
         -amount : float
