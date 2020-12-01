@@ -6,6 +6,10 @@ use App\Entity\Exception\AccountNotActiveException;
 use App\Entity\Exception\BoundaryDateException;
 use App\Entity\Exception\LegalAgeException;
 use App\Entity\Exception\UnknownTimeZoneException;
+use App\Entity\Exception\SpecialCharsException;
+use App\Entity\Exception\FirstNameLengthException;
+use App\Entity\Exception\LastNameLengthException;
+use App\Entity\Exception\PasswordUppercaseException;
 use App\Entity\User;
 use PHPUnit\Framework\TestCase;
 
@@ -98,6 +102,100 @@ class UserTest extends TestCase
             ["email@test.com"],
             ["test@orange.fr"],
             ["dupond2.dupont1@gmail.com"]
+        ];
+    }
+
+    public function testFirstNameConformity(): void
+    {
+        $user = $this->userInitialization();
+        $this->expectException(SpecialCharsException::class);
+        $user->setFirstName("jojol@sticot");
+    }
+
+    /**
+     * @dataProvider firstNameProvider
+     */
+    public function testFirstNameLength($fn): void
+    {
+        $user = $this->userInitialization();
+        $this->expectException(FirstNameLengthException::class);
+        $user->setFirstName($fn);
+    }
+
+    public function firstNameProvider(): array
+    {
+        return [
+            [""],
+            ["monsieurdontleprenomestbientroplong"]
+        ];
+    }
+
+    public function testLastNameConformity(): void
+    {
+        $user = $this->userInitialization();
+        $this->expectException(SpecialCharsException::class);
+        $user->setLastName("jojol@sticot");
+    }
+
+    /**
+     * @dataProvider lastNameProvider
+     */
+    public function testLastNameLength($ln): void
+    {
+        $user = $this->userInitialization();
+        $this->expectException(LastNameLengthException::class);
+        $user->setLastName($ln);
+    }
+
+    public function lastNameProvider(): array
+    {
+        return [
+            [""],
+            ["monsieurdontlenomdefamilleestbientroplong"]
+        ];
+    }
+
+    /**
+     * @dataProvider passwordProvider
+     */
+    public function testPasswordDoesNotContainUppercase($pw): void
+    {
+        $user = $this->userInitialization();
+        $this->expectException(PasswordUppercaseException::class);
+        $user->setPassword($pw);
+    }
+
+    public function passwordProvider(): array
+    {
+        return [
+            [""],
+            ["pasdemajuscules"],
+            ["123547"]
+            //["Pasdecaracterespeciaux123"],
+            // ["Test1deP@sswordcorrect"]
+        ];
+    }
+
+     /**
+     * @dataProvider passwordUppercaseProvider
+     */
+    public function testPasswordContainsUppercase($pass): void
+    {
+        $user = $this->userInitialization();
+        $user->setPassword($pass);
+        $pw = $user->getPassword();
+        $this->assertIsString($pass);
+        //$this->assertContains('A', $pw);//assertRegexp
+    }
+
+    public function passwordUppercaseProvider(): array
+    {
+        return [
+            ["AB123"],
+            ["MajusculeOK"],
+            ["123547P"]
+            //["Pasdecaracterespeciaux123"],
+            // ["Test1deP@sswordcorrect"]
         ];
     }
 

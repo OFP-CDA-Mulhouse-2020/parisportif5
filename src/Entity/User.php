@@ -10,6 +10,10 @@ use App\Entity\Exception\AccountNotActiveException;
 use App\Entity\Exception\BoundaryDateException;
 use App\Entity\Exception\LegalAgeException;
 use App\Entity\Exception\UnknownTimeZoneException;
+use App\Entity\Exception\SpecialCharsException;
+use App\Entity\Exception\FirstNameLengthException;
+use App\Entity\Exception\LastNameLengthException;
+use App\Entity\Exception\PasswordUppercaseException;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
@@ -62,6 +66,11 @@ class User
      * @ORM\Column(type="string", length=255)
      */
     private string $emailAddress;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private string $password;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -154,6 +163,12 @@ class User
 
     public function setFirstName(string $firstName): self
     {
+        if (preg_match('/[\^£$%&*()}{@#~?><>,|=_+¬]/', $firstName)) {
+            throw new SpecialCharsException("Le prénom ne doit pas contenir de caractères spéciaux");
+        }
+        if ((strlen($firstName) < 2) || (strlen($firstName) > 25)) {
+            throw new FirstNameLengthException("Le prénom doit être supérieur à 1 caractère et inférieur à 25 caractères");
+        }
         $this->firstName = $firstName;
 
         return $this;
@@ -166,7 +181,34 @@ class User
 
     public function setLastName(string $lastName): self
     {
+        if (preg_match('/[\^£$%&*()}{@#~?><>,|=_+¬]/', $lastName)) {
+            throw new SpecialCharsException("Le prénom ne doit pas contenir de caractères spéciaux");
+        }
+        if ((strlen($lastName) < 2 ) || (strlen($lastName) > 25)) {
+            throw new LastNameLengthException("Le nom de famille doit être supérieur à 1 caractère et inférieur à 25 caractères");
+        }
         $this->lastName = $lastName;
+
+        return $this;
+    }
+
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(string $password): self
+    {
+        // if (!is_string($password)) {
+        //     throw new \InvalidArgumentException("Le mot de passe doit être une chaîne de caractères");
+        // }
+        // if (strlen($password) < 8) {
+        //     throw new \InvalidArgumentException("Le mot de passe doit être supérieur à 8 caractères, contenir au moins une majuscule et un caractère spécial");
+        // }
+        if (!preg_match('/[A-Z]/', $password)) {//créer les exceptions
+            throw new PasswordUppercaseException("Le mot de passe doit contenir au moins une majuscule");
+        }
+        $this->password = $password;
 
         return $this;
     }
