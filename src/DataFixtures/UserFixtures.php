@@ -14,13 +14,16 @@ class UserFixtures extends Fixture
 
         for ($count = 0; $count < 20; $count++) {
             $user = new User();
-            $user->setCivility("Civilité : " . $count . "Monsieur");
-            $user->setFirstName("Prénom : " . "Dupont" . $count);
-            $user->setLastName("Nom de Famille : " . "Dupond" . $count);
-            $user->setBillingAddress("Adresse : " . $count . " Rue de Champignac");
-            $user->setBillingPostcode("Code postal : 90" . $count);
-            $user->setBillingCountry("Pays : " . $count);
-            $user->setBirthDate(new DateTime());
+            $user->setCivility("Monsieur");
+            $user->setFirstName("Dupont" . $count);
+            $user->setLastName("Dupond" . $count);
+            $user->setEmailAddress("monsieurdupont" . $count . "@adresse.com");
+            $user->setBillingAddress($count . " Rue de Champignac");
+            $user->setBillingPostcode("90" . $count);
+            $user->setBillingCountry("France");
+            $user->setBirthDate(new DateTime("1950-11-11"));
+            $user->setPassword("Test123456€");
+            $user->setTimeZoneSelected("Europe/Paris");
             $manager->persist($user);
         }
 

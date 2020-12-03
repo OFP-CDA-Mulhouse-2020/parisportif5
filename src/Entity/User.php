@@ -80,7 +80,7 @@ class User
     /**
      * @ORM\Column(type="boolean")
      */
-    private bool $deletedStatus;
+    private bool $deletedStatus = false;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
@@ -90,7 +90,7 @@ class User
     /**
      * @ORM\Column(type="boolean")
      */
-    private bool $suspendedStatus;
+    private bool $suspendedStatus = false;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
@@ -100,7 +100,7 @@ class User
     /**
      * @ORM\Column(type="boolean")
      */
-    private bool $activatedStatus;
+    private bool $activatedStatus = false;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
