@@ -53,19 +53,30 @@ class DummyFormControllerTest extends WebTestCase
 
         $crawler = $client->submit($form);
 
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertEquals(200 || 300, $client->getResponse()->getStatusCode());
     }
 
-    // public function testFormValidity()
+    // public function testFormDataValidity()
     // {
-    //     $client = static::createClient([
-    //         'environment' => 'test'
-    //     ]);
+    //     $client = static::createClient();
     //     $userRepository = static::$container->get(UserRepository::class);
 
     //     $testUser = $userRepository->findOneByEmailAddress('monsieurdupont3@adresse.com');
 
     //     $client->loginUser($testUser);
-        
+
     // }
+
+    public function testSuccessfulConnexion()
+    {
+        $client = static::createClient();
+        $crawler = $client->request('GET', '/account/connect');
+
+        $form = $crawler->filter('form')->form();
+        $form['user_login[emailAddress]'] = 'test123@mail.com';
+        $form['user_login[password]'] = 'Testp@ss01';
+
+        $crawler = $client->submit($form);
+        $this->assertResponseRedirects('/account/logged');
+    }
 }

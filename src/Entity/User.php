@@ -14,11 +14,12 @@ use App\Entity\Exception\SpecialCharsException;
 use App\Entity\Exception\FirstNameLengthException;
 use App\Entity\Exception\LastNameLengthException;
 use App\Entity\Exception\PasswordUppercaseException;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  */
-class User
+class User //implements UserInterface
 {
     /**
      * @ORM\Id
@@ -63,7 +64,7 @@ class User
     private \DateTime $birthDate;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, unique=true)
      */
     private string $emailAddress;
 
@@ -156,6 +157,23 @@ class User
         return $this;
     }
 
+    // public function getUsername()
+    // {
+    //    // return $this->username;
+    // }
+
+    // public function getRoles()
+    // {
+    // }
+
+    // public function getSalt()
+    // {
+    // }
+
+    // public function eraseCredentials()
+    // {
+    // }
+
     public function getFirstName(): ?string
     {
         return $this->firstName;
@@ -196,6 +214,7 @@ class User
     {
         return $this->password;
     }
+
 
     public function setPassword(string $password): self
     {
