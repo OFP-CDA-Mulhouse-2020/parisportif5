@@ -6,7 +6,7 @@ use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DomCrawler\Crawler;
 
-class DummyFormControllerTest extends WebTestCase
+class ConnexionFormControllerTest extends WebTestCase
 {
     public function testFormPage()
     {

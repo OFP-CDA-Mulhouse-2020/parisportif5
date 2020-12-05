@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class DummyFormController extends AbstractController //rename + dossier
+class ConnexionFormController extends AbstractController //dossier
 {
     /**
      * @Route("/account/connect", name="Connexion")
