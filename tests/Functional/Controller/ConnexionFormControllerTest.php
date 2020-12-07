@@ -79,4 +79,28 @@ class ConnexionFormControllerTest extends WebTestCase
         $crawler = $client->submit($form);
         $this->assertResponseRedirects('/account/logged');
     }
+
+    // /**
+    //  * @dataProvider passwordProvider
+    //  */
+    // public function testIncorrectCredentials($pwp)
+    // {
+    //     $client = static::createClient();
+    //     $crawler = $client->request('GET', '/account/connect');
+
+    //     $form = $crawler->filter('form')->form();
+    //     $form['user_login[emailAddress]'] = 'test123@mail.com';
+    //     $form['user_login[password]'] = $pwp;
+
+    //     $crawler = $client->submit($form);
+    //     $this->expectException(InvalidCredentialsException::class);
+    // }
+    // public function passwordProvider(): array
+    // {
+    //     return [
+    //         [""],
+    //         ["testp@ss01"],
+    //         ["1235M"]
+    //     ];
+    // }
 }

@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Entity\Exception\InvalidCredentialsException;
 use App\Form\UserLoginType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,6 +26,9 @@ class ConnexionFormController extends AbstractController //dossier
         if ($form->isSubmitted() && $form->isValid()) {
             return $this->redirectToRoute('userloggedin');
         }
+        // else {
+        //     throw new InvalidCredentialsException("Les identifiants sont incorrects");
+        // }
 
         return $this->render('dummy_form/index.html.twig', [
             'page_title' => 'Connexion',
