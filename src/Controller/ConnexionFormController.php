@@ -18,7 +18,7 @@ class ConnexionFormController extends AbstractController //dossier
     public function renderDummyForm(Request $request): Response
     {
         $user = new User();
-        $user->setEmailAddress('test123@mail.com');
+        $user->setEmail('test123@mail.com');
 
         $form = $this->createForm(UserLoginType::class, $user);
 

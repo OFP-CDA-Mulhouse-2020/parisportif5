@@ -6,27 +6,54 @@ use App\Entity\User;
 use DateTime;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class UserFixtures extends Fixture
 {
+    private UserPasswordEncoderInterface $passwordEncoder;
+
+    public function __construct(UserPasswordEncoderInterface $passwordEncoder)
+    {
+        $this->passwordEncoder = $passwordEncoder;
+    }
+
     public function load(ObjectManager $manager): void
     {
-
-        for ($count = 0; $count < 20; $count++) {
+        $testData = [
+            [
+                'civility' => "Monsieur",
+                'firstname' => "Tintin",
+                'lastname' => "Dupont",
+                'address' => "1 avenue Hergé",
+                'city' => "COLMAR",
+                'postcode' => "68000",
+                'country' => "FR",
+                'email' => "tintin.dupont@test.fr",
+                'password' => "@Hadock5",
+                'birthdate' => new \DateTime('2000-10-20', new \DateTimeZone("Europe/Paris")),
+                'timezone' => "Europe/Paris"
+            ]
+        ];
+        $count = count($testData);
+        for ($i = 0; $i < $count; $i++) {
             $user = new User();
-            $user->setCivility("Monsieur");
-            $user->setFirstName("Dupont" . $count);
-            $user->setLastName("Dupond" . $count);
-            $user->setEmailAddress("monsieurdupont" . $count . "@adresse.com");
-            $user->setBillingAddress($count . " Rue de Champignac");
-            $user->setBillingPostcode("90" . $count);
-            $user->setBillingCountry("France");
-            $user->setBirthDate(new DateTime("1950-11-11"));
-            $user->setPassword("Test123456€");
-            $user->setTimeZoneSelected("Europe/Paris");
+            $user
+                ->setCivility($testData[$i]['civility'])
+                ->setFirstName($testData[$i]['firstname'])
+                ->setLastName($testData[$i]['lastname'])
+                ->setBillingAddress($testData[$i]['address'])
+                ->setBillingCity($testData[$i]['city'])
+                ->setBillingPostcode($testData[$i]['postcode'])
+                ->setBillingCountry($testData[$i]['country'])
+                ->setBirthDate(new DateTime('2000-10-20'))
+                ->setTimeZoneSelected($testData[$i]['timezone'])
+                ->setEmail($testData[$i]['email'])
+                ->setPassword($this->passwordEncoder->encodePassword(
+                    $user,
+                    $testData[$i]['password']
+                ));
             $manager->persist($user);
         }
-
         $manager->flush();
     }
 }

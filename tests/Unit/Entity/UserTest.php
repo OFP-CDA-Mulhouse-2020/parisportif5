@@ -2,19 +2,13 @@
 
 namespace App\Tests\Unit\Entity;
 
-use App\Entity\Exception\AccountNotActiveException;
-use App\Entity\Exception\BoundaryDateException;
-use App\Entity\Exception\LegalAgeException;
-use App\Entity\Exception\UnknownTimeZoneException;
-use App\Entity\Exception\SpecialCharsException;
-use App\Entity\Exception\FirstNameLengthException;
-use App\Entity\Exception\LastNameLengthException;
-use App\Entity\Exception\PasswordUppercaseException;
 use App\Entity\User;
-use PHPUnit\Framework\TestCase;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\HttpKernel\KernelInterface;
 
-class UserTest extends TestCase
+class UserTest extends WebTestCase
 {
+    //throw new \Exception($violations);
     private function timezoneInitialization(): \DateTimeZone
     {
         return new \DateTimeZone('Europe/Paris');
@@ -22,58 +16,80 @@ class UserTest extends TestCase
 
     private function userInitialization(): User
     {
-        return new User();
+        $user = new User();
+        $user
+            ->setCivility("Monsieur")
+            ->setFirstName("Dupont")
+            ->setLastName("Tintin")
+            ->setBillingAddress("1 avenue st martin")
+            ->setBillingCity("Colmar")
+            ->setBillingPostcode("68000")
+            ->setBillingCountry("FR")
+            ->setBirthDate(new \DateTime("2000-10-10"))
+            ->setPassword("Azerty78")
+            ->setEmail("dupond.t@orange.fr")
+            ->setTimeZoneSelected("Europe/Paris");
+        return $user;
     }
 
-    public function testIsUserExistsWhithoutException(): void
+    private function kernelInitialization(): KernelInterface
     {
-        $user = $this->userInitialization();
-        $this->assertNotNull($user, "User n'est pas null");
-        $this->assertInstanceOf(User::class, $user);
+        $kernel = self::bootKernel();
+        $kernel->boot();
+        return $kernel;
     }
 
     /**
      * @dataProvider unexpectedCivilityProvider
-     * @param mixed $civility
      */
-    public function testCivilityUnexpectedValueException($civility): void
+    public function testCivilityUnexpectedValue(string $civility): void
     {
+        $kernel = $this->kernelInitialization();
         $user = $this->userInitialization();
-        $this->expectException(\InvalidArgumentException::class);
         $user->setCivility($civility);
+        /** @var ValidatorInterface $validator */
+        $validator = $kernel->getContainer()->get('validator');
+        $violations = $validator->validate($user);
+        $this->assertCount(1, $violations);
     }
 
     public function unexpectedCivilityProvider(): array
     {
         return [
             ["x"],
-            ["monsieur"],
-            [0]
+            ["mr"],
+            [""]
         ];
     }
 
     public function testCivilityExpectedValue(): void
     {
-        $civility1 = 'Madame';
-        $civility2 = 'Monsieur';
-        $this->assertIsString($civility1);
-        $this->assertIsString($civility2);
+        $civility1 = "Madame";
+        $civility2 = "Monsieur";
+        $kernel = $this->kernelInitialization();
         $user = $this->userInitialization();
         $user->setCivility($civility1);
-        $this->assertSame($civility1, $user->getCivility());
+        /** @var ValidatorInterface $validator */
+        $validator = $kernel->getContainer()->get('validator');
+        $violations = $validator->validate($user);
+        $this->assertCount(0, $violations);
         $user->setCivility($civility2);
-        $this->assertSame($civility2, $user->getCivility());
+        $violations = $validator->validate($user);
+        $this->assertCount(0, $violations);
     }
 
     /**
      * @dataProvider unconformityEmailAddressProvider
-     * @param mixed $emailAddress
      */
-    public function testEmailAddressUnconformityExeption($emailAddress): void
+    public function testEmailAddressUnconformity(string $emailAddress): void
     {
+        $kernel = $this->kernelInitialization();
         $user = $this->userInitialization();
-        $this->expectException(\InvalidArgumentException::class);
-        $user->setEmailAddress($emailAddress);
+        $user->setEmail($emailAddress);
+        /** @var ValidatorInterface $validator */
+        $validator = $kernel->getContainer()->get('validator');
+        $violations = $validator->validate($user);
+        $this->assertGreaterThanOrEqual(1, count($violations));
     }
 
     public function unconformityEmailAddressProvider(): array
@@ -81,7 +97,7 @@ class UserTest extends TestCase
         return [
             ["emailtest.com"],
             ["test"],
-            [0]
+            [""]
         ];
     }
 
@@ -90,10 +106,13 @@ class UserTest extends TestCase
      */
     public function testEmailAddressConformity(string $emailAddress): void
     {
+        $kernel = $this->kernelInitialization();
         $user = $this->userInitialization();
-        //$this->assertIsString($emailAddress);
-        $user->setEmailAddress($emailAddress);
-        $this->assertSame($emailAddress, $user->getEmailAddress());
+        $user->setEmail($emailAddress);
+        /** @var ValidatorInterface $validator */
+        $validator = $kernel->getContainer()->get('validator');
+        $violations = $validator->validate($user);
+        $this->assertCount(0, $violations);
     }
 
     public function conformityEmailAddressProvider(): array
@@ -105,153 +124,150 @@ class UserTest extends TestCase
         ];
     }
 
-    public function testFirstNameConformity(): void
-    {
-        $user = $this->userInitialization();
-        $this->expectException(SpecialCharsException::class);
-        $user->setFirstName("jojol@sticot");
-    }
-
     /**
-     * @dataProvider firstNameProvider
+     * @dataProvider nameUnconformityProvider
      */
-    public function testFirstNameLength($fn): void
+    public function testNameUnconformity(string $firstName): void
     {
+        $kernel = $this->kernelInitialization();
         $user = $this->userInitialization();
-        $this->expectException(FirstNameLengthException::class);
-        $user->setFirstName($fn);
+        $user->setFirstName($firstName);
+        $user->setLastName($firstName);
+        /** @var ValidatorInterface $validator */
+        $validator = $kernel->getContainer()->get('validator');
+        $violations = $validator->validate($user);
+        $this->assertGreaterThanOrEqual(2, count($violations));
     }
 
-    public function firstNameProvider(): array
+    public function nameUnconformityProvider(): array
     {
         return [
-            [""],
-            ["monsieurdontleprenomestbientroplong"]
-        ];
-    }
-
-    public function testLastNameConformity(): void
-    {
-        $user = $this->userInitialization();
-        $this->expectException(SpecialCharsException::class);
-        $user->setLastName("jojol@sticot");
-    }
-
-    /**
-     * @dataProvider lastNameProvider
-     */
-    public function testLastNameLength($ln): void
-    {
-        $user = $this->userInitialization();
-        $this->expectException(LastNameLengthException::class);
-        $user->setLastName($ln);
-    }
-
-    public function lastNameProvider(): array
-    {
-        return [
-            [""],
-            ["monsieurdontlenomdefamilleestbientroplong"]
+            ["gab#"],
+            ["fa25"],
+            ["monsieurdontlenomestbientroplong"],
+            [""]
         ];
     }
 
     /**
-     * @dataProvider passwordProvider
+     * @dataProvider nameConformityProvider
      */
-    public function testPasswordDoesNotContainUppercase($pw): void
+    public function testNameConformity(string $firstName): void
     {
+        $kernel = $this->kernelInitialization();
         $user = $this->userInitialization();
-        $this->expectException(PasswordUppercaseException::class);
-        $user->setPassword($pw);
+        $user->setFirstName($firstName);
+        $user->setLastName($firstName);
+        /** @var ValidatorInterface $validator */
+        $validator = $kernel->getContainer()->get('validator');
+        $violations = $validator->validate($user);
+        //throw new \Exception($violations);
+        $this->assertCount(0, $violations);
     }
 
-    public function passwordProvider(): array
+    public function nameConformityProvider(): array
+    {
+        return [
+            ["Anaïs"],
+            ["édouârd"],
+            ["Jean-Marc de l'Atour"],
+            ["ggg"]
+        ];
+    }
+
+    /**
+     * @dataProvider passwordUnconformityProvider
+     */
+    public function testPasswordUnconformity(string $password): void
+    {
+        $kernel = $this->kernelInitialization();
+        $user = $this->userInitialization();
+        $user->setPassword($password);
+        /** @var ValidatorInterface $validator */
+        $validator = $kernel->getContainer()->get('validator');
+        $violations = $validator->validate($user);
+        //throw new \Exception($violations);
+        $this->assertGreaterThanOrEqual(1, count($violations));
+    }
+
+    public function passwordUnconformityProvider(): array
     {
         return [
             [""],
-            ["pasdemajuscules"],
-            ["123547"]
-            //["Pasdecaracterespeciaux123"],
-            // ["Test1deP@sswordcorrect"]
+            ["quedeslettresà"],
+            ["61235478"]
         ];
     }
 
      /**
-     * @dataProvider passwordUppercaseProvider
+     * @dataProvider passwordConformityProvider
      */
-    public function testPasswordContainsUppercase($pass): void
+    public function testPasswordConformity(string $password): void
     {
+        $kernel = $this->kernelInitialization();
         $user = $this->userInitialization();
-        $user->setPassword($pass);
-        $pw = $user->getPassword();
-        $this->assertIsString($pass);
-        //$this->assertContains('A', $pw);//assertRegexp
+        $user->setPassword($password);
+        /** @var ValidatorInterface $validator */
+        $validator = $kernel->getContainer()->get('validator');
+        $violations = $validator->validate($user);
+        //throw new \Exception($violations);
+        $this->assertCount(0, $violations);
     }
 
-    public function passwordUppercaseProvider(): array
+    public function passwordConformityProvider(): array
     {
         return [
-            ["AB123"],
-            ["MajusculeOK"],
-            ["123547P"]
-            //["Pasdecaracterespeciaux123"],
-            // ["Test1deP@sswordcorrect"]
+            ["P123547"],
+            ["&123547"],
+            ["aveccaracterespeciaux123"],
+            ["Aveccaracterespeciaux#"],
+            ["Test1deP@sswordcorrect"]
         ];
     }
 
     /**
-     * @dataProvider birthDateUnderLegalAgeProvider
+     * @dataProvider birthDateUnconformityProvider
      */
-    public function testBirthDateUnderLegalAgeException(\DateTime $birthDate): void
+    public function testBirthDateUnconformity(\DateTime $birthDate): void
     {
+        $kernel = $this->kernelInitialization();
         $user = $this->userInitialization();
-        //$this->assertInstanceOf(\DateTime::class, $birthDate);
-        $this->expectException(LegalAgeException::class);
         $user->setBirthDate($birthDate);
+        /** @var ValidatorInterface $validator */
+        $validator = $kernel->getContainer()->get('validator');
+        $violations = $validator->validate($user);
+        //throw new \Exception($violations);
+        $this->assertGreaterThanOrEqual(1, count($violations));
     }
 
-    public function birthDateUnderLegalAgeProvider(): array
+    public function birthDateUnconformityProvider(): array
     {
         $timezone = $this->timezoneInitialization();
         $legalAgeBirthDate = (new \DateTime('now', $timezone))->sub(new \DateInterval('P18Y'));
         return [
             [$legalAgeBirthDate->setTime(23, 59, 59, 999999)],
-            [$legalAgeBirthDate->modify('+1 day')->setTime(23, 59, 59, 999999)]
-        ];
-    }
-
-    /**
-     * @dataProvider futurBirthDateBoundaryProvider
-     */
-    public function testFuturBirthDateBoundaryException(\DateTime $birthDate): void
-    {
-        $user = $this->userInitialization();
-        //$this->assertInstanceOf(\DateTime::class, $birthDate);
-        $this->expectException(BoundaryDateException::class);
-        $user->setBirthDate($birthDate);
-    }
-
-    public function futurBirthDateBoundaryProvider(): array
-    {
-        $timezone = $this->timezoneInitialization();
-        return [
+            [$legalAgeBirthDate->modify('+1 day')->setTime(23, 59, 59, 999999)],
             [(new \DateTime('now', $timezone))->setTime(23, 59, 60)],
             [(new \DateTime('now', $timezone))->add(new \DateInterval('P2Y'))]
         ];
     }
 
     /**
-     * @dataProvider birthDateOverLegalAgeProvider
+     * @dataProvider birthDateConformityProvider
      */
-    public function testBirthDateOverLegalAge(\DateTime $birthDate): void
+    public function testBirthDateConformity(\DateTime $birthDate): void
     {
+        $kernel = $this->kernelInitialization();
         $user = $this->userInitialization();
-        //$this->assertInstanceOf(\DateTime::class, $birthDate);
         $user->setBirthDate($birthDate);
-        $this->assertSame($birthDate, $user->getBirthDate());
+        /** @var ValidatorInterface $validator */
+        $validator = $kernel->getContainer()->get('validator');
+        $violations = $validator->validate($user);
+        //throw new \Exception($violations);
+        $this->assertCount(0, $violations);
     }
 
-    public function birthDateOverLegalAgeProvider(): array
+    public function birthDateConformityProvider(): array
     {
         $timezone = $this->timezoneInitialization();
         $legalAgeBirthDate1 = (new \DateTime('now', $timezone))->sub(new \DateInterval('P18Y'));
@@ -265,12 +281,16 @@ class UserTest extends TestCase
     /**
      * @dataProvider timeZoneSelectedUnconformityProvider
      */
-    public function testTimeZoneSelectedUnconformityException(string $timeZone): void
+    public function testTimeZoneSelectedUnconformity(string $timeZone): void
     {
+        $kernel = $this->kernelInitialization();
         $user = $this->userInitialization();
-        //$this->assertIsString($timeZone);
-        $this->expectException(UnknownTimeZoneException::class);
         $user->setTimeZoneSelected($timeZone);
+        /** @var ValidatorInterface $validator */
+        $validator = $kernel->getContainer()->get('validator');
+        $violations = $validator->validate($user);
+        //throw new \Exception($violations);
+        $this->assertGreaterThanOrEqual(1, count($violations));
     }
 
     public function timeZoneSelectedUnconformityProvider(): array
@@ -287,10 +307,14 @@ class UserTest extends TestCase
      */
     public function testTimeZoneSelectedConformity(string $timeZone): void
     {
+        $kernel = $this->kernelInitialization();
         $user = $this->userInitialization();
-        //$this->assertIsString($timeZone);
         $user->setTimeZoneSelected($timeZone);
-        $this->assertSame($timeZone, $user->getTimeZoneSelected());
+        /** @var ValidatorInterface $validator */
+        $validator = $kernel->getContainer()->get('validator');
+        $violations = $validator->validate($user);
+        //throw new \Exception($violations);
+        $this->assertCount(0, $violations);
     }
 
     public function timeZoneSelectedConformityProvider(): array
@@ -302,67 +326,20 @@ class UserTest extends TestCase
         ];
     }
 
-    public function testSuspendAccountWithoutActivationException(): void
-    {
-        $user = $this->userInitialization();
-        $this->expectException(AccountNotActiveException::class);
-        $user->setActivatedStatus(false);
-        $user->setSuspendedStatus(true);
-    }
-
-    public function testSuspendAccountWithActivation(): void
-    {
-        $user = $this->userInitialization();
-        $user->setActivatedStatus(true);
-        $user->setSuspendedStatus(true);
-        $this->assertSame(true, $user->getSuspendedStatus());
-    }
-
-    /**
-     * @dataProvider dateBoundaryUnconformityForAllStatusProvider
-     */
-    public function testDateBoundaryUnconformityForAllStatus(\DateTime $statusDate): void
-    {
-        $user = $this->userInitialization();
-        $this->expectException(BoundaryDateException::class);
-        $user->setActivatedStatus(true);
-        $user->setActivatedDate($statusDate);
-        $this->expectException(BoundaryDateException::class);
-        $user->setSuspendedDate($statusDate);
-        $this->expectException(BoundaryDateException::class);
-        $user->setDeletedDate($statusDate);
-    }
-
-    public function dateBoundaryUnconformityForAllStatusProvider(): array
-    {
-        $timezone = $this->timezoneInitialization();
-        return [
-            [(new \DateTime('now', $timezone))->setTime(23, 59, 60)],
-            [(new \DateTime('now', $timezone))->add(new \DateInterval('P2Y'))]
-        ];
-    }
-
-    /**
-     * @dataProvider dateConformityForAllStatusProvider
-     */
-    public function testDateConformityForAllStatus(\DateTime $statusDate): void
-    {
-        $user = $this->userInitialization();
-        $user->setActivatedStatus(true);
-        $user->setActivatedDate($statusDate);
-        $this->assertSame($statusDate, $user->getActivatedDate());
-        $user->setSuspendedDate($statusDate);
-        $this->assertSame($statusDate, $user->getSuspendedDate());
-        $user->setDeletedDate($statusDate);
-        $this->assertSame($statusDate, $user->getDeletedDate());
-    }
-
-    public function dateConformityForAllStatusProvider(): array
-    {
-        $timezone = $this->timezoneInitialization();
-        return [
-            [(new \DateTime('now', $timezone))->setTime(0, 0)],
-            [(new \DateTime('now', $timezone))->sub(new \DateInterval('P1D'))]
-        ];
-    }
+    // public function testSuspendAccountWithoutActivation(): void
+    // {
+        /*$user = $this->userInitialization();
+        $this->assertTrue($user->getActivatedStatus());
+        $this->assertTrue($user->getSuspendedStatus());
+        $user->valid();
+        $this->assertFalse($user->getSuspendedStatus());
+        $user->desactivate();
+        $this->assertFalse($user->getActivatedStatus());
+        $result1 = $user->suspend();
+        $result2 = $user->suspend();
+        $this->assertTrue($result1);
+        $this->assertFalse($result2);
+        $this->assertFalse($user->getSuspendedStatus());
+        //$this->assertNotNull($user->getSuspendedDate());*/
+    //}
 }
