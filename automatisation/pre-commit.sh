@@ -37,5 +37,5 @@ phpcs="vendor/bin/phpcs --report=code --colors --report-width=80 --standard=PSR1
 
 __run "1/4" "Code Sniffer : Corrects PSR12 code styling standards" "${modified} | xargs -r ${phpcbf}"
 __run "2/4" "Code Sniffer : Detects violations of PSR12 coding standard" "${modified} | xargs -r ${phpcs}"
-__run "3/4" "PhpStan : Analyse the code" "${modified} | xargs -r vendor/bin/phpstan analyse -c phpstan.neon.dist"
+__run "3/4" "PhpStan : Analyse the code" "vendor/bin/phpstan analyse -c phpstan.neon.dist"
 __run "4/4" "PhpUnit : Runs unit tests" "php bin/phpunit -c phpunit.xml"
