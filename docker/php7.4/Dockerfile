@@ -22,3 +22,9 @@ RUN pecl install apcu-${APCU_VERSION} && docker-php-ext-enable apcu \
     && echo "apc.enable_cli=1" >> /usr/local/etc/php/php.ini \
     && echo "apc.enable=1" >> /usr/local/etc/php/php.ini
 #APCU
+
+RUN service apache2 restart
+
+ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf

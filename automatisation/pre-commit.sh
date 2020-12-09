@@ -30,7 +30,7 @@ function __run() #(step, name, cmd)
     fi
 }
 
-modified="git diff --diff-filter=M --name-only --cached  | grep \".php$\""
+modified="git diff --diff-filter=d --name-only --cached  | grep \".php$\""
 ignore="vendor,automatisation,config,docker,docs,migrations,src/Kernel.php,public,tests/bootstrap.php,templates,translations,var"
 phpcbf="vendor/bin/phpcbf --report=code --colors --report-width=80 --standard=PSR12 --encoding=utf-8 --ignore=${ignore} -n -p"
 phpcs="vendor/bin/phpcs --report=code --colors --report-width=80 --standard=PSR12 --encoding=utf-8 --ignore=${ignore} -n -p"
@@ -38,4 +38,4 @@ phpcs="vendor/bin/phpcs --report=code --colors --report-width=80 --standard=PSR1
 __run "1/4" "Code Sniffer : Corrects PSR12 code styling standards" "${modified} | xargs -r ${phpcbf}"
 __run "2/4" "Code Sniffer : Detects violations of PSR12 coding standard" "${modified} | xargs -r ${phpcs}"
 __run "3/4" "PhpStan : Analyse the code" "${modified} | xargs -r vendor/bin/phpstan analyse -c phpstan.neon.dist"
-__run "4/4" "PhpUnit : Runs unit tests" "php bin/phpunit -c phpunit.xml.dist"
+__run "4/4" "PhpUnit : Runs unit tests" "php bin/phpunit -c phpunit.xml"
