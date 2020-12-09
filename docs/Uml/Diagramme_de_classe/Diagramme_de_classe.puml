@@ -2,12 +2,8 @@
 skinparam linetype ortho
 'plantuml
 'Relations :
-    'Un statut de l'utilisateur
-    'User "0..*"  --> "3" UserStatus
     'Un utilisateur a une langue sélectionnée
     User "0..*" --> "1" Language
-    'Un utilisateur a un compte
-    User "1" -- "1" Account
     'Une facture n'est pas pas forcément lié à un utilisateur existant
     User "0..1" <-- "0..*" Billing
     'Un paris a un type
@@ -97,28 +93,12 @@ skinparam linetype ortho
         +isEmpty() : bool
         +getBetsCount() : int
     }
-    'Compte (sert à ce connecter)
-    'class Account {
-    '    -identifier : int
-    '    -validation : bool
-    '    -password : string
-    '    -emailAddress : string
-    '    -creationDate : DateTime
-    '    -status : bool
-    '    +isValidate() : bool
-    '}
-    'Un statut de l'utilisateur
-    'class UserStatus {
-    '    -identifier : int
-    '    -type : string
-    '    -status : bool
-    '    -actionDate : DateTime
-    '}
     'Utilisateur avec un compte
     class User {
-        -identifier : int
-        -emailAddress : string
+        -id : int
+        -email : string
         -password : string
+        -roles : string[]
         -activatedStatus : bool
         -activatedDate : DateTime
         -suspendedStatus : bool
@@ -129,12 +109,24 @@ skinparam linetype ortho
         -firstName : string
         -lastName : string
         -billingAddress : string
+        -billingCity : string
         -billingPostcode : string
         -billingCountry : string
         -birthDate : DateTime
         -timeZoneSelected : string
+        +{static} MIN_AGE_FOR_BETTING : int = 18
+        +{static} DATABASE_TIME_ZONE : string = 'UTC'
         +getName() : string
         +getAddress() : string
+        +isPasswordSafe() : bool
+        +getSalt() : string|null
+        +eraseCredentials() : void
+        +delete() : bool
+        +restore() : bool
+        +suspend() : bool
+        +valid() : bool
+        +activate() : bool
+        +desactivate() : bool
     }
     'Langue d'affichage de l'utilisateur
     class Language {
