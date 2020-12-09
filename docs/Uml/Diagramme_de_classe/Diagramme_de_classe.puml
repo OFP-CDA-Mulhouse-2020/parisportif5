@@ -144,9 +144,10 @@ skinparam linetype ortho
         -identifier : int
         -firstName : string
         -lastName : string
-        -billingAddress : string
-        -billingPostcode : string
-        -billingCountry : string
+        -address : string
+        -city : string
+        -postcode : string
+        -country : string
         -orderNumber  : int
         -amount : float
         -currency : string
