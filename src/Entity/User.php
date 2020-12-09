@@ -1,24 +1,19 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Entity;
 
-use App\Repository\UserRepository;
-use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use App\Validator as UserAssert;
 use App\Entity\Exception\AccountNotActiveException;
 use App\Entity\Exception\BoundaryDateException;
-use App\Entity\Exception\LegalAgeException;
-use App\Entity\Exception\UnknownTimeZoneException;
-use App\Entity\Exception\SpecialCharsException;
-use App\Entity\Exception\FirstNameLengthException;
-use App\Entity\Exception\LastNameLengthException;
-use App\Entity\Exception\PasswordUppercaseException;
+use App\Repository\UserRepository;
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  */
-class User
+class User implements UserInterface
 {
     /**
      * @ORM\Id
@@ -28,52 +23,160 @@ class User
     private int $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=180, unique=true)
+     * @Assert\NotBlank(
+     *     message="L'adresse email ne peut pas être vide",
+     *     normalizer="trim"
+     * )
+     * @Assert\Email(
+     *     message="L'adresse email {{ value }}' n'est pas valide",
+     *     mode="html5"
+     * )
+     */
+    private string $email;
+
+    /**
+     * @ORM\Column(type="json")
+     * @var array<string> $roles
+     */
+    private array $roles = [];
+
+    /**
+     * @var string The hashed password
+     * @ORM\Column(type="string")
+     * @Assert\NotBlank(
+     *     message="Le mot de passe ne peut pas être vide",
+     *     normalizer="trim"
+     * )
+     * @Assert\Length(
+     *     min=7,
+     *     minMessage="Votre mot de passe doit avoir plus de {{ limit }} caractères",
+     * )
+     * @Assert\Regex(
+     *     pattern="/^[\p{L}]+$/u",
+     *     match=false,
+     *     message="Pour la sécurité de votre mot de passe, vous ne pouvez pas mettre uniquement des lettres (lettres accentuées incluses)"
+     * )
+     * @Assert\Regex(
+     *     pattern="/^\d+$/",
+     *     match=false,
+     *     message="Pour la sécurité de votre mot de passe, vous ne pouvez pas mettre uniquement des chiffres"
+     * )
+     * @Assert\NotCompromisedPassword(
+     *     message="Mot de passe interdit"
+     * )
+     */
+    private $password;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Assert\NotBlank(
+     *     message="La civilité ne peut pas être vide",
+     *     normalizer="trim"
+     * )
+     * @Assert\Regex(
+     *     pattern="/(monsieur|madame)/i",
+     *     message="La sélection d'une civilité est limitée à « Madame » ou « Monsieur »"
+     * )
      */
     private string $civility;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Assert\NotBlank(
+     *     message="Le prénom ne peut pas être vide",
+     *     normalizer="trim"
+     * )
+     * @Assert\Length(
+     *     min=2,
+     *     max=26,
+     *     minMessage="Votre prénom doit avoir plus de {{ limit }} caractères",
+     *     maxMessage="Votre prénom doit avoir moins de {{ limit }} caractères"
+     * )
+     * @Assert\Regex(
+     *     pattern="/^[\p{L}\-\'\s]+$/u",
+     *     message="Uniquement les lettres et les caractères suivant (-, ') sont autorisé"
+     * )
      */
     private string $firstName;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Assert\NotBlank(
+     *     message="Le nom de famille ne peut pas être vide",
+     *     normalizer="trim"
+     * )
+     * @Assert\Length(
+     *     min=2,
+     *     max=26,
+     *     minMessage="Votre nom de famille doit avoir plus de {{ limit }} caractères",
+     *     maxMessage="Votre nom de famille doit avoir moins de {{ limit }} caractères"
+     * )
+     * @Assert\Regex(
+     *     pattern="/^[\p{L}\-\'\s]+$/u",
+     *     message="Uniquement les lettres et les caractères suivant (-, ') sont autorisé"
+     * )
      */
     private string $lastName;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Assert\NotBlank(
+     *     message="L'adresse ne peut pas être vide",
+     *     normalizer="trim"
+     * )
      */
     private string $billingAddress;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Assert\NotBlank(
+     *     message="La ville ne peut pas être vide",
+     *     normalizer="trim"
+     * )
+     */
+    private string $billingCity;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Assert\NotBlank(
+     *     message="Le code postal ne peut pas être vide",
+     *     normalizer="trim"
+     * )
      */
     private string $billingPostcode;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Assert\NotBlank(
+     *     message="Le pays ne peut pas être vide.",
+     *     normalizer="trim"
+     * )
+     * @Assert\Country(
+     *     message="Le pays {{ value }} n'est pas valide",
+     * )
      */
     private string $billingCountry;
 
     /**
      * @ORM\Column(type="date")
+     * @Assert\NotBlank(
+     *     message="La date de naissance ne peut pas être vide",
+     *     normalizer="trim"
+     * )
+     * @UserAssert\HasLegalAge
      */
     private \DateTime $birthDate;
 
     /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private string $emailAddress;
-
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private string $password;
-
-    /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Assert\NotBlank(
+     *     message="Le fuseau horaire ne peut pas être vide",
+     *     normalizer="trim"
+     * )
+     * @Assert\Timezone(
+     *     message="Le fuseau horaire {{ value }} n'est pas valide"
+     * )
      */
     private string $timeZoneSelected;
 
@@ -110,17 +213,105 @@ class User
     /**
      * @var array<int, string>
      */
-    private array $timezoneIdentifiersList = [];
+    private array $timezoneIdentifiersList;
     public const MIN_AGE_FOR_BETTING = 18;
+    public const DATABASE_TIME_ZONE = "UTC";
 
     public function __construct()
     {
+        $this->activatedStatus = true;
+        $this->suspendedStatus = false;
+        $this->deletedStatus = false;
         $this->timezoneIdentifiersList = \DateTimeZone::listIdentifiers();
     }
 
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): self
+    {
+        $this->email = $email;
+        return $this;
+    }
+
+    /**
+     * A visual identifier that represents this user.
+     *
+     * @see UserInterface
+     */
+    public function getUsername(): string
+    {
+        return (string) $this->email;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function getRoles(): array
+    {
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
+    }
+
+    /** @param array<string> $roles */
+    public function setRoles(array $roles): self
+    {
+        $this->roles = $roles;
+        return $this;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function getPassword(): string
+    {
+        return (string) $this->password;
+    }
+
+    public function setPassword(string $password): self
+    {
+        $this->password = $password;
+        return $this;
+    }
+
+    /**
+     * @Assert\IsTrue(
+     *     message="Le mot de passe ne peut contenir le prénom, le nom ou les deux."
+     * )
+     */
+    public function isPasswordSafe(): bool
+    {
+        return ($this->lastName !== $this->password
+            && $this->firstName !== $this->password
+            && $this->getName() !== $this->password);
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function getSalt(): ?string
+    {
+        // not needed when using the "bcrypt" algorithm in security.yaml
+        return null;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function eraseCredentials(): void
+    {
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
     }
 
     public function getCivility(): ?string
@@ -130,29 +321,7 @@ class User
 
     public function setCivility(string $civility): self
     {
-        if ($civility != "Monsieur" && $civility != "Madame") {
-            throw new \InvalidArgumentException("La civilité doit être renseignée 
-                et être l'un des deux termes suivants : Monsieur ou Madame");
-        }
-
         $this->civility = $civility;
-
-        return $this;
-    }
-
-    public function getEmailAddress(): ?string
-    {
-        return $this->emailAddress;
-    }
-
-    public function setEmailAddress(string $emailAddress): self
-    {
-        if (filter_var($emailAddress, FILTER_VALIDATE_EMAIL) === false) {
-            throw new \InvalidArgumentException("L'adresse email est invalide");
-        }
-
-        $this->emailAddress = $emailAddress;
-
         return $this;
     }
 
@@ -163,14 +332,7 @@ class User
 
     public function setFirstName(string $firstName): self
     {
-        if (preg_match('/[\^£$%&*()}{@#~?><>,|=_+¬]/', $firstName)) {
-            throw new SpecialCharsException("Le prénom ne doit pas contenir de caractères spéciaux");
-        }
-        if ((strlen($firstName) < 2) || (strlen($firstName) > 25)) {
-            throw new FirstNameLengthException("Le prénom doit être supérieur à 1 caractère et inférieur à 25 caractères");
-        }
         $this->firstName = $firstName;
-
         return $this;
     }
 
@@ -181,36 +343,14 @@ class User
 
     public function setLastName(string $lastName): self
     {
-        if (preg_match('/[\^£$%&*()}{@#~?><>,|=_+¬]/', $lastName)) {
-            throw new SpecialCharsException("Le prénom ne doit pas contenir de caractères spéciaux");
-        }
-        if ((strlen($lastName) < 2 ) || (strlen($lastName) > 25)) {
-            throw new LastNameLengthException("Le nom de famille doit être supérieur à 1 caractère et inférieur à 25 caractères");
-        }
         $this->lastName = $lastName;
-
         return $this;
     }
 
-    public function getPassword(): ?string
+    public function getName(): ?string
     {
-        return $this->password;
-    }
-
-    public function setPassword(string $password): self
-    {
-        // if (!is_string($password)) {
-        //     throw new \InvalidArgumentException("Le mot de passe doit être une chaîne de caractères");
-        // }
-        // if (strlen($password) < 8) {
-        //     throw new \InvalidArgumentException("Le mot de passe doit être supérieur à 8 caractères, contenir au moins une majuscule et un caractère spécial");
-        // }
-        if (!preg_match('/[A-Z]/', $password)) {//créer les exceptions
-            throw new PasswordUppercaseException("Le mot de passe doit contenir au moins une majuscule");
-        }
-        $this->password = $password;
-
-        return $this;
+        $name = trim(($this->firstName ?? '') . ' ' . ($this->lastName ?? ''));
+        return empty($name) ? null : $name;
     }
 
     public function getBillingAddress(): ?string
@@ -221,7 +361,17 @@ class User
     public function setBillingAddress(string $billingAddress): self
     {
         $this->billingAddress = $billingAddress;
+        return $this;
+    }
 
+    public function getBillingCity(): ?string
+    {
+        return $this->billingCity;
+    }
+
+    public function setBillingCity(string $billingCity): self
+    {
+        $this->billingCity = $billingCity;
         return $this;
     }
 
@@ -233,7 +383,6 @@ class User
     public function setBillingPostcode(string $billingPostcode): self
     {
         $this->billingPostcode = $billingPostcode;
-
         return $this;
     }
 
@@ -245,8 +394,15 @@ class User
     public function setBillingCountry(string $billingCountry): self
     {
         $this->billingCountry = $billingCountry;
-
         return $this;
+    }
+
+    public function getAddress(): ?string
+    {
+        $address = trim(($this->billingAddress ?? '') . ' ' .
+            ($this->billingPostcode ?? '') . ' ' . ($this->billingCity ?? '') . ' ' .
+            ($this->billingCountry ?? ''));
+        return empty($address) ? null : $address;
     }
 
     public function getBirthDate(): ?\DateTime
@@ -256,28 +412,7 @@ class User
 
     public function setBirthDate(\DateTime $birthDate): self
     {
-        //$birthDateTimeZone = $birthDate->getTimezone();
-        //$timeZone = $birthDateTimeZone !== false ?
-        //    $birthDateTimeZone->getName() : ($this->timeZoneSelected ?? 'UTC');
-        $timeZoneString = $this->timeZoneSelected ?? 'UTC';
-        $timeZoneObject = new \DateTimeZone($timeZoneString);
-        $birthDate = $birthDate->setTimezone($timeZoneObject);
-        $currentDate = new \DateTime('now', $timeZoneObject);
-        if ($birthDate >= $currentDate) {
-            throw new BoundaryDateException("La date de naissance ne peut être supérieur 
-                ou égal à la date en cours.");
-        }
-        $currentDate = $currentDate->setTime(23, 59, 59, 999999);
-        $legalAge = clone $birthDate;
-        $legalAge = $legalAge->setTime(23, 59, 60);
-        $legalAge->add(new \DateInterval('P' . self::MIN_AGE_FOR_BETTING . 'Y'));
-        if ($legalAge > $currentDate) {
-            throw new LegalAgeException("L'âge requis pour créer un compte est de 
-                " . self::MIN_AGE_FOR_BETTING . " ans.");
-        }
-
         $this->birthDate = $birthDate;
-
         return $this;
     }
 
@@ -288,12 +423,7 @@ class User
 
     public function setTimeZoneSelected(string $timeZoneSelected): self
     {
-        if (in_array($timeZoneSelected, $this->timezoneIdentifiersList) == false) {
-            throw new UnknownTimeZoneException("Le fuseu horaire n'est pas reconnu.");
-        }
-
         $this->timeZoneSelected = $timeZoneSelected;
-
         return $this;
     }
 
@@ -302,10 +432,9 @@ class User
         return $this->deletedStatus;
     }
 
-    public function setDeletedStatus(bool $deletedStatus): self
+    private function setDeletedStatus(bool $deletedStatus): self
     {
         $this->deletedStatus = $deletedStatus;
-
         return $this;
     }
 
@@ -314,21 +443,17 @@ class User
         return $this->deletedDate;
     }
 
-    public function setDeletedDate(?\DateTime $deletedDate): self
+    public function delete(): void
     {
-        if ($deletedDate instanceof \DateTime) {
-            $timeZoneString = $this->timeZoneSelected ?? 'UTC';
-            $timeZoneObject = new \DateTimeZone($timeZoneString);
-            $deletedDate = $deletedDate->setTimezone($timeZoneObject);
-            $currentDate = new \DateTime('now', $timeZoneObject);
-            if ($deletedDate > $currentDate) {
-                throw new BoundaryDateException("La date de suppression du compte ne peut être supérieur 
-                    à la date en cours.");
-            }
+        if ($this->deletedDate instanceof \DateTime && $this->deletedStatus === true) {
         }
+        $this->deletedDate = new \DateTime('now', new \DateTimeZone(self::DATABASE_TIME_ZONE));
+        $this->deletedStatus = true;
+    }
 
+    private function setDeletedDate(?\DateTime $deletedDate): self
+    {
         $this->deletedDate = $deletedDate;
-
         return $this;
     }
 
@@ -337,15 +462,9 @@ class User
         return $this->suspendedStatus;
     }
 
-    public function setSuspendedStatus(bool $suspendedStatus): self
+    private function setSuspendedStatus(bool $suspendedStatus): self
     {
-        if ($this->getActivatedStatus() !== true) {
-            throw new AccountNotActiveException("Le compte ne peut pas être suspendu 
-                si il n'est pas actif.");
-        }
-
         $this->suspendedStatus = $suspendedStatus;
-
         return $this;
     }
 
@@ -354,25 +473,9 @@ class User
         return $this->suspendedDate;
     }
 
-    public function setSuspendedDate(?\DateTime $suspendedDate): self
+    private function setSuspendedDate(?\DateTime $suspendedDate): self
     {
-        if ($this->getActivatedStatus() !== true) {
-            throw new AccountNotActiveException("La date de suspension du compte ne peut être modifier 
-                si le compte n'est pas actif.");
-        }
-        if ($suspendedDate instanceof \DateTime) {
-            $timeZoneString = $this->timeZoneSelected ?? 'UTC';
-            $timeZoneObject = new \DateTimeZone($timeZoneString);
-            $suspendedDate = $suspendedDate->setTimezone($timeZoneObject);
-            $currentDate = new \DateTime('now', $timeZoneObject);
-            if ($suspendedDate > $currentDate) {
-                throw new BoundaryDateException("La date de suspension du compte ne peut être supérieur 
-                    à la date en cours.");
-            }
-        }
-
         $this->suspendedDate = $suspendedDate;
-
         return $this;
     }
 
@@ -381,10 +484,9 @@ class User
         return $this->activatedStatus;
     }
 
-    public function setActivatedStatus(bool $activatedStatus): self
+    private function setActivatedStatus(bool $activatedStatus): self
     {
         $this->activatedStatus = $activatedStatus;
-
         return $this;
     }
 
@@ -393,21 +495,9 @@ class User
         return $this->activatedDate;
     }
 
-    public function setActivatedDate(?\DateTime $activatedDate): self
+    private function setActivatedDate(?\DateTime $activatedDate): self
     {
-        if ($activatedDate instanceof \DateTime) {
-            $timeZoneString = $this->timeZoneSelected ?? 'UTC';
-            $timeZoneObject = new \DateTimeZone($timeZoneString);
-            $activatedDate = $activatedDate->setTimezone($timeZoneObject);
-            $currentDate = new \DateTime('now', $timeZoneObject);
-            if ($activatedDate > $currentDate) {
-                throw new BoundaryDateException("La date d'activation du compte ne peut être supérieur 
-                    à la date en cours.");
-            }
-        }
-
         $this->activatedDate = $activatedDate;
-
         return $this;
     }
 }
