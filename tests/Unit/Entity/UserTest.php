@@ -326,20 +326,124 @@ class UserTest extends WebTestCase
         ];
     }
 
-    // public function testSuspendAccountWithoutActivation(): void
-    // {
-        /*$user = $this->userInitialization();
+    public function testValidAccountWithoutActivation(): void
+    {
+        $user = $this->userInitialization();
         $this->assertTrue($user->getActivatedStatus());
         $this->assertTrue($user->getSuspendedStatus());
+        $this->assertNotNull($user->getSuspendedDate());
+        $user->desactivate();
+        $this->assertFalse($user->getActivatedStatus());
+        $result1 = $user->valid();
+        $result2 = $user->valid();
+        $this->assertFalse($result1);
+        $this->assertFalse($result2);
+        $this->assertTrue($user->getSuspendedStatus());
+        $this->assertNotNull($user->getSuspendedDate());
+    }
+
+    public function testValidAccountWithActivation(): void
+    {
+        $user = $this->userInitialization();
+        $this->assertTrue($user->getActivatedStatus());
+        $this->assertTrue($user->getSuspendedStatus());
+        $this->assertNotNull($user->getSuspendedDate());
+        $result1 = $user->valid();
+        $result2 = $user->valid();
+        $this->assertTrue($result1);
+        $this->assertFalse($result2);
+        $this->assertFalse($user->getSuspendedStatus());
+        $this->assertNull($user->getSuspendedDate());
+    }
+
+    public function testSuspendAccountWithoutActivation(): void
+    {
+        $user = $this->userInitialization();
+        $this->assertTrue($user->getActivatedStatus());
+        $this->assertTrue($user->getSuspendedStatus());
+        $this->assertNotNull($user->getSuspendedDate());
         $user->valid();
         $this->assertFalse($user->getSuspendedStatus());
         $user->desactivate();
         $this->assertFalse($user->getActivatedStatus());
         $result1 = $user->suspend();
         $result2 = $user->suspend();
-        $this->assertTrue($result1);
+        $this->assertFalse($result1);
         $this->assertFalse($result2);
         $this->assertFalse($user->getSuspendedStatus());
-        //$this->assertNotNull($user->getSuspendedDate());*/
-    //}
+        $this->assertNull($user->getSuspendedDate());
+    }
+
+    public function testSuspendAccountWithActivation(): void
+    {
+        $user = $this->userInitialization();
+        $this->assertTrue($user->getActivatedStatus());
+        $this->assertTrue($user->getSuspendedStatus());
+        $this->assertNotNull($user->getSuspendedDate());
+        $user->valid();
+        $this->assertFalse($user->getSuspendedStatus());
+        $result1 = $user->suspend();
+        $result2 = $user->suspend();
+        $this->assertTrue($result1);
+        $this->assertFalse($result2);
+        $this->assertTrue($user->getSuspendedStatus());
+        $this->assertNotNull($user->getSuspendedDate());
+    }
+
+    public function testActivateAccount(): void
+    {
+        $user = $this->userInitialization();
+        $this->assertTrue($user->getActivatedStatus());
+        $this->assertNotNull($user->getActivatedDate());
+        $user->desactivate();
+        $this->assertFalse($user->getActivatedStatus());
+        $this->assertNull($user->getActivatedDate());
+        $result1 = $user->activate();
+        $result2 = $user->activate();
+        $this->assertTrue($result1);
+        $this->assertFalse($result2);
+        $this->assertTrue($user->getActivatedStatus());
+        $this->assertNotNull($user->getActivatedDate());
+    }
+
+    public function testDesactivateAccount(): void
+    {
+        $user = $this->userInitialization();
+        $this->assertTrue($user->getActivatedStatus());
+        $result1 = $user->desactivate();
+        $result2 = $user->desactivate();
+        $this->assertTrue($result1);
+        $this->assertFalse($result2);
+        $this->assertFalse($user->getActivatedStatus());
+        $this->assertNull($user->getActivatedDate());
+    }
+
+    public function testDeleteAccount(): void
+    {
+        $user = $this->userInitialization();
+        $this->assertFalse($user->getDeletedStatus());
+        $this->assertNull($user->getDeletedDate());
+        $result1 = $user->delete();
+        $result2 = $user->delete();
+        $this->assertTrue($result1);
+        $this->assertFalse($result2);
+        $this->assertTrue($user->getDeletedStatus());
+        $this->assertNotNull($user->getDeletedDate());
+    }
+
+    public function testRestoreAccount(): void
+    {
+        $user = $this->userInitialization();
+        $this->assertFalse($user->getDeletedStatus());
+        $this->assertNull($user->getDeletedDate());
+        $user->delete();
+        $this->assertTrue($user->getDeletedStatus());
+        $this->assertNotNull($user->getDeletedDate());
+        $result1 = $user->restore();
+        $result2 = $user->restore();
+        $this->assertTrue($result1);
+        $this->assertFalse($result2);
+        $this->assertFalse($user->getDeletedStatus());
+        $this->assertNull($user->getDeletedDate());
+    }
 }

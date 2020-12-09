@@ -4,8 +4,6 @@ namespace App\Entity;
 
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Validator as UserAssert;
-use App\Entity\Exception\AccountNotActiveException;
-use App\Entity\Exception\BoundaryDateException;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -66,7 +64,7 @@ class User implements UserInterface
      *     message="Mot de passe interdit"
      * )
      */
-    private $password;
+    private string $password;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
@@ -210,19 +208,18 @@ class User implements UserInterface
      */
     private ?\DateTime $activatedDate;
 
-    /**
-     * @var array<int, string>
-     */
-    private array $timezoneIdentifiersList;
     public const MIN_AGE_FOR_BETTING = 18;
     public const DATABASE_TIME_ZONE = "UTC";
 
     public function __construct()
     {
+        $creationDate = new \DateTime('now', new \DateTimeZone(self::DATABASE_TIME_ZONE));
         $this->activatedStatus = true;
-        $this->suspendedStatus = false;
+        $this->activatedDate = $creationDate;
+        $this->suspendedStatus = true;
+        $this->suspendedDate = $creationDate;
         $this->deletedStatus = false;
-        $this->timezoneIdentifiersList = \DateTimeZone::listIdentifiers();
+        $this->deletedDate = null;
     }
 
     public function getId(): ?int
@@ -443,18 +440,34 @@ class User implements UserInterface
         return $this->deletedDate;
     }
 
-    public function delete(): void
-    {
-        if ($this->deletedDate instanceof \DateTime && $this->deletedStatus === true) {
-        }
-        $this->deletedDate = new \DateTime('now', new \DateTimeZone(self::DATABASE_TIME_ZONE));
-        $this->deletedStatus = true;
-    }
-
     private function setDeletedDate(?\DateTime $deletedDate): self
     {
         $this->deletedDate = $deletedDate;
         return $this;
+    }
+
+    public function delete(): bool
+    {
+        if (empty($this->deletedDate) && $this->deletedStatus === false) {
+            $this->setDeletedDate(new \DateTime('now', new \DateTimeZone(self::DATABASE_TIME_ZONE)));
+            $this->setDeletedStatus(true);
+            $this->setActivatedStatus(false);
+            $this->setSuspendedStatus(true);
+            return true;
+        }
+        return false;
+    }
+
+    public function restore(): bool
+    {
+        if (!empty($this->deletedDate) && $this->deletedStatus === true) {
+            $this->setDeletedDate(null);
+            $this->setDeletedStatus(false);
+            $this->setActivatedStatus(!empty($this->ActivatedDate));
+            $this->setSuspendedStatus(!empty($this->SuspendedDate));
+            return true;
+        }
+        return false;
     }
 
     public function getSuspendedStatus(): ?bool
@@ -479,6 +492,26 @@ class User implements UserInterface
         return $this;
     }
 
+    public function suspend(): bool
+    {
+        if ($this->activatedStatus === true && empty($this->suspendedDate) && $this->suspendedStatus === false) {
+            $this->setSuspendedDate(new \DateTime('now', new \DateTimeZone(self::DATABASE_TIME_ZONE)));
+            $this->setSuspendedStatus(true);
+            return true;
+        }
+        return false;
+    }
+
+    public function valid(): bool
+    {
+        if ($this->activatedStatus === true && !empty($this->suspendedDate) && $this->suspendedStatus === true) {
+            $this->setSuspendedDate(null);
+            $this->setSuspendedStatus(false);
+            return true;
+        }
+        return false;
+    }
+
     public function getActivatedStatus(): ?bool
     {
         return $this->activatedStatus;
@@ -499,5 +532,25 @@ class User implements UserInterface
     {
         $this->activatedDate = $activatedDate;
         return $this;
+    }
+
+    public function activate(): bool
+    {
+        if (empty($this->activatedDate) && $this->activatedStatus === false) {
+            $this->setActivatedDate(new \DateTime('now', new \DateTimeZone(self::DATABASE_TIME_ZONE)));
+            $this->setActivatedStatus(true);
+            return true;
+        }
+        return false;
+    }
+
+    public function desactivate(): bool
+    {
+        if (!empty($this->activatedDate) && $this->activatedStatus === true) {
+            $this->setActivatedDate(null);
+            $this->setActivatedStatus(false);
+            return true;
+        }
+        return false;
     }
 }

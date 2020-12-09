@@ -14,8 +14,7 @@
         <server name="SHELL_VERBOSITY" value="-1" />
         <server name="KERNEL_CLASS" value="App\Kernel" />
         <server name="APP_ENV" value="test" force="true" />
-        <env name="APP_ENV" value="test"/>
-        <env name="DATABASE_URL" value = "mysql://root:test@127.0.0.1:3306/parisportif_dev_test?serverVersion=8.0" />
+        <env name="DATABASE_URL" value = "mysql://root:test@mysql/parisportif_test?serverVersion=8.0" />
     </php>
          
     <testsuites>
@@ -29,4 +28,8 @@
             <directory suffix=".php">src</directory>
         </whitelist>
     </filter>
+
+    <listeners>
+        <listener class="Symfony\Bridge\PhpUnit\SymfonyTestsListener"/>
+    </listeners>
 </phpunit>

@@ -3,7 +3,6 @@
 namespace App\DataFixtures;
 
 use App\Entity\User;
-use DateTime;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
@@ -30,7 +29,7 @@ class UserFixtures extends Fixture
                 'country' => "FR",
                 'email' => "tintin.dupont@test.fr",
                 'password' => "@Hadock5",
-                'birthdate' => new \DateTime('2000-10-20', new \DateTimeZone("Europe/Paris")),
+                'birthdate' => "2000-10-20",
                 'timezone' => "Europe/Paris"
             ]
         ];
@@ -45,7 +44,7 @@ class UserFixtures extends Fixture
                 ->setBillingCity($testData[$i]['city'])
                 ->setBillingPostcode($testData[$i]['postcode'])
                 ->setBillingCountry($testData[$i]['country'])
-                ->setBirthDate(new DateTime('2000-10-20'))
+                ->setBirthDate(new \DateTime($testData[$i]['birthdate'], new \DateTimeZone("UTC")))
                 ->setTimeZoneSelected($testData[$i]['timezone'])
                 ->setEmail($testData[$i]['email'])
                 ->setPassword($this->passwordEncoder->encodePassword(

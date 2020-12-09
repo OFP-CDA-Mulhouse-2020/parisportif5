@@ -9,7 +9,7 @@ use Symfony\Component\Form\Exception\UnexpectedTypeException;
 
 class HasLegalAgeValidator extends ConstraintValidator
 {
-    public function validate($value, Constraint $constraint)
+    public function validate($value, Constraint $constraint): void
     {
         /* @var $constraint \App\Validator\HasLegalAge */
         if (!$constraint instanceof HasLegalAge) {
@@ -22,13 +22,13 @@ class HasLegalAgeValidator extends ConstraintValidator
 
         if (!$value instanceof \DateTime) {
             // throw this exception if your validator cannot handle the passed type so that it can be marked as invalid
-            throw new \UnexpectedValueException($value, 'datetime');
+            throw new \UnexpectedValueException("Cette valeur $value n'est pas un objet DateTime");
         }
 
         $minAge = User::MIN_AGE_FOR_BETTING;
         if ($this->hasLegalAge($value, $minAge)) {
             $this->context->buildViolation($constraint->message)
-                ->setParameter('{{ integer }}', $minAge)
+                ->setParameter('{{ integer }}', (string) $minAge)
                 ->addViolation();
         }
     }

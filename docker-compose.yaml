@@ -18,14 +18,14 @@ services:
     image: mysql:8.0.22
     restart: always
     volumes:
-    - database:/var/lib/mysql/
+      - database:/var/lib/mysql/
+    ports:
+      - 9906:3306
     environment:
       MYSQL_DATABASE: parisportif_dev
       MYSQL_USER: root
       MYSQL_PASSWORD: 
       MYSQL_ROOT_PASSWORD: test
-    ports:
-      - 3306:3306
   
   phpmyadmin:
     container_name: parisportif5_phpmyadmin

@@ -16,6 +16,13 @@ RUN docker-php-ext-install opcache pdo_mysql -j$(nproc) \
     && echo "xdebug.remote_host=host.docker.internal" >> /usr/local/etc/php/php.ini \
     && a2enmod rewrite && docker-php-ext-configure opcache --enable-opcache
 
+#INSTALL APCU
+RUN pecl install apcu-${APCU_VERSION} && docker-php-ext-enable apcu \
+    && echo "extension=apcu.so" >> /usr/local/etc/php/php.ini \
+    && echo "apc.enable_cli=1" >> /usr/local/etc/php/php.ini \
+    && echo "apc.enable=1" >> /usr/local/etc/php/php.ini
+#APCU
+
 RUN service apache2 restart
 
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
