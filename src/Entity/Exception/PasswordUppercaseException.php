@@ -6,5 +6,5 @@ namespace App\Entity\Exception;
 
 class PasswordUppercaseException extends \Exception
 {
-    
+
 }
