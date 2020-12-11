@@ -3,24 +3,32 @@
 namespace App\Tests\Unit\Entity;
 
 use App\Entity\User;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class UserTest extends WebTestCase
+class UserTest extends KernelTestCase
 {
+    private ValidatorInterface $validator;
+
     //throw new \Exception($violations);
-    private function timezoneInitialization(): \DateTimeZone
+    public function setUp(): void
     {
-        return new \DateTimeZone('Europe/Paris');
+        $kernel = self::bootKernel();
+        $this->validator = $kernel->getContainer()->get('validator');
     }
 
-    private function userInitialization(): User
+    private function createDefaultTimeZone(): \DateTimeZone
+    {
+        return new \DateTimeZone('UTC');
+    }
+
+    private function createValidUser(): User
     {
         $user = new User();
         $user
             ->setCivility("Monsieur")
-            ->setFirstName("Dupont")
-            ->setLastName("Tintin")
+            ->setFirstName("Tintin")
+            ->setLastName("Dupont")
             ->setBillingAddress("1 avenue st martin")
             ->setBillingCity("Colmar")
             ->setBillingPostcode("68000")
@@ -32,24 +40,14 @@ class UserTest extends WebTestCase
         return $user;
     }
 
-    private function kernelInitialization(): KernelInterface
-    {
-        $kernel = self::bootKernel();
-        $kernel->boot();
-        return $kernel;
-    }
-
     /**
      * @dataProvider unexpectedCivilityProvider
      */
     public function testCivilityUnexpectedValue(string $civility): void
     {
-        $kernel = $this->kernelInitialization();
-        $user = $this->userInitialization();
+        $user = $this->createValidUser();
         $user->setCivility($civility);
-        /** @var ValidatorInterface $validator */
-        $validator = $kernel->getContainer()->get('validator');
-        $violations = $validator->validate($user);
+        $violations = $this->validator->validate($user);
         $this->assertCount(1, $violations);
     }
 
@@ -66,15 +64,12 @@ class UserTest extends WebTestCase
     {
         $civility1 = "Madame";
         $civility2 = "Monsieur";
-        $kernel = $this->kernelInitialization();
-        $user = $this->userInitialization();
+        $user = $this->createValidUser();
         $user->setCivility($civility1);
-        /** @var ValidatorInterface $validator */
-        $validator = $kernel->getContainer()->get('validator');
-        $violations = $validator->validate($user);
+        $violations = $this->validator->validate($user);
         $this->assertCount(0, $violations);
         $user->setCivility($civility2);
-        $violations = $validator->validate($user);
+        $violations = $this->validator->validate($user);
         $this->assertCount(0, $violations);
     }
 
@@ -83,12 +78,9 @@ class UserTest extends WebTestCase
      */
     public function testEmailAddressUnconformity(string $emailAddress): void
     {
-        $kernel = $this->kernelInitialization();
-        $user = $this->userInitialization();
+        $user = $this->createValidUser();
         $user->setEmail($emailAddress);
-        /** @var ValidatorInterface $validator */
-        $validator = $kernel->getContainer()->get('validator');
-        $violations = $validator->validate($user);
+        $violations = $this->validator->validate($user);
         $this->assertGreaterThanOrEqual(1, count($violations));
     }
 
@@ -106,12 +98,9 @@ class UserTest extends WebTestCase
      */
     public function testEmailAddressConformity(string $emailAddress): void
     {
-        $kernel = $this->kernelInitialization();
-        $user = $this->userInitialization();
+        $user = $this->createValidUser();
         $user->setEmail($emailAddress);
-        /** @var ValidatorInterface $validator */
-        $validator = $kernel->getContainer()->get('validator');
-        $violations = $validator->validate($user);
+        $violations = $this->validator->validate($user);
         $this->assertCount(0, $violations);
     }
 
@@ -129,13 +118,10 @@ class UserTest extends WebTestCase
      */
     public function testNameUnconformity(string $firstName): void
     {
-        $kernel = $this->kernelInitialization();
-        $user = $this->userInitialization();
+        $user = $this->createValidUser();
         $user->setFirstName($firstName);
         $user->setLastName($firstName);
-        /** @var ValidatorInterface $validator */
-        $validator = $kernel->getContainer()->get('validator');
-        $violations = $validator->validate($user);
+        $violations = $this->validator->validate($user);
         $this->assertGreaterThanOrEqual(2, count($violations));
     }
 
@@ -154,14 +140,10 @@ class UserTest extends WebTestCase
      */
     public function testNameConformity(string $firstName): void
     {
-        $kernel = $this->kernelInitialization();
-        $user = $this->userInitialization();
+        $user = $this->createValidUser();
         $user->setFirstName($firstName);
         $user->setLastName($firstName);
-        /** @var ValidatorInterface $validator */
-        $validator = $kernel->getContainer()->get('validator');
-        $violations = $validator->validate($user);
-        //throw new \Exception($violations);
+        $violations = $this->validator->validate($user);
         $this->assertCount(0, $violations);
     }
 
@@ -180,13 +162,9 @@ class UserTest extends WebTestCase
      */
     public function testPasswordUnconformity(string $password): void
     {
-        $kernel = $this->kernelInitialization();
-        $user = $this->userInitialization();
+        $user = $this->createValidUser();
         $user->setPassword($password);
-        /** @var ValidatorInterface $validator */
-        $validator = $kernel->getContainer()->get('validator');
-        $violations = $validator->validate($user);
-        //throw new \Exception($violations);
+        $violations = $this->validator->validate($user);
         $this->assertGreaterThanOrEqual(1, count($violations));
     }
 
@@ -204,13 +182,9 @@ class UserTest extends WebTestCase
      */
     public function testPasswordConformity(string $password): void
     {
-        $kernel = $this->kernelInitialization();
-        $user = $this->userInitialization();
+        $user = $this->createValidUser();
         $user->setPassword($password);
-        /** @var ValidatorInterface $validator */
-        $validator = $kernel->getContainer()->get('validator');
-        $violations = $validator->validate($user);
-        //throw new \Exception($violations);
+        $violations = $this->validator->validate($user);
         $this->assertCount(0, $violations);
     }
 
@@ -230,19 +204,15 @@ class UserTest extends WebTestCase
      */
     public function testBirthDateUnconformity(\DateTime $birthDate): void
     {
-        $kernel = $this->kernelInitialization();
-        $user = $this->userInitialization();
+        $user = $this->createValidUser();
         $user->setBirthDate($birthDate);
-        /** @var ValidatorInterface $validator */
-        $validator = $kernel->getContainer()->get('validator');
-        $violations = $validator->validate($user);
-        //throw new \Exception($violations);
+        $violations = $this->validator->validate($user);
         $this->assertGreaterThanOrEqual(1, count($violations));
     }
 
     public function birthDateUnconformityProvider(): array
     {
-        $timezone = $this->timezoneInitialization();
+        $timezone = $this->createDefaultTimeZone();
         $legalAgeBirthDate = (new \DateTime('now', $timezone))->sub(new \DateInterval('P18Y'));
         return [
             [$legalAgeBirthDate->setTime(23, 59, 59, 999999)],
@@ -257,19 +227,15 @@ class UserTest extends WebTestCase
      */
     public function testBirthDateConformity(\DateTime $birthDate): void
     {
-        $kernel = $this->kernelInitialization();
-        $user = $this->userInitialization();
+        $user = $this->createValidUser();
         $user->setBirthDate($birthDate);
-        /** @var ValidatorInterface $validator */
-        $validator = $kernel->getContainer()->get('validator');
-        $violations = $validator->validate($user);
-        //throw new \Exception($violations);
+        $violations = $this->validator->validate($user);
         $this->assertCount(0, $violations);
     }
 
     public function birthDateConformityProvider(): array
     {
-        $timezone = $this->timezoneInitialization();
+        $timezone = $this->createDefaultTimeZone();
         $legalAgeBirthDate1 = (new \DateTime('now', $timezone))->sub(new \DateInterval('P18Y'));
         $legalAgeBirthDate2 = clone $legalAgeBirthDate1;
         return [
@@ -283,13 +249,9 @@ class UserTest extends WebTestCase
      */
     public function testTimeZoneSelectedUnconformity(string $timeZone): void
     {
-        $kernel = $this->kernelInitialization();
-        $user = $this->userInitialization();
+        $user = $this->createValidUser();
         $user->setTimeZoneSelected($timeZone);
-        /** @var ValidatorInterface $validator */
-        $validator = $kernel->getContainer()->get('validator');
-        $violations = $validator->validate($user);
-        //throw new \Exception($violations);
+        $violations = $this->validator->validate($user);
         $this->assertGreaterThanOrEqual(1, count($violations));
     }
 
@@ -307,13 +269,9 @@ class UserTest extends WebTestCase
      */
     public function testTimeZoneSelectedConformity(string $timeZone): void
     {
-        $kernel = $this->kernelInitialization();
-        $user = $this->userInitialization();
+        $user = $this->createValidUser();
         $user->setTimeZoneSelected($timeZone);
-        /** @var ValidatorInterface $validator */
-        $validator = $kernel->getContainer()->get('validator');
-        $violations = $validator->validate($user);
-        //throw new \Exception($violations);
+        $violations = $this->validator->validate($user);
         $this->assertCount(0, $violations);
     }
 
@@ -328,7 +286,7 @@ class UserTest extends WebTestCase
 
     public function testValidAccountWithoutActivation(): void
     {
-        $user = $this->userInitialization();
+        $user = $this->createValidUser();
         $this->assertTrue($user->getActivatedStatus());
         $this->assertTrue($user->getSuspendedStatus());
         $this->assertNotNull($user->getSuspendedDate());
@@ -344,7 +302,7 @@ class UserTest extends WebTestCase
 
     public function testValidAccountWithActivation(): void
     {
-        $user = $this->userInitialization();
+        $user = $this->createValidUser();
         $this->assertTrue($user->getActivatedStatus());
         $this->assertTrue($user->getSuspendedStatus());
         $this->assertNotNull($user->getSuspendedDate());
@@ -358,7 +316,7 @@ class UserTest extends WebTestCase
 
     public function testSuspendAccountWithoutActivation(): void
     {
-        $user = $this->userInitialization();
+        $user = $this->createValidUser();
         $this->assertTrue($user->getActivatedStatus());
         $this->assertTrue($user->getSuspendedStatus());
         $this->assertNotNull($user->getSuspendedDate());
@@ -376,7 +334,7 @@ class UserTest extends WebTestCase
 
     public function testSuspendAccountWithActivation(): void
     {
-        $user = $this->userInitialization();
+        $user = $this->createValidUser();
         $this->assertTrue($user->getActivatedStatus());
         $this->assertTrue($user->getSuspendedStatus());
         $this->assertNotNull($user->getSuspendedDate());
@@ -392,7 +350,7 @@ class UserTest extends WebTestCase
 
     public function testActivateAccount(): void
     {
-        $user = $this->userInitialization();
+        $user = $this->createValidUser();
         $this->assertTrue($user->getActivatedStatus());
         $this->assertNotNull($user->getActivatedDate());
         $user->desactivate();
@@ -408,7 +366,7 @@ class UserTest extends WebTestCase
 
     public function testDesactivateAccount(): void
     {
-        $user = $this->userInitialization();
+        $user = $this->createValidUser();
         $this->assertTrue($user->getActivatedStatus());
         $result1 = $user->desactivate();
         $result2 = $user->desactivate();
@@ -420,7 +378,7 @@ class UserTest extends WebTestCase
 
     public function testDeleteAccount(): void
     {
-        $user = $this->userInitialization();
+        $user = $this->createValidUser();
         $this->assertFalse($user->getDeletedStatus());
         $this->assertNull($user->getDeletedDate());
         $result1 = $user->delete();
@@ -433,7 +391,7 @@ class UserTest extends WebTestCase
 
     public function testRestoreAccount(): void
     {
-        $user = $this->userInitialization();
+        $user = $this->createValidUser();
         $this->assertFalse($user->getDeletedStatus());
         $this->assertNull($user->getDeletedDate());
         $user->delete();
@@ -445,5 +403,82 @@ class UserTest extends WebTestCase
         $this->assertFalse($result2);
         $this->assertFalse($user->getDeletedStatus());
         $this->assertNull($user->getDeletedDate());
+    }
+
+    public function testIsTruePasswordSafe(): void
+    {
+        $user = $this->createValidUser();
+        $result = $user->isPasswordSafe();
+        $this->assertTrue($result);
+        $violations = $this->validator->validate($user);
+        $this->assertCount(0, $violations);
+    }
+
+    public function testIsFalsePasswordSafe(): void
+    {
+        $user = $this->createValidUser();
+        $user->setPassword("tintin45335");
+        $result = $user->isPasswordSafe();
+        $this->assertFalse($result);
+        $violations = $this->validator->validate($user);
+        $this->assertCount(1, $violations);
+    }
+
+    public function testMethodGetFullName(): void
+    {
+        $user = $this->createValidUser();
+        $result = method_exists($user, 'getFullName');
+        $this->assertTrue($result);
+        $result = ($user->getFullName() ?? '');
+        $this->assertStringContainsString(($user->getFirstName() ?? ''), $result);
+        $this->assertStringContainsString(($user->getLastName() ?? ''), $result);
+    }
+
+    public function testMethodGetFullAddress(): void
+    {
+        $user = $this->createValidUser();
+        $result = method_exists($user, 'getFullAddress');
+        $this->assertTrue($result);
+        $result = ($user->getFullAddress() ?? '');
+        $this->assertStringContainsString(($user->getBillingAddress() ?? ''), $result);
+        $this->assertStringContainsString(($user->getBillingCity() ?? ''), $result);
+        $this->assertStringContainsString(($user->getBillingPostcode() ?? ''), $result);
+        $this->assertStringContainsString(($user->getBillingCountry() ?? ''), $result);
+    }
+
+    public function testConstantMinAgeForBetting(): void
+    {
+        $user = $this->createValidUser();
+        $className = get_class($user);
+        $result = defined($className . '::MIN_AGE_FOR_BETTING');
+        $this->assertTrue($result);
+        $this->assertSame(18, $user::MIN_AGE_FOR_BETTING);
+    }
+
+    public function testConstantDatabaseTimeZone(): void
+    {
+        $user = $this->createValidUser();
+        $className = get_class($user);
+        $result = defined($className . '::STORED_TIME_ZONE');
+        $this->assertTrue($result);
+        $this->assertSame('UTC', $user::STORED_TIME_ZONE);
+    }
+
+    public function testConstantSelectCurrencyName(): void
+    {
+        $user = $this->createValidUser();
+        $className = get_class($user);
+        $result = defined($className . '::SELECT_CURRENCY_NAME');
+        $this->assertTrue($result);
+        $this->assertSame('Euro', $user::SELECT_CURRENCY_NAME);
+    }
+
+    public function testConstantSelectCurrencySymbol(): void
+    {
+        $user = $this->createValidUser();
+        $className = get_class($user);
+        $result = defined($className . '::SELECT_CURRENCY_SYMBOL');
+        $this->assertTrue($result);
+        $this->assertSame('€', $user::SELECT_CURRENCY_SYMBOL);
     }
 }

@@ -2,12 +2,8 @@
 
 namespace App\Entity;
 
-use App\Entity\Exception\BillingBlankAddressException;
-use App\Entity\Exception\BillingInvalidNameException;
-use App\Entity\Exception\BillingBlankNameException;
-use App\Entity\Exception\BillingInvalidAddressException;
-use App\Entity\Exception\BillingNameLengthException;
 use App\Repository\BillingRepository;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -24,33 +20,174 @@ class Billing
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(
+     *     message="Le prénom ne peut pas être vide",
+     *     normalizer="trim"
+     * )
+     * @Assert\Length(
+     *     min=2,
+     *     max=26,
+     *     minMessage="Votre prénom doit avoir plus de {{ limit }} caractères",
+     *     maxMessage="Votre prénom doit avoir moins de {{ limit }} caractères"
+     * )
+     * @Assert\Regex(
+     *     pattern="/^[\p{L}\-\'\s]+$/u",
+     *     message="Les chiffres et les caractères spéciaux ne sont pas autorisés dans le prénom"
+     * )
      */
     private string $firstName;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(
+     *     message="Le nom de famille ne peut pas être vide",
+     *     normalizer="trim"
+     * )
+     * @Assert\Length(
+     *     min=2,
+     *     max=26,
+     *     minMessage="Votre nom de famille doit avoir plus de {{ limit }} caractères",
+     *     maxMessage="Votre nom de famille doit avoir moins de {{ limit }} caractères"
+     * )
+     * @Assert\Regex(
+     *     pattern="/^[\p{L}\-\'\s]+$/u",
+     *     message="Les chiffres et les caractères spéciaux ne sont pas autorisés dans le nom de famille"
+     * )
      */
     private string $lastName;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(
+     *     message="L'adresse ne peut pas être vide",
+     *     normalizer="trim"
+     * )
+     * @Assert\Regex(
+     *     pattern="/^[\p{L}\-\'\s\d\,]+$/u",
+     *     message="Les caractères spéciaux ne sont pas autorisés dans l'adresse"
+     * )
      */
     private string $address;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(
+     *     message="La ville ne peut pas être vide",
+     *     normalizer="trim"
+     * )
+     * @Assert\Regex(
+     *     pattern="/^[\p{L}\-\'\s]+$/u",
+     *     message="Les chiffres et les caractères spéciaux ne sont pas autorisés dans la ville"
+     * )
      */
     private string $city;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(
+     *     message="Le code postal ne peut pas être vide",
+     *     normalizer="trim"
+     * )
+     * @Assert\Regex(
+     *     pattern="/^[\p{L}\-\s\d]+$/u",
+     *     message="Les caractères spéciaux ne sont pas autorisés dans le code postal"
+     * )
      */
     private string $postcode;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(
+     *     message="Le pays ne peut pas être vide",
+     *     normalizer="trim"
+     * )
+     * @Assert\Country(
+     *     message="Le pays {{ value }} n'est pas valide",
+     * )
      */
     private string $country;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(
+     *     message="La désignation ne peut pas être vide",
+     *     normalizer="trim"
+     * )
+     */
+    private string $designation;
+
+    /**
+     * @ORM\Column(type="integer")
+     * @Assert\Type(
+     *     type="integer",
+     *     message="La valeur {{ value }} n'est pas du type {{ type }}."
+     * )
+     * @Assert\Positive(
+     *     message="Le numéro de commande doit être un entier positif"
+     * )
+     */
+    private int $orderNumber;
+
+    /**
+     * @ORM\Column(type="integer")
+     * @Assert\Positive(
+     *     message="Le numéro de facture doit être un entier positif"
+     * )
+     */
+    private int $invoiceNumber;
+
+    /**
+     * @ORM\Column(type="integer")
+     * @Assert\PositiveOrZero(
+     *     message="La montant de la facture en centimes doit être soit zéro, soit un entier positif"
+     * )
+     */
+    private int $amount;
+
+    /**
+     * @ORM\Column(type="integer")
+     * @Assert\Positive(
+     *     message="Le taux de commission multiplier par 100 doit être un entier positif"
+     * )
+     */
+    private int $commissionRate;
+
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private \DateTimeInterface $issueDate;
+
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private \DateTimeInterface $deliveryDate;
+
+    /**
+     * @const int DEFAULT_COMMISSION_RATE
+     * @Assert\Type(
+     *     type="integer",
+     *     message="Le taux de commission par défaut {{ value }} n'est pas du type {{ type }}."
+     * )
+    */
+    public const DEFAULT_COMMISSION_RATE =  750;
+
+    /**
+     * @const string DEFAULT_CURRENCY_NAME
+     * @Assert\Type(
+     *     type="string",
+     *     message="La devise monétaire par défaut {{ value }} n'est pas du type {{ type }}."
+     * )
+    */
+    public const DEFAULT_CURRENCY_NAME = "Euro";
+
+    /**
+     * @const string DEFAULT_CURRENCY_SYMBOL
+     * @Assert\Type(
+     *     type="string",
+     *     message="Le symbole de la devise monétaire par défaut {{ value }} n'est pas du type {{ type }}."
+     * )
+    */
+    public const DEFAULT_CURRENCY_SYMBOL = "€";
 
     public function getId(): ?int
     {
@@ -64,15 +201,6 @@ class Billing
 
     public function setFirstName(string $firstName): self
     {
-        if (trim($firstName) == "") {
-            throw new BillingBlankNameException("Le prénom ne peut être vide");
-        }
-        if (preg_match('/^[\p{L}\-\'\s]+$/u', $firstName) !== 1) {
-            throw new BillingInvalidNameException("Le prénom ne peut contenir que des lettres, des apostrophes (') et des tirets");
-        }
-        if ((mb_strlen($firstName) < 2) || (mb_strlen($firstName) > 25)) {
-            throw new BillingNameLengthException("Le prénom ne peut être inférieur à 2 caractère et supérieur à 25 caractères");
-        }
         $this->firstName = $firstName;
         return $this;
     }
@@ -84,17 +212,14 @@ class Billing
 
     public function setLastName(string $lastName): self
     {
-        if (trim($lastName) == "") {
-            throw new BillingBlankNameException("Le nom de famille ne peut être vide");
-        }
-        if (preg_match('/^[\p{L}\-\'\s]+$/u', $lastName) !== 1) {
-            throw new BillingInvalidNameException("Le nom de famille ne peut contenir que des lettres, des apostrophes (') et des tirets");
-        }
-        if ((mb_strlen($lastName) < 2) || (mb_strlen($lastName) > 25)) {
-            throw new BillingNameLengthException("Le nom de famille ne peut être inférieur à 2 caractère et supérieur à 25 caractères");
-        }
         $this->lastName = $lastName;
         return $this;
+    }
+
+    public function getFullName(): ?string
+    {
+        $fullName = trim(($this->firstName ?? '') . ' ' . ($this->lastName ?? ''));
+        return !empty($fullName) ? $fullName : null;
     }
 
     public function getAddress(): ?string
@@ -104,12 +229,6 @@ class Billing
 
     public function setAddress(string $address): self
     {
-        if (trim($address) == "") {
-            throw new BillingBlankAddressException("L'adresse ne peut être vide");
-        }
-        if (preg_match('/^[\p{L}\-\'\s\d]+$/u', $address) !== 1) {
-            throw new BillingInvalidAddressException("L'adresse ne peut contenir que des lettres, des chiffres, des apostrophes (') et des tirets");
-        }
         $this->address = $address;
         return $this;
     }
@@ -121,12 +240,6 @@ class Billing
 
     public function setCity(string $city): self
     {
-        if (trim($city) == "") {
-            throw new BillingBlankAddressException("La ville ne peut être vide");
-        }
-        if (preg_match('/^[\p{L}\-\s]+$/u', $city) !== 1) {
-            throw new BillingInvalidAddressException("La ville ne peut contenir que des lettres et des tirets");
-        }
         $this->city = $city;
         return $this;
     }
@@ -138,12 +251,6 @@ class Billing
 
     public function setPostcode(string $postcode): self
     {
-        if (trim($postcode) == "") {
-            throw new BillingBlankAddressException("Le code postale ne peut être vide");
-        }
-        if (preg_match('/^[a-z\-\s\d]+$/i', $postcode) !== 1) {
-            throw new BillingInvalidAddressException("Le code postale ne peut contenir que des lettres (sans accents), des chiffres et des tirets");
-        }
         $this->postcode = $postcode;
         return $this;
     }
@@ -155,13 +262,102 @@ class Billing
 
     public function setCountry(string $country): self
     {
-        if (trim($country) == "") {
-            throw new BillingBlankAddressException("Le pays ne peut être vide");
-        }
-        if (preg_match('/^[\p{L}]+$/u', $country) !== 1) {
-            throw new BillingInvalidAddressException("Le pays ne peut contenir que des lettres");
-        }
         $this->country = $country;
         return $this;
+    }
+
+    public function getFullAddress(): ?string
+    {
+        $fullAddress = trim(($this->address ?? '') . ' ' .
+            ($this->postcode ?? '') . ' ' . ($this->city ?? '') . ' ' .
+            ($this->country ?? ''));
+        return !empty($fullAddress) ? $fullAddress : null;
+    }
+
+    public function getDesignation(): ?string
+    {
+        return $this->designation;
+    }
+
+    public function setDesignation(string $designation): self
+    {
+        $this->designation = $designation;
+        return $this;
+    }
+
+    public function getOrderNumber(): ?int
+    {
+        return $this->orderNumber;
+    }
+
+    public function setOrderNumber(int $orderNumber): self
+    {
+        $this->orderNumber = $orderNumber;
+        return $this;
+    }
+
+    public function getInvoiceNumber(): ?int
+    {
+        return $this->invoiceNumber;
+    }
+
+    public function setInvoiceNumber(int $invoiceNumber): self
+    {
+        $this->invoiceNumber = $invoiceNumber;
+        return $this;
+    }
+
+    public function getAmount(): ?int
+    {
+        return $this->amount;
+    }
+
+    public function setAmount(int $amount): self
+    {
+        $this->amount = $amount;
+        return $this;
+    }
+
+    public function getIssueDate(): ?\DateTimeInterface
+    {
+        return $this->issueDate;
+    }
+
+    public function setIssueDate(\DateTimeInterface $issueDate): self
+    {
+        $this->issueDate = $issueDate;
+        return $this;
+    }
+
+    public function getDeliveryDate(): ?\DateTimeInterface
+    {
+        return $this->deliveryDate;
+    }
+
+    public function setDeliveryDate(\DateTimeInterface $deliveryDate): self
+    {
+        $this->deliveryDate = $deliveryDate;
+        return $this;
+    }
+
+    public function getCommissionRate(): ?int
+    {
+        return $this->commissionRate;
+    }
+
+    public function setCommissionRate(int $commissionRate): self
+    {
+        $this->commissionRate = $commissionRate;
+        return $this;
+    }
+
+    public function convertToCurrencyUnit(int $amount): float
+    {
+        return ((float)$amount * 0.01);
+    }
+
+    public function getCommissionRateInPourcent(int $commissionRate): float
+    {
+        return ((float)$commissionRate * 0.01);
     }
 }

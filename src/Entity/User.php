@@ -158,13 +158,17 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="date")
+     * @Assert\Type(
+     *     type="\DateTime",
+     *     message="La valeur {{ value }} n'est pas du type {{ type }}."
+     * )
      * @Assert\NotBlank(
      *     message="La date de naissance ne peut pas être vide",
      *     normalizer="trim"
      * )
      * @UserAssert\HasLegalAge
      */
-    private \DateTime $birthDate;
+    private \DateTimeInterface $birthDate;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
@@ -186,7 +190,7 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="datetime", nullable=true)
      */
-    private ?\DateTime $deletedDate;
+    private ?\DateTimeInterface $deletedDate;
 
     /**
      * @ORM\Column(type="boolean")
@@ -196,7 +200,7 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="datetime", nullable=true)
      */
-    private ?\DateTime $suspendedDate;
+    private ?\DateTimeInterface $suspendedDate;
 
     /**
      * @ORM\Column(type="boolean")
@@ -206,14 +210,47 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="datetime", nullable=true)
      */
-    private ?\DateTime $activatedDate;
+    private ?\DateTimeInterface $activatedDate;
 
+    /**
+     * @const int MIN_AGE_FOR_BETTING
+     * @Assert\Type(
+     *     type="integer",
+     *     message="L'âge minimum pour parier {{ value }} n'est pas du type {{ type }}."
+     * )
+    */
     public const MIN_AGE_FOR_BETTING = 18;
-    public const DATABASE_TIME_ZONE = "UTC";
+
+    /**
+     * @const string STORED_TIME_ZONE
+     * @Assert\Type(
+     *     type="string",
+     *     message="Le fuseau horraire stocké {{ value }} n'est pas du type {{ type }}."
+     * )
+    */
+    public const STORED_TIME_ZONE = "UTC";
+
+    /**
+     * @const string SELECT_CURRENCY_SYMBOL
+     * @Assert\Type(
+     *     type="string",
+     *     message="La devise monétaire sélectionnée {{ value }} n'est pas du type {{ type }}."
+     * )
+    */
+    public const SELECT_CURRENCY_NAME = "Euro";
+
+    /**
+     * @const string SELECT_CURRENCY_SYMBOL
+     * @Assert\Type(
+     *     type="string",
+     *     message="Le symbole de la devise monétaire sélectionné {{ value }} n'est pas du type {{ type }}."
+     * )
+    */
+    public const SELECT_CURRENCY_SYMBOL = "€";
 
     public function __construct()
     {
-        $creationDate = new \DateTime('now', new \DateTimeZone(self::DATABASE_TIME_ZONE));
+        $creationDate = new \DateTime('now', new \DateTimeZone(self::STORED_TIME_ZONE));
         $this->activatedStatus = true;
         $this->activatedDate = $creationDate;
         $this->suspendedStatus = true;
@@ -283,14 +320,13 @@ class User implements UserInterface
 
     /**
      * @Assert\IsTrue(
-     *     message="Le mot de passe ne peut contenir le prénom, le nom ou les deux."
+     *     message="Le mot de passe ne doit pas contenir le prénom et/ou le nom"
      * )
      */
     public function isPasswordSafe(): bool
     {
-        return ($this->lastName !== $this->password
-            && $this->firstName !== $this->password
-            && $this->getName() !== $this->password);
+        return (stripos($this->password, $this->lastName) === false
+            && stripos($this->password, $this->firstName) === false);
     }
 
     /**
@@ -344,10 +380,10 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getName(): ?string
+    public function getFullName(): ?string
     {
-        $name = trim(($this->firstName ?? '') . ' ' . ($this->lastName ?? ''));
-        return empty($name) ? null : $name;
+        $fullName = trim(($this->firstName ?? '') . ' ' . ($this->lastName ?? ''));
+        return !empty($fullName) ? $fullName : null;
     }
 
     public function getBillingAddress(): ?string
@@ -394,20 +430,20 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getAddress(): ?string
+    public function getFullAddress(): ?string
     {
-        $address = trim(($this->billingAddress ?? '') . ' ' .
+        $fullAddress = trim(($this->billingAddress ?? '') . ' ' .
             ($this->billingPostcode ?? '') . ' ' . ($this->billingCity ?? '') . ' ' .
             ($this->billingCountry ?? ''));
-        return empty($address) ? null : $address;
+        return !empty($fullAddress) ? $fullAddress : null;
     }
 
-    public function getBirthDate(): ?\DateTime
+    public function getBirthDate(): ?\DateTimeInterface
     {
         return $this->birthDate;
     }
 
-    public function setBirthDate(\DateTime $birthDate): self
+    public function setBirthDate(\DateTimeInterface $birthDate): self
     {
         $this->birthDate = $birthDate;
         return $this;
@@ -429,30 +465,18 @@ class User implements UserInterface
         return $this->deletedStatus;
     }
 
-    private function setDeletedStatus(bool $deletedStatus): self
-    {
-        $this->deletedStatus = $deletedStatus;
-        return $this;
-    }
-
-    public function getDeletedDate(): ?\DateTime
+    public function getDeletedDate(): ?\DateTimeInterface
     {
         return $this->deletedDate;
-    }
-
-    private function setDeletedDate(?\DateTime $deletedDate): self
-    {
-        $this->deletedDate = $deletedDate;
-        return $this;
     }
 
     public function delete(): bool
     {
         if (empty($this->deletedDate) && $this->deletedStatus === false) {
-            $this->setDeletedDate(new \DateTime('now', new \DateTimeZone(self::DATABASE_TIME_ZONE)));
-            $this->setDeletedStatus(true);
-            $this->setActivatedStatus(false);
-            $this->setSuspendedStatus(true);
+            $this->deletedDate = new \DateTime('now', new \DateTimeZone(self::STORED_TIME_ZONE));
+            $this->deletedStatus = true;
+            $this->activatedStatus = false;
+            $this->suspendedStatus = true;
             return true;
         }
         return false;
@@ -461,10 +485,10 @@ class User implements UserInterface
     public function restore(): bool
     {
         if (!empty($this->deletedDate) && $this->deletedStatus === true) {
-            $this->setDeletedDate(null);
-            $this->setDeletedStatus(false);
-            $this->setActivatedStatus(!empty($this->ActivatedDate));
-            $this->setSuspendedStatus(!empty($this->SuspendedDate));
+            $this->deletedDate = null;
+            $this->deletedStatus = false;
+            $this->activatedStatus = !empty($this->ActivatedDate);
+            $this->suspendedStatus = !empty($this->SuspendedDate);
             return true;
         }
         return false;
@@ -475,28 +499,16 @@ class User implements UserInterface
         return $this->suspendedStatus;
     }
 
-    private function setSuspendedStatus(bool $suspendedStatus): self
-    {
-        $this->suspendedStatus = $suspendedStatus;
-        return $this;
-    }
-
-    public function getSuspendedDate(): ?\DateTime
+    public function getSuspendedDate(): ?\DateTimeInterface
     {
         return $this->suspendedDate;
-    }
-
-    private function setSuspendedDate(?\DateTime $suspendedDate): self
-    {
-        $this->suspendedDate = $suspendedDate;
-        return $this;
     }
 
     public function suspend(): bool
     {
         if ($this->activatedStatus === true && empty($this->suspendedDate) && $this->suspendedStatus === false) {
-            $this->setSuspendedDate(new \DateTime('now', new \DateTimeZone(self::DATABASE_TIME_ZONE)));
-            $this->setSuspendedStatus(true);
+            $this->suspendedDate = new \DateTime('now', new \DateTimeZone(self::STORED_TIME_ZONE));
+            $this->suspendedStatus = true;
             return true;
         }
         return false;
@@ -505,8 +517,8 @@ class User implements UserInterface
     public function valid(): bool
     {
         if ($this->activatedStatus === true && !empty($this->suspendedDate) && $this->suspendedStatus === true) {
-            $this->setSuspendedDate(null);
-            $this->setSuspendedStatus(false);
+            $this->suspendedDate = null;
+            $this->suspendedStatus = false;
             return true;
         }
         return false;
@@ -517,28 +529,16 @@ class User implements UserInterface
         return $this->activatedStatus;
     }
 
-    private function setActivatedStatus(bool $activatedStatus): self
-    {
-        $this->activatedStatus = $activatedStatus;
-        return $this;
-    }
-
-    public function getActivatedDate(): ?\DateTime
+    public function getActivatedDate(): ?\DateTimeInterface
     {
         return $this->activatedDate;
-    }
-
-    private function setActivatedDate(?\DateTime $activatedDate): self
-    {
-        $this->activatedDate = $activatedDate;
-        return $this;
     }
 
     public function activate(): bool
     {
         if (empty($this->activatedDate) && $this->activatedStatus === false) {
-            $this->setActivatedDate(new \DateTime('now', new \DateTimeZone(self::DATABASE_TIME_ZONE)));
-            $this->setActivatedStatus(true);
+            $this->activatedDate = new \DateTime('now', new \DateTimeZone(self::STORED_TIME_ZONE));
+            $this->activatedStatus = true;
             return true;
         }
         return false;
@@ -547,8 +547,8 @@ class User implements UserInterface
     public function desactivate(): bool
     {
         if (!empty($this->activatedDate) && $this->activatedStatus === true) {
-            $this->setActivatedDate(null);
-            $this->setActivatedStatus(false);
+            $this->activatedDate = null;
+            $this->activatedStatus = false;
             return true;
         }
         return false;
