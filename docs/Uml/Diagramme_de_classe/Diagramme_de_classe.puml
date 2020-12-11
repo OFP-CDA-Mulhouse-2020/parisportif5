@@ -115,7 +115,9 @@ skinparam linetype ortho
         -birthDate : DateTime
         -timeZoneSelected : string
         +{static} MIN_AGE_FOR_BETTING : int = 18
-        +{static} DATABASE_TIME_ZONE : string = 'UTC'
+        +{static} STORED_TIME_ZONE : string = 'UTC'
+        +{static} SELECT_CURRENCY_NAME : string = "Euro"
+        +{static} SELECT_CURRENCY_SYMBOL : string = "€"
         +getName() : string
         +getAddress() : string
         +isPasswordSafe() : bool
@@ -144,16 +146,26 @@ skinparam linetype ortho
         -identifier : int
         -firstName : string
         -lastName : string
-        -billingAddress : string
-        -billingPostcode : string
-        -billingCountry : string
-        -orderNumber  : int
-        -amount : float
-        -currency : string
-        -type : int
+        -address : string
+        -city : string
+        -postcode : string
+        -country : string
+        -designation : string
+        -orderNumber : int
+        -invoiceNumber : int
+        -amount : int
+        -commissionRate : int
+        -operationType : string
+        -issueDate : DateTime
+        -deliveryDate : DateTime
+        +{static} DEFAULT_COMMISSION_RATE : int =  750
+        +{static} DEFAULT_CURRENCY_NAME : string = "Euro"
+        +{static} DEFAULT_CURRENCY_SYMBOL : string = "€"
         +getName() : string
         +getAddress() : string
         +deleteUser() : void
+        +convertToCurrencyUnit() : float
+        +getCommissionRateInPourcent() : float
     }
     'Un paris
     class Bet {

@@ -73,7 +73,7 @@ class UserCreationType extends AbstractType
                 'label' => "Date de naissance",
                 'invalid_message' => "Veuillez sélectionner une date de naissance",
                 'input' => 'datetime',
-                'model_timezone' => User::DATABASE_TIME_ZONE,
+                'model_timezone' => User::STORED_TIME_ZONE,
                 'widget' => 'single_text'
             ])
             ->add('email', RepeatedType::class, [

@@ -3,7 +3,7 @@
 # Based on code from : https://dev.to/bdelespierre/how-to-setup-git-commit-hooks-for-php-42d1
 # Based on code from : https://gist.github.com/Pilipo/e52ff5ac38fba9e1f5ed966816de41e9
 
-# get bash colors and styles here: 
+# get bash colors and styles here:
 # http://misc.flogisoft.com/bash/tip_colors_and_formatting
 C_RESET='\e[0m'
 C_RED='\e[31m'
