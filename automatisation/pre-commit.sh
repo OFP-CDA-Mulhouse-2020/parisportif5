@@ -3,7 +3,7 @@
 # Based on code from : https://dev.to/bdelespierre/how-to-setup-git-commit-hooks-for-php-42d1
 # Based on code from : https://gist.github.com/Pilipo/e52ff5ac38fba9e1f5ed966816de41e9
 
-# get bash colors and styles here: 
+# get bash colors and styles here:
 # http://misc.flogisoft.com/bash/tip_colors_and_formatting
 C_RESET='\e[0m'
 C_RED='\e[31m'
@@ -30,12 +30,11 @@ function __run() #(step, name, cmd)
     fi
 }
 
-modified="git diff --diff-filter=d --name-only --cached  | grep \".php$\""
-ignore="vendor,automatisation,config,docker,docs,migrations,src/Kernel.php,public,tests/bootstrap.php,templates,translations,var"
-phpcbf="vendor/bin/phpcbf --report=code --colors --report-width=80 --standard=PSR12 --encoding=utf-8 --ignore=${ignore} -n -p"
-phpcs="vendor/bin/phpcs --report=code --colors --report-width=80 --standard=PSR12 --encoding=utf-8 --ignore=${ignore} -n -p"
+ignore="bin,vendor,automatisation,config,docker,docs,migrations,src/Kernel.php,public,tests/bootstrap.php,templates,translations,var,.github"
+phpcbf="vendor/bin/phpcbf --extensions=php --report=code --colors --report-width=80 --standard=PSR12 --encoding=utf-8 --ignore=${ignore} -n -p"
+phpcs="vendor/bin/phpcs --extensions=php --report=code --colors --report-width=80 --standard=PSR12 --encoding=utf-8 --ignore=${ignore} -n -p"
 
-__run "1/4" "Code Sniffer : Corrects PSR12 code styling standards" "${modified} | xargs -r ${phpcbf}"
-__run "2/4" "Code Sniffer : Detects violations of PSR12 coding standard" "${modified} | xargs -r ${phpcs}"
+__run "1/4" "Code Sniffer : Corrects PSR12 code styling standards" "${phpcbf} src tests"
+__run "2/4" "Code Sniffer : Detects violations of PSR12 coding standard" "${phpcs} src tests"
 __run "3/4" "PhpStan : Analyse the code" "vendor/bin/phpstan analyse -c phpstan.neon.dist"
 __run "4/4" "PhpUnit : Runs unit tests" "php bin/phpunit -c phpunit.xml"
