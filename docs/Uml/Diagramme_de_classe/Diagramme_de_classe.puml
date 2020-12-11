@@ -146,15 +146,6 @@ skinparam linetype ortho
         -identifier : int
         -firstName : string
         -lastName : string
-<<<<<<< HEAD
-        -billingAddress : string
-        -billingPostcode : string
-        -billingCountry : string
-        -orderNumber  : int
-        -amount : float
-        -currency : string
-        -type : int
-=======
         -address : string
         -city : string
         -postcode : string
@@ -170,7 +161,6 @@ skinparam linetype ortho
         +{static} DEFAULT_COMMISSION_RATE : int =  750
         +{static} DEFAULT_CURRENCY_NAME : string = "Euro"
         +{static} DEFAULT_CURRENCY_SYMBOL : string = "€"
->>>>>>> cf519c7... 2020-12-11 - #1 - Entité Billing avec tests
         +getName() : string
         +getAddress() : string
         +deleteUser() : void
