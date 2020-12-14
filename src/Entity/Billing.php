@@ -32,7 +32,7 @@ class Billing
      * )
      * @Assert\Regex(
      *     pattern="/^[\p{L}\-\'\s]+$/u",
-     *     message="Les chiffres et les caractères spéciaux ne sont pas autorisés dans le prénom"
+     *     message="Les chiffres et les caractères spéciaux ne sont pas autorisés pour le prénom"
      * )
      */
     private string $firstName;
@@ -51,7 +51,7 @@ class Billing
      * )
      * @Assert\Regex(
      *     pattern="/^[\p{L}\-\'\s]+$/u",
-     *     message="Les chiffres et les caractères spéciaux ne sont pas autorisés dans le nom de famille"
+     *     message="Les chiffres et les caractères spéciaux ne sont pas autorisés pour le nom de famille"
      * )
      */
     private string $lastName;
@@ -64,7 +64,7 @@ class Billing
      * )
      * @Assert\Regex(
      *     pattern="/^[\p{L}\-\'\s\d\,]+$/u",
-     *     message="Les caractères spéciaux ne sont pas autorisés dans l'adresse"
+     *     message="Les caractères spéciaux ne sont pas autorisés pour l'adresse"
      * )
      */
     private string $address;
@@ -77,7 +77,7 @@ class Billing
      * )
      * @Assert\Regex(
      *     pattern="/^[\p{L}\-\'\s]+$/u",
-     *     message="Les chiffres et les caractères spéciaux ne sont pas autorisés dans la ville"
+     *     message="Les chiffres et les caractères spéciaux ne sont pas autorisés pour la ville"
      * )
      */
     private string $city;
@@ -90,7 +90,7 @@ class Billing
      * )
      * @Assert\Regex(
      *     pattern="/^[\p{L}\-\s\d]+$/u",
-     *     message="Les caractères spéciaux ne sont pas autorisés dans le code postal"
+     *     message="Les caractères spéciaux ne sont pas autorisés pour le code postal"
      * )
      */
     private string $postcode;
