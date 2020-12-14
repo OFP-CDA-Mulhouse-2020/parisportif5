@@ -41,36 +41,41 @@ class UserTest extends KernelTestCase
     }
 
     /**
-     * @dataProvider unexpectedCivilityProvider
+     * @dataProvider civilityConformityProvider
      */
-    public function testCivilityUnexpectedValue(string $civility): void
+    public function testCivilityConformity(string $civility): void
     {
         $user = $this->createValidUser();
         $user->setCivility($civility);
         $violations = $this->validator->validate($user);
-        $this->assertCount(1, $violations);
+        $this->assertCount(0, $violations);
     }
 
-    public function unexpectedCivilityProvider(): array
+    public function civilityConformityProvider(): array
     {
         return [
             ["x"],
             ["mr"],
-            [""]
+            ["Madame"],
+            ["Monsieur"]
         ];
     }
 
-    public function testCivilityExpectedValue(): void
+    public function testCivilityUnconformity(): void
     {
-        $civility1 = "Madame";
-        $civility2 = "Monsieur";
+        $civility1 = "";
+        $civility2 = "    ";
+        $civility3 = "beaucouptroplonguecivilité";
         $user = $this->createValidUser();
         $user->setCivility($civility1);
         $violations = $this->validator->validate($user);
-        $this->assertCount(0, $violations);
+        $this->assertCount(1, $violations);
         $user->setCivility($civility2);
         $violations = $this->validator->validate($user);
-        $this->assertCount(0, $violations);
+        $this->assertCount(1, $violations);
+        $user->setCivility($civility3);
+        $violations = $this->validator->validate($user);
+        $this->assertCount(1, $violations);
     }
 
     /**
@@ -89,6 +94,7 @@ class UserTest extends KernelTestCase
         return [
             ["emailtest.com"],
             ["test"],
+            ["   "],
             [""]
         ];
     }
@@ -131,7 +137,8 @@ class UserTest extends KernelTestCase
             ["gab#"],
             ["fa25"],
             ["monsieurdontlenomestbientroplong"],
-            [""]
+            [""],
+            ["   "]
         ];
     }
 
@@ -172,6 +179,7 @@ class UserTest extends KernelTestCase
     {
         return [
             [""],
+            ["  "],
             ["quedeslettresà"],
             ["61235478"]
         ];
@@ -260,7 +268,9 @@ class UserTest extends KernelTestCase
         return [
             ['Antartica/Inconnu'],
             ['Europe_Paris'],
-            ['europe/Paris']
+            ['europe/Paris'],
+            [''],
+            ['   ']
         ];
     }
 
@@ -278,9 +288,177 @@ class UserTest extends KernelTestCase
     public function timeZoneSelectedConformityProvider(): array
     {
         return [
-            ['Antarctica/Troll'],
+            ['Antarctica/McMurdo'],
             ['Europe/Paris'],
             ['Africa/Johannesburg']
+        ];
+    }
+
+    /**
+     * @dataProvider billingAddressCompatibleProvider
+     */
+    public function testBillingAddressCompatible(string $address)
+    {
+        $user = $this->createValidUser();
+        $user->setBillingAddress($address);
+        $violations = $this->validator->validate($user);
+        $this->assertCount(0, $violations);
+    }
+
+    public function billingAddressCompatibleProvider(): array
+    {
+        return [
+            ["5, rue Jean-Gabin"],
+            ["lieu-dit LeFabien"],
+            ["Rue de l'Abbaye"],
+            ["ggg"]
+        ];
+    }
+
+    /**
+     * @dataProvider billingAddressUncompatibleProvider
+     */
+    public function testBillingAddressUncompatible(string $address)
+    {
+        $user = $this->createValidUser();
+        $user->setBillingAddress($address);
+        $violations = $this->validator->validate($user);
+        $this->assertGreaterThanOrEqual(1, count($violations));
+    }
+
+    public function billingAddressUncompatibleProvider(): array
+    {
+        return [
+            ["5, rue Jean-Gabin#"],
+            ["lieu-dit LeFabien@"],
+            ["Rue de l`Abbaye"],
+            [""],
+            ["    "]
+        ];
+    }
+
+      /**
+     * @dataProvider billingCityCompatibleProvider
+     */
+    public function testBillingCityCompatible(string $city)
+    {
+        $user = $this->createValidUser();
+        $user->setBillingCity($city);
+        $violations = $this->validator->validate($user);
+        $this->assertCount(0, $violations);
+    }
+
+    public function billingCityCompatibleProvider(): array
+    {
+        return [
+            ["Saint-Jean de L'Arche"],
+            ["Paris"],
+            ["londre"]
+        ];
+    }
+
+    /**
+     * @dataProvider billingCityUncompatibleProvider
+     */
+    public function testBillingCityUncompatible(string $city)
+    {
+        $user = $this->createValidUser();
+        $user->setBillingCity($city);
+        $violations = $this->validator->validate($user);
+        $this->assertGreaterThanOrEqual(1, count($violations));
+    }
+
+    public function billingCityUncompatibleProvider(): array
+    {
+        return [
+            ["1the village"],
+            ["P@ris"],
+            ["londre,"],
+            [''],
+            ['  ']
+        ];
+    }
+
+    /**
+     * @dataProvider billingPostcodeCompatibleProvider
+     */
+    public function testBillingPostcodeCompatible(string $postcode)
+    {
+        $user = $this->createValidUser();
+        $user->setBillingPostcode($postcode);
+        $violations = $this->validator->validate($user);
+        $this->assertCount(0, $violations);
+    }
+
+    public function billingPostcodeCompatibleProvider(): array
+    {
+        return [
+            ["68000"],
+            ["CP-Index 7000"]
+        ];
+    }
+
+    /**
+     * @dataProvider billingPostcodeUncompatibleProvider
+     */
+    public function testBillingPostcodeUncompatible(string $postcode)
+    {
+        $user = $this->createValidUser();
+        $user->setBillingPostcode($postcode);
+        $violations = $this->validator->validate($user);
+        $this->assertGreaterThanOrEqual(1, count($violations));
+    }
+
+    public function billingPostcodeUncompatibleProvider(): array
+    {
+        return [
+            ["68000@"],
+            ["CP'Index 7000"],
+            [''],
+            ['  ']
+        ];
+    }
+
+    /**
+     * @dataProvider billingCountryCompatibleProvider
+     * ISO 3166-1 alpha-2 => 2 lettres majuscules
+     */
+    public function testBillingCountryCompatible(string $country)
+    {
+        $user = $this->createValidUser();
+        $user->setBillingCountry($country);
+        $violations = $this->validator->validate($user);
+        $this->assertCount(0, $violations);
+    }
+
+    public function billingCountryCompatibleProvider(): array
+    {
+        return [
+            ["FR"],
+            ["DE"]
+        ];
+    }
+
+    /**
+     * @dataProvider billingCountryUncompatibleProvider
+     */
+    public function testBillingCountryUncompatible(string $country)
+    {
+        $user = $this->createValidUser();
+        $user->setBillingCountry($country);
+        $violations = $this->validator->validate($user);
+        $this->assertGreaterThanOrEqual(1, count($violations));
+    }
+
+    public function billingCountryUncompatibleProvider(): array
+    {
+        return [
+            ["XY"],
+            ["FRA"],
+            ["France"],
+            ["fr"],
+            [''],
+            ['   ']
         ];
     }
 

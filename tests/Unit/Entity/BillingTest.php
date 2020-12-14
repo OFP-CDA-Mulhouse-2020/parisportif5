@@ -151,7 +151,7 @@ class BillingTest extends KernelTestCase
         $billing = $this->createValidBilling();
         $billing->setAddress($address);
         $violations = $this->validator->validate($billing);
-        $this->assertCount(1, $violations);
+        $this->assertGreaterThanOrEqual(1, count($violations));
     }
 
     public function addressUncompatibleProvider(): array
@@ -162,6 +162,48 @@ class BillingTest extends KernelTestCase
             ["Rue de l`Abbaye"],
             [""],
             ["    "]
+        ];
+    }
+
+    /**
+     * @dataProvider cityCompatibleProvider
+     */
+    public function testCityCompatible(string $city)
+    {
+        $billing = $this->createValidBilling();
+        $billing->setCity($city);
+        $violations = $this->validator->validate($billing);
+        $this->assertCount(0, $violations);
+    }
+
+    public function cityCompatibleProvider(): array
+    {
+        return [
+            ["Saint-Jean de L'Arche"],
+            ["Paris"],
+            ["londre"]
+        ];
+    }
+
+    /**
+     * @dataProvider cityUncompatibleProvider
+     */
+    public function testCityUncompatible(string $city)
+    {
+        $billing = $this->createValidBilling();
+        $billing->setCity($city);
+        $violations = $this->validator->validate($billing);
+        $this->assertGreaterThanOrEqual(1, count($violations));
+    }
+
+    public function cityUncompatibleProvider(): array
+    {
+        return [
+            ["1the village"],
+            ["P@ris"],
+            ["londre,"],
+            [''],
+            ['  ']
         ];
     }
 
@@ -192,14 +234,16 @@ class BillingTest extends KernelTestCase
         $billing = $this->createValidBilling();
         $billing->setPostcode($postcode);
         $violations = $this->validator->validate($billing);
-        $this->assertCount(1, $violations);
+        $this->assertGreaterThanOrEqual(1, count($violations));
     }
 
     public function postcodeUncompatibleProvider(): array
     {
         return [
             ["68000@"],
-            ["CP'Index 7000"]
+            ["CP'Index 7000"],
+            [''],
+            ['  ']
         ];
     }
 
@@ -231,7 +275,7 @@ class BillingTest extends KernelTestCase
         $billing = $this->createValidBilling();
         $billing->setCountry($country);
         $violations = $this->validator->validate($billing);
-        $this->assertCount(1, $violations);
+        $this->assertGreaterThanOrEqual(1, count($violations));
     }
 
     public function countryUncompatibleProvider(): array
@@ -240,7 +284,9 @@ class BillingTest extends KernelTestCase
             ["XY"],
             ["FRA"],
             ["France"],
-            ["fr"]
+            ["fr"],
+            [''],
+            ['   ']
         ];
     }
 
@@ -269,6 +315,8 @@ class BillingTest extends KernelTestCase
         $designation2 = '   ';
         $billing = $this->createValidBilling();
         $billing->setDesignation($designation1);
+        $violations = $this->validator->validate($billing);
+        $this->assertCount(1, $violations);
         $billing->setDesignation($designation2);
         $violations = $this->validator->validate($billing);
         $this->assertCount(1, $violations);

@@ -67,14 +67,14 @@ class User implements UserInterface
     private string $password;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=15, nullable=true)
      * @Assert\NotBlank(
      *     message="La civilité ne peut pas être vide",
      *     normalizer="trim"
      * )
-     * @Assert\Regex(
-     *     pattern="/(monsieur|madame)/i",
-     *     message="La sélection d'une civilité est limitée à « Madame » ou « Monsieur »"
+     * @Assert\Length(
+     *      max = 15,
+     *      maxMessage = "La civilité ne peut pas être plus longue que {{ limit }} caractères"
      * )
      */
     private string $civility;
@@ -123,6 +123,10 @@ class User implements UserInterface
      *     message="L'adresse ne peut pas être vide",
      *     normalizer="trim"
      * )
+     * @Assert\Regex(
+     *     pattern="/^[\p{L}\-\'\s\d\,]+$/u",
+     *     message="Les caractères spéciaux ne sont pas autorisés pour l'adresse"
+     * )
      */
     private string $billingAddress;
 
@@ -132,6 +136,10 @@ class User implements UserInterface
      *     message="La ville ne peut pas être vide",
      *     normalizer="trim"
      * )
+     * @Assert\Regex(
+     *     pattern="/^[\p{L}\-\'\s]+$/u",
+     *     message="Les chiffres et les caractères spéciaux ne sont pas autorisés pour la ville"
+     * )
      */
     private string $billingCity;
 
@@ -140,6 +148,10 @@ class User implements UserInterface
      * @Assert\NotBlank(
      *     message="Le code postal ne peut pas être vide",
      *     normalizer="trim"
+     * )
+     * @Assert\Regex(
+     *     pattern="/^[\p{L}\-\s\d]+$/u",
+     *     message="Les caractères spéciaux ne sont pas autorisés pour le code postal"
      * )
      */
     private string $billingPostcode;

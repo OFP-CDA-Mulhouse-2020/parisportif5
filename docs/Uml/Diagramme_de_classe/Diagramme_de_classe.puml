@@ -185,7 +185,7 @@ skinparam linetype ortho
     class Location {
         -identifier : int
         -place : string
-        -timezone : DateTimeZone
+        -timezone : string
         -country : string
     }
     'Sport pratiqué (runtype = fixture, race) (type = collectif ou individuel ou les deux)
