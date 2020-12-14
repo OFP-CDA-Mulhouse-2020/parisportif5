@@ -188,7 +188,7 @@ skinparam linetype ortho
         -timezone : string
         -country : string
     }
-    'Sport pratiqué (runtype = fixture, race) (type = collectif ou individuel ou les deux)
+    'Sport pratiqué (runtype = fixture(match), race(course)) (type = collectif ou individuel ou les deux)
     class Sport {
         -identifier : int
         -name : string
@@ -210,7 +210,8 @@ skinparam linetype ortho
         -country : string
         +hasWinner() : bool
         +hasEvents() : bool
-        +isBegin() : bool
+        +isFinish() : bool
+        +isOngoing() : bool
         +getEventsCount() : int
     }
     'Événement de la compétition (poul de qualification, Circuit F1 de france)

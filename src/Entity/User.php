@@ -67,7 +67,7 @@ class User implements UserInterface
     private string $password;
 
     /**
-     * @ORM\Column(type="string", length=15, nullable=true)
+     * @ORM\Column(type="string", length=60, nullable=true)
      * @Assert\NotBlank(
      *     message="La civilité ne peut pas être vide",
      *     normalizer="trim"
