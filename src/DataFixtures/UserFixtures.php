@@ -44,7 +44,7 @@ class UserFixtures extends Fixture
                 ->setBillingCity($testData[$i]['city'])
                 ->setBillingPostcode($testData[$i]['postcode'])
                 ->setBillingCountry($testData[$i]['country'])
-                ->setBirthDate(new \DateTime($testData[$i]['birthdate'], new \DateTimeZone("UTC")))
+                ->setBirthDate(new \DateTimeImmutable($testData[$i]['birthdate'], new \DateTimeZone("UTC")))
                 ->setTimeZoneSelected($testData[$i]['timezone'])
                 ->setEmail($testData[$i]['email'])
                 ->setPassword($this->passwordEncoder->encodePassword(

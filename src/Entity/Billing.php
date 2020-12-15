@@ -153,14 +153,14 @@ class Billing implements FundStorageInterface
     private int $commissionRate;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="datetime_immutable")
      */
-    private \DateTimeInterface $issueDate;
+    private \DateTimeImmutable $issueDate;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="datetime_immutable")
      */
-    private \DateTimeInterface $deliveryDate;
+    private \DateTimeImmutable $deliveryDate;
 
     /**
      * @const int DEFAULT_COMMISSION_RATE
@@ -321,23 +321,23 @@ class Billing implements FundStorageInterface
         return $this;
     }
 
-    public function getIssueDate(): ?\DateTimeInterface
+    public function getIssueDate(): ?\DateTimeImmutable
     {
         return $this->issueDate;
     }
 
-    public function setIssueDate(\DateTimeInterface $issueDate): self
+    public function setIssueDate(\DateTimeImmutable $issueDate): self
     {
         $this->issueDate = $issueDate;
         return $this;
     }
 
-    public function getDeliveryDate(): ?\DateTimeInterface
+    public function getDeliveryDate(): ?\DateTimeImmutable
     {
         return $this->deliveryDate;
     }
 
-    public function setDeliveryDate(\DateTimeInterface $deliveryDate): self
+    public function setDeliveryDate(\DateTimeImmutable $deliveryDate): self
     {
         $this->deliveryDate = $deliveryDate;
         return $this;

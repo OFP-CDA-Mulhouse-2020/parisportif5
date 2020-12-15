@@ -33,7 +33,7 @@ class UserTest extends KernelTestCase
             ->setBillingCity("Colmar")
             ->setBillingPostcode("68000")
             ->setBillingCountry("FR")
-            ->setBirthDate(new \DateTime("2000-10-10"))
+            ->setBirthDate(new \DateTimeImmutable("2000-10-10"))
             ->setPassword("Azerty78")
             ->setEmail("dupond.t@orange.fr")
             ->setTimeZoneSelected("Europe/Paris");
@@ -210,7 +210,7 @@ class UserTest extends KernelTestCase
     /**
      * @dataProvider birthDateUnconformityProvider
      */
-    public function testBirthDateUnconformity(\DateTime $birthDate): void
+    public function testBirthDateUnconformity(\DateTimeImmutable $birthDate): void
     {
         $user = $this->createValidUser();
         $user->setBirthDate($birthDate);
@@ -221,19 +221,19 @@ class UserTest extends KernelTestCase
     public function birthDateUnconformityProvider(): array
     {
         $timezone = $this->createDefaultTimeZone();
-        $legalAgeBirthDate = (new \DateTime('now', $timezone))->sub(new \DateInterval('P18Y'));
+        $legalAgeBirthDate = (new \DateTimeImmutable('now', $timezone))->sub(new \DateInterval('P18Y'));
         return [
             [$legalAgeBirthDate->setTime(23, 59, 59, 999999)],
             [$legalAgeBirthDate->modify('+1 day')->setTime(23, 59, 59, 999999)],
-            [(new \DateTime('now', $timezone))->setTime(23, 59, 60)],
-            [(new \DateTime('now', $timezone))->add(new \DateInterval('P2Y'))]
+            [$legalAgeBirthDate->modify('+1 day')->setTime(0, 0)],
+            [$legalAgeBirthDate->modify('+2 year')]
         ];
     }
 
     /**
      * @dataProvider birthDateConformityProvider
      */
-    public function testBirthDateConformity(\DateTime $birthDate): void
+    public function testBirthDateConformity(\DateTimeImmutable $birthDate): void
     {
         $user = $this->createValidUser();
         $user->setBirthDate($birthDate);
@@ -244,11 +244,10 @@ class UserTest extends KernelTestCase
     public function birthDateConformityProvider(): array
     {
         $timezone = $this->createDefaultTimeZone();
-        $legalAgeBirthDate1 = (new \DateTime('now', $timezone))->sub(new \DateInterval('P18Y'));
-        $legalAgeBirthDate2 = clone $legalAgeBirthDate1;
+        $legalAgeBirthDate = (new \DateTimeImmutable('now', $timezone))->sub(new \DateInterval('P18Y'));
         return [
-            [$legalAgeBirthDate1->modify("-1 day")],
-            [$legalAgeBirthDate2->modify("-1 year")]
+            [$legalAgeBirthDate->modify("-1 day")],
+            [$legalAgeBirthDate->modify("-1 year")]
         ];
     }
 

@@ -170,17 +170,13 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="date")
-     * @Assert\Type(
-     *     type="\DateTime",
-     *     message="La valeur {{ value }} n'est pas du type {{ type }}."
-     * )
      * @Assert\NotBlank(
      *     message="La date de naissance ne peut pas être vide",
      *     normalizer="trim"
      * )
      * @UserAssert\HasLegalAge
      */
-    private \DateTimeInterface $birthDate;
+    private \DateTimeImmutable $birthDate;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
@@ -200,9 +196,9 @@ class User implements UserInterface
     private bool $deletedStatus;
 
     /**
-     * @ORM\Column(type="datetime", nullable=true)
+     * @ORM\Column(type="datetime_immutable", nullable=true)
      */
-    private ?\DateTimeInterface $deletedDate;
+    private ?\DateTimeImmutable $deletedDate;
 
     /**
      * @ORM\Column(type="boolean")
@@ -210,9 +206,9 @@ class User implements UserInterface
     private bool $suspendedStatus;
 
     /**
-     * @ORM\Column(type="datetime", nullable=true)
+     * @ORM\Column(type="datetime_immutable", nullable=true)
      */
-    private ?\DateTimeInterface $suspendedDate;
+    private ?\DateTimeImmutable $suspendedDate;
 
     /**
      * @ORM\Column(type="boolean")
@@ -220,9 +216,9 @@ class User implements UserInterface
     private bool $activatedStatus;
 
     /**
-     * @ORM\Column(type="datetime", nullable=true)
+     * @ORM\Column(type="datetime_immutable", nullable=true)
      */
-    private ?\DateTimeInterface $activatedDate;
+    private ?\DateTimeImmutable $activatedDate;
 
     /**
      * @const int MIN_AGE_FOR_BETTING
@@ -265,7 +261,7 @@ class User implements UserInterface
 
     public function __construct()
     {
-        $creationDate = new \DateTime('now', new \DateTimeZone(self::STORED_TIME_ZONE));
+        $creationDate = new \DateTimeImmutable('now', new \DateTimeZone(self::STORED_TIME_ZONE));
         $this->activatedStatus = true;
         $this->activatedDate = $creationDate;
         $this->suspendedStatus = true;
@@ -453,12 +449,12 @@ class User implements UserInterface
         return !empty($fullAddress) ? $fullAddress : null;
     }
 
-    public function getBirthDate(): ?\DateTimeInterface
+    public function getBirthDate(): ?\DateTimeImmutable
     {
         return $this->birthDate;
     }
 
-    public function setBirthDate(\DateTimeInterface $birthDate): self
+    public function setBirthDate(\DateTimeImmutable $birthDate): self
     {
         $this->birthDate = $birthDate;
         return $this;
@@ -480,7 +476,7 @@ class User implements UserInterface
         return $this->deletedStatus;
     }
 
-    public function getDeletedDate(): ?\DateTimeInterface
+    public function getDeletedDate(): ?\DateTimeImmutable
     {
         return $this->deletedDate;
     }
@@ -488,7 +484,7 @@ class User implements UserInterface
     public function delete(): bool
     {
         if (empty($this->deletedDate) && $this->deletedStatus === false) {
-            $this->deletedDate = new \DateTime('now', new \DateTimeZone(self::STORED_TIME_ZONE));
+            $this->deletedDate = new \DateTimeImmutable('now', new \DateTimeZone(self::STORED_TIME_ZONE));
             $this->deletedStatus = true;
             $this->activatedStatus = false;
             $this->suspendedStatus = true;
@@ -514,7 +510,7 @@ class User implements UserInterface
         return $this->suspendedStatus;
     }
 
-    public function getSuspendedDate(): ?\DateTimeInterface
+    public function getSuspendedDate(): ?\DateTimeImmutable
     {
         return $this->suspendedDate;
     }
@@ -522,7 +518,7 @@ class User implements UserInterface
     public function suspend(): bool
     {
         if ($this->activatedStatus === true && empty($this->suspendedDate) && $this->suspendedStatus === false) {
-            $this->suspendedDate = new \DateTime('now', new \DateTimeZone(self::STORED_TIME_ZONE));
+            $this->suspendedDate = new \DateTimeImmutable('now', new \DateTimeZone(self::STORED_TIME_ZONE));
             $this->suspendedStatus = true;
             return true;
         }
@@ -544,7 +540,7 @@ class User implements UserInterface
         return $this->activatedStatus;
     }
 
-    public function getActivatedDate(): ?\DateTimeInterface
+    public function getActivatedDate(): ?\DateTimeImmutable
     {
         return $this->activatedDate;
     }
@@ -552,7 +548,7 @@ class User implements UserInterface
     public function activate(): bool
     {
         if (empty($this->activatedDate) && $this->activatedStatus === false) {
-            $this->activatedDate = new \DateTime('now', new \DateTimeZone(self::STORED_TIME_ZONE));
+            $this->activatedDate = new \DateTimeImmutable('now', new \DateTimeZone(self::STORED_TIME_ZONE));
             $this->activatedStatus = true;
             return true;
         }
