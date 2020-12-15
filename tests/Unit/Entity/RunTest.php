@@ -2,11 +2,11 @@
 
 namespace App\Tests\Unit\Entity;
 
-use App\Entity\Competition;
+use App\Entity\Run;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class CompetitionTest extends KernelTestCase
+class RunTest extends KernelTestCase
 {
     private ValidatorInterface $validator;
 
@@ -17,15 +17,14 @@ class CompetitionTest extends KernelTestCase
         $this->validator = $kernel->getContainer()->get('validator');
     }
 
-    private function createValidCompetition(): Competition
+    private function createValidRun(): Run
     {
-        $competition = new Competition();
+        $run = new Run();
         $date = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
-        $competition
+        $run
             ->setName('name')
-            ->setStartDate($date->setTime(23, 59, 59, 1000000))
-            ->setCountry('FR');
-        return $competition;
+            ->setStartDate($date->setTime(23, 59, 59, 1000000));
+        return $run;
     }
 
     private function createDefaultTimeZone(): \DateTimeZone
@@ -36,32 +35,32 @@ class CompetitionTest extends KernelTestCase
     /**
      * @dataProvider namePropertyCompatibleProvider
      */
-    public function testNamePropertyCompatible(string $competitionName)
+    public function testNamePropertyCompatible(string $runName)
     {
-        $competition = $this->createValidCompetition();
-        $competition->setName($competitionName);
-        $violations = $this->validator->validate($competition);
+        $run = $this->createValidRun();
+        $run->setName($runName);
+        $violations = $this->validator->validate($run);
         $this->assertCount(0, $violations);
     }
 
     public function namePropertyCompatibleProvider(): array
     {
         return [
-            ["Grand prix de France"],
-            ["Championnat de France"]
+            ["Spécial n°1 des Vosges"],
+            ["Match pool n°1 France-Espagne"]
         ];
     }
 
     public function testNamePropertyUncompatible()
     {
-        $competitionName1 = '';
-        $competitionName2 = '   ';
-        $competition = $this->createValidCompetition();
-        $competition->setName($competitionName1);
-        $violations = $this->validator->validate($competition);
+        $runName1 = '';
+        $runName2 = '   ';
+        $run = $this->createValidRun();
+        $run->setName($runName1);
+        $violations = $this->validator->validate($run);
         $this->assertCount(1, $violations);
-        $competition->setName($competitionName2);
-        $violations = $this->validator->validate($competition);
+        $run->setName($runName2);
+        $violations = $this->validator->validate($run);
         $this->assertCount(1, $violations);
     }
 
@@ -70,10 +69,10 @@ class CompetitionTest extends KernelTestCase
      */
     public function testStartDateUnconformity(\DateTimeInterface $startDate): void
     {
-        $competition = $this->createValidCompetition();
-        $competition->setStartDate($startDate);
-        $violations = $this->validator->validate($competition);
-        $this->assertGreaterThanOrEqual(1, count($violations));
+        $run = $this->createValidRun();
+        $run->setStartDate($startDate);
+        $violations = $this->validator->validate($run);
+        $this->assertCount(1, $violations);
     }
 
     public function startDateUnconformityProvider(): array
@@ -93,9 +92,9 @@ class CompetitionTest extends KernelTestCase
      */
     public function testStartDateConformity(\DateTimeInterface $startDate): void
     {
-        $competition = $this->createValidCompetition();
-        $competition->setStartDate($startDate);
-        $violations = $this->validator->validate($competition);
+        $run = $this->createValidRun();
+        $run->setStartDate($startDate);
+        $violations = $this->validator->validate($run);
         $this->assertCount(0, $violations);
     }
 
@@ -109,14 +108,14 @@ class CompetitionTest extends KernelTestCase
         ];
     }
 
-    /**
+       /**
      * @dataProvider endDateUnconformityProvider
      */
     public function testEndDateUnconformity(\DateTimeInterface $endDate): void
     {
-        $competition = $this->createValidCompetition();
-        $competition->setEndDate($endDate);
-        $violations = $this->validator->validate($competition);
+        $run = $this->createValidRun();
+        $run->setEndDate($endDate);
+        $violations = $this->validator->validate($run);
         $this->assertGreaterThanOrEqual(1, count($violations));
     }
 
@@ -137,9 +136,9 @@ class CompetitionTest extends KernelTestCase
      */
     public function testEndDateConformity(\DateTimeInterface $endDate): void
     {
-        $competition = $this->createValidCompetition();
-        $competition->setEndDate($endDate);
-        $violations = $this->validator->validate($competition);
+        $run = $this->createValidRun();
+        $run->setEndDate($endDate);
+        $violations = $this->validator->validate($run);
         $this->assertCount(0, $violations);
     }
 
@@ -153,68 +152,25 @@ class CompetitionTest extends KernelTestCase
         ];
     }
 
-    /**
-     * @dataProvider countryCompatibleProvider
-     * ISO 3166-1 alpha-2 => 2 lettres majuscules
-     */
-    public function testCountryCompatible(string $country)
-    {
-        $competition = $this->createValidCompetition();
-        $competition->setCountry($country);
-        $violations = $this->validator->validate($competition);
-        $this->assertCount(0, $violations);
-    }
-
-    public function countryCompatibleProvider(): array
-    {
-        return [
-            ["FR"],
-            ["DE"]
-        ];
-    }
-
-    /**
-     * @dataProvider countryUncompatibleProvider
-     */
-    public function testCountryUncompatible(string $country)
-    {
-        $competition = $this->createValidCompetition();
-        $competition->setCountry($country);
-        $violations = $this->validator->validate($competition);
-        $this->assertGreaterThanOrEqual(1, count($violations));
-    }
-
-    public function countryUncompatibleProvider(): array
-    {
-        return [
-            ["XY"],
-            ["FRA"],
-            ["France"],
-            ["fr"],
-            [''],
-            ['   ']
-        ];
-    }
-
     public function testMethodIsFinishReturnFalse()
     {
         $date = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
-        $competition = $this->createValidCompetition();
-        $exist = method_exists($competition, 'isFinish');
+        $run = $this->createValidRun();
+        $exist = method_exists($run, 'isFinish');
         $this->assertTrue($exist);
-        $competition->setEndDate($date->modify('+2 day'));
-        $result = $competition->isFinish();
+        $run->setEndDate($date->modify('+2 day'));
+        $result = $run->isFinish();
         $this->assertFalse($result);
     }
 
     public function testMethodIsOngoingReturnFalse()
     {
         $date = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
-        $competition = $this->createValidCompetition();
-        $exist = method_exists($competition, 'isOngoing');
+        $run = $this->createValidRun();
+        $exist = method_exists($run, 'isOngoing');
         $this->assertTrue($exist);
-        $competition->setEndDate($date->modify('+2 day'));
-        $result = $competition->isOngoing();
+        $run->setEndDate($date->modify('+2 day'));
+        $result = $run->isOngoing();
         $this->assertFalse($result);
     }
 }

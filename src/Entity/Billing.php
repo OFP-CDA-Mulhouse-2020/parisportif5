@@ -177,8 +177,11 @@ class Billing
      *     type="string",
      *     message="La devise monétaire par défaut {{ value }} n'est pas du type {{ type }}."
      * )
+     * @Assert\Currency(
+     *     message="La devise monétaire par défaut {{ value }} n'est pas valide."
+     * )
     */
-    public const DEFAULT_CURRENCY_NAME = "Euro";
+    public const DEFAULT_CURRENCY_CODE = "EUR";
 
     /**
      * @const string DEFAULT_CURRENCY_SYMBOL

@@ -116,7 +116,7 @@ skinparam linetype ortho
         -timeZoneSelected : string
         +{static} MIN_AGE_FOR_BETTING : int = 18
         +{static} STORED_TIME_ZONE : string = 'UTC'
-        +{static} SELECT_CURRENCY_NAME : string = "Euro"
+        +{static} SELECT_CURRENCY_CODE : string = "EUR"
         +{static} SELECT_CURRENCY_SYMBOL : string = "€"
         +getName() : string
         +getAddress() : string
@@ -159,7 +159,7 @@ skinparam linetype ortho
         -issueDate : DateTime
         -deliveryDate : DateTime
         +{static} DEFAULT_COMMISSION_RATE : int =  750
-        +{static} DEFAULT_CURRENCY_NAME : string = "Euro"
+        +{static} DEFAULT_CURRENCY_CODE : string = "EUR"
         +{static} DEFAULT_CURRENCY_SYMBOL : string = "€"
         +getName() : string
         +getAddress() : string
@@ -228,7 +228,8 @@ skinparam linetype ortho
         -startDate : DateTime
         -endDate : DateTime
         -result : Team|null
-        +isBegin() : bool
+        +isFinish() : bool
+        +isOngoing() : bool
         +hasTeams() : bool
         +hasResult() : bool
         +getTeamsCount() : int
