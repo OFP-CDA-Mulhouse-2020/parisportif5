@@ -72,4 +72,54 @@ class MemberTest extends WebTestCase
             ["2"]
         ];
     }
+
+    /**
+     * @dataProvider validFirstNameProvider
+     */
+    public function testIfFirstNameIsCorrect(string $fN): void
+    {
+        $kernel = $this->initializeKernel();
+        $member = $this->initializeSport();
+        $member->setFirstName($fN);
+        $validator = $kernel->getContainer()->get('validator');
+        $violations = $validator->validate($member);
+        $this->assertCount(0, $violations);
+    }
+
+    public function validFirstNameProvider(): array
+    {
+        return [
+            ["Antoinette"],
+            ["Höx"],
+            ["Nuño"],
+            ["Åssel"],
+            ["Sjåndra"],
+            ["Pierre-Anthoine"],
+            ["Joël"]
+        ];
+    }
+
+    /**
+     * @dataProvider invalidFirstNameProvider
+     */
+    public function testIfFirstNameIsINCorrect(string $fN): void
+    {
+        $kernel = $this->initializeKernel();
+        $member = $this->initializeSport();
+        $member->setLastName($fN);
+        $validator = $kernel->getContainer()->get('validator');
+        $violations = $validator->validate($member);
+        $this->assertGreaterThanOrEqual(1, count($violations));
+    }
+
+    public function invalidFirstNameProvider(): array
+    {
+        return [
+            ["\/\/ils0n"],
+            ["H@rry"],
+            ["Moumoute2"],
+            ["♥"],
+            [""]
+        ];
+    }
 }
