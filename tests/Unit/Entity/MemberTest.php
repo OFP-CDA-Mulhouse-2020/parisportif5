@@ -50,4 +50,26 @@ class MemberTest extends WebTestCase
             ["Üçkup"]
         ];
     }
+
+    /**
+     * @dataProvider invalidLastNameProvider
+     */
+    public function testIfLastNameIsINCorrect(string $lN): void
+    {
+        $kernel = $this->initializeKernel();
+        $member = $this->initializeSport();
+        $member->setLastName($lN);
+        $validator = $kernel->getContainer()->get('validator');
+        $violations = $validator->validate($member);
+        $this->assertGreaterThanOrEqual(1, count($violations));
+    }
+
+    public function invalidLastNameProvider(): array
+    {
+        return [
+            ["SPARRO\/\/"],
+            ["H@land"],
+            ["2"]
+        ];
+    }
 }
