@@ -17,6 +17,8 @@ class SportTest extends WebTestCase
         $sport->setNumberOfCompetitors(1);
         $sport->setCountry("FR");
         $sport->setRunType("fixture");
+        $sport->setIndividualType(false);
+        $sport->setCollectiveType(true);
         return $sport;
     }
 
@@ -77,6 +79,16 @@ class SportTest extends WebTestCase
     }
 
     public function testIfRunTypeIsValid(): void
+    {
+        $kernel = $this->initializeKernel();
+        $sport = $this->initializeSport();
+        /** @var ValidatorInterface $validator */
+        $validator = $kernel->getContainer()->get('validator');
+        $violations = $validator->validate($sport);
+        $this->assertCount(0, $violations);
+    }
+
+    public function testIfSportTypeIsValid(): void
     {
         $kernel = $this->initializeKernel();
         $sport = $this->initializeSport();

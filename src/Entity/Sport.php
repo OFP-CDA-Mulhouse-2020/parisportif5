@@ -8,6 +8,10 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=SportRepository::class)
+ * @Assert\Expression(
+ *      "this.getIndividualType() == true or this.getCollectiveType() == true",
+ *      message="Le sport ne peut être ni individuel ni collectif et doit être au moins l'un des deux"
+ * )
  */
 class Sport
 {
@@ -52,6 +56,16 @@ class Sport
      * @Assert\Choice({"fixture", "race"})
      */
     private string $runType;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private bool $individualType;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private bool $collectiveType;
 
     public function getId(): ?int
     {
@@ -102,6 +116,30 @@ class Sport
     public function setRunType(string $runType): self
     {
         $this->runType = $runType;
+
+        return $this;
+    }
+
+    public function getIndividualType(): ?bool
+    {
+        return $this->individualType;
+    }
+
+    public function setIndividualType(bool $individualType): self
+    {
+        $this->individualType = $individualType;
+
+        return $this;
+    }
+
+    public function getCollectiveType(): ?bool
+    {
+        return $this->collectiveType;
+    }
+
+    public function setCollectiveType(bool $collectiveType): self
+    {
+        $this->collectiveType = $collectiveType;
 
         return $this;
     }
