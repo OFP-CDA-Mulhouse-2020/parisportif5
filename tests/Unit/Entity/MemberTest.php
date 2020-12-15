@@ -14,6 +14,7 @@ class MemberTest extends WebTestCase
     {
         $member =  new Member();
         $member->setLastName("Papin");
+        $member->setFirstName("Jean-Pierre");
         return $member;
     }
 
@@ -24,12 +25,29 @@ class MemberTest extends WebTestCase
         return $kernel;
     }
 
-    public function testIfNameIsNotNull(): void
+    /**
+     * @dataProvider validLastNameProvider
+     */
+    public function testIfLastNameIsCorrect(string $lN): void
     {
         $kernel = $this->initializeKernel();
         $member = $this->initializeSport();
+        $member->setLastName($lN);
         $validator = $kernel->getContainer()->get('validator');
         $violations = $validator->validate($member);
         $this->assertCount(0, $violations);
+    }
+
+    public function validLastNameProvider(): array
+    {
+        return [
+            ["Van Der Weg"],
+            ["Höhenhausen"],
+            ["Gonzalo-Viñales"],
+            ["Åaland"],
+            ["Sjålle"],
+            ["Lindstrøm"],
+            ["Üçkup"]
+        ];
     }
 }

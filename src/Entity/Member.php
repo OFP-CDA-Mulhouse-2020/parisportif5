@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Symfony\Component\Validator\Constraints as Assert;
 use App\Repository\MemberRepository;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -20,11 +21,27 @@ class Member
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(
+     *     message="Le nom de famille ne peut être vide",
+     *     normalizer="trim"
+     * )
+     * @Assert\Regex(
+     *     pattern="/^[\p{L}\-\'\s]+$/u",
+     *     message="Seuls les lettres, traits d'union et apostrophes sont autorisés"
+     * )
      */
     private string $lastName;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(
+     *     message="Le prénom ne peut être vide",
+     *     normalizer="trim"
+     * )
+     * @Assert\Regex(
+     *     pattern="/^[\p{L}\-\s]+$/u",
+     *     message="Seuls les lettres et traits d'union sont autorisés"
+     * )
      */
     private string $firstName;
 
