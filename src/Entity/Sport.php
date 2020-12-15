@@ -2,11 +2,16 @@
 
 namespace App\Entity;
 
+use Symfony\Component\Validator\Constraints as Assert;
 use App\Repository\SportRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=SportRepository::class)
+ * @Assert\Expression(
+ *      "this.getIndividualType() == true or this.getCollectiveType() == true",
+ *      message="Le sport ne peut être ni individuel ni collectif et doit être au moins l'un des deux"
+ * )
  */
 class Sport
 {
@@ -19,18 +24,38 @@ class Sport
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(
+     *     message="Le nom du sport ne peut être vide"
+     * )
      */
     private string $name;
 
     /**
      * @ORM\Column(type="integer")
+     * @Assert\NotNull(
+     *     message="Le nombre de compétiteurs ne peut être vide"
+     * )
+     * @Assert\GreaterThanOrEqual(1)(
+     *     message="Le nombre de compétiteurs doit être supérieur ou égal à 1"
+     * )
      */
     private int $numberOfCompetitors;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(
+     *     message="Le pays doit être renseigné"     *
+     * )
+     * @Assert\Country
      */
-    private bool $collectiveType;
+    private string $country;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank
+     * @Assert\Choice({"fixture", "race"})
+     */
+    private string $runType;
 
     /**
      * @ORM\Column(type="boolean")
@@ -38,14 +63,9 @@ class Sport
     private bool $individualType;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="boolean")
      */
-    private string $runType;
-
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private string $country;
+    private bool $collectiveType;
 
     public function getId(): ?int
     {
@@ -76,26 +96,14 @@ class Sport
         return $this;
     }
 
-    public function getCollectiveType(): ?bool
+    public function getCountry(): ?string
     {
-        return $this->collectiveType;
+        return $this->country;
     }
 
-    public function setCollectiveType(bool $collectiveType): self
+    public function setCountry(string $country): self
     {
-        $this->collectiveType = $collectiveType;
-
-        return $this;
-    }
-
-    public function getIndividualType(): ?bool
-    {
-        return $this->individualType;
-    }
-
-    public function setIndividualType(bool $individualType): self
-    {
-        $this->individualType = $individualType;
+        $this->country = $country;
 
         return $this;
     }
@@ -112,14 +120,26 @@ class Sport
         return $this;
     }
 
-    public function getCountry(): ?string
+    public function getIndividualType(): ?bool
     {
-        return $this->country;
+        return $this->individualType;
     }
 
-    public function setCountry(string $country): self
+    public function setIndividualType(bool $individualType): self
     {
-        $this->country = $country;
+        $this->individualType = $individualType;
+
+        return $this;
+    }
+
+    public function getCollectiveType(): ?bool
+    {
+        return $this->collectiveType;
+    }
+
+    public function setCollectiveType(bool $collectiveType): self
+    {
+        $this->collectiveType = $collectiveType;
 
         return $this;
     }
