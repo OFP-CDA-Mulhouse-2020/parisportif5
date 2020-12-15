@@ -9,8 +9,8 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity(repositoryClass=SportRepository::class)
  * @Assert\Expression(
- *      "this.getIndividualType() == true or this.getCollectiveType() == true",
- *      message="Le sport ne peut pas être ni individuel ni collectif et doit être au moins l'un des deux"
+ *      "this.getIndividualType() or this.getCollectiveType()",
+ *      message="Le sport ne peut être ni individuel ni collectif et doit être au moins l'un des deux"
  * )
  */
 class Sport

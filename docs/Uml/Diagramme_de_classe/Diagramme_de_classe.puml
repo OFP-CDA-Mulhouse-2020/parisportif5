@@ -42,6 +42,9 @@ skinparam linetype ortho
     MemberStatus "1" <-- "0..*" Member
     'Liaison potentiel entre un paris et une compétition
     Bet "0..*" -- "0..1" Competition
+    FundStorageInterface <|.. Billing
+    FundStorageInterface <|.. Wallet
+    FundStorageInterface <|.. Bet
     'Classe d'association entre paris et compétition
     (Bet, Competition) .. CompetitionBets
     'Liaison potentiel entre un paris et une rencontre ou course
@@ -58,6 +61,10 @@ skinparam linetype ortho
     (Bet, Member) .. MemberBets
 'Définitions des classes :
     'Rôle du membre (pilote, co-pilote, joueur)
+    interface FundStorageInterface {
+        +convertToCurrencyUnit(in int amount) : float
+        +convertCurrencyUnitToStoredData(in float amount) : int
+    }
     class MemberRole {
         -identifier : int
         -name : string
@@ -81,7 +88,7 @@ skinparam linetype ortho
     'Porte-feuille de l'utilisateur avec des fonds (de l'argent gagnés)
     class Wallet {
         -identifier : int
-        -amount : float
+        -amount : int
         +add(in float value) : void
         +subtract(in float value) : void
         +isEmpty() : bool
@@ -164,16 +171,17 @@ skinparam linetype ortho
         +getName() : string
         +getAddress() : string
         +deleteUser() : void
-        +convertToCurrencyUnit() : float
-        +getCommissionRateInPourcent() : float
+        +convertToCommissionRate(in int commissionRate) : float
+        +convertCommissionRateToStoredData(in float commissionRate) : int
     }
     'Un paris
     class Bet {
         -identifier : int
-        -amount : float
-        -odds : float
-        -betSubject : string
-        +getOdds() : float
+        -designation : string
+        -amount : int
+        -odds : int
+        +convertToOddsMultiplier(in int odds) : float
+        +convertOddsMultiplierToStoredData(in float odds) : int
     }
     'Catégorie de paris (ex: Paris sur la victoire du favoris)
     class BetType {

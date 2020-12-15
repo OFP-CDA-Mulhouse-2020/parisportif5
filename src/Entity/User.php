@@ -53,7 +53,7 @@ class User implements UserInterface
      * @Assert\Regex(
      *     pattern="/^[\p{L}]+$/u",
      *     match=false,
-     *     message="Pour la sécurité de votre mot de passe, vous ne pouvez pas mettre uniquement des lettres (lettres accentuées incluses)"
+     *     message="Pour la sécurité de votre mot de passe, vous ne pouvez pas mettre uniquement des lettres"
      * )
      * @Assert\Regex(
      *     pattern="/^\d+$/",

@@ -88,22 +88,22 @@ class SportTest extends WebTestCase
         $this->assertCount(0, $violations);
     }
 
-     /**
-     * @dataProvider sportTypeProvider
+    /**
+     * @dataProvider validSportTypeSetProvider
      */
-    public function testIfSportTypeIsValid(bool $cT, bool $iT): void
+    public function testIfSportTypeIsValid(bool $individualType, bool $collectiveType): void
     {
         $kernel = $this->initializeKernel();
         $sport = $this->initializeSport();
-        $sport->setIndividualType($iT);
-        $sport->setCollectiveType($cT);
+        $sport->setIndividualType($individualType);
+        $sport->setCollectiveType($collectiveType);
         /** @var ValidatorInterface $validator */
         $validator = $kernel->getContainer()->get('validator');
         $violations = $validator->validate($sport);
         $this->assertCount(0, $violations);
     }
 
-    public function sportTypeProvider(): array
+    public function validSportTypeSetProvider(): array
     {
         return [
             [true, false],
