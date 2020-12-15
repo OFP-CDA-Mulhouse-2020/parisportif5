@@ -45,12 +45,8 @@ class Sport
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(
-<<<<<<< HEAD
      *     message="Le pays doit être renseigné",
      *     normalizer="trim"
-=======
-     *     message="Le pays doit être renseigné"
->>>>>>> 473b7a4... 2020-12-15 - #2 - Entité Bet et tests
      * )
      * @Assert\Country
      */

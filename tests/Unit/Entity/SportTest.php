@@ -88,17 +88,6 @@ class SportTest extends WebTestCase
         $this->assertCount(0, $violations);
     }
 
-<<<<<<< HEAD
-     /**
-     * @dataProvider sportTypeProvider
-     */
-    public function testIfSportTypeIsValid(bool $cT, bool $iT): void
-    {
-        $kernel = $this->initializeKernel();
-        $sport = $this->initializeSport();
-        $sport->setIndividualType($iT);
-        $sport->setCollectiveType($cT);
-=======
     /**
      * @dataProvider validSportTypeSetProvider
      */
@@ -108,18 +97,13 @@ class SportTest extends WebTestCase
         $sport = $this->initializeSport();
         $sport->setIndividualType($individualType);
         $sport->setCollectiveType($collectiveType);
->>>>>>> 473b7a4... 2020-12-15 - #2 - Entité Bet et tests
         /** @var ValidatorInterface $validator */
         $validator = $kernel->getContainer()->get('validator');
         $violations = $validator->validate($sport);
         $this->assertCount(0, $violations);
     }
 
-<<<<<<< HEAD
-    public function sportTypeProvider(): array
-=======
     public function validSportTypeSetProvider(): array
->>>>>>> 473b7a4... 2020-12-15 - #2 - Entité Bet et tests
     {
         return [
             [true, false],
@@ -128,11 +112,7 @@ class SportTest extends WebTestCase
         ];
     }
 
-<<<<<<< HEAD
     public function testIfSportTypeIsNotValid(): void
-=======
-    public function testIfSportTypeIsInvalid(): void
->>>>>>> 473b7a4... 2020-12-15 - #2 - Entité Bet et tests
     {
         $kernel = $this->initializeKernel();
         $sport = $this->initializeSport();
