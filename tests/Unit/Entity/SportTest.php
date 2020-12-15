@@ -88,13 +88,39 @@ class SportTest extends WebTestCase
         $this->assertCount(0, $violations);
     }
 
-    public function testIfSportTypeIsValid(): void
+     /**
+     * @dataProvider sportTypeProvider
+     */
+    public function testIfSportTypeIsValid(bool $cT, bool $iT): void
     {
         $kernel = $this->initializeKernel();
         $sport = $this->initializeSport();
+        $sport->setIndividualType($iT);
+        $sport->setCollectiveType($cT);
         /** @var ValidatorInterface $validator */
         $validator = $kernel->getContainer()->get('validator');
         $violations = $validator->validate($sport);
         $this->assertCount(0, $violations);
+    }
+
+    public function sportTypeProvider(): array
+    {
+        return [
+            [true, false],
+            [false, true],
+            [true, true]
+        ];
+    }
+
+    public function testIfSportTypeIsNotValid(): void
+    {
+        $kernel = $this->initializeKernel();
+        $sport = $this->initializeSport();
+        $sport->setIndividualType(false);
+        $sport->setCollectiveType(false);
+        /** @var ValidatorInterface $validator */
+        $validator = $kernel->getContainer()->get('validator');
+        $violations = $validator->validate($sport);
+        $this->assertCount(1, $violations);
     }
 }

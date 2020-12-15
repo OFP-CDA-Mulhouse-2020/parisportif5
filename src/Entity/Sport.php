@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity(repositoryClass=SportRepository::class)
  * @Assert\Expression(
  *      "this.getIndividualType() == true or this.getCollectiveType() == true",
- *      message="Le sport ne peut être ni individuel ni collectif et doit être au moins l'un des deux"
+ *      message="Le sport ne peut pas être ni individuel ni collectif et doit être au moins l'un des deux"
  * )
  */
 class Sport
@@ -25,7 +25,8 @@ class Sport
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(
-     *     message="Le nom du sport ne peut être vide"
+     *     message="Le nom du sport ne peut être vide",
+     *     normalizer="trim"
      * )
      */
     private string $name;
@@ -44,7 +45,8 @@ class Sport
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(
-     *     message="Le pays doit être renseigné"     *
+     *     message="Le pays doit être renseigné",
+     *     normalizer="trim"
      * )
      * @Assert\Country
      */
@@ -52,7 +54,8 @@ class Sport
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Assert\NotBlank
+     * @Assert\NotBlank,
+     *     normalizer="trim"
      * @Assert\Choice({"fixture", "race"})
      */
     private string $runType;
