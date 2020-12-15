@@ -328,6 +328,8 @@ class BillingTest extends KernelTestCase
         $orderNumber2 = 1000000000;
         $billing = $this->createValidBilling();
         $billing->setOrderNumber($orderNumber1);
+        $violations = $this->validator->validate($billing);
+        $this->assertCount(0, $violations);
         $billing->setOrderNumber($orderNumber2);
         $violations = $this->validator->validate($billing);
         $this->assertCount(0, $violations);
@@ -339,6 +341,8 @@ class BillingTest extends KernelTestCase
         $orderNumber2 = -1;
         $billing = $this->createValidBilling();
         $billing->setOrderNumber($orderNumber1);
+        $violations = $this->validator->validate($billing);
+        $this->assertCount(1, $violations);
         $billing->setOrderNumber($orderNumber2);
         $violations = $this->validator->validate($billing);
         $this->assertCount(1, $violations);
@@ -350,6 +354,8 @@ class BillingTest extends KernelTestCase
         $invoiceNumber2 = 1000000000;
         $billing = $this->createValidBilling();
         $billing->setInvoiceNumber($invoiceNumber1);
+        $violations = $this->validator->validate($billing);
+        $this->assertCount(0, $violations);
         $billing->setInvoiceNumber($invoiceNumber2);
         $violations = $this->validator->validate($billing);
         $this->assertCount(0, $violations);
@@ -361,6 +367,8 @@ class BillingTest extends KernelTestCase
         $invoiceNumber2 = -1;
         $billing = $this->createValidBilling();
         $billing->setInvoiceNumber($invoiceNumber1);
+        $violations = $this->validator->validate($billing);
+        $this->assertCount(1, $violations);
         $billing->setInvoiceNumber($invoiceNumber2);
         $violations = $this->validator->validate($billing);
         $this->assertCount(1, $violations);
@@ -372,6 +380,8 @@ class BillingTest extends KernelTestCase
         $amount2 = 1000000000;
         $billing = $this->createValidBilling();
         $billing->setAmount($amount1);
+        $violations = $this->validator->validate($billing);
+        $this->assertCount(0, $violations);
         $billing->setAmount($amount2);
         $violations = $this->validator->validate($billing);
         $this->assertCount(0, $violations);
@@ -435,21 +445,43 @@ class BillingTest extends KernelTestCase
         $this->assertIsString($billing::DEFAULT_CURRENCY_SYMBOL);
     }
 
-    public function testMethodConvertToCurrencyUnitReturnType(): void
+    public function testMethodConvertToCurrencyUnitReturnValue(): void
     {
         $billing = $this->createValidBilling();
         $result = method_exists($billing, 'convertToCurrencyUnit');
         $this->assertTrue($result);
         $result = $billing->convertToCurrencyUnit(1500);
         $this->assertIsFloat($result);
+        $this->assertSame(15.0, $result);
     }
 
-    public function testMethodGetCommissionRateInPourcentReturnType(): void
+    public function testMethodConvertToCommissionRateReturnValue(): void
     {
         $billing = $this->createValidBilling();
-        $result = method_exists($billing, 'getCommissionRateInPourcent');
+        $result = method_exists($billing, 'convertToCommissionRate');
         $this->assertTrue($result);
-        $result = $billing->convertToCurrencyUnit(750);
+        $result = $billing->convertToCommissionRate(75000);
         $this->assertIsFloat($result);
+        $this->assertSame(7.5, $result);
+    }
+
+    public function testMethodConvertCurrencyUnitToStoredDataReturnValue(): void
+    {
+        $billing = $this->createValidBilling();
+        $result = method_exists($billing, 'convertCurrencyUnitToStoredData');
+        $this->assertTrue($result);
+        $result = $billing->convertCurrencyUnitToStoredData(15.0);
+        $this->assertIsInt($result);
+        $this->assertSame(1500, $result);
+    }
+
+    public function testMethodConvertCommissionRateToStoredDataReturnValue(): void
+    {
+        $billing = $this->createValidBilling();
+        $result = method_exists($billing, 'convertCommissionRateToStoredData');
+        $this->assertTrue($result);
+        $result = $billing->convertCommissionRateToStoredData(7.5);
+        $this->assertIsInt($result);
+        $this->assertSame(75000, $result);
     }
 }

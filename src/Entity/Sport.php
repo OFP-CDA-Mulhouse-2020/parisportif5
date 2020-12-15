@@ -9,8 +9,8 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity(repositoryClass=SportRepository::class)
  * @Assert\Expression(
- *      "this.getIndividualType() == true or this.getCollectiveType() == true",
- *      message="Le sport ne peut pas être ni individuel ni collectif et doit être au moins l'un des deux"
+ *      "this.getIndividualType() or this.getCollectiveType()",
+ *      message="Le sport ne peut être ni individuel ni collectif et doit être au moins l'un des deux"
  * )
  */
 class Sport
@@ -45,8 +45,12 @@ class Sport
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(
+<<<<<<< HEAD
      *     message="Le pays doit être renseigné",
      *     normalizer="trim"
+=======
+     *     message="Le pays doit être renseigné"
+>>>>>>> 473b7a4... 2020-12-15 - #2 - Entité Bet et tests
      * )
      * @Assert\Country
      */

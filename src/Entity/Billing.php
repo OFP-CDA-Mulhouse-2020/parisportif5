@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity(repositoryClass=BillingRepository::class)
  */
-class Billing
+class Billing implements FundStorageInterface
 {
     /**
      * @ORM\Id
@@ -110,7 +110,7 @@ class Billing
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(
-     *     message="La désignation ne peut pas être vide",
+     *     message="La désignation de la facture ne peut pas être vide",
      *     normalizer="trim"
      * )
      */
@@ -139,15 +139,15 @@ class Billing
     /**
      * @ORM\Column(type="integer")
      * @Assert\PositiveOrZero(
-     *     message="La montant de la facture en centimes doit être soit zéro, soit un entier positif"
+     *     message="La montant de la facture en centimes doit être un entier positif ou zéro"
      * )
      */
     private int $amount;
 
     /**
      * @ORM\Column(type="integer")
-     * @Assert\Positive(
-     *     message="Le taux de commission multiplier par 100 doit être un entier positif"
+     * @Assert\PositiveOrZero(
+     *     message="Le taux de commission (multiplier par 10000) doit être un entier positif ou zéro"
      * )
      */
     private int $commissionRate;
@@ -169,7 +169,7 @@ class Billing
      *     message="Le taux de commission par défaut {{ value }} n'est pas du type {{ type }}."
      * )
     */
-    public const DEFAULT_COMMISSION_RATE =  750;
+    public const DEFAULT_COMMISSION_RATE =  75000;
 
     /**
      * @const string DEFAULT_CURRENCY_NAME
@@ -359,8 +359,18 @@ class Billing
         return ((float)$amount * 0.01);
     }
 
-    public function getCommissionRateInPourcent(int $commissionRate): float
+    public function convertToCommissionRate(int $commissionRate): float
     {
-        return ((float)$commissionRate * 0.01);
+        return ((float)$commissionRate * 0.0001);
+    }
+
+    public function convertCurrencyUnitToStoredData(float $amount): int
+    {
+        return intVal($amount * 100);
+    }
+
+    public function convertCommissionRateToStoredData(float $commissionRate): int
+    {
+        return intVal($commissionRate * 10000);
     }
 }

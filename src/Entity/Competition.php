@@ -40,7 +40,7 @@ class Competition
      * @ORM\Column(type="datetime_immutable")
      * @Assert\GreaterThan(
      *     propertyPath="startDate",
-     *     message="La date de fin de la compétition doit être supérieur à la date du début de celle-ci ({{ compared_value }} UTC)"
+     *     message="La date de fin de la compétition doit être supérieur à la date du début de celle-ci"
      * )
      */
     private \DateTimeImmutable $endDate;
