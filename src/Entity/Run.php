@@ -2,14 +2,14 @@
 
 namespace App\Entity;
 
-use App\Repository\CompetitionRepository;
+use App\Repository\RunRepository;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass=CompetitionRepository::class)
+ * @ORM\Entity(repositoryClass=RunRepository::class)
  */
-class Competition
+class Run
 {
     /**
      * @ORM\Id
@@ -21,7 +21,7 @@ class Competition
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(
-     *     message="Le nom de la compétition ne peut pas être vide",
+     *     message="Le nom de la course ou du match ne peut pas être vide",
      *     normalizer="trim"
      * )
      */
@@ -31,7 +31,7 @@ class Competition
      * @ORM\Column(type="datetime_immutable")
      * @Assert\GreaterThanOrEqual(
      *     value="tomorrow UTC",
-     *     message="La date du début de la compétition doit être supérieur ou égale au {{ compared_value }} UTC"
+     *     message="La date du début de la course ou du match doit être supérieur ou égale au {{ compared_value }} UTC"
      * )
      */
     private \DateTimeImmutable $startDate;
@@ -40,22 +40,10 @@ class Competition
      * @ORM\Column(type="datetime_immutable")
      * @Assert\GreaterThan(
      *     propertyPath="startDate",
-     *     message="La date de fin de la compétition doit être supérieur à la date du début de celle-ci ({{ compared_value }} UTC)"
+     *     message="La date de fin de la course ou du match doit être supérieur à la date du début de celle-ci ({{ compared_value }} UTC)"
      * )
      */
     private \DateTimeImmutable $endDate;
-
-    /**
-     * @ORM\Column(type="string", length=255)
-     * @Assert\NotBlank(
-     *     message="Le pays ne peut pas être vide",
-     *     normalizer="trim"
-     * )
-     * @Assert\Country(
-     *     message="Le pays {{ value }} n'est pas valide",
-     * )
-     */
-    private string $country;
 
     public function getId(): ?int
     {
@@ -70,7 +58,6 @@ class Competition
     public function setName(string $name): self
     {
         $this->name = $name;
-
         return $this;
     }
 
@@ -93,17 +80,6 @@ class Competition
     public function setEndDate(\DateTimeImmutable $endDate): self
     {
         $this->endDate = $endDate;
-        return $this;
-    }
-
-    public function getCountry(): ?string
-    {
-        return $this->country;
-    }
-
-    public function setCountry(string $country): self
-    {
-        $this->country = $country;
         return $this;
     }
 

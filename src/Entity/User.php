@@ -248,8 +248,11 @@ class User implements UserInterface
      *     type="string",
      *     message="La devise monétaire sélectionnée {{ value }} n'est pas du type {{ type }}."
      * )
+     * @Assert\Currency(
+     *     message="La devise monétaire par défaut {{ value }} n'est pas valide."
+     * )
     */
-    public const SELECT_CURRENCY_NAME = "Euro";
+    public const SELECT_CURRENCY_CODE = "EUR";
 
     /**
      * @const string SELECT_CURRENCY_SYMBOL

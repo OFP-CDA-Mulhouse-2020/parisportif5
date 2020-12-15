@@ -602,7 +602,7 @@ class UserTest extends KernelTestCase
         $this->assertCount(1, $violations);
     }
 
-    public function testMethodGetFullName(): void
+    public function testMethodGetFullNameReturnValue(): void
     {
         $user = $this->createValidUser();
         $result = method_exists($user, 'getFullName');
@@ -612,7 +612,7 @@ class UserTest extends KernelTestCase
         $this->assertStringContainsString(($user->getLastName() ?? ''), $result);
     }
 
-    public function testMethodGetFullAddress(): void
+    public function testMethodGetFullAddressReturnValue(): void
     {
         $user = $this->createValidUser();
         $result = method_exists($user, 'getFullAddress');
@@ -624,39 +624,39 @@ class UserTest extends KernelTestCase
         $this->assertStringContainsString(($user->getBillingCountry() ?? ''), $result);
     }
 
-    public function testConstantMinAgeForBetting(): void
+    public function testConstantTypeMinAgeForBetting(): void
     {
         $user = $this->createValidUser();
         $className = get_class($user);
         $result = defined($className . '::MIN_AGE_FOR_BETTING');
         $this->assertTrue($result);
-        $this->assertSame(18, $user::MIN_AGE_FOR_BETTING);
+        $this->assertIsInt($user::MIN_AGE_FOR_BETTING);
     }
 
-    public function testConstantDatabaseTimeZone(): void
+    public function testConstantTypeDatabaseTimeZone(): void
     {
         $user = $this->createValidUser();
         $className = get_class($user);
         $result = defined($className . '::STORED_TIME_ZONE');
         $this->assertTrue($result);
-        $this->assertSame('UTC', $user::STORED_TIME_ZONE);
+        $this->assertIsString($user::STORED_TIME_ZONE);
     }
 
-    public function testConstantSelectCurrencyName(): void
+    public function testConstantTypeSelectCurrencyCode(): void
     {
         $user = $this->createValidUser();
         $className = get_class($user);
-        $result = defined($className . '::SELECT_CURRENCY_NAME');
+        $result = defined($className . '::SELECT_CURRENCY_CODE');
         $this->assertTrue($result);
-        $this->assertSame('Euro', $user::SELECT_CURRENCY_NAME);
+        $this->assertIsString($user::SELECT_CURRENCY_CODE);
     }
 
-    public function testConstantSelectCurrencySymbol(): void
+    public function testConstantTypeSelectCurrencySymbol(): void
     {
         $user = $this->createValidUser();
         $className = get_class($user);
         $result = defined($className . '::SELECT_CURRENCY_SYMBOL');
         $this->assertTrue($result);
-        $this->assertSame('€', $user::SELECT_CURRENCY_SYMBOL);
+        $this->assertIsString($user::SELECT_CURRENCY_SYMBOL);
     }
 }
