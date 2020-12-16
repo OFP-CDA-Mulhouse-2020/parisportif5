@@ -142,11 +142,11 @@ skinparam linetype ortho
         -identifier : int
         -name : string
         -country : string
-        -countryCode : string
-        -continent : string
+        -code : string
         -dateFormat : string
         -timeFormat : string
-        +getDateTimeFormat() : string
+        +isValidDateTimeFormat() : bool
+        +getDateTimeFormat() : string|null
     }
     'Factures (type=débit ou crédit)
     class Billing {

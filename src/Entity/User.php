@@ -235,6 +235,9 @@ class User implements UserInterface
      *     type="string",
      *     message="Le fuseau horraire stocké {{ value }} n'est pas du type {{ type }}."
      * )
+     * @Assert\Timezone(
+     *     message="Le fuseau horaire {{ value }} n'est pas valide"
+     * )
     */
     public const STORED_TIME_ZONE = "UTC";
 

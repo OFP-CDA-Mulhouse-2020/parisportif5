@@ -118,10 +118,6 @@ class Billing implements FundStorageInterface
 
     /**
      * @ORM\Column(type="integer")
-     * @Assert\Type(
-     *     type="integer",
-     *     message="La valeur {{ value }} n'est pas du type {{ type }}."
-     * )
      * @Assert\Positive(
      *     message="Le numéro de commande doit être un entier positif"
      * )
@@ -163,13 +159,13 @@ class Billing implements FundStorageInterface
     private \DateTimeImmutable $deliveryDate;
 
     /**
-     * @const int DEFAULT_COMMISSION_RATE
+     * @const float DEFAULT_COMMISSION_RATE
      * @Assert\Type(
-     *     type="integer",
+     *     type="float",
      *     message="Le taux de commission par défaut {{ value }} n'est pas du type {{ type }}."
      * )
     */
-    public const DEFAULT_COMMISSION_RATE =  75000;
+    public const DEFAULT_COMMISSION_RATE =  7.5;
 
     /**
      * @const string DEFAULT_CURRENCY_NAME
@@ -356,12 +352,12 @@ class Billing implements FundStorageInterface
 
     public function convertToCurrencyUnit(int $amount): float
     {
-        return ((float)$amount * 0.01);
+        return floatVal($amount * 0.01);
     }
 
     public function convertToCommissionRate(int $commissionRate): float
     {
-        return ((float)$commissionRate * 0.0001);
+        return floatVal($commissionRate * 0.0001);
     }
 
     public function convertCurrencyUnitToStoredData(float $amount): int

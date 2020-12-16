@@ -83,12 +83,12 @@ class Bet implements FundStorageInterface
 
     public function convertToCurrencyUnit(int $amount): float
     {
-        return ((float)$amount * 0.01);
+        return floatVal($amount * 0.01);
     }
 
     public function convertToOddsMultiplier(int $odds): float
     {
-        return ((float)$odds * 0.0001);
+        return floatVal($odds * 0.0001);
     }
 
     public function convertCurrencyUnitToStoredData(float $amount): int
