@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class MemberTest extends WebTestCase
 {
 
-    private function initializeSport(): Member
+    private function initializeMember(): Member
     {
         $member =  new Member();
         $member->setLastName("Papin");
@@ -31,7 +31,7 @@ class MemberTest extends WebTestCase
     public function testIfLastNameIsCorrect(string $lN): void
     {
         $kernel = $this->initializeKernel();
-        $member = $this->initializeSport();
+        $member = $this->initializeMember();
         $member->setLastName($lN);
         $validator = $kernel->getContainer()->get('validator');
         $violations = $validator->validate($member);
@@ -57,7 +57,7 @@ class MemberTest extends WebTestCase
     public function testIfLastNameIsINCorrect(string $lN): void
     {
         $kernel = $this->initializeKernel();
-        $member = $this->initializeSport();
+        $member = $this->initializeMember();
         $member->setLastName($lN);
         $validator = $kernel->getContainer()->get('validator');
         $violations = $validator->validate($member);
@@ -79,7 +79,7 @@ class MemberTest extends WebTestCase
     public function testIfFirstNameIsCorrect(string $fN): void
     {
         $kernel = $this->initializeKernel();
-        $member = $this->initializeSport();
+        $member = $this->initializeMember();
         $member->setFirstName($fN);
         $validator = $kernel->getContainer()->get('validator');
         $violations = $validator->validate($member);
@@ -105,7 +105,7 @@ class MemberTest extends WebTestCase
     public function testIfFirstNameIsINCorrect(string $fN): void
     {
         $kernel = $this->initializeKernel();
-        $member = $this->initializeSport();
+        $member = $this->initializeMember();
         $member->setLastName($fN);
         $validator = $kernel->getContainer()->get('validator');
         $violations = $validator->validate($member);

@@ -246,7 +246,7 @@ skinparam linetype ortho
     class Score {
         -identifier : int
         -value : int
-        -type : string
+        -runType : string
         +getScore() : int
     }
     'Joueur ou sportif ou pilote
