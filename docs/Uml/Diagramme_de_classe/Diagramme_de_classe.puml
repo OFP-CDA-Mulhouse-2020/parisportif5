@@ -260,6 +260,7 @@ skinparam linetype ortho
     class Team {
         -identifier : int
         -name : string
+        -country : string
         +hasResult() : bool
         +hasMembers() : bool
         +hasScores() : bool
