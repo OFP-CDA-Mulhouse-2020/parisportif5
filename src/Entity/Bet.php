@@ -43,6 +43,16 @@ class Bet implements FundStorageInterface
      */
     private int $odds;
 
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private ?bool $isWinning;
+
+    public function __construct()
+    {
+        $this->isWinning = null;
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -79,6 +89,26 @@ class Bet implements FundStorageInterface
     {
         $this->odds = $odds;
         return $this;
+    }
+
+    public function hasWon(): ?bool
+    {
+        return $this->isWinning;
+    }
+
+    public function won(): void
+    {
+        $this->isWinning = true;
+    }
+
+    public function lost(): void
+    {
+        $this->isWinning = false;
+    }
+
+    public function restoreWithoutResult(): void
+    {
+        $this->isWinning = null;
     }
 
     public function convertToCurrencyUnit(int $amount): float

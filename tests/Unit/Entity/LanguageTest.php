@@ -189,13 +189,6 @@ class LanguageTest extends KernelTestCase
     public function testDateFormatUncompatible(string $dateFormat)
     {
         $language = $this->createValidLanguage();
-        /*$date = new \DateTime();
-        $classReflection = new \ReflectionClass($date);
-        $formatArray = $classReflection->getConstants();
-        foreach ($formatArray as $name => $format) {
-            $format = trim(str_replace('(string)', '', $format));
-            echo $name . ' : ' . $date->format($format) . "\r\n";
-        }*/
         $language->setDateFormat($dateFormat);
         $violations = $this->validator->validate($language);
         $this->assertGreaterThanOrEqual(1, count($violations));
@@ -223,7 +216,6 @@ class LanguageTest extends KernelTestCase
         $language = $this->createValidLanguage();
         $language->setTimeFormat($dateFormat);
         $violations = $this->validator->validate($language);
-        //throw new \Exception($violations);
         $this->assertCount(0, $violations);
     }
 
@@ -235,6 +227,7 @@ class LanguageTest extends KernelTestCase
             ['H:i:s O'],
             ['H:i:s T'],
             ['H:i:sP'],
+            ['H:i'],
             ['\TH \h i:s \s\e\c T']
         ];
     }
@@ -248,13 +241,6 @@ class LanguageTest extends KernelTestCase
     public function testTimeFormatUncompatible(string $dateFormat)
     {
         $language = $this->createValidLanguage();
-        /*$date = new \DateTime();
-        $classReflection = new \ReflectionClass($date);
-        $formatArray = $classReflection->getConstants();
-        foreach ($formatArray as $name => $format) {
-            $format = trim(str_replace('(string)', '', $format));
-            echo $name . ' : ' . $date->format($format) . "\r\n";
-        }*/
         $language->setTimeFormat($dateFormat);
         $violations = $this->validator->validate($language);
         $this->assertGreaterThanOrEqual(1, count($violations));
@@ -270,6 +256,7 @@ class LanguageTest extends KernelTestCase
             ["H:i:s + O"],
             ["H:i:s .u"],
             ["H:i:s P"],
+            ["H"],
             [""],
             ["   "]
         ];

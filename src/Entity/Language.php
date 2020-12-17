@@ -63,12 +63,11 @@ class Language
      *     normalizer="trim"
      * )
      * @Assert\Regex(
-     *     pattern="/^([Dl]\,\s)?(([dj](\-|\s|\/)[mn](\-|\s|\/)Y)|(Y(\-|\s|\/)[mn](\-|\s|\/)[dj])|([mn](\-|\s|\/)[dj](\-|\s|\/)Y))\s?$/u",
+     *     pattern="/^([Dl]\,\s)?((([dj](\-|\s|\/)[mn]|[mn](\-|\s|\/)[dj])(\-|\s|\/)Y)|(Y(\-|\s|\/)[mn](\-|\s|\/)[dj]))\s?$/u",
      *     message="Certains caractères spéciaux et paramètres sur la date ne sont pas autorisés pour le format de la date"
      * )
      */
     private string $dateFormat;
-    // pattern="/[\p{C}\p{Pi}\p{Pf}\p{No}\p{S}]+/u",
 
     /**
      * @ORM\Column(type="string", length=50)
@@ -77,13 +76,11 @@ class Language
      *     normalizer="trim"
      * )
      * @Assert\Regex(
-     *     pattern="/^(\\T)?[HG](\:|\s|(\s?(\\\p{Ll}|\\\p{Lu})+\s))i(\:|\s|(\s?(\\\p{Ll}|\\\p{Lu})+\s))s(\.u|\.vP?|P|O|\sO|\s?(\\\p{Ll}|\\\p{Lu})+)?(\s?T)?$/u",
+     *     pattern="/^(\\T)?[HG](\s?(\:|(\\\p{L})+)\s?|\s?)i(\s?(\:|(\\\p{L})+)\s?|\s?)(s(\.u|\.vP?|P|O|\sO|\s?(\\\p{L})+)?)?(\s?T)?$/u",
      *     message="Certains caractères spéciaux et paramètres sur l'heure ne sont pas autorisés pour le format de l'heure"
      * )
      */
     private string $timeFormat;
-    // pattern="/^(\\T)?[HG](\:|\s)i(\:|\s)s(\.u|\.vP?|P|O|\sO)?(\s?T)?$/u",
-    // pattern="/[\p{C}\p{Pi}\p{Pf}\p{No}\p{Sc}\p{Sk}\p{So}]+/",
 
     public function getId(): ?int
     {

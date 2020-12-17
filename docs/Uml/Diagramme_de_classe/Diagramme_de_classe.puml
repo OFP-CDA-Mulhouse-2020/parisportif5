@@ -180,6 +180,11 @@ skinparam linetype ortho
         -designation : string
         -amount : int
         -odds : int
+        -isWinning : bool|null
+        +hasWon() : bool|null
+        +won() : void
+        +lost() : void
+        +restoreWithoutResult() : void
         +convertToOddsMultiplier(in int odds) : float
         +convertOddsMultiplierToStoredData(in float odds) : int
     }

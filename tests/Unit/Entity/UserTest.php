@@ -464,6 +464,10 @@ class UserTest extends KernelTestCase
     public function testValidAccountWithoutActivation(): void
     {
         $user = $this->createValidUser();
+        $method = method_exists($user, 'valid');
+        $this->assertTrue($method);
+        $method = method_exists($user, 'desactivate');
+        $this->assertTrue($method);
         $this->assertTrue($user->getActivatedStatus());
         $this->assertTrue($user->getSuspendedStatus());
         $this->assertNotNull($user->getSuspendedDate());
@@ -480,6 +484,8 @@ class UserTest extends KernelTestCase
     public function testValidAccountWithActivation(): void
     {
         $user = $this->createValidUser();
+        $method = method_exists($user, 'valid');
+        $this->assertTrue($method);
         $this->assertTrue($user->getActivatedStatus());
         $this->assertTrue($user->getSuspendedStatus());
         $this->assertNotNull($user->getSuspendedDate());
@@ -494,6 +500,10 @@ class UserTest extends KernelTestCase
     public function testSuspendAccountWithoutActivation(): void
     {
         $user = $this->createValidUser();
+        $method = method_exists($user, 'valid');
+        $this->assertTrue($method);
+        $method = method_exists($user, 'suspend');
+        $this->assertTrue($method);
         $this->assertTrue($user->getActivatedStatus());
         $this->assertTrue($user->getSuspendedStatus());
         $this->assertNotNull($user->getSuspendedDate());
@@ -512,6 +522,10 @@ class UserTest extends KernelTestCase
     public function testSuspendAccountWithActivation(): void
     {
         $user = $this->createValidUser();
+        $method = method_exists($user, 'valid');
+        $this->assertTrue($method);
+        $method = method_exists($user, 'suspend');
+        $this->assertTrue($method);
         $this->assertTrue($user->getActivatedStatus());
         $this->assertTrue($user->getSuspendedStatus());
         $this->assertNotNull($user->getSuspendedDate());
@@ -528,6 +542,10 @@ class UserTest extends KernelTestCase
     public function testActivateAccount(): void
     {
         $user = $this->createValidUser();
+        $method = method_exists($user, 'desactivate');
+        $this->assertTrue($method);
+        $method = method_exists($user, 'activate');
+        $this->assertTrue($method);
         $this->assertTrue($user->getActivatedStatus());
         $this->assertNotNull($user->getActivatedDate());
         $user->desactivate();
@@ -544,6 +562,8 @@ class UserTest extends KernelTestCase
     public function testDesactivateAccount(): void
     {
         $user = $this->createValidUser();
+        $method = method_exists($user, 'desactivate');
+        $this->assertTrue($method);
         $this->assertTrue($user->getActivatedStatus());
         $result1 = $user->desactivate();
         $result2 = $user->desactivate();
@@ -556,6 +576,8 @@ class UserTest extends KernelTestCase
     public function testDeleteAccount(): void
     {
         $user = $this->createValidUser();
+        $method = method_exists($user, 'delete');
+        $this->assertTrue($method);
         $this->assertFalse($user->getDeletedStatus());
         $this->assertNull($user->getDeletedDate());
         $result1 = $user->delete();
@@ -569,6 +591,10 @@ class UserTest extends KernelTestCase
     public function testRestoreAccount(): void
     {
         $user = $this->createValidUser();
+        $method = method_exists($user, 'delete');
+        $this->assertTrue($method);
+        $method = method_exists($user, 'restore');
+        $this->assertTrue($method);
         $this->assertFalse($user->getDeletedStatus());
         $this->assertNull($user->getDeletedDate());
         $user->delete();
@@ -585,6 +611,8 @@ class UserTest extends KernelTestCase
     public function testIsTruePasswordSafe(): void
     {
         $user = $this->createValidUser();
+        $method = method_exists($user, 'isPasswordSafe');
+        $this->assertTrue($method);
         $result = $user->isPasswordSafe();
         $this->assertTrue($result);
         $violations = $this->validator->validate($user);
@@ -594,6 +622,8 @@ class UserTest extends KernelTestCase
     public function testIsFalsePasswordSafe(): void
     {
         $user = $this->createValidUser();
+        $method = method_exists($user, 'isPasswordSafe');
+        $this->assertTrue($method);
         $user->setPassword("tintin45335");
         $result = $user->isPasswordSafe();
         $this->assertFalse($result);

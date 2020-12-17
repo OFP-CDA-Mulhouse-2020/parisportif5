@@ -142,4 +142,44 @@ class BetTest extends KernelTestCase
         $this->assertIsInt($result);
         //$this->assertSame(15000, $result);
     }
+
+    public function testWonBet(): void
+    {
+        $bet = $this->createValidBet();
+        $method = method_exists($bet, 'won');
+        $this->assertTrue($method);
+        $method = method_exists($bet, 'hasWon');
+        $this->assertTrue($method);
+        $this->assertNull($bet->hasWon());
+        $bet->won();
+        $this->assertTrue($bet->hasWon());
+    }
+
+    public function testLostBet(): void
+    {
+        $bet = $this->createValidBet();
+        $method = method_exists($bet, 'lost');
+        $this->assertTrue($method);
+        $method = method_exists($bet, 'hasWon');
+        $this->assertTrue($method);
+        $this->assertNull($bet->hasWon());
+        $bet->lost();
+        $this->assertFalse($bet->hasWon());
+    }
+
+    public function testRestoreWithoutResultBet(): void
+    {
+        $bet = $this->createValidBet();
+        $method = method_exists($bet, 'restoreWithoutResult');
+        $this->assertTrue($method);
+        $method = method_exists($bet, 'lost');
+        $this->assertTrue($method);
+        $method = method_exists($bet, 'hasWon');
+        $this->assertTrue($method);
+        $this->assertNull($bet->hasWon());
+        $bet->lost();
+        $this->assertFalse($bet->hasWon());
+        $bet->restoreWithoutResult();
+        $this->assertNull($bet->hasWon());
+    }
 }
