@@ -29,7 +29,7 @@ class UserControllerTest extends WebTestCase
             ->setBillingCity("Colmar")
             ->setBillingPostcode("68000")
             ->setBillingCountry("FR")
-            ->setBirthDate(new \DateTime("2000-10-10"))
+            ->setBirthDate(new \DateTimeImmutable("2000-10-10"))
             ->setPassword("Azerty78")
             ->setEmail("dupond.t@orange.fr")
             ->setTimeZoneSelected("Europe/Paris");

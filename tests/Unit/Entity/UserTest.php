@@ -33,7 +33,7 @@ class UserTest extends KernelTestCase
             ->setBillingCity("Colmar")
             ->setBillingPostcode("68000")
             ->setBillingCountry("FR")
-            ->setBirthDate(new \DateTime("2000-10-10"))
+            ->setBirthDate(new \DateTimeImmutable("2000-10-10"))
             ->setPassword("Azerty78")
             ->setEmail("dupond.t@orange.fr")
             ->setTimeZoneSelected("Europe/Paris");
@@ -210,7 +210,7 @@ class UserTest extends KernelTestCase
     /**
      * @dataProvider birthDateUnconformityProvider
      */
-    public function testBirthDateUnconformity(\DateTime $birthDate): void
+    public function testBirthDateUnconformity(\DateTimeImmutable $birthDate): void
     {
         $user = $this->createValidUser();
         $user->setBirthDate($birthDate);
@@ -221,19 +221,19 @@ class UserTest extends KernelTestCase
     public function birthDateUnconformityProvider(): array
     {
         $timezone = $this->createDefaultTimeZone();
-        $legalAgeBirthDate = (new \DateTime('now', $timezone))->sub(new \DateInterval('P18Y'));
+        $legalAgeBirthDate = (new \DateTimeImmutable('now', $timezone))->sub(new \DateInterval('P18Y'));
         return [
             [$legalAgeBirthDate->setTime(23, 59, 59, 999999)],
             [$legalAgeBirthDate->modify('+1 day')->setTime(23, 59, 59, 999999)],
-            [(new \DateTime('now', $timezone))->setTime(23, 59, 60)],
-            [(new \DateTime('now', $timezone))->add(new \DateInterval('P2Y'))]
+            [$legalAgeBirthDate->modify('+1 day')->setTime(0, 0)],
+            [$legalAgeBirthDate->modify('+2 year')]
         ];
     }
 
     /**
      * @dataProvider birthDateConformityProvider
      */
-    public function testBirthDateConformity(\DateTime $birthDate): void
+    public function testBirthDateConformity(\DateTimeImmutable $birthDate): void
     {
         $user = $this->createValidUser();
         $user->setBirthDate($birthDate);
@@ -244,11 +244,10 @@ class UserTest extends KernelTestCase
     public function birthDateConformityProvider(): array
     {
         $timezone = $this->createDefaultTimeZone();
-        $legalAgeBirthDate1 = (new \DateTime('now', $timezone))->sub(new \DateInterval('P18Y'));
-        $legalAgeBirthDate2 = clone $legalAgeBirthDate1;
+        $legalAgeBirthDate = (new \DateTimeImmutable('now', $timezone))->sub(new \DateInterval('P18Y'));
         return [
-            [$legalAgeBirthDate1->modify("-1 day")],
-            [$legalAgeBirthDate2->modify("-1 year")]
+            [$legalAgeBirthDate->modify("-1 day")],
+            [$legalAgeBirthDate->modify("-1 year")]
         ];
     }
 
@@ -465,6 +464,10 @@ class UserTest extends KernelTestCase
     public function testValidAccountWithoutActivation(): void
     {
         $user = $this->createValidUser();
+        $method = method_exists($user, 'valid');
+        $this->assertTrue($method);
+        $method = method_exists($user, 'desactivate');
+        $this->assertTrue($method);
         $this->assertTrue($user->getActivatedStatus());
         $this->assertTrue($user->getSuspendedStatus());
         $this->assertNotNull($user->getSuspendedDate());
@@ -481,6 +484,8 @@ class UserTest extends KernelTestCase
     public function testValidAccountWithActivation(): void
     {
         $user = $this->createValidUser();
+        $method = method_exists($user, 'valid');
+        $this->assertTrue($method);
         $this->assertTrue($user->getActivatedStatus());
         $this->assertTrue($user->getSuspendedStatus());
         $this->assertNotNull($user->getSuspendedDate());
@@ -495,6 +500,10 @@ class UserTest extends KernelTestCase
     public function testSuspendAccountWithoutActivation(): void
     {
         $user = $this->createValidUser();
+        $method = method_exists($user, 'valid');
+        $this->assertTrue($method);
+        $method = method_exists($user, 'suspend');
+        $this->assertTrue($method);
         $this->assertTrue($user->getActivatedStatus());
         $this->assertTrue($user->getSuspendedStatus());
         $this->assertNotNull($user->getSuspendedDate());
@@ -513,6 +522,10 @@ class UserTest extends KernelTestCase
     public function testSuspendAccountWithActivation(): void
     {
         $user = $this->createValidUser();
+        $method = method_exists($user, 'valid');
+        $this->assertTrue($method);
+        $method = method_exists($user, 'suspend');
+        $this->assertTrue($method);
         $this->assertTrue($user->getActivatedStatus());
         $this->assertTrue($user->getSuspendedStatus());
         $this->assertNotNull($user->getSuspendedDate());
@@ -529,6 +542,10 @@ class UserTest extends KernelTestCase
     public function testActivateAccount(): void
     {
         $user = $this->createValidUser();
+        $method = method_exists($user, 'desactivate');
+        $this->assertTrue($method);
+        $method = method_exists($user, 'activate');
+        $this->assertTrue($method);
         $this->assertTrue($user->getActivatedStatus());
         $this->assertNotNull($user->getActivatedDate());
         $user->desactivate();
@@ -545,6 +562,8 @@ class UserTest extends KernelTestCase
     public function testDesactivateAccount(): void
     {
         $user = $this->createValidUser();
+        $method = method_exists($user, 'desactivate');
+        $this->assertTrue($method);
         $this->assertTrue($user->getActivatedStatus());
         $result1 = $user->desactivate();
         $result2 = $user->desactivate();
@@ -557,6 +576,8 @@ class UserTest extends KernelTestCase
     public function testDeleteAccount(): void
     {
         $user = $this->createValidUser();
+        $method = method_exists($user, 'delete');
+        $this->assertTrue($method);
         $this->assertFalse($user->getDeletedStatus());
         $this->assertNull($user->getDeletedDate());
         $result1 = $user->delete();
@@ -570,6 +591,10 @@ class UserTest extends KernelTestCase
     public function testRestoreAccount(): void
     {
         $user = $this->createValidUser();
+        $method = method_exists($user, 'delete');
+        $this->assertTrue($method);
+        $method = method_exists($user, 'restore');
+        $this->assertTrue($method);
         $this->assertFalse($user->getDeletedStatus());
         $this->assertNull($user->getDeletedDate());
         $user->delete();
@@ -586,6 +611,8 @@ class UserTest extends KernelTestCase
     public function testIsTruePasswordSafe(): void
     {
         $user = $this->createValidUser();
+        $method = method_exists($user, 'isPasswordSafe');
+        $this->assertTrue($method);
         $result = $user->isPasswordSafe();
         $this->assertTrue($result);
         $violations = $this->validator->validate($user);
@@ -595,6 +622,8 @@ class UserTest extends KernelTestCase
     public function testIsFalsePasswordSafe(): void
     {
         $user = $this->createValidUser();
+        $method = method_exists($user, 'isPasswordSafe');
+        $this->assertTrue($method);
         $user->setPassword("tintin45335");
         $result = $user->isPasswordSafe();
         $this->assertFalse($result);

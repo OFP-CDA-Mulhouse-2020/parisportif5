@@ -25,7 +25,7 @@ class UserCreationType extends AbstractType
         $timezones = \DateTimeZone::listIdentifiers(\DateTimeZone::PER_COUNTRY, $currentCountry);
         $timezone = count($timezones) == 1 ? $timezones[0] : 'UTC';*/
         /*$minAge = User::MIN_AGE_FOR_BETTING;
-        $currentYear = (int)(new \DateTime('now', new \DateTimeZone('UTC')))->format('Y');*/
+        $currentYear = (int)(new \DateTimeImmutable('now', new \DateTimeZone('UTC')))->format('Y');*/
         $builder
             ->add('civility', ChoiceType::class, [
                 'required' => true,
@@ -72,7 +72,7 @@ class UserCreationType extends AbstractType
                 'required' => true,
                 'label' => "Date de naissance",
                 'invalid_message' => "Veuillez sélectionner une date de naissance",
-                'input' => 'datetime',
+                'input' => 'datetime_immutable',
                 'model_timezone' => User::STORED_TIME_ZONE,
                 'widget' => 'single_text'
             ])

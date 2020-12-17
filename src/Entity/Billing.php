@@ -118,10 +118,6 @@ class Billing implements FundStorageInterface
 
     /**
      * @ORM\Column(type="integer")
-     * @Assert\Type(
-     *     type="integer",
-     *     message="La valeur {{ value }} n'est pas du type {{ type }}."
-     * )
      * @Assert\Positive(
      *     message="Le numéro de commande doit être un entier positif"
      * )
@@ -153,23 +149,23 @@ class Billing implements FundStorageInterface
     private int $commissionRate;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="datetime_immutable")
      */
-    private \DateTimeInterface $issueDate;
+    private \DateTimeImmutable $issueDate;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="datetime_immutable")
      */
-    private \DateTimeInterface $deliveryDate;
+    private \DateTimeImmutable $deliveryDate;
 
     /**
-     * @const int DEFAULT_COMMISSION_RATE
+     * @const float DEFAULT_COMMISSION_RATE
      * @Assert\Type(
-     *     type="integer",
+     *     type="float",
      *     message="Le taux de commission par défaut {{ value }} n'est pas du type {{ type }}."
      * )
     */
-    public const DEFAULT_COMMISSION_RATE =  75000;
+    public const DEFAULT_COMMISSION_RATE =  7.5;
 
     /**
      * @const string DEFAULT_CURRENCY_NAME
@@ -321,23 +317,23 @@ class Billing implements FundStorageInterface
         return $this;
     }
 
-    public function getIssueDate(): ?\DateTimeInterface
+    public function getIssueDate(): ?\DateTimeImmutable
     {
         return $this->issueDate;
     }
 
-    public function setIssueDate(\DateTimeInterface $issueDate): self
+    public function setIssueDate(\DateTimeImmutable $issueDate): self
     {
         $this->issueDate = $issueDate;
         return $this;
     }
 
-    public function getDeliveryDate(): ?\DateTimeInterface
+    public function getDeliveryDate(): ?\DateTimeImmutable
     {
         return $this->deliveryDate;
     }
 
-    public function setDeliveryDate(\DateTimeInterface $deliveryDate): self
+    public function setDeliveryDate(\DateTimeImmutable $deliveryDate): self
     {
         $this->deliveryDate = $deliveryDate;
         return $this;
@@ -356,12 +352,12 @@ class Billing implements FundStorageInterface
 
     public function convertToCurrencyUnit(int $amount): float
     {
-        return ((float)$amount * 0.01);
+        return floatVal($amount * 0.01);
     }
 
     public function convertToCommissionRate(int $commissionRate): float
     {
-        return ((float)$commissionRate * 0.0001);
+        return floatVal($commissionRate * 0.0001);
     }
 
     public function convertCurrencyUnitToStoredData(float $amount): int

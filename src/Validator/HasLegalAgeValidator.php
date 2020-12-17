@@ -20,22 +20,22 @@ class HasLegalAgeValidator extends ConstraintValidator
             return;
         }
 
-        if (!$value instanceof \DateTime) {
+        if (!$value instanceof \DateTimeImmutable) {
             // throw this exception if your validator cannot handle the passed type so that it can be marked as invalid
-            throw new \UnexpectedValueException("Cette valeur $value n'est pas un objet DateTime");
+            throw new \UnexpectedValueException("Cette valeur $value n'est pas un objet DateTimeImmutable");
         }
 
         $minAge = User::MIN_AGE_FOR_BETTING;
         if ($this->hasLegalAge($value, $minAge)) {
             $this->context->buildViolation($constraint->message)
-                ->setParameter('{{ integer }}', (string) $minAge)
+                ->setParameter('{{ integer }}', (string)$minAge)
                 ->addViolation();
         }
     }
 
-    private function hasLegalAge(\DateTime $value, int $minAge): bool
+    private function hasLegalAge(\DateTimeImmutable $value, int $minAge): bool
     {
-        $legalAgeDate = clone $value;
+        $legalAgeDate = \DateTime::createFromImmutable($value);
         $timeZoneString = 'UTC';
         $timeZoneObject = new \DateTimeZone($timeZoneString);
         $legalAgeDate = $legalAgeDate->setTimezone($timeZoneObject);
