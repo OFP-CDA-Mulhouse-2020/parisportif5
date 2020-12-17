@@ -28,6 +28,15 @@ class Run
     private string $name;
 
     /**
+     * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(
+     *     message="Le nom de l'évènement ne peut pas être vide",
+     *     normalizer="trim"
+     * )
+     */
+    private string $event;
+
+    /**
      * @ORM\Column(type="datetime_immutable")
      * @Assert\GreaterThanOrEqual(
      *     value="tomorrow UTC",
@@ -58,6 +67,17 @@ class Run
     public function setName(string $name): self
     {
         $this->name = $name;
+        return $this;
+    }
+
+    public function getEvent(): ?string
+    {
+        return $this->event;
+    }
+
+    public function setEvent(string $event): self
+    {
+        $this->event = $event;
         return $this;
     }
 

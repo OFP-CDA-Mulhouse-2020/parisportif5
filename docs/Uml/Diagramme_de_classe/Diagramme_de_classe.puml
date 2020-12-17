@@ -5,23 +5,25 @@ skinparam linetype ortho
     'Un utilisateur a une langue sélectionnée
     User "0..*" --> "1" Language
     'Une facture n'est pas pas forcément lié à un utilisateur existant
-    User "0..1" <-- "0..*" Billing
+    User "1" <-- "0..*" Billing
     'Un paris a un type
     BetType "1" <-- "0..*" Bet
     'Un utilisateur a un porte-feuille
     User "1" -- "1" Wallet
-    'Un utilisateur a une liste des paris en cours (validé)
-    User "1" -- "1" OngoingBets
-    'Un paris (validé) est lié à une liste de paris en cours
-    Bet "0..*" --o "1" OngoingBets
+    'Un utilisateur a des paris
+    User "1" o-- "0..*" Bet
     'Un type de paris est lié à un sport
     BetType "0..*" --> "1" Sport
+    'Une catégorie de paris est lié a un sport
+    BetCategory "0..*" --o "1" Sport
     'Une compétition a des événements
-    Competition "1" o-- "0..*" Event
+    'Competition "1" o-- "0..*" Event
     'La compétition a une équipe gagnante
     Competition "1" --> "0..1" Team
     'Un événement a plusieurs rencontre ou course
-    Event "1" o-- "0..*" Run
+    'Event "1" o-- "0..*" Run
+    'Une compétition a plusieurs rencontre ou course
+    Competition "1" o-- "0..*" Run
     'Une rencontre ou une course a un lieu
     Run "1" -- "1" Location
     'Une équipe a des scores (des matchs, des courses)
@@ -30,8 +32,6 @@ skinparam linetype ortho
     Run "1" o--> "0..*" Team
     'Une équipe a plusieurs membre
     Team "1" *-- "1..*" Member
-    'Un paris a un état (en cours ou passé)
-    BetState "1" <-- "0..*" Bet
     'Une équipe a un résultat (gagnant, perdant) même dans le cas de sport individuel
     ResultType "0..1" <-- "0..*" Team
     'Un membre a un résultat dans le cas de sport individuel (gagnant, perdant)
@@ -60,11 +60,12 @@ skinparam linetype ortho
     'Classe d'association entre un paris et un membre
     (Bet, Member) .. MemberBets
 'Définitions des classes :
-    'Rôle du membre (pilote, co-pilote, joueur)
+    'Pour convertir le montant enregistré dans la bdd en unité monétaire et vice versa
     interface FundStorageInterface {
         +convertToCurrencyUnit(in int amount) : float
         +convertCurrencyUnitToStoredData(in float amount) : int
     }
+    'Rôle du membre (pilote, co-pilote, joueur)
     class MemberRole {
         -identifier : int
         -name : string
@@ -79,12 +80,6 @@ skinparam linetype ortho
         -identifier : int
         -name : string
     }
-    'État du paris (en cours, validé, finis)
-    class BetState {
-        -identifier : int
-        -name : string
-        -description : string
-    }
     'Porte-feuille de l'utilisateur avec des fonds (de l'argent gagnés)
     class Wallet {
         -identifier : int
@@ -93,12 +88,6 @@ skinparam linetype ortho
         +subtract(in float value) : void
         +isEmpty() : bool
         +isAuthorizedSubtraction(in float value) : bool
-    }
-    'Liste qui contient les paris validés et en cours
-    class OngoingBets {
-        -identifier : int
-        +isEmpty() : bool
-        +getBetsCount() : int
     }
     'Utilisateur avec un compte
     class User {
@@ -136,6 +125,7 @@ skinparam linetype ortho
         +valid() : bool
         +activate() : bool
         +desactivate() : bool
+        +cancelBet(in Bet bet) : void
     }
     'Langue d'affichage de l'utilisateur
     class Language {
@@ -188,8 +178,18 @@ skinparam linetype ortho
         +convertToOddsMultiplier(in int odds) : float
         +convertOddsMultiplierToStoredData(in float odds) : int
     }
-    'Catégorie de paris (ex: Paris sur la victoire du favoris)
+    'Type de paris (ex: Paris sur la victoire d'1 équipe)
     class BetType {
+        -identifier : int
+        -isActive : bool
+        -category : string
+        -target : string
+        -description : string
+        +activate() : void
+        +deactivate() : void
+    }
+    'Catégorie de paris (ex: Paris sur les résultats)
+    class BetCategory {
         -identifier : int
         -name : string
         -description : string
@@ -228,12 +228,12 @@ skinparam linetype ortho
         +getEventsCount() : int
     }
     'Événement de la compétition (poul de qualification, Circuit F1 de france)
-    class Event {
-        -identifier : int
-        -name : string
-        +hasRuns() : bool
-        +getRunsCount() : int
-    }
+    'class Event {
+    '    -identifier : int
+     '   -name : string
+    '    +hasRuns() : bool
+     '   +getRunsCount() : int
+    '}
     'Un match, une rencontre, une course
     class Run {
         -identifier : int

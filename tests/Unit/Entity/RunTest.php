@@ -22,7 +22,8 @@ class RunTest extends KernelTestCase
         $run = new Run();
         $date = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
         $run
-            ->setName('name')
+            ->setName('run name')
+            ->setEvent('event name')
             ->setStartDate($date->setTime(23, 59, 59, 1000000));
         return $run;
     }
@@ -60,6 +61,38 @@ class RunTest extends KernelTestCase
         $violations = $this->validator->validate($run);
         $this->assertCount(1, $violations);
         $run->setName($runName2);
+        $violations = $this->validator->validate($run);
+        $this->assertCount(1, $violations);
+    }
+
+    /**
+     * @dataProvider eventPropertyCompatibleProvider
+     */
+    public function testEventPropertyCompatible(string $event)
+    {
+        $run = $this->createValidRun();
+        $run->setEvent($event);
+        $violations = $this->validator->validate($run);
+        $this->assertCount(0, $violations);
+    }
+
+    public function eventPropertyCompatibleProvider(): array
+    {
+        return [
+            ["Championnat des Vosges"],
+            ["Matchs de pool n°1"]
+        ];
+    }
+
+    public function testEventPropertyUncompatible()
+    {
+        $event1 = '';
+        $event2 = '   ';
+        $run = $this->createValidRun();
+        $run->setEvent($event1);
+        $violations = $this->validator->validate($run);
+        $this->assertCount(1, $violations);
+        $run->setEvent($event2);
         $violations = $this->validator->validate($run);
         $this->assertCount(1, $violations);
     }
