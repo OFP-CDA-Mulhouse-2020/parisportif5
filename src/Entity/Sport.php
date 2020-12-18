@@ -40,7 +40,7 @@ class Sport
      *     message="Le nombre de compétiteurs doit être supérieur ou égal à 1"
      * )
      */
-    private int $numberOfCompetitors;
+    private int $maxMembers;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -70,6 +70,16 @@ class Sport
      */
     private bool $collectiveType;
 
+    /**
+     * @ORM\Column(type="integer")
+     * @Assert\NotBlank,
+     *     normalizer="trim"
+     * @Assert\GreaterThanOrEqual(1)(
+     *     message="Le nombre d'équipes doit être supérieur ou égal à 1"
+     * )
+     */
+    private int $maxTeams;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -87,14 +97,14 @@ class Sport
         return $this;
     }
 
-    public function getNumberOfCompetitors(): ?int
+    public function getMaxMembers(): ?int
     {
-        return $this->numberOfCompetitors;
+        return $this->maxMembers;
     }
 
-    public function setNumberOfCompetitors(int $numberOfCompetitors): self
+    public function setMaxMembers(int $maxMembers): self
     {
-        $this->numberOfCompetitors = $numberOfCompetitors;
+        $this->maxMembers = $maxMembers;
 
         return $this;
     }
@@ -143,6 +153,18 @@ class Sport
     public function setCollectiveType(bool $collectiveType): self
     {
         $this->collectiveType = $collectiveType;
+
+        return $this;
+    }
+
+    public function getMaxTeams(): ?int
+    {
+        return $this->maxTeams;
+    }
+
+    public function setMaxTeams(int $maxTeams): self
+    {
+        $this->maxTeams = $maxTeams;
 
         return $this;
     }

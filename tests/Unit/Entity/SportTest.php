@@ -14,7 +14,8 @@ class SportTest extends WebTestCase
     {
         $sport =  new Sport();
         $sport->setName("Football");
-        $sport->setNumberOfCompetitors(1);
+        $sport->setMaxMembers(22);
+        $sport->setMaxTeams(2);
         $sport->setCountry("FR");
         $sport->setRunType("fixture");
         $sport->setIndividualType(false);
@@ -45,7 +46,7 @@ class SportTest extends WebTestCase
         $sport->setName("");
         $validator = $kernel->getContainer()->get('validator');
         $violations = $validator->validate($sport);
-        $this->assertCount(1, $violations);
+        $this->assertGreaterThanOrEqual(1, count($violations));
     }
 
     public function testIfNumberOfCompetitorsIsNotNull(): void
@@ -61,11 +62,11 @@ class SportTest extends WebTestCase
     {
         $kernel = $this->initializeKernel();
         $sport = $this->initializeSport();
-        $sport->setNumberOfCompetitors(-2);
+        $sport->setMaxMembers(-2);
         /** @var ValidatorInterface $validator */
         $validator = $kernel->getContainer()->get('validator');
         $violations = $validator->validate($sport);
-        $this->assertCount(1, $violations);
+        $this->assertGreaterThanOrEqual(1, count($violations));
     }
 
     public function testIfCountryIsValid(): void
@@ -121,6 +122,27 @@ class SportTest extends WebTestCase
         /** @var ValidatorInterface $validator */
         $validator = $kernel->getContainer()->get('validator');
         $violations = $validator->validate($sport);
-        $this->assertCount(1, $violations);
+        $this->assertGreaterThanOrEqual(1, count($violations));
+    }
+
+    public function testIfTeamLimitIsValid(): void
+    {
+        $kernel = $this->initializeKernel();
+        $sport = $this->initializeSport();
+        /** @var ValidatorInterface $validator */
+        $validator = $kernel->getContainer()->get('validator');
+        $violations = $validator->validate($sport);
+        $this->assertCount(0, $violations);
+    }
+
+    public function testIfTeamLimitIsNotValid(): void
+    {
+        $kernel = $this->initializeKernel();
+        $sport = $this->initializeSport();
+        $sport->setMaxTeams(-1);
+        /** @var ValidatorInterface $validator */
+        $validator = $kernel->getContainer()->get('validator');
+        $violations = $validator->validate($sport);
+        $this->assertGreaterThanOrEqual(1, count($violations));
     }
 }
