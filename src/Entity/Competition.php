@@ -57,6 +57,14 @@ class Competition
      */
     private string $country;
 
+    /**
+     * @ORM\Column(type="integer")
+     * @Assert\Positive(
+     *     message="Le nombre maximum de course ou de rencontre doit être un entier positif"
+     * )
+     */
+    private int $maxRuns;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -104,6 +112,17 @@ class Competition
     public function setCountry(string $country): self
     {
         $this->country = $country;
+        return $this;
+    }
+
+    public function getMaxRuns(): ?int
+    {
+        return $this->maxRuns;
+    }
+
+    public function setMaxRuns(int $maxRuns): self
+    {
+        $this->maxRuns = $maxRuns;
         return $this;
     }
 
