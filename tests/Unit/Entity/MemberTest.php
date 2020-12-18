@@ -3,6 +3,8 @@
 namespace App\Tests\Unit\Entity;
 
 use App\Entity\Member;
+use App\Entity\MemberRole;
+use App\Entity\MemberStatus;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -16,6 +18,20 @@ class MemberTest extends WebTestCase
         $member->setLastName("Papin");
         $member->setFirstName("Jean-Pierre");
         return $member;
+    }
+
+    private function initializeMemberRole(string $memberRoleName): MemberRole
+    {
+        $memberRole =  new MemberRole();
+        $memberRole->setName($memberRoleName);
+        return $memberRole;
+    }
+
+    private function initializeMemberStatus(string $memberStatusName): MemberStatus
+    {
+        $memberStatus =  new MemberStatus();
+        $memberStatus->setName($memberStatusName);
+        return $memberStatus;
     }
 
     private function initializeKernel(): KernelInterface
@@ -121,5 +137,51 @@ class MemberTest extends WebTestCase
             ["♥"],
             [""]
         ];
+    }
+
+    public function testIfMemberRoleIsValid(): void
+    {
+        $kernel = $this->initializeKernel();
+        $member = $this->initializeMember();
+        $memberRole = $this->initializeMemberRole("footballer");
+        $member->setMemberRole($memberRole);
+        $this->assertSame($memberRole, $member->getMemberRole());
+        $validator = $kernel->getContainer()->get('validator');
+        $violations = $validator->validate($member);
+        $this->assertCount(0, $violations);
+    }
+
+    public function testIfMemberRoleIsInvalid(): void
+    {
+        $kernel = $this->initializeKernel();
+        $member = $this->initializeMember();
+        $memberRole = $this->initializeMemberRole("player");
+        $member->setMemberRole($memberRole);
+        $validator = $kernel->getContainer()->get('validator');
+        $violations = $validator->validate($member);
+        $this->assertCount(1, $violations);
+    }
+
+    public function testIfMemberStatusIsValid(): void
+    {
+        $kernel = $this->initializeKernel();
+        $member = $this->initializeMember();
+        $memberStatus = $this->initializeMemberStatus("titular");
+        $member->setMemberStatus($memberStatus);
+        $this->assertSame($memberStatus, $member->getMemberStatus());
+        $validator = $kernel->getContainer()->get('validator');
+        $violations = $validator->validate($member);
+        $this->assertCount(0, $violations);
+    }
+
+    public function testIfMemberStatusIsInvalid(): void
+    {
+        $kernel = $this->initializeKernel();
+        $member = $this->initializeMember();
+        $memberStatus = $this->initializeMemberStatus("on the bench");
+        $member->setMemberStatus($memberStatus);
+        $validator = $kernel->getContainer()->get('validator');
+        $violations = $validator->validate($member);
+        $this->assertCount(1, $violations);
     }
 }
