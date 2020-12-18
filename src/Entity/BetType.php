@@ -36,6 +36,11 @@ class BetType
      */
     private string $target;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private bool $active;
+
     /** @const array SUBJECTS */
     public const TARGETS = ["run", "competition", "team", "member"];
 
@@ -69,5 +74,20 @@ class BetType
     {
         $this->target = $target;
         return $this;
+    }
+
+    public function isActive(): ?bool
+    {
+        return $this->active;
+    }
+
+    public function activate(): void
+    {
+        $this->active = true;
+    }
+
+    public function desactivate(): void
+    {
+        $this->active = false;
     }
 }

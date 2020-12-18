@@ -24,7 +24,7 @@ class Team
      *     normalizer="trim"
      * )
      * @Assert\Regex(
-     *     pattern="/^((\'(?<!\'))?|\p{L}(\.(?!\.))?|(\-(?!\-))|(\s(?!\s))|\d)+$/u",
+     *     pattern="/^\p{L}((?<!\')\'|\p{L}?\s?(?!\s)(\.(?!\.))?|\-(?!\-)|\s(?!\s)|\d)+\S$/u",
      *     message="Seuls le chiffres, les lettres et les caractères suivants (.,-, ') sont autorisés, et il doit y avoir au moins duex caractères valides"
      * )
      * @Assert\Length(

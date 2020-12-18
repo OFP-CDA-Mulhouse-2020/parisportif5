@@ -95,4 +95,22 @@ class BetTypeTest extends KernelTestCase
             ["  "]
         ];
     }
+
+    public function testMethodActivate(): void
+    {
+        $betType = $this->createValidBetType();
+        $method = method_exists($betType, 'activate');
+        $this->assertTrue($method);
+        $betType->activate();
+        $this->assertTrue($betType->isActive());
+    }
+
+    public function testMethodDesactivate(): void
+    {
+        $betType = $this->createValidBetType();
+        $method = method_exists($betType, 'desactivate');
+        $this->assertTrue($method);
+        $betType->desactivate();
+        $this->assertFalse($betType->isActive());
+    }
 }

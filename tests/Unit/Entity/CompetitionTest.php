@@ -24,7 +24,8 @@ class CompetitionTest extends KernelTestCase
         $competition
             ->setName('name')
             ->setStartDate($date->setTime(23, 59, 59, 1000000))
-            ->setCountry('FR');
+            ->setCountry('FR')
+            ->setMaxRuns(1);
         return $competition;
     }
 
@@ -194,6 +195,32 @@ class CompetitionTest extends KernelTestCase
             [''],
             ['   ']
         ];
+    }
+
+    public function testMaxRunsCompatible()
+    {
+        $maxRuns1 = 1;
+        $maxRuns2 = 50;
+        $competition = $this->createValidCompetition();
+        $competition->setMaxRuns($maxRuns1);
+        $violations = $this->validator->validate($competition);
+        $this->assertCount(0, $violations);
+        $competition->setMaxRuns($maxRuns2);
+        $violations = $this->validator->validate($competition);
+        $this->assertCount(0, $violations);
+    }
+
+    public function testMaxRunsUncompatible()
+    {
+        $maxRuns1 = 0;
+        $maxRuns2 = -1;
+        $competition = $this->createValidCompetition();
+        $competition->setMaxRuns($maxRuns1);
+        $violations = $this->validator->validate($competition);
+        $this->assertCount(1, $violations);
+        $competition->setMaxRuns($maxRuns2);
+        $violations = $this->validator->validate($competition);
+        $this->assertCount(1, $violations);
     }
 
     public function testMethodIsFinishReturnFalse()
