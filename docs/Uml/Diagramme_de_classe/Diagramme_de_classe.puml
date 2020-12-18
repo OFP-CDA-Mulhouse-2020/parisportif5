@@ -162,6 +162,7 @@ skinparam linetype ortho
         +deleteUser() : void
         +convertToCommissionRate(in int commissionRate) : float
         +convertCommissionRateToStoredData(in float commissionRate) : int
+        +hasUser() : bool
     }
     'Un paris
     class Bet {

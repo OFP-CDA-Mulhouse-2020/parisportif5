@@ -30,6 +30,11 @@ class Wallet
      */
     private int $amount;
 
+    /**
+     * @ORM\OneToOne(targetEntity=User::class, mappedBy="wallet", cascade={"persist", "remove"})
+     */
+    private User $user;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -43,6 +48,23 @@ class Wallet
     public function setAmount(int $amount): self
     {
         $this->amount = $amount;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(User $user): self
+    {
+        $this->user = $user;
+
+        // set the owning side of the relation if necessary
+        if ($user->getWallet() !== $this) {
+            $user->setWallet($this);
+        }
 
         return $this;
     }

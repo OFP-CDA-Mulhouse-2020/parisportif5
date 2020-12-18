@@ -48,6 +48,13 @@ class Bet implements FundStorageInterface
      */
     private ?bool $isWinning;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="onGoingBets")
+     * @ORM\JoinColumn(nullable=false)
+     * @Assert\Valid
+     */
+    private User $user;
+
     public function __construct()
     {
         $this->isWinning = null;
@@ -129,5 +136,16 @@ class Bet implements FundStorageInterface
     public function convertOddsMultiplierToStoredData(float $odds): int
     {
         return intVal($odds * 10000);
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(User $user): self
+    {
+        $this->user = $user;
+        return $this;
     }
 }
