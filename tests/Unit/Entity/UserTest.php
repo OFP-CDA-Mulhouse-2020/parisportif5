@@ -2,7 +2,10 @@
 
 namespace App\Tests\Unit\Entity;
 
+use App\Entity\Bet;
+use App\Entity\Language;
 use App\Entity\User;
+use App\Entity\Wallet;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -38,6 +41,45 @@ class UserTest extends KernelTestCase
             ->setEmail("dupond.t@orange.fr")
             ->setTimeZoneSelected("Europe/Paris");
         return $user;
+    }
+
+    private function createWalletObject(int $amount): Wallet
+    {
+        $wallet =  new Wallet();
+        $wallet->setAmount($amount);
+        return $wallet;
+    }
+
+    private function createLanguageObject(
+        string $name = 'name',
+        string $country = 'pays',
+        string $code = 'fr_FR',
+        string $dateFormat = 'd/m/Y',
+        string $timeFormat = 'H:i:s'
+    ): Language {
+        $language = new Language();
+        $language
+            ->setName($name)
+            ->setCountry($country)
+            ->setCode($code)
+            ->setDateFormat($dateFormat)
+            ->setTimeFormat($timeFormat);
+        return $language;
+    }
+
+    private function createBetObject(
+        User $user,
+        string $designation = 'paris',
+        int $amount = 100,
+        int $odds = 12000
+    ): Bet {
+        $bet = new Bet();
+        $bet
+            ->setDesignation($designation)
+            ->setAmount($amount)
+            ->setOdds($odds)
+            ->setUser($user);
+        return $bet;
     }
 
     /**
@@ -687,5 +729,84 @@ class UserTest extends KernelTestCase
         $result = defined($className . '::SELECT_CURRENCY_SYMBOL');
         $this->assertTrue($result);
         $this->assertIsString($user::SELECT_CURRENCY_SYMBOL);
+    }
+
+    public function testWalletUncompatible(): void
+    {
+        $user = $this->createValidUser();
+        $wallet = $this->createWalletObject(-1);
+        $user->setWallet($wallet);
+        $violations = $this->validator->validate($user);
+        $this->assertCount(1, $violations);
+    }
+
+    public function testWalletCompatible(): void
+    {
+        $user = $this->createValidUser();
+        $wallet = $this->createWalletObject(0);
+        $user->setWallet($wallet);
+        $this->assertSame($wallet, $user->getWallet());
+        $violations = $this->validator->validate($user);
+        $this->assertCount(0, $violations);
+    }
+
+    public function testLanguageUncompatible(): void
+    {
+        $user = $this->createValidUser();
+        $language = $this->createLanguageObject('name', 'pays', 'XD');
+        $user->setLanguage($language);
+        $violations = $this->validator->validate($user);
+        $this->assertCount(1, $violations);
+    }
+
+    public function testLanguageCompatible(): void
+    {
+        $user = $this->createValidUser();
+        $language = $this->createLanguageObject();
+        $user->setLanguage($language);
+        $this->assertSame($language, $user->getLanguage());
+        $violations = $this->validator->validate($user);
+        $this->assertCount(0, $violations);
+    }
+
+    public function testAddOnGoingBetUncompatible(): void
+    {
+        $user = $this->createValidUser();
+        $bet = $this->createBetObject($user, 'paris', -1);
+        $user->addOnGoingBet($bet);
+        $violations = $this->validator->validate($user);
+        $this->assertCount(1, $violations);
+    }
+
+    public function testAddOnGoingBetCompatible(): void
+    {
+        $user = $this->createValidUser();
+        $bet = $this->createBetObject($user);
+        $user->addOnGoingBet($bet);
+        $this->assertContains($bet, $user->getOnGoingBets());
+        $violations = $this->validator->validate($user);
+        $this->assertCount(0, $violations);
+    }
+
+    public function testRemoveOnGoingBetUncompatible(): void
+    {
+        $user = $this->createValidUser();
+        $bet = $this->createBetObject($user, 'paris', -1);
+        $user->addOnGoingBet($bet);
+        $violations = $this->validator->validate($user);
+        $this->assertCount(1, $violations);
+        $user->removeOnGoingBet($bet);
+        $this->assertNotContains($bet, $user->getOnGoingBets());
+    }
+
+    public function testRemoveOnGoingBetCompatible(): void
+    {
+        $user = $this->createValidUser();
+        $bet = $this->createBetObject($user);
+        $user->addOnGoingBet($bet);
+        $violations = $this->validator->validate($user);
+        $this->assertCount(0, $violations);
+        $user->removeOnGoingBet($bet);
+        $this->assertNotContains($bet, $user->getOnGoingBets());
     }
 }

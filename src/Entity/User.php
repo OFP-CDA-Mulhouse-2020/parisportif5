@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Validator as UserAssert;
 use App\Repository\UserRepository;
@@ -221,6 +223,27 @@ class User implements UserInterface
     private ?\DateTimeImmutable $activatedDate;
 
     /**
+     * @ORM\OneToOne(targetEntity=Wallet::class, inversedBy="user", cascade={"persist", "remove"})
+     * @ORM\JoinColumn(nullable=false)
+     * @Assert\Valid
+     */
+    private Wallet $wallet;
+
+    /**
+     * @ORM\OneToOne(targetEntity=Language::class, cascade={"persist", "remove"})
+     * @ORM\JoinColumn(nullable=false)
+     * @Assert\Valid
+     */
+    private Language $language;
+
+    /**
+     * @var Collection<int,Bet> $onGoingBets
+     * @ORM\OneToMany(targetEntity=Bet::class, mappedBy="user", orphanRemoval=true)
+     * @Assert\Valid
+     */
+    private Collection $onGoingBets;
+
+    /**
      * @const int MIN_AGE_FOR_BETTING
      * @Assert\Type(
      *     type="integer",
@@ -271,6 +294,7 @@ class User implements UserInterface
         $this->suspendedDate = $creationDate;
         $this->deletedStatus = false;
         $this->deletedDate = null;
+        $this->onGoingBets = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -474,6 +498,28 @@ class User implements UserInterface
         return $this;
     }
 
+    public function getWallet(): ?Wallet
+    {
+        return $this->wallet;
+    }
+
+    public function setWallet(Wallet $wallet): self
+    {
+        $this->wallet = $wallet;
+        return $this;
+    }
+
+    public function getLanguage(): ?Language
+    {
+        return $this->language;
+    }
+
+    public function setLanguage(Language $language): self
+    {
+        $this->language = $language;
+        return $this;
+    }
+
     public function getDeletedStatus(): ?bool
     {
         return $this->deletedStatus;
@@ -566,5 +612,35 @@ class User implements UserInterface
             return true;
         }
         return false;
+    }
+
+    /**
+     * @return Collection<int,Bet>
+     */
+    public function getOnGoingBets(): Collection
+    {
+        return $this->onGoingBets;
+    }
+
+    public function addOnGoingBet(Bet $onGoingBet): self
+    {
+        if (!$this->onGoingBets->contains($onGoingBet)) {
+            $this->onGoingBets[] = $onGoingBet;
+            //$onGoingBet->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOnGoingBet(Bet $onGoingBet): self
+    {
+        if ($this->onGoingBets->removeElement($onGoingBet)) {
+            // set the owning side to null (unless already changed)
+            /*if ($onGoingBet->getUser() === $this) {
+                $onGoingBet->setUser(null);
+            }*/
+        }
+
+        return $this;
     }
 }

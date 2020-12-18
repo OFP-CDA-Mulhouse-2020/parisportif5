@@ -3,6 +3,7 @@
 namespace App\Tests\Unit\Entity;
 
 use App\Entity\Bet;
+use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -27,7 +28,25 @@ class BetTest extends KernelTestCase
         return $bet;
     }
 
-        /**
+    private function createUserObject(string $country = "FR"): User
+    {
+        $user = new User();
+        $user
+            ->setCivility("Monsieur")
+            ->setFirstName("Tintin")
+            ->setLastName("Dupont")
+            ->setBillingAddress("1 avenue st martin")
+            ->setBillingCity("Colmar")
+            ->setBillingPostcode("68000")
+            ->setBillingCountry($country)
+            ->setBirthDate(new \DateTimeImmutable("2000-10-10"))
+            ->setPassword("Azerty78")
+            ->setEmail("dupond.t@orange.fr")
+            ->setTimeZoneSelected("Europe/Paris");
+        return $user;
+    }
+
+    /**
      * @dataProvider designationCompatibleProvider
      */
     public function testDesignationCompatible(string $designation)
@@ -181,5 +200,24 @@ class BetTest extends KernelTestCase
         $this->assertFalse($bet->hasWon());
         $bet->restoreWithoutResult();
         $this->assertNull($bet->hasWon());
+    }
+
+    public function testUserUncompatible(): void
+    {
+        $bet = $this->createValidBet();
+        $user = $this->createUserObject('XD');
+        $bet->setUser($user);
+        $violations = $this->validator->validate($bet);
+        $this->assertCount(1, $violations);
+    }
+
+    public function testUserCompatible(): void
+    {
+        $bet = $this->createValidBet();
+        $user = $this->createUserObject();
+        $bet->setUser($user);
+        $this->assertSame($user, $bet->getUser());
+        $violations = $this->validator->validate($bet);
+        $this->assertCount(0, $violations);
     }
 }
