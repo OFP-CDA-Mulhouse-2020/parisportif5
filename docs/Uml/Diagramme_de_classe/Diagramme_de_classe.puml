@@ -204,7 +204,7 @@ skinparam linetype ortho
     class Sport {
         -identifier : int
         -name : string
-        -maxTeamsByRun : int
+        -maxTeams : int
         -maxMembersByTeam : int
         -collectiveType : bool
         -individualType : bool
