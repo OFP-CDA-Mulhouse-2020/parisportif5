@@ -40,7 +40,7 @@ class Sport
      *     message="Le nombre de compétiteurs doit être supérieur ou égal à 1"
      * )
      */
-    private int $maxMembers;
+    private int $maxMembersByTeam;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -97,14 +97,14 @@ class Sport
         return $this;
     }
 
-    public function getMaxMembers(): ?int
+    public function getMaxMembersByTeam(): ?int
     {
-        return $this->maxMembers;
+        return $this->maxMembersByTeam;
     }
 
-    public function setMaxMembers(int $maxMembers): self
+    public function setMaxMembersByTeam(int $maxMembersByTeam): self
     {
-        $this->maxMembers = $maxMembers;
+        $this->maxMembersByTeam = $maxMembersByTeam;
 
         return $this;
     }

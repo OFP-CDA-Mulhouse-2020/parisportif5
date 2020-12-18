@@ -14,7 +14,7 @@ class SportTest extends WebTestCase
     {
         $sport =  new Sport();
         $sport->setName("Football");
-        $sport->setMaxMembers(22);
+        $sport->setMaxMembersByTeam(11);
         $sport->setMaxTeams(2);
         $sport->setCountry("FR");
         $sport->setRunType("fixture");
@@ -62,7 +62,7 @@ class SportTest extends WebTestCase
     {
         $kernel = $this->initializeKernel();
         $sport = $this->initializeSport();
-        $sport->setMaxMembers(-2);
+        $sport->setMaxMembersByTeam(-2);
         /** @var ValidatorInterface $validator */
         $validator = $kernel->getContainer()->get('validator');
         $violations = $validator->validate($sport);
