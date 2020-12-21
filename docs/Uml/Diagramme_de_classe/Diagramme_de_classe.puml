@@ -37,19 +37,19 @@ skinparam linetype ortho
     'Un membre a un status (blessé, titulaire)
     MemberStatus "1" <-- "0..*" Member
     'Liaison potentiel entre un paris et une compétition
-    Bet "0..*" -- "0..1" Competition
+    Bet "0..*" --> "1" Competition
     'Classe d'association entre paris et compétition
     (Bet, Competition) .. CompetitionBets
     'Liaison potentiel entre un paris et une rencontre ou course
-    Bet "0..*" -- "0..1" Run
+    Bet "0..*" --> "0..1" Run
     'Classe d'association entre un paris et une rencontre ou course
     (Bet, Run) .. RunBets
     'Liaison potentiel entre un paris et une équipe
-    Bet "0..*" -- "0..1" Team
+    Bet "0..*" --> "0..1" Team
     'Classe d'association entre un paris et une équipe
     (Bet, Team) .. TeamBets
     'Liaison potentiel entre un paris et un membre
-    Bet "0..*" -- "0..1" Member
+    Bet "0..*" --> "0..1" Member
     'Classe d'association entre un paris et un membre
     (Bet, Member) .. MemberBets
     'Implémentation de l'interface FundStorageInterface par l'entité Billing
