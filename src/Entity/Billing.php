@@ -159,6 +159,12 @@ class Billing implements FundStorageInterface
     private \DateTimeImmutable $deliveryDate;
 
     /**
+     * @ORM\OneToOne(targetEntity=User::class, cascade={"persist", "remove"})
+     * @Assert\Valid
+     */
+    private ?User $user;
+
+    /**
      * @const float DEFAULT_COMMISSION_RATE
      * @Assert\Type(
      *     type="float",
@@ -350,6 +356,17 @@ class Billing implements FundStorageInterface
         return $this;
     }
 
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
+        return $this;
+    }
+
     public function convertToCurrencyUnit(int $amount): float
     {
         return floatVal($amount * 0.01);
@@ -368,5 +385,10 @@ class Billing implements FundStorageInterface
     public function convertCommissionRateToStoredData(float $commissionRate): int
     {
         return intVal($commissionRate * 10000);
+    }
+
+    public function hasUser(): bool
+    {
+        return empty($this->user) ? false : true;
     }
 }

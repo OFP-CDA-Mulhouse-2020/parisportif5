@@ -5,7 +5,7 @@ skinparam linetype ortho
     'Un utilisateur a une langue sélectionnée
     User "0..*" --> "1" Language
     'Une facture n'est pas pas forcément lié à un utilisateur existant
-    User "1" <-- "0..*" Billing
+    User "0..1" <-- "0..*" Billing
     'Un paris a un type
     BetType "1" <-- "0..*" Bet
     'Un utilisateur a un porte-feuille
@@ -154,7 +154,7 @@ skinparam linetype ortho
         -operationType : string
         -issueDate : DateTime
         -deliveryDate : DateTime
-        +{static} DEFAULT_COMMISSION_RATE : int =  750
+        +{static} DEFAULT_COMMISSION_RATE : float =  7.5
         +{static} DEFAULT_CURRENCY_CODE : string = "EUR"
         +{static} DEFAULT_CURRENCY_SYMBOL : string = "€"
         +getName() : string
