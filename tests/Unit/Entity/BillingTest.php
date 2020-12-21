@@ -3,6 +3,7 @@
 namespace App\Tests\Unit\Entity;
 
 use App\Entity\Billing;
+use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -32,6 +33,24 @@ class BillingTest extends KernelTestCase
             ->setInvoiceNumber(1)
             ->setAmount(5);
         return $billing;
+    }
+
+    private function createUserObject(string $country = "FR"): User
+    {
+        $user = new User();
+        $user
+            ->setCivility("Monsieur")
+            ->setFirstName("Tintin")
+            ->setLastName("Dupont")
+            ->setBillingAddress("1 avenue st martin")
+            ->setBillingCity("Colmar")
+            ->setBillingPostcode("68000")
+            ->setBillingCountry($country)
+            ->setBirthDate(new \DateTimeImmutable("2000-10-10"))
+            ->setPassword("Azerty78")
+            ->setEmail("dupond.t@orange.fr")
+            ->setTimeZoneSelected("Europe/Paris");
+        return $user;
     }
 
     /**
@@ -483,5 +502,33 @@ class BillingTest extends KernelTestCase
         $result = $billing->convertCommissionRateToStoredData(7.5);
         $this->assertIsInt($result);
         //$this->assertSame(75000, $result);
+    }
+
+    public function testUserUncompatible(): void
+    {
+        $billing = $this->createValidBilling();
+        $user = $this->createUserObject('XD');
+        $billing->setUser($user);
+        $violations = $this->validator->validate($billing);
+        $this->assertCount(1, $violations);
+    }
+
+    public function testUserCompatible(): void
+    {
+        $billing = $this->createValidBilling();
+        $user = $this->createUserObject();
+        $billing->setUser($user);
+        $this->assertSame($user, $billing->getUser());
+        $violations = $this->validator->validate($billing);
+        $this->assertCount(0, $violations);
+    }
+
+    public function testMethodHasUser(): void
+    {
+        $billing = $this->createValidBilling();
+        $method = method_exists($billing, 'hasUser');
+        $this->assertTrue($method);
+        $result = $billing->hasUser();
+        $this->assertIsBool($result);
     }
 }
