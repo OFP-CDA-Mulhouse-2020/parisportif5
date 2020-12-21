@@ -45,6 +45,20 @@ class Member
      */
     private string $firstName;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=MemberRole::class)
+     * @ORM\JoinColumn(nullable=false)
+     * @Assert\Valid
+     */
+    private MemberRole $memberRole;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=MemberStatus::class)
+     * @ORM\JoinColumn(nullable=false)
+     * @Assert\Valid
+     */
+    private MemberStatus $memberStatus;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -70,6 +84,30 @@ class Member
     public function setFirstName(string $firstName): self
     {
         $this->firstName = $firstName;
+
+        return $this;
+    }
+
+    public function getMemberRole(): ?MemberRole
+    {
+        return $this->memberRole;
+    }
+
+    public function setMemberRole(MemberRole $memberRole): self
+    {
+        $this->memberRole = $memberRole;
+
+        return $this;
+    }
+
+    public function getMemberStatus(): ?MemberStatus
+    {
+        return $this->memberStatus;
+    }
+
+    public function setMemberStatus(MemberStatus $memberStatus): self
+    {
+        $this->memberStatus = $memberStatus;
 
         return $this;
     }
