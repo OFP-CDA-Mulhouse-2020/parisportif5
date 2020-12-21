@@ -1,5 +1,5 @@
 # This is a basic workflow
-name: code_checker
+name: CI
 
 # Controls when the action will run. 
 on:
@@ -14,44 +14,11 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-
-  composer-caching:
-    name: Mise en cache de composer
-
-    runs-on: ubuntu-latest
-
-    steps:
-
-      - name: Checkout project
-        uses: actions/checkout@v2
-
-      - name: Validate composer.json and composer.lock
-        run: composer validate
-      
-      - name: Get Composer Cache Directory
-        id: composer-cache
-        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
-
-      - name: Cache Composer Downloads
-        uses: actions/cache@v2
-        with:
-          path: vendor/
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-        
-      - name: Cache PHP dependencies
-        uses: actions/cache@v2
-        with:
-          path: vendor
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
   
   code-check-tests:
     name: Tests de conformité du code
 
-    needs: composer-caching
-
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
 
     steps:
 
@@ -60,17 +27,13 @@ jobs:
 
       - name: Install composer
         uses: php-actions/composer@v1
-        with:
-          php_version: 7.4
-          composer_version: 1
 
       - name: Install php_codesniffer
         uses: hrysd/action-php_codesniffer@v1
         with:
           standard: PSR12
           target_directory: src
-        env:
-          GH_BOT_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
+          github_token: ${{ secrets.github_token }}
           
       - name: Run php_codesniffer
         run: ./vendor/bin/phpcs src --extensions=php --ignore=src/Kernel.php --report=code --colors --report-width=80 --standard=PSR12
@@ -78,9 +41,7 @@ jobs:
   syntax-tests:
     name: Tests de syntaxe
 
-    needs: composer-caching
-
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
 
     steps:
 
@@ -89,42 +50,33 @@ jobs:
 
       - name: Install composer
         uses: php-actions/composer@v1
-        with:
-          php_version: 7.4
-          composer_version: 1
         
       - name: PHPStan
         uses: chindit/actions-phpstan@master
         with:
-          # Arguments to add to PHPStan
           arguments: '-c phpstan.neon.dist --no-interaction --no-progress'
 
   unit-tests:
     name: Tests unitaires
 
-    needs: composer-caching
+    runs-on: ubuntu-18.04
 
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
 
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Checkout project
         uses: actions/checkout@v2
 
       - name: Install composer
         uses: php-actions/composer@v1
-        with:
-          php_version: 7.4
-          composer_version: 1
 
-      - name: Installs phpunit latest version
+      - name: Installs phpunit version
         uses: php-actions/phpunit@17-php-versions
         with:
           bootstrap: vendor/autoload.php
           configuration: phpunit.xml.dist
+          php_version: 7.4
+          phpunit_version: 8.3
+          memory_limit: 2G
 
       - name: Runs phpunit tests
         run: php bin/phpunit --configuration 'phpunit.xml.dist' --bootstrap 'vendor/autoload.php' --test-suffix 'Test.php,.phpt' tests
