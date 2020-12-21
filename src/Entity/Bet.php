@@ -55,6 +55,31 @@ class Bet implements FundStorageInterface
      */
     private User $user;
 
+    /**
+     * @ORM\OneToOne(targetEntity=Competition::class, cascade={"persist", "remove"})
+     * @ORM\JoinColumn(nullable=false)
+     * @Assert\Valid
+     */
+    private Competition $competition;
+
+    /**
+     * @ORM\OneToOne(targetEntity=Run::class, cascade={"persist", "remove"})
+     * @Assert\Valid
+     */
+    private ?Run $run;
+
+    /**
+     * @ORM\OneToOne(targetEntity=Team::class, cascade={"persist", "remove"})
+     * @Assert\Valid
+     */
+    private ?Team $team;
+
+    /**
+     * @ORM\OneToOne(targetEntity=Member::class, cascade={"persist", "remove"})
+     * @Assert\Valid
+     */
+    private ?Member $teamMember;
+
     public function __construct()
     {
         $this->isWinning = null;
@@ -147,5 +172,54 @@ class Bet implements FundStorageInterface
     {
         $this->user = $user;
         return $this;
+    }
+
+    public function getCompetition(): ?Competition
+    {
+        return $this->competition;
+    }
+
+    public function setCompetition(Competition $competition): self
+    {
+        $this->competition = $competition;
+        return $this;
+    }
+
+    public function getRun(): ?Run
+    {
+        return $this->run;
+    }
+
+    public function setRun(?Run $run): self
+    {
+        $this->run = $run;
+        return $this;
+    }
+
+    public function getTeam(): ?Team
+    {
+        return $this->team;
+    }
+
+    public function setTeam(?Team $team): self
+    {
+        $this->team = $team;
+        return $this;
+    }
+
+    public function getTeamMember(): ?Member
+    {
+        return $this->teamMember;
+    }
+
+    public function setTeamMember(?Member $teamMember): self
+    {
+        $this->teamMember = $teamMember;
+        return $this;
+    }
+
+    public function getTarget(): ?object
+    {
+        return $this->teamMember ?? $this->team ?? $this->run ?? $this->competition;
     }
 }

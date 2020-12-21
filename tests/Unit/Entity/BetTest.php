@@ -3,6 +3,10 @@
 namespace App\Tests\Unit\Entity;
 
 use App\Entity\Bet;
+use App\Entity\Competition;
+use App\Entity\Member;
+use App\Entity\Run;
+use App\Entity\Team;
 use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -44,6 +48,47 @@ class BetTest extends KernelTestCase
             ->setEmail("dupond.t@orange.fr")
             ->setTimeZoneSelected("Europe/Paris");
         return $user;
+    }
+
+    private function createCompetitionObject(string $country = "FR"): Competition
+    {
+        $competition = new Competition();
+        $date = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
+        $competition
+            ->setName('name')
+            ->setStartDate($date->setTime(23, 59, 59, 1000000))
+            ->setCountry($country)
+            ->setMaxRuns(1);
+        return $competition;
+    }
+
+    private function createRunObject(\DateTimeImmutable $date = null): Run
+    {
+        $run = new Run();
+        $startDate = $date ?? new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
+        $run
+            ->setName('run name')
+            ->setEvent('event name')
+            ->setStartDate($startDate->setTime(23, 59, 59, 1000000));
+        return $run;
+    }
+
+    private function createTeamObject(string $country = "FR"): Team
+    {
+        $team =  new Team();
+        $team
+            ->setName("RC Strasbourg Alsace")
+            ->setCountry($country);
+        return $team;
+    }
+
+    private function createMemberObject(string $lastName = "Jean"): Member
+    {
+        $member = new Member();
+        $member
+            ->setLastName($lastName)
+            ->setFirstName("Jean-Pierre");
+        return $member;
     }
 
     /**
@@ -219,5 +264,99 @@ class BetTest extends KernelTestCase
         $this->assertSame($user, $bet->getUser());
         $violations = $this->validator->validate($bet);
         $this->assertCount(0, $violations);
+    }
+
+    public function testCompetitionUncompatible(): void
+    {
+        $bet = $this->createValidBet();
+        $competition = $this->createCompetitionObject('XD');
+        $bet->setCompetition($competition);
+        $violations = $this->validator->validate($bet);
+        $this->assertCount(1, $violations);
+    }
+
+    public function testCompetitionCompatible(): void
+    {
+        $bet = $this->createValidBet();
+        $competition = $this->createCompetitionObject();
+        $bet->setCompetition($competition);
+        $this->assertSame($competition, $bet->getCompetition());
+        $violations = $this->validator->validate($bet);
+        $this->assertCount(0, $violations);
+    }
+
+    public function testRunUncompatible(): void
+    {
+        $date = new \DateTimeImmutable('-1 day', new \DateTimeZone('UTC'));
+        $bet = $this->createValidBet();
+        $run = $this->createRunObject($date);
+        $bet->setRun($run);
+        $violations = $this->validator->validate($bet);
+        $this->assertCount(1, $violations);
+    }
+
+    public function testRunCompatible(): void
+    {
+        $bet = $this->createValidBet();
+        $run = $this->createRunObject();
+        $bet->setRun($run);
+        $this->assertSame($run, $bet->getRun());
+        $violations = $this->validator->validate($bet);
+        $this->assertCount(0, $violations);
+    }
+
+    public function testTeamUncompatible(): void
+    {
+        $bet = $this->createValidBet();
+        $team = $this->createTeamObject('XD');
+        $bet->setTeam($team);
+        $violations = $this->validator->validate($bet);
+        $this->assertCount(1, $violations);
+    }
+
+    public function testTeamCompatible(): void
+    {
+        $bet = $this->createValidBet();
+        $team = $this->createTeamObject();
+        $bet->setTeam($team);
+        $this->assertSame($team, $bet->getTeam());
+        $violations = $this->validator->validate($bet);
+        $this->assertCount(0, $violations);
+    }
+
+    public function testTeamMemberUncompatible(): void
+    {
+        $bet = $this->createValidBet();
+        $member = $this->createMemberObject('SPARRO\/\/');
+        $bet->setTeamMember($member);
+        $violations = $this->validator->validate($bet);
+        $this->assertCount(1, $violations);
+    }
+
+    public function testTeamMemberCompatible(): void
+    {
+        $bet = $this->createValidBet();
+        $member = $this->createMemberObject();
+        $bet->setTeamMember($member);
+        $this->assertSame($member, $bet->getTeamMember());
+        $violations = $this->validator->validate($bet);
+        $this->assertCount(0, $violations);
+    }
+
+    public function testMethodGetTargetExpectedReturnValue(): void
+    {
+        $bet = $this->createValidBet();
+        $method = method_exists($bet, 'getTarget');
+        $this->assertTrue($method);
+        $competition = $this->createCompetitionObject();
+        $bet->setCompetition($competition);
+        $result = $bet->getTarget();
+        $this->assertIsObject($result);
+        $this->assertInstanceOf(Competition::class, $result);
+        $member = $this->createMemberObject();
+        $bet->setTeamMember($member);
+        $result = $bet->getTarget();
+        $this->assertIsObject($result);
+        $this->assertInstanceOf(Member::class, $result);
     }
 }
