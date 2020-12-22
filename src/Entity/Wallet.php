@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Entity(repositoryClass=WalletRepository::class)
  */
-class Wallet
+class Wallet implements FundStorageInterface
 {
     /**
      * @ORM\Id
@@ -69,5 +69,17 @@ class Wallet
         }
 
         return $this;
+    }
+
+    public function convertToCurrencyUnit(int $amount): float
+    {
+        $this->amount = intval($amount / 100, 10);
+        return $this->amount;
+    }
+
+    public function convertCurrencyUnitToStoredData(float $amount): int
+    {
+        $this->amount = intval($amount * 100, 10);
+        return $this->amount;
     }
 }
