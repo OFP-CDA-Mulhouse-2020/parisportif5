@@ -59,6 +59,12 @@ class Member
      */
     private MemberStatus $memberStatus;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=ResultType::class)
+     * @Assert\Valid
+     */
+    private ResultType $resultType;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -108,6 +114,18 @@ class Member
     public function setMemberStatus(MemberStatus $memberStatus): self
     {
         $this->memberStatus = $memberStatus;
+
+        return $this;
+    }
+
+    public function getResultType(): ?ResultType
+    {
+        return $this->resultType;
+    }
+
+    public function setResultType(ResultType $resultType): self
+    {
+        $this->resultType = $resultType;
 
         return $this;
     }

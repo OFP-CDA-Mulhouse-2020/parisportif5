@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Unit\Entity;
 
 use App\Entity\Member;
 use App\Entity\MemberRole;
 use App\Entity\MemberStatus;
+use App\Entity\ResultType;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -32,6 +35,13 @@ class MemberTest extends WebTestCase
         $memberStatus =  new MemberStatus();
         $memberStatus->setName($memberStatusName);
         return $memberStatus;
+    }
+
+    private function initializeResultType(string $resultTypeName): ResultType
+    {
+        $resultType =  new ResultType();
+        $resultType->setName($resultTypeName);
+        return $resultType;
     }
 
     private function initializeKernel(): KernelInterface
@@ -180,6 +190,29 @@ class MemberTest extends WebTestCase
         $member = $this->initializeMember();
         $memberStatus = $this->initializeMemberStatus("on the bench");
         $member->setMemberStatus($memberStatus);
+        $validator = $kernel->getContainer()->get('validator');
+        $violations = $validator->validate($member);
+        $this->assertCount(1, $violations);
+    }
+
+    public function testIfResultTypeIsValid(): void
+    {
+        $kernel = $this->initializeKernel();
+        $member = $this->initializeMember();
+        $resultType = $this->initializeResultType("draw");
+        $member->setResultType($resultType);
+        $this->assertSame($resultType, $member->getResultType());
+        $validator = $kernel->getContainer()->get('validator');
+        $violations = $validator->validate($member);
+        $this->assertCount(0, $violations);
+    }
+
+    public function testIfResultTypeIsInvalid(): void
+    {
+        $kernel = $this->initializeKernel();
+        $member = $this->initializeMember();
+        $resultType = $this->initializeResultType("victoire");
+        $member->setResultType($resultType);
         $validator = $kernel->getContainer()->get('validator');
         $violations = $validator->validate($member);
         $this->assertCount(1, $violations);
