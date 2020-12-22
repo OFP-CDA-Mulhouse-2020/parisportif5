@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Symfony\Component\Validator\Constraints as Assert;
@@ -25,7 +27,7 @@ class Team
      * )
      * @Assert\Regex(
      *     pattern="/^\p{L}((?<!\')\'|\p{L}?\s?(?!\s)(\.(?!\.))?|\-(?!\-)|\s(?!\s)|\d)+\S$/u",
-     *     message="Seuls le chiffres, les lettres et les caractères suivants (.,-, ') sont autorisés, et il doit y avoir au moins duex caractères valides"
+     *     message="Seules les chiffres, les lettres et les caractères suivants (., -, ') sont autorisés"
      * )
      * @Assert\Length(
      *     min=2,

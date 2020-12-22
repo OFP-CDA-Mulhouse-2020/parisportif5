@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Entity;
 
+use App\Entity\Competition;
+use App\Entity\Location;
 use App\Entity\Run;
+use App\Entity\Sport;
+use App\Entity\Team;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -36,6 +40,51 @@ final class RunTest extends KernelTestCase
     private function createDefaultTimeZone(): \DateTimeZone
     {
         return new \DateTimeZone('UTC');
+    }
+
+    private function createTeamObject(string $country = "FR"): Team
+    {
+        $team =  new Team();
+        $team
+            ->setName("RC Strasbourg Alsace")
+            ->setCountry($country);
+        return $team;
+    }
+
+    private function createLocationObject(string $country = "FR"): Location
+    {
+        $location = new Location();
+        $location
+            ->setPlace('Stade de France 75000 Paris')
+            ->setTimeZone('UTC')
+            ->setCountry($country);
+        return $location;
+    }
+
+    private function createCompetitionObject(string $country = "FR"): Competition
+    {
+        $competition = new Competition();
+        $date = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
+        $competition
+            ->setName('name')
+            ->setStartDate($date->setTime(23, 59, 59, 1000000))
+            ->setCountry($country)
+            ->setMaxRuns(1);
+        return $competition;
+    }
+
+    private function createSportObject(string $country = "FR"): Sport
+    {
+        $sport =  new Sport();
+        $sport
+            ->setName("Football")
+            ->setMaxMembersByTeam(11)
+            ->setMaxTeams(2)
+            ->setCountry($country)
+            ->setRunType("fixture")
+            ->setIndividualType(false)
+            ->setCollectiveType(true);
+        return $sport;
     }
 
     /**
@@ -211,4 +260,174 @@ final class RunTest extends KernelTestCase
         $result = $run->isOngoing();
         $this->assertFalse($result);
     }
+
+    public function testLocationCompatible()
+    {
+        $run = $this->createValidRun();
+        $location = $this->createLocationObject();
+        $run->setLocation($location);
+        $this->assertSame($location, $run->getLocation());
+        $violations = $this->validator->validate($run);
+        $this->assertCount(0, $violations);
+    }
+
+    public function testLocationUncompatible()
+    {
+        $run = $this->createValidRun();
+        $location = $this->createLocationObject('XD');
+        $run->setLocation($location);
+        $violations = $this->validator->validate($run);
+        $this->assertCount(1, $violations);
+    }
+
+    public function testAddTeamCompatible()
+    {
+        $run = $this->createValidRun();
+        $competition = $this->createCompetitionObject();
+        $sport = $this->createSportObject();
+        $competition->setSport($sport);
+        $run->setCompetition($competition);
+        $team = $this->createTeamObject();
+        $run->addTeam($team);
+        $this->assertContains($team, $run->getTeams());
+        $violations = $this->validator->validate($run);
+        $this->assertCount(0, $violations);
+    }
+
+    public function testAddTeamUncompatible()
+    {
+        $run = $this->createValidRun();
+        $competition = $this->createCompetitionObject();
+        $sport = $this->createSportObject();
+        $competition->setSport($sport);
+        $run->setCompetition($competition);
+        $team = $this->createTeamObject('XD');
+        $run->addTeam($team);
+        $violations = $this->validator->validate($run);
+        $this->assertCount(1, $violations);
+    }
+
+    public function testAddTeamCompatibleOverLimit()
+    {
+        $run = $this->createValidRun();
+        $competition = $this->createCompetitionObject();
+        $sport = $this->createSportObject();
+        $competition->setSport($sport);
+        $run->setCompetition($competition);
+        $team = $this->createTeamObject();
+        $run->addTeam($team);
+        $run->addTeam($this->createTeamObject('DE'));
+        $run->addTeam($this->createTeamObject('GB'));
+        $run->addTeam($this->createTeamObject('US'));
+        $violations = $this->validator->validate($run);
+        $this->assertCount(0, $violations);
+        $maxTeams = $run->getCompetition()->getSport()->getMaxTeams();
+        $this->assertCount($maxTeams, $run->getTeams());
+    }
+
+    public function testRemoveTeamUncompatible(): void
+    {
+        $run = $this->createValidRun();
+        $competition = $this->createCompetitionObject();
+        $sport = $this->createSportObject();
+        $competition->setSport($sport);
+        $run->setCompetition($competition);
+        $team = $this->createTeamObject('XD');
+        $run->addTeam($team);
+        $violations = $this->validator->validate($run);
+        $this->assertCount(1, $violations);
+        $run->removeTeam($team);
+        $this->assertNotContains($team, $run->getTeams());
+    }
+
+    public function testRemoveTeamCompatible(): void
+    {
+        $run = $this->createValidRun();
+        $competition = $this->createCompetitionObject();
+        $sport = $this->createSportObject();
+        $competition->setSport($sport);
+        $run->setCompetition($competition);
+        $team = $this->createTeamObject();
+        $run->addTeam($team);
+        $violations = $this->validator->validate($run);
+        $this->assertCount(0, $violations);
+        $run->removeTeam($team);
+        $this->assertNotContains($team, $run->getTeams());
+    }
+
+    public function testResultCompatible()
+    {
+        $run = $this->createValidRun();
+        $team = $this->createTeamObject();
+        $run->setResult($team);
+        $this->assertSame($team, $run->getResult());
+        $violations = $this->validator->validate($run);
+        $this->assertCount(0, $violations);
+        $run->setResult(null);
+        $this->assertNull($run->getResult());
+        $violations = $this->validator->validate($run);
+        $this->assertCount(0, $violations);
+    }
+
+    public function testResultUncompatible()
+    {
+        $run = $this->createValidRun();
+        $team = $this->createTeamObject('XD');
+        $run->setResult($team);
+        $violations = $this->validator->validate($run);
+        $this->assertCount(1, $violations);
+    }
+
+    /*public function testAddResultCompatible()
+    {
+        $run = $this->createValidRun();
+        $result = $this->createResultObject();
+        $run->addResult($result);
+        $this->assertContains($result, $run->getResults());
+        $violations = $this->validator->validate($run);
+        $this->assertCount(0, $violations);
+    }
+
+    public function testAddResultUncompatible()
+    {
+        $run = $this->createValidRun();
+        $result = $this->createResultObject('XD');
+        $run->addResult($result);
+        $violations = $this->validator->validate($run);
+        $this->assertCount(1, $violations);
+    }
+
+    public function testAddResultCompatibleOverLimit()
+    {
+        $run = $this->createValidRun();
+        $result = $this->createResultObject();
+        $run->addResult($result);
+        $run->addResult($this->createResultObject('DE'));
+        $run->addResult($this->createResultObject('GB'));
+        $run->addResult($this->createResultObject('US'));
+        $violations = $this->validator->validate($run);
+        $this->assertCount(1, $violations);
+    }
+
+    public function testRemoveResultUncompatible(): void
+    {
+        $run = $this->createValidRun();
+        $result = $this->createResultObject('XD');
+        $run->addResult($result);
+        $violations = $this->validator->validate($run);
+        $this->assertCount(1, $violations);
+        $run->removeResult($result);
+        $this->assertNotContains($result, $run->getResults());
+    }
+
+    public function testRemoveResultCompatible(): void
+    {
+        $run = $this->createValidRun();
+        $result = $this->createResultObject();
+        $run->addResult($result);
+        $violations = $this->validator->validate($run);
+        $this->assertCount(0, $violations);
+        $run->removeResult($result);
+        $this->assertNotContains($result, $run->getResults());
+    }*/
 }

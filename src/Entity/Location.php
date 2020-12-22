@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Repository\LocationRepository;
@@ -51,6 +53,12 @@ class Location
      */
     private string $country;
 
+    /**
+     * @ORM\OneToOne(targetEntity=Run::class, mappedBy="location", cascade={"persist", "remove"})
+     * @Assert\Valid
+     */
+    private Run $run;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -86,6 +94,23 @@ class Location
     public function setCountry(string $country): self
     {
         $this->country = $country;
+        return $this;
+    }
+
+    public function getRun(): ?Run
+    {
+        return $this->run;
+    }
+
+    public function setRun(Run $run): self
+    {
+        $this->run = $run;
+
+        // set the owning side of the relation if necessary
+        if ($run->getLocation() !== $this) {
+            $run->setLocation($this);
+        }
+
         return $this;
     }
 }

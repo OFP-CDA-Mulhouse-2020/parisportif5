@@ -23,15 +23,17 @@ skinparam linetype ortho
     'Une rencontre ou une course a un lieu
     Run "1" -- "1" Location
     'Une équipe a des scores (des matchs, des courses)
-    Team "1" o-- "0..*" Score
+    'Team "1" o-- "0..*" Score
     'Une rencontre ou une course a plusieurs équipes
     Run "1" o--> "0..*" Team
     'Une équipe a plusieurs membre
     Team "1" *-- "1..*" Member
+    'Une compétition a un sport
+    Sport "1" <-- "0..*" Competition
     'Une équipe a un résultat (gagnant, perdant) même dans le cas de sport individuel
-    ResultType "0..1" <-- "0..*" Team
+    'ResultType "0..1" <-- "0..*" Team
     'Un membre a un résultat dans le cas de sport individuel (gagnant, perdant)
-    ResultType "0..1" <-- "0..*" Member
+    'ResultType "0..1" <-- "0..*" Member
     'Un membre a un rôle (fonction) tel que pilote, joueur
     MemberRole "1" <-- "0..*" Member
     'Un membre a un status (blessé, titulaire)
@@ -75,10 +77,10 @@ skinparam linetype ortho
         -name : string
     }
     'Type de résultat (gagnant, perdant, ex aequo)
-    class ResultType {
-        -identifier : int
-        -name : string
-    }
+    'class ResultType {
+    '    -identifier : int
+    '    -name : string
+    '}
     'Porte-feuille de l'utilisateur avec des fonds (de l'argent gagnés)
     class Wallet {
         -identifier : int
@@ -225,10 +227,11 @@ skinparam linetype ortho
         -country : string
         -maxRuns : int
         +hasWinner() : bool
-        +hasEvents() : bool
+        +hasRuns() : bool
         +isFinish() : bool
         +isOngoing() : bool
         +getEventsCount() : int
+        +getRunsCount() : int
     }
     'Un match, une rencontre, une course
     class Run {
@@ -245,12 +248,12 @@ skinparam linetype ortho
         +getTeamsCount() : int
     }
     'Score de l'équipe ou du membre de l'équipe
-    class Score {
-        -identifier : int
-        -value : int
-        -runType : string
-        +getScore() : int
-    }
+    'class Score {
+    '    -identifier : int
+    '    -value : int
+    '    -runType : string
+    '    +getScore() : int
+    '}
     'Joueur ou sportif ou pilote
     class Member {
         -identifier : int

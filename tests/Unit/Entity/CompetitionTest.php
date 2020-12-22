@@ -6,6 +6,7 @@ namespace App\Tests\Unit\Entity;
 
 use App\Entity\Competition;
 use App\Entity\Run;
+use App\Entity\Sport;
 use App\Entity\Team;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -59,6 +60,20 @@ final class CompetitionTest extends KernelTestCase
             ->setEvent('event name')
             ->setStartDate($startDate);
         return $run;
+    }
+
+    private function createSportObject(string $country = "FR"): Sport
+    {
+        $sport =  new Sport();
+        $sport
+            ->setName("Football")
+            ->setMaxMembersByTeam(11)
+            ->setMaxTeams(2)
+            ->setCountry($country)
+            ->setRunType("fixture")
+            ->setIndividualType(false)
+            ->setCollectiveType(true);
+        return $sport;
     }
 
     /**
@@ -382,5 +397,24 @@ final class CompetitionTest extends KernelTestCase
         $this->assertCount(0, $violations);
         $competition->removeRun($run);
         $this->assertNotContains($run, $competition->getWinners());
+    }
+
+    public function testSportCompatible()
+    {
+        $competition = $this->createValidCompetition();
+        $sport = $this->createSportObject();
+        $competition->setSport($sport);
+        $this->assertSame($sport, $competition->getSport());
+        $violations = $this->validator->validate($competition);
+        $this->assertCount(0, $violations);
+    }
+
+    public function testSportUncompatible()
+    {
+        $competition = $this->createValidCompetition();
+        $sport = $this->createSportObject('XD');
+        $competition->setSport($sport);
+        $violations = $this->validator->validate($competition);
+        $this->assertCount(1, $violations);
     }
 }
