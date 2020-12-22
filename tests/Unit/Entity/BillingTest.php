@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Unit\Entity;
 
 use App\Entity\Billing;
@@ -7,7 +9,10 @@ use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class BillingTest extends KernelTestCase
+/**
+ * @covers \Billing
+ */
+final class BillingTest extends KernelTestCase
 {
     private ValidatorInterface $validator;
 

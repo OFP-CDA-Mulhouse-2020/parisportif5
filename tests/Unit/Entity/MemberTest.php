@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Unit\Entity;
 
 use App\Entity\Member;
@@ -9,7 +11,10 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class MemberTest extends WebTestCase
+/**
+ * @covers \Member
+ */
+final class MemberTest extends WebTestCase
 {
 
     private function initializeMember(): Member

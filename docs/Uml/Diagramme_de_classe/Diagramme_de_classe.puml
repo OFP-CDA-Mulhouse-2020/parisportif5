@@ -17,7 +17,7 @@ skinparam linetype ortho
     'Une catégorie de paris est lié a un sport
     BetCategory "0..*" --o "1" Sport
     'La compétition a une équipe gagnante
-    Competition "1" --> "0..1" Team
+    Competition "0..*" --> "0..3" Team
     'Une compétition a plusieurs rencontre ou course
     Competition "1" o-- "0..*" Run
     'Une rencontre ou une course a un lieu
@@ -177,6 +177,7 @@ skinparam linetype ortho
         +restoreWithoutResult() : void
         +convertToOddsMultiplier(in int odds) : float
         +convertOddsMultiplierToStoredData(in float odds) : int
+        +getTarget() : Member|Team|Run|Competition
     }
     'Type de paris (ex: Paris sur la victoire d'1 équipe)
     class BetType {
@@ -232,6 +233,7 @@ skinparam linetype ortho
     'Un match, une rencontre, une course
     class Run {
         -identifier : int
+        -event : string
         -name : string
         -startDate : DateTime
         -endDate : DateTime

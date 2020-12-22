@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Unit\Entity;
 
 use App\Entity\Bet;
@@ -9,7 +11,10 @@ use App\Entity\Wallet;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class UserTest extends KernelTestCase
+/**
+ * @covers \User
+ */
+final class UserTest extends KernelTestCase
 {
     private ValidatorInterface $validator;
 

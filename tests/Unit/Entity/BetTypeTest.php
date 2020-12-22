@@ -1,12 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Unit\Entity;
 
 use App\Entity\BetType;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class BetTypeTest extends KernelTestCase
+/**
+ * @covers \BetType
+ */
+final class BetTypeTest extends KernelTestCase
 {
     private ValidatorInterface $validator;
 

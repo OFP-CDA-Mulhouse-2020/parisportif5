@@ -1,12 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Unit\Entity;
 
 use App\Entity\Competition;
+use App\Entity\Run;
+use App\Entity\Team;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class CompetitionTest extends KernelTestCase
+/**
+ * @covers \Competition
+ */
+final class CompetitionTest extends KernelTestCase
 {
     private ValidatorInterface $validator;
 
@@ -32,6 +39,26 @@ class CompetitionTest extends KernelTestCase
     private function createDefaultTimeZone(): \DateTimeZone
     {
         return new \DateTimeZone('UTC');
+    }
+
+    private function createTeamObject(string $country = "FR"): Team
+    {
+        $team =  new Team();
+        $team
+            ->setName("RC Strasbourg Alsace")
+            ->setCountry($country);
+        return $team;
+    }
+
+    private function createRunObject(\DateTimeImmutable $date = null): Run
+    {
+        $run = new Run();
+        $startDate = $date ?? new \DateTimeImmutable('+1 day', new \DateTimeZone('UTC'));
+        $run
+            ->setName('run name')
+            ->setEvent('event name')
+            ->setStartDate($startDate);
+        return $run;
     }
 
     /**
@@ -243,5 +270,117 @@ class CompetitionTest extends KernelTestCase
         $competition->setEndDate($date->modify('+2 day'));
         $result = $competition->isOngoing();
         $this->assertFalse($result);
+    }
+
+    public function testAddWinnerCompatible()
+    {
+        $competition = $this->createValidCompetition();
+        $team = $this->createTeamObject();
+        $competition->addWinner($team);
+        $this->assertContains($team, $competition->getWinners());
+        $violations = $this->validator->validate($competition);
+        $this->assertCount(0, $violations);
+    }
+
+    public function testAddWinnerUncompatible()
+    {
+        $competition = $this->createValidCompetition();
+        $team = $this->createTeamObject('XD');
+        $competition->addWinner($team);
+        $violations = $this->validator->validate($competition);
+        $this->assertCount(1, $violations);
+    }
+
+    public function testAddWinnerCompatibleOverLimit()
+    {
+        $competition = $this->createValidCompetition();
+        $team = $this->createTeamObject();
+        $competition->addWinner($team);
+        $competition->addWinner($this->createTeamObject('DE'));
+        $competition->addWinner($this->createTeamObject('GB'));
+        $competition->addWinner($this->createTeamObject('US'));
+        $violations = $this->validator->validate($competition);
+        $this->assertCount(1, $violations);
+    }
+
+    public function testRemoveWinnerUncompatible(): void
+    {
+        $competition = $this->createValidCompetition();
+        $team = $this->createTeamObject('XD');
+        $competition->addWinner($team);
+        $violations = $this->validator->validate($competition);
+        $this->assertCount(1, $violations);
+        $competition->removeWinner($team);
+        $this->assertNotContains($team, $competition->getWinners());
+    }
+
+    public function testRemoveWinnerCompatible(): void
+    {
+        $competition = $this->createValidCompetition();
+        $team = $this->createTeamObject();
+        $competition->addWinner($team);
+        $violations = $this->validator->validate($competition);
+        $this->assertCount(0, $violations);
+        $competition->removeWinner($team);
+        $this->assertNotContains($team, $competition->getWinners());
+    }
+
+    public function testAddRunCompatible()
+    {
+        $competition = $this->createValidCompetition();
+        $run = $this->createRunObject();
+        $competition->addRun($run);
+        $this->assertCount(1, $competition->getRuns());
+        $this->assertContains($run, $competition->getRuns());
+        $violations = $this->validator->validate($competition);
+        $this->assertCount(0, $violations);
+    }
+
+    public function testAddRunUncompatible()
+    {
+        $competition = $this->createValidCompetition();
+        $date = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
+        $run = $this->createRunObject($date);
+        $competition->addRun($run);
+        $this->assertCount(1, $competition->getRuns());
+        $violations = $this->validator->validate($competition);
+        $this->assertCount(1, $violations);
+    }
+
+    public function testAddRunCompatibleOverLimit()
+    {
+        $competition = $this->createValidCompetition();
+        $run = $this->createRunObject();
+        $competition->setMaxRuns(3);
+        $competition->addRun($run);
+        $competition->addRun($this->createRunObject());
+        $competition->addRun($this->createRunObject());
+        $competition->addRun($this->createRunObject());
+        $violations = $this->validator->validate($competition);
+        $this->assertCount(0, $violations);
+        $this->assertCount(3, $competition->getRuns());
+    }
+
+    public function testRemoveRunUncompatible(): void
+    {
+        $competition = $this->createValidCompetition();
+        $date = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
+        $run = $this->createRunObject($date);
+        $competition->addRun($run);
+        $violations = $this->validator->validate($competition);
+        $this->assertCount(1, $violations);
+        $competition->removeRun($run);
+        $this->assertNotContains($run, $competition->getWinners());
+    }
+
+    public function testRemoveRunCompatible(): void
+    {
+        $competition = $this->createValidCompetition();
+        $run = $this->createRunObject();
+        $competition->addRun($run);
+        $violations = $this->validator->validate($competition);
+        $this->assertCount(0, $violations);
+        $competition->removeRun($run);
+        $this->assertNotContains($run, $competition->getWinners());
     }
 }

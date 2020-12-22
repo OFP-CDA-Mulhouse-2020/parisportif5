@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Unit\Entity;
 
 use App\Entity\MemberRole;
@@ -7,7 +9,10 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class MemberRoleTest extends KernelTestCase
+/**
+ * @covers \MemberRole
+ */
+final class MemberRoleTest extends KernelTestCase
 {
     private function initializeMemberRole(): MemberRole
     {

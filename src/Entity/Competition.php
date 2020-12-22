@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\CompetitionRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -60,10 +62,34 @@ class Competition
     /**
      * @ORM\Column(type="integer")
      * @Assert\Positive(
-     *     message="Le nombre maximum de course ou de rencontre doit être un entier positif"
+     *     message="Le nombre maximum de course ou de rencontre (Run) doit être un entier positif"
      * )
      */
     private int $maxRuns;
+
+    /**
+     * @var Collection<int,Team> $winners
+     * @ORM\ManyToMany(targetEntity=Team::class)
+     * @Assert\Valid
+     * @Assert\Count(
+     *      max = 3,
+     *      maxMessage = "Vous ne pouvez pas ajouter plus de {{ limit }} gagnants"
+     * )
+     */
+    private Collection $winners;
+
+    /**
+     * @var Collection<int,Run> $runs
+     * @ORM\OneToMany(targetEntity=Run::class, mappedBy="competition", orphanRemoval=true)
+     * @Assert\Valid
+     */
+    private Collection $runs;
+
+    public function __construct()
+    {
+        $this->winners = new ArrayCollection();
+        $this->runs = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -139,5 +165,77 @@ class Competition
         $currentDate = new \DateTime('now', $timezoneUTC);
         return ($currentDate >= $this->startDate->setTimezone($timezoneUTC)
             && $currentDate <= $this->endDate->setTimezone($timezoneUTC));
+    }
+
+    /**
+     * @return Collection<int,Team>
+     */
+    public function getWinners(): Collection
+    {
+        return $this->winners;
+    }
+
+    public function addWinner(Team $winner): self
+    {
+        if (!$this->winners->contains($winner)) {
+            $this->winners[] = $winner;
+        }
+        return $this;
+    }
+
+    public function removeWinner(Team $winner): self
+    {
+        $this->winners->removeElement($winner);
+        return $this;
+    }
+
+    /*
+     * @Assert\IsFalse(
+     *     message="Le nombre maximum de course ou de rencontre (Run) a été atteint"
+     * )
+     *
+    public function isOverMaxRuns(): bool
+    {
+        if (isset($this->maxRuns)) {
+            if ($this->maxRuns > 0 && count($this->runs) >= $this->maxRuns) {
+                return true;
+            }
+        }
+        return false;
+    }*/
+
+    /**
+     * @return Collection<int,Run>
+     */
+    public function getRuns(): Collection
+    {
+        return $this->runs;
+    }
+
+    public function addRun(Run $run): self
+    {
+        if (!$this->runs->contains($run)) {
+            if (isset($this->maxRuns)) {
+                if ($this->maxRuns > 0 && count($this->runs) >= $this->maxRuns) {
+                    return $this;
+                }
+            }
+            $this->runs[] = $run;
+            $run->setCompetition($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRun(Run $run): self
+    {
+        if ($this->runs->removeElement($run)) {
+            // set the owning side to null (unless already changed)
+            /*if ($run->getCompetition() === $this) {
+                $run->setCompetition(null);
+            }*/
+        }
+
+        return $this;
     }
 }

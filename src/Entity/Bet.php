@@ -80,6 +80,13 @@ class Bet implements FundStorageInterface
      */
     private ?Member $teamMember;
 
+    /**
+     * @ORM\OneToOne(targetEntity=BetType::class, cascade={"persist", "remove"})
+     * @ORM\JoinColumn(nullable=false)
+     * @Assert\Valid
+     */
+    private BetType $betType;
+
     public function __construct()
     {
         $this->isWinning = null;
@@ -121,46 +128,6 @@ class Bet implements FundStorageInterface
     {
         $this->odds = $odds;
         return $this;
-    }
-
-    public function hasWon(): ?bool
-    {
-        return $this->isWinning;
-    }
-
-    public function won(): void
-    {
-        $this->isWinning = true;
-    }
-
-    public function lost(): void
-    {
-        $this->isWinning = false;
-    }
-
-    public function restoreWithoutResult(): void
-    {
-        $this->isWinning = null;
-    }
-
-    public function convertToCurrencyUnit(int $amount): float
-    {
-        return floatVal($amount * 0.01);
-    }
-
-    public function convertToOddsMultiplier(int $odds): float
-    {
-        return floatVal($odds * 0.0001);
-    }
-
-    public function convertCurrencyUnitToStoredData(float $amount): int
-    {
-        return intVal($amount * 100);
-    }
-
-    public function convertOddsMultiplierToStoredData(float $odds): int
-    {
-        return intVal($odds * 10000);
     }
 
     public function getUser(): ?User
@@ -216,6 +183,57 @@ class Bet implements FundStorageInterface
     {
         $this->teamMember = $teamMember;
         return $this;
+    }
+
+    public function getBetType(): ?BetType
+    {
+        return $this->betType;
+    }
+
+    public function setBetType(BetType $betType): self
+    {
+        $this->betType = $betType;
+        return $this;
+    }
+
+    public function hasWon(): ?bool
+    {
+        return $this->isWinning;
+    }
+
+    public function won(): void
+    {
+        $this->isWinning = true;
+    }
+
+    public function lost(): void
+    {
+        $this->isWinning = false;
+    }
+
+    public function restoreWithoutResult(): void
+    {
+        $this->isWinning = null;
+    }
+
+    public function convertToCurrencyUnit(int $amount): float
+    {
+        return floatVal($amount * 0.01);
+    }
+
+    public function convertToOddsMultiplier(int $odds): float
+    {
+        return floatVal($odds * 0.0001);
+    }
+
+    public function convertCurrencyUnitToStoredData(float $amount): int
+    {
+        return intVal($amount * 100);
+    }
+
+    public function convertOddsMultiplierToStoredData(float $odds): int
+    {
+        return intVal($odds * 10000);
     }
 
     public function getTarget(): ?object

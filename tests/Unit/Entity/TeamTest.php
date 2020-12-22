@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Unit\Entity;
 
 use App\Entity\Team;
@@ -7,7 +9,10 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class TeamTest extends KernelTestCase
+/**
+ * @covers \Team
+ */
+final class TeamTest extends KernelTestCase
 {
     private function initializeTeam(): Team
     {

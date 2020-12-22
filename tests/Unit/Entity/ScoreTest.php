@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Unit\Entity;
 
 use App\Entity\Score;
@@ -7,7 +9,10 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class ScoreTest extends KernelTestCase
+/**
+ * @covers \Score
+ */
+final class ScoreTest extends KernelTestCase
 {
     private function initializeScore(): Score
     {
@@ -72,7 +77,7 @@ class ScoreTest extends KernelTestCase
     {
         $kernel = $this->initializeKernel();
         $score = $this->initializeScore();
-        $score->setRunType($s);
+        $score->setValue($s);
         $validator = $kernel->getContainer()->get('validator');
         $violations = $validator->validate($score);
         $this->assertGreaterThanOrEqual(1, count($violations));

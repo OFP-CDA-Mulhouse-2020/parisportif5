@@ -54,6 +54,13 @@ class Run
      */
     private \DateTimeImmutable $endDate;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=Competition::class, inversedBy="runs")
+     * @ORM\JoinColumn(nullable=false)
+     * @Assert\Valid
+     */
+    private Competition $competition;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -116,5 +123,16 @@ class Run
         $currentDate = new \DateTime('now', $timezoneUTC);
         return ($currentDate >= $this->startDate->setTimezone($timezoneUTC)
             && $currentDate <= $this->endDate->setTimezone($timezoneUTC));
+    }
+
+    public function getCompetition(): ?Competition
+    {
+        return $this->competition;
+    }
+
+    public function setCompetition(Competition $competition): self
+    {
+        $this->competition = $competition;
+        return $this;
     }
 }

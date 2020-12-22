@@ -1,12 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Functional\Controller;
 
 use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpKernel\KernelInterface;
 
-class UserControllerTest extends WebTestCase
+/**
+ * @covers \UserController
+ */
+final class UserControllerTest extends WebTestCase
 {
     /*private KernelInterface $kernelIn;
 
