@@ -385,7 +385,7 @@ final class CompetitionTest extends KernelTestCase
         $violations = $this->validator->validate($competition);
         $this->assertCount(1, $violations);
         $competition->removeRun($run);
-        $this->assertNotContains($run, $competition->getWinners());
+        $this->assertNotContains($run, $competition->getRuns());
     }
 
     public function testRemoveRunCompatible(): void
@@ -396,7 +396,7 @@ final class CompetitionTest extends KernelTestCase
         $violations = $this->validator->validate($competition);
         $this->assertCount(0, $violations);
         $competition->removeRun($run);
-        $this->assertNotContains($run, $competition->getWinners());
+        $this->assertNotContains($run, $competition->getRuns());
     }
 
     public function testSportCompatible()
