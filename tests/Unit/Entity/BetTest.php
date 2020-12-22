@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Unit\Entity;
 
 use App\Entity\Bet;
+use App\Entity\BetType;
 use App\Entity\Competition;
 use App\Entity\Member;
 use App\Entity\Run;
@@ -11,7 +14,10 @@ use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class BetTest extends KernelTestCase
+/**
+ * @covers \Bet
+ */
+final class BetTest extends KernelTestCase
 {
     private ValidatorInterface $validator;
 
@@ -65,11 +71,11 @@ class BetTest extends KernelTestCase
     private function createRunObject(\DateTimeImmutable $date = null): Run
     {
         $run = new Run();
-        $startDate = $date ?? new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
+        $startDate = $date ?? new \DateTimeImmutable('+1 day', new \DateTimeZone('UTC'));
         $run
             ->setName('run name')
             ->setEvent('event name')
-            ->setStartDate($startDate->setTime(23, 59, 59, 1000000));
+            ->setStartDate($startDate);
         return $run;
     }
 
@@ -89,6 +95,14 @@ class BetTest extends KernelTestCase
             ->setLastName($lastName)
             ->setFirstName("Jean-Pierre");
         return $member;
+    }
+
+    private function createBetTypeObject(string $target = 'run'): BetType
+    {
+        $betType = new BetType();
+        $betType
+            ->setTarget($target);
+        return $betType;
     }
 
     /**
@@ -287,7 +301,7 @@ class BetTest extends KernelTestCase
 
     public function testRunUncompatible(): void
     {
-        $date = new \DateTimeImmutable('-1 day', new \DateTimeZone('UTC'));
+        $date = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
         $bet = $this->createValidBet();
         $run = $this->createRunObject($date);
         $bet->setRun($run);
@@ -339,6 +353,25 @@ class BetTest extends KernelTestCase
         $member = $this->createMemberObject();
         $bet->setTeamMember($member);
         $this->assertSame($member, $bet->getTeamMember());
+        $violations = $this->validator->validate($bet);
+        $this->assertCount(0, $violations);
+    }
+
+    public function testBetTypeUncompatible(): void
+    {
+        $bet = $this->createValidBet();
+        $member = $this->createBetTypeObject('other');
+        $bet->setBetType($member);
+        $violations = $this->validator->validate($bet);
+        $this->assertCount(1, $violations);
+    }
+
+    public function testBetTypeCompatible(): void
+    {
+        $bet = $this->createValidBet();
+        $member = $this->createBetTypeObject();
+        $bet->setBetType($member);
+        $this->assertSame($member, $bet->getBetType());
         $violations = $this->validator->validate($bet);
         $this->assertCount(0, $violations);
     }

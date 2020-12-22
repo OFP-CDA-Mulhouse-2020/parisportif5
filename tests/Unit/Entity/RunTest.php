@@ -1,12 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Unit\Entity;
 
 use App\Entity\Run;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class RunTest extends KernelTestCase
+/**
+ * @covers \Run
+ */
+final class RunTest extends KernelTestCase
 {
     private ValidatorInterface $validator;
 

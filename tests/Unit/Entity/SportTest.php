@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Unit\Entity;
 
 use App\Entity\Sport;
@@ -7,7 +9,10 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class SportTest extends WebTestCase
+/**
+ * @covers \Sport
+ */
+final class SportTest extends WebTestCase
 {
 
     private function initializeSport(): Sport
