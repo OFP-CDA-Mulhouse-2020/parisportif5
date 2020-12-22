@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Repository\SportRepository;
 use Doctrine\ORM\Mapping as ORM;
@@ -81,6 +83,18 @@ class Sport
      * )
      */
     private int $maxTeams;
+
+    /**
+     * @var Collection<int,BetCategory> $betCategories
+     * @ORM\ManyToMany(targetEntity=BetCategory::class)
+     * @Assert\Valid
+     */
+    private Collection $betCategories;
+
+    public function __construct()
+    {
+        $this->betCategories = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -167,6 +181,30 @@ class Sport
     public function setMaxTeams(int $maxTeams): self
     {
         $this->maxTeams = $maxTeams;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int,BetCategory>
+     */
+    public function getBetCategories(): Collection
+    {
+        return $this->betCategories;
+    }
+
+    public function addBetCategory(BetCategory $betCategory): self
+    {
+        if (!$this->betCategories->contains($betCategory)) {
+            $this->betCategories[] = $betCategory;
+        }
+
+        return $this;
+    }
+
+    public function removeBetCategory(BetCategory $betCategory): self
+    {
+        $this->betCategories->removeElement($betCategory);
 
         return $this;
     }

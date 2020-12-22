@@ -134,7 +134,7 @@ final class BetTypeTest extends KernelTestCase
         $this->assertFalse($betType->isActive());
     }
 
-    public function testBetTypeUncompatible(): void
+    public function testSportUncompatible(): void
     {
         $betType = $this->createValidBetType();
         $sport = $this->createSportObject('XD');
@@ -143,7 +143,7 @@ final class BetTypeTest extends KernelTestCase
         $this->assertCount(1, $violations);
     }
 
-    public function testBetTypeCompatible(): void
+    public function testSportCompatible(): void
     {
         $betType = $this->createValidBetType();
         $sport = $this->createSportObject();
