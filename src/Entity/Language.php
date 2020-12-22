@@ -65,8 +65,9 @@ class Language
      *     normalizer="trim"
      * )
      * @Assert\Regex(
-     *     pattern="/^([Dl]\,\s)?((([dj](\-|\s|\/)[mn]|[mn](\-|\s|\/)[dj])(\-|\s|\/)Y)|(Y(\-|\s|\/)[mn](\-|\s|\/)[dj]))\s?$/u",
-     *     message="Certains caractères spéciaux et paramètres sur la date ne sont pas autorisés pour le format de la date"
+     *  pattern=
+     *  "/^([Dl]\,\s)?((([dj](\-|\s|\/)[mn]|[mn](\-|\s|\/)[dj])(\-|\s|\/)Y)|(Y(\-|\s|\/)[mn](\-|\s|\/)[dj]))\s?$/u",
+     *  message="Certains caractères spéciaux et paramètres pour le format de la date ne sont pas autorisés"
      * )
      */
     private string $dateFormat;
@@ -78,8 +79,9 @@ class Language
      *     normalizer="trim"
      * )
      * @Assert\Regex(
-     *     pattern="/^(\\T)?[HG](\s?(\:|(\\\p{L})+)\s?)i((\s?(\:|(\\\p{L})+)\s?)(s(\.u|\.vP?|P|O|\sO|\s?(\\\p{L})+)?)?)?(\s?T)?$/u",
-     *     message="Certains caractères spéciaux et paramètres sur l'heure ne sont pas autorisés pour le format de l'heure"
+     *  message="Certains caractères spéciaux et paramètres pour le format de l'heure ne sont pas autorisés",
+     *  pattern=
+     * "/^(\\T)?[HG](\s?(\:|(\\\p{L})+)\s?)i((\s?(\:|(\\\p{L})+)\s?)(s(\.u|\.vP?|P|O|\sO|\s?(\\\p{L})+)?)?)?(\s?T)?$/u"
      * )
      */
     private string $timeFormat;

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Entity;
 
 use App\Entity\BetType;
+use App\Entity\Sport;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -55,6 +56,20 @@ final class BetTypeTest extends KernelTestCase
         $betType
             ->setTarget('run');
         return $betType;
+    }
+
+    private function createSportObject(string $country = "FR"): Sport
+    {
+        $sport =  new Sport();
+        $sport
+            ->setName("Football")
+            ->setMaxMembersByTeam(11)
+            ->setMaxTeams(2)
+            ->setCountry($country)
+            ->setRunType("fixture")
+            ->setIndividualType(false)
+            ->setCollectiveType(true);
+        return $sport;
     }
 
     /**
@@ -117,5 +132,24 @@ final class BetTypeTest extends KernelTestCase
         $this->assertTrue($method);
         $betType->desactivate();
         $this->assertFalse($betType->isActive());
+    }
+
+    public function testBetTypeUncompatible(): void
+    {
+        $betType = $this->createValidBetType();
+        $sport = $this->createSportObject('XD');
+        $betType->setSport($sport);
+        $violations = $this->validator->validate($betType);
+        $this->assertCount(1, $violations);
+    }
+
+    public function testBetTypeCompatible(): void
+    {
+        $betType = $this->createValidBetType();
+        $sport = $this->createSportObject();
+        $betType->setSport($sport);
+        $this->assertSame($sport, $betType->getSport());
+        $violations = $this->validator->validate($betType);
+        $this->assertCount(0, $violations);
     }
 }
