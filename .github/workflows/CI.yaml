@@ -66,16 +66,11 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@v2
 
-      - name: Install composer
-        uses: php-actions/composer@v1
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest
 
-      - name: Installs phpunit version
-        uses: php-actions/phpunit@17-php-versions
-        with:
-          bootstrap: vendor/autoload.php
-          configuration: phpunit.xml.dist
-          php_version: 7.4
-          memory_limit: 2G
+      - name: Installs phpunit version 8.3
+        uses: chindit/actions-phpunit-symfony@v8.3.0
 
-      - name: Runs phpunit tests
+      - name: Runs PHPUnit tests
         run: php bin/phpunit --configuration 'phpunit.xml.dist' --bootstrap 'vendor/autoload.php' --test-suffix 'Test.php' tests
