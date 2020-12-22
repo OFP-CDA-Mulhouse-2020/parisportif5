@@ -43,6 +43,13 @@ class BetType
      */
     private bool $active;
 
+    /**
+     * @ORM\OneToOne(targetEntity=Sport::class, cascade={"persist", "remove"})
+     * @ORM\JoinColumn(nullable=false)
+     * @Assert\Valid
+     */
+    private Sport $sport;
+
     /** @const array SUBJECTS */
     public const TARGETS = ["run", "competition", "team", "member"];
 
@@ -91,5 +98,16 @@ class BetType
     public function desactivate(): void
     {
         $this->active = false;
+    }
+
+    public function getSport(): ?Sport
+    {
+        return $this->sport;
+    }
+
+    public function setSport(Sport $sport): self
+    {
+        $this->sport = $sport;
+        return $this;
     }
 }

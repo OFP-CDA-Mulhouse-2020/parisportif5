@@ -360,8 +360,8 @@ final class BetTest extends KernelTestCase
     public function testBetTypeUncompatible(): void
     {
         $bet = $this->createValidBet();
-        $member = $this->createBetTypeObject('other');
-        $bet->setBetType($member);
+        $betType = $this->createBetTypeObject('other');
+        $bet->setBetType($betType);
         $violations = $this->validator->validate($bet);
         $this->assertCount(1, $violations);
     }
@@ -369,9 +369,9 @@ final class BetTest extends KernelTestCase
     public function testBetTypeCompatible(): void
     {
         $bet = $this->createValidBet();
-        $member = $this->createBetTypeObject();
-        $bet->setBetType($member);
-        $this->assertSame($member, $bet->getBetType());
+        $betType = $this->createBetTypeObject();
+        $bet->setBetType($betType);
+        $this->assertSame($betType, $bet->getBetType());
         $violations = $this->validator->validate($bet);
         $this->assertCount(0, $violations);
     }
