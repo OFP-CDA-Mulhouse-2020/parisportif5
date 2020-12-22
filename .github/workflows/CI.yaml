@@ -70,12 +70,7 @@ jobs:
         uses: php-actions/composer@v1
 
       - name: Installs phpunit version
-        uses: php-actions/phpunit@17-php-versions
-        with:
-          bootstrap: vendor/autoload.php
-          configuration: phpunit.xml.dist
-          php_version: 7.4
-          memory_limit: 2G
+        uses: chindit/actions-phpunit-symfony@master
 
       - name: Runs phpunit tests
         run: php bin/phpunit --configuration 'phpunit.xml.dist' --bootstrap 'vendor/autoload.php' --test-suffix 'Test.php' tests
