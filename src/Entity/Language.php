@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Repository\LanguageRepository;
@@ -76,7 +78,7 @@ class Language
      *     normalizer="trim"
      * )
      * @Assert\Regex(
-     *     pattern="/^(\\T)?[HG](\s?(\:|(\\\p{L})+)\s?|\s?)i(\s?(\:|(\\\p{L})+)\s?|\s?)(s(\.u|\.vP?|P|O|\sO|\s?(\\\p{L})+)?)?(\s?T)?$/u",
+     *     pattern="/^(\\T)?[HG](\s?(\:|(\\\p{L})+)\s?)i((\s?(\:|(\\\p{L})+)\s?)(s(\.u|\.vP?|P|O|\sO|\s?(\\\p{L})+)?)?)?(\s?T)?$/u",
      *     message="Certains caractères spéciaux et paramètres sur l'heure ne sont pas autorisés pour le format de l'heure"
      * )
      */

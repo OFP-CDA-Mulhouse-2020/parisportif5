@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Repository\CompetitionRepository;
@@ -84,6 +86,13 @@ class Competition
      * @Assert\Valid
      */
     private Collection $runs;
+
+    /**
+     * @ORM\OneToOne(targetEntity=Sport::class, cascade={"persist", "remove"})
+     * @ORM\JoinColumn(nullable=false)
+     * @Assert\Valid
+     */
+    private Sport $sport;
 
     public function __construct()
     {
@@ -215,10 +224,11 @@ class Competition
     public function addRun(Run $run): self
     {
         if (!$this->runs->contains($run)) {
-            if (isset($this->maxRuns)) {
-                if ($this->maxRuns > 0 && count($this->runs) >= $this->maxRuns) {
-                    return $this;
-                }
+            if (!isset($this->maxRuns)) {
+                return $this;
+            }
+            if ($this->maxRuns > 0 && count($this->runs) >= $this->maxRuns) {
+                return $this;
             }
             $this->runs[] = $run;
             $run->setCompetition($this);
@@ -236,6 +246,17 @@ class Competition
             }*/
         }
 
+        return $this;
+    }
+
+    public function getSport(): ?Sport
+    {
+        return $this->sport;
+    }
+
+    public function setSport(Sport $sport): self
+    {
+        $this->sport = $sport;
         return $this;
     }
 }

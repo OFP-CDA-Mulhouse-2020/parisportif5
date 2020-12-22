@@ -75,8 +75,7 @@ jobs:
           bootstrap: vendor/autoload.php
           configuration: phpunit.xml.dist
           php_version: 7.4
-          phpunit_version: 9
           memory_limit: 2G
 
       - name: Runs phpunit tests
-        run: php bin/phpunit --configuration 'phpunit.xml.dist' --bootstrap 'vendor/autoload.php' --test-suffix 'Test.php,.phpt' tests
+        run: php bin/phpunit --configuration 'phpunit.xml.dist' --bootstrap 'vendor/autoload.php' --test-suffix 'Test.php' tests

@@ -1,8 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Repository\RunRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -60,6 +64,31 @@ class Run
      * @Assert\Valid
      */
     private Competition $competition;
+
+    /**
+     * @ORM\OneToOne(targetEntity=Team::class, cascade={"persist", "remove"})
+     * @Assert\Valid
+     */
+    private ?Team $result;
+
+    /**
+     * @ORM\OneToOne(targetEntity=Location::class, inversedBy="run", cascade={"persist", "remove"})
+     * @ORM\JoinColumn(nullable=false)
+     * @Assert\Valid
+     */
+    private Location $location;
+
+    /**
+     * @var Collection<int,Team> $teams
+     * @ORM\ManyToMany(targetEntity=Team::class)
+     * @Assert\Valid
+     */
+    private Collection $teams;
+
+    public function __construct()
+    {
+        $this->teams = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -133,6 +162,62 @@ class Run
     public function setCompetition(Competition $competition): self
     {
         $this->competition = $competition;
+        return $this;
+    }
+
+    public function getResult(): ?Team
+    {
+        return $this->result;
+    }
+
+    public function setResult(?Team $result): self
+    {
+        $this->result = $result;
+        return $this;
+    }
+
+    public function getLocation(): ?Location
+    {
+        return $this->location;
+    }
+
+    public function setLocation(Location $location): self
+    {
+        $this->location = $location;
+        return $this;
+    }
+
+    /**
+     * @return Collection<int,Team>
+     */
+    public function getTeams(): Collection
+    {
+        return $this->teams;
+    }
+
+    public function addTeam(Team $team): self
+    {
+        if (!$this->teams->contains($team)) {
+            if (empty($this->competition)) {
+                return $this;
+            }
+            if (empty($this->competition->getSport())) {
+                return $this;
+            }
+            $maxTeams = $this->competition->getSport()->getMaxTeams();
+            if ($maxTeams > 0 && count($this->teams) >= $maxTeams) {
+                return $this;
+            }
+            $this->teams[] = $team;
+        }
+
+        return $this;
+    }
+
+    public function removeTeam(Team $team): self
+    {
+        $this->teams->removeElement($team);
+
         return $this;
     }
 }
