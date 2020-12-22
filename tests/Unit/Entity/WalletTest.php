@@ -10,12 +10,6 @@ use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-// addAmount ne peut pas être null
-// addAmount ne peut pas être négatif
-// withdrawAmount ne peut pas être null
-// withdrawAmount ne peut pas être négatif
-// ne peut pas retirer plus que ce qu'il y a sur le compte
-
 /**
  * @covers \Wallet
  */
@@ -72,7 +66,6 @@ final class WalletTest extends WebTestCase
         /** @var ValidatorInterface $validator */
         $validator = $kernel->getContainer()->get('validator');
         $violations = $validator->validate($wallet);
-        //throw new \Exception($violations);
         $this->assertCount(0, $violations);
     }
 
@@ -87,12 +80,36 @@ final class WalletTest extends WebTestCase
         $this->assertGreaterThanOrEqual(1, count($violations));
     }
 
-    /* ERROR = must be of the type int, float given
-    Implement interface FundStorageInterface for converting to int and vice versa
     public function testIfWalletAmountIsCorrect(): void
     {
         $wallet = $this->initializeWallet();
-        $wallet->setAmount(0.4);
-        $this->assertGreaterThanOrEqual(0, $wallet->getAmount());
-    }*/
+        $kernel = $this->initializeKernel();
+        /** @var ValidatorInterface $validator */
+        $validator = $kernel->getContainer()->get('validator');
+        $violations = $validator->validate($wallet);
+        $this->assertCount(0, $violations);
+    }
+
+    /**
+     * @dataProvider incorrectWalletAmountProvider
+     */
+    public function testIfWalletAmountIsInCorrect(int $wA): void
+    {
+        $wallet = $this->initializeWallet();
+        $kernel = $this->initializeKernel();
+        $wallet->setAmount($wA);
+        /** @var ValidatorInterface $validator */
+        $validator = $kernel->getContainer()->get('validator');
+        $violations = $validator->validate($wallet);
+        $this->assertGreaterThanOrEqual(1, count($violations));
+    }
+
+    public function incorrectWalletAmountProvider(): array
+    {
+        return [
+            [-14],
+            [-1000000000]
+            //["2"]
+        ];
+    }
 }
