@@ -53,6 +53,7 @@ class Language
      *     normalizer="trim"
      * )
      * @Assert\Locale(
+     *     canonicalize=true,
      *     message="Le code du langage {{ value }} n'est pas valide (identifiants locaux au format ICU)"
      * )
      */
