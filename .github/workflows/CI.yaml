@@ -71,9 +71,6 @@ jobs:
 
       - name: Installs phpunit version
         uses: chindit/actions-phpunit-symfony@master
-        with:
-          php_version: 7.4.9
-          memory_limit: 2G
 
       - name: Runs phpunit tests
         run: php bin/phpunit --configuration 'phpunit.xml.dist' --bootstrap 'vendor/autoload.php' --test-suffix 'Test.php' tests
