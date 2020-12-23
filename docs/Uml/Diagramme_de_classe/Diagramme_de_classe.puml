@@ -7,53 +7,41 @@ skinparam linetype ortho
     'Une facture n'est pas pas forcément lié à un utilisateur existant
     User "0..1" <-- "0..*" Billing
     'Un paris a un type
-    BetType "1" <-- "0..*" Bet
+    BetCategory "1" <-- "0..*" Bet
     'Un utilisateur a un porte-feuille
     User "1" -- "1" Wallet
     'Un utilisateur a des paris
     User "1" o-- "0..*" Bet
-    'Un type de paris est lié à un sport
-    BetType "0..*" --> "1" Sport
-    'Une catégorie de paris est lié a un sport
-    BetCategory "0..*" <--o "0..*" Sport
     'La compétition a une équipe gagnante
-    Competition "0..*" --> "0..3" Team
+    Competition "0..*" --> "0..1" Team
     'Une compétition a plusieurs rencontre ou course
     Competition "1" o-- "0..*" Run
     'Une rencontre ou une course a un lieu
     Run "1" -- "1" Location
-    'Une équipe a des scores (des matchs, des courses)
-    'Team "1" o-- "0..*" Score
     'Une rencontre ou une course a plusieurs équipes
     Run "1" o--> "0..*" Team
     'Une équipe a plusieurs membre
     Team "1" *-- "1..*" Member
     'Une compétition a un sport
     Sport "1" <-- "0..*" Competition
-    'Une équipe a un résultat (gagnant, perdant) même dans le cas de sport individuel
-    'ResultType "0..1" <-- "0..*" Team
-    'Un membre a un résultat dans le cas de sport individuel (gagnant, perdant)
-    'ResultType "0..1" <-- "0..*" Member
+    Result "0..*" -- "1" Run
+    Result "0..*" --> "0..1" Team
+    Result "0..*" --> "0..1" Member
+    BetCategory "1..*" <-- "0..*" Run
+    Sport "1" <-- "0..*" Team
+    'BetCategory "1" <-- "0..*" Result
     'Un membre a un rôle (fonction) tel que pilote, joueur
     MemberRole "1" <-- "0..*" Member
     'Un membre a un status (blessé, titulaire)
     MemberStatus "1" <-- "0..*" Member
     'Liaison potentiel entre un paris et une compétition
     Bet "0..*" --> "1" Competition
-    'Classe d'association entre paris et compétition
-    (Bet, Competition) .. CompetitionBets
     'Liaison potentiel entre un paris et une rencontre ou course
     Bet "0..*" --> "0..1" Run
-    'Classe d'association entre un paris et une rencontre ou course
-    (Bet, Run) .. RunBets
     'Liaison potentiel entre un paris et une équipe
     Bet "0..*" --> "0..1" Team
-    'Classe d'association entre un paris et une équipe
-    (Bet, Team) .. TeamBets
     'Liaison potentiel entre un paris et un membre
     Bet "0..*" --> "0..1" Member
-    'Classe d'association entre un paris et un membre
-    (Bet, Member) .. MemberBets
     'Implémentation de l'interface FundStorageInterface par l'entité Billing
     FundStorageInterface <|.. Billing
     'Implémentation de l'interface FundStorageInterface par l'entité Wallet
@@ -76,11 +64,6 @@ skinparam linetype ortho
         -identifier : int
         -name : string
     }
-    'Type de résultat (gagnant, perdant, ex aequo)
-    'class ResultType {
-    '    -identifier : int
-    '    -name : string
-    '}
     'Porte-feuille de l'utilisateur avec des fonds (de l'argent gagnés)
     class Wallet {
         -identifier : int
@@ -181,20 +164,11 @@ skinparam linetype ortho
         +convertOddsMultiplierToStoredData(in float odds) : int
         +getTarget() : Member|Team|Run|Competition
     }
-    'Type de paris (ex: Paris sur la victoire d'1 équipe)
-    class BetType {
-        -identifier : int
-        -isActive : bool
-        -target : string
-        -description : string
-        +activate() : void
-        +desactivate() : void
-    }
-    'Catégorie de paris (ex: Paris sur les résultats)
+    'Catégorie de paris (ex: Paris sur le résultat)
     class BetCategory {
         -identifier : int
         -title : string
-        -items : array
+        -name : string
         -description : string
     }
     'Lieu de la rencontre/course
@@ -208,12 +182,12 @@ skinparam linetype ortho
     class Sport {
         -identifier : int
         -name : string
-        -maxTeams : int
+        -maxTeamsByRun : int
         -maxMembersByTeam : int
         -collectiveType : bool
         -individualType : bool
-        -runType : string
         -country : string
+        -resultType : string
         +isCollective() : bool
         +isIndividual() : bool
         +isBothIndividualAndCollective() : bool
@@ -226,6 +200,7 @@ skinparam linetype ortho
         -endDate : DateTime
         -country : string
         -maxRuns : int
+        -winner : Result
         +hasWinner() : bool
         +hasRuns() : bool
         +isFinish() : bool
@@ -240,35 +215,34 @@ skinparam linetype ortho
         -name : string
         -startDate : DateTime
         -endDate : DateTime
-        -result : Team|null
+        -noWinner : bool
+        -scores : Result[]
         +isFinish() : bool
         +isOngoing() : bool
         +hasTeams() : bool
         +hasResult() : bool
         +getTeamsCount() : int
     }
-    'Score de l'équipe ou du membre de l'équipe
-    'class Score {
-    '    -identifier : int
-    '    -value : int
-    '    -runType : string
-    '    +getScore() : int
-    '}
+    'Résultat du match ou de la course
+    class Result {
+        -identifier : int
+        -type : string
+        -betCategoryId : int
+        -value : int
+        -winner : bool
+    }
     'Joueur ou sportif ou pilote
     class Member {
         -identifier : int
         -lastName : string
         -firstName : string
-        +hasResult() : bool
     }
     'Équipes qui participe à une rencontre, à une course
     class Team {
         -identifier : int
         -name : string
         -country : string
-        +hasResult() : bool
         +hasMembers() : bool
-        +hasScores() : bool
         +getMembersCount() : int
         +getScoresCount() : int
     }
