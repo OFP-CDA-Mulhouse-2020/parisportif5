@@ -214,7 +214,7 @@ skinparam linetype ortho
         -name : string
         -startDate : DateTime
         -endDate : DateTime
-        -winner : Result
+        -winner : Team|null
         -scores : Result[]
         +isFinish() : bool
         +isOngoing() : bool
@@ -228,7 +228,6 @@ skinparam linetype ortho
         -type : string
         -betCategoryName : string
         -value : int
-        +isUndefined() : bool
     }
     'Joueur ou sportif ou pilote
     class Member {
