@@ -200,6 +200,7 @@ skinparam linetype ortho
         -endDate : DateTime
         -country : string
         -maxRuns : int
+        -winner : Result
         +hasWinner() : bool
         +hasRuns() : bool
         +isFinish() : bool
@@ -214,7 +215,7 @@ skinparam linetype ortho
         -name : string
         -startDate : DateTime
         -endDate : DateTime
-        -winner : Team|null
+        -noWinner : bool
         -scores : Result[]
         +isFinish() : bool
         +isOngoing() : bool
@@ -226,8 +227,9 @@ skinparam linetype ortho
     class Result {
         -identifier : int
         -type : string
-        -betCategoryName : string
+        -betCategoryId : int
         -value : int
+        -winner : bool
     }
     'Joueur ou sportif ou pilote
     class Member {
