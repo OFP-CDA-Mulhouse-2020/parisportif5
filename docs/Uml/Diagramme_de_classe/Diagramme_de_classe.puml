@@ -24,12 +24,13 @@ skinparam linetype ortho
     Team "1" *-- "1..*" Member
     'Une compétition a un sport
     Sport "1" <-- "0..*" Competition
-    Result "0..*" -- "1" Run
+    Result "0..*" -- "0..1" Run
     Result "0..*" --> "0..1" Team
     Result "0..*" --> "0..1" Member
     BetCategory "1..*" <-- "0..*" Run
     Sport "1" <-- "0..*" Team
-    'BetCategory "1" <-- "0..*" Result
+    BetCategory "1" <-- "0..*" Result
+    Result "0..1" -- "0..1" Competition
     'Un membre a un rôle (fonction) tel que pilote, joueur
     MemberRole "1" <-- "0..*" Member
     'Un membre a un status (blessé, titulaire)
@@ -227,7 +228,6 @@ skinparam linetype ortho
     class Result {
         -identifier : int
         -type : string
-        -betCategoryId : int
         -value : int
         -winner : bool
     }
