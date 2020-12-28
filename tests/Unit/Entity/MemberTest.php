@@ -40,13 +40,6 @@ final class MemberTest extends WebTestCase
         return $memberStatus;
     }
 
-    private function initializeResultType(string $resultTypeName): ResultType
-    {
-        $resultType =  new ResultType();
-        $resultType->setName($resultTypeName);
-        return $resultType;
-    }
-
     private function initializeKernel(): KernelInterface
     {
         $kernel = self::bootKernel();
@@ -193,29 +186,6 @@ final class MemberTest extends WebTestCase
         $member = $this->initializeMember();
         $memberStatus = $this->initializeMemberStatus("on the bench");
         $member->setMemberStatus($memberStatus);
-        $validator = $kernel->getContainer()->get('validator');
-        $violations = $validator->validate($member);
-        $this->assertCount(1, $violations);
-    }
-
-    public function testIfResultTypeIsValid(): void
-    {
-        $kernel = $this->initializeKernel();
-        $member = $this->initializeMember();
-        $resultType = $this->initializeResultType("draw");
-        $member->setResultType($resultType);
-        $this->assertSame($resultType, $member->getResultType());
-        $validator = $kernel->getContainer()->get('validator');
-        $violations = $validator->validate($member);
-        $this->assertCount(0, $violations);
-    }
-
-    public function testIfResultTypeIsInvalid(): void
-    {
-        $kernel = $this->initializeKernel();
-        $member = $this->initializeMember();
-        $resultType = $this->initializeResultType("victoire");
-        $member->setResultType($resultType);
         $validator = $kernel->getContainer()->get('validator');
         $violations = $validator->validate($member);
         $this->assertCount(1, $violations);
