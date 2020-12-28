@@ -6,7 +6,6 @@ namespace App\Tests\Unit\Entity;
 
 use App\Entity\MemberRole;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
@@ -14,18 +13,19 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  */
 final class MemberRoleTest extends KernelTestCase
 {
-    private function initializeMemberRole(): MemberRole
+    private ValidatorInterface $validator;
+
+    public function setUp(): void
+    {
+        $kernel = self::bootKernel();
+        $this->validator = $kernel->getContainer()->get('validator');
+    }
+
+    private function createValidMemberRole(): MemberRole
     {
         $memberRole =  new MemberRole();
         $memberRole->setName("pilot");
         return $memberRole;
-    }
-
-    private function initializeKernel(): KernelInterface
-    {
-        $kernel = self::bootKernel();
-        $kernel->boot();
-        return $kernel;
     }
 
     /**
@@ -33,45 +33,43 @@ final class MemberRoleTest extends KernelTestCase
      */
     public function testIfMemberRoleIsValid(string $mR): void
     {
-        $kernel = $this->initializeKernel();
-        $memberRole = $this->initializeMemberRole();
+        $memberRole = $this->createValidMemberRole();
         $memberRole->setName($mR);
-        $validator = $kernel->getContainer()->get('validator');
-        $violations = $validator->validate($memberRole);
+        $violations = $this->validator->validate($memberRole);
         $this->assertCount(0, $violations);
     }
 
     public function validMemberRoleProvider(): array
     {
         return [
-            ["pilot"],
+            ["PILOT"],
             ["footballer"],
             ["handballer"],
-            ["tennsiplayer"],
-            ["tabletennisplayer"]
+            ["tennis-player"],
+            ["table-tennis_player"]
         ];
     }
 
     /**
      * @dataProvider invalidMemberRoleProvider
      */
-    public function testIfMemberRoleIsInvalid(string $mR): void
+    public function testIfMemberRoleIsIncorrect(string $mR): void
     {
-        $kernel = $this->initializeKernel();
-        $memberRole = $this->initializeMemberRole();
+        $memberRole = $this->createValidMemberRole();
         $memberRole->setName($mR);
-        $validator = $kernel->getContainer()->get('validator');
-        $violations = $validator->validate($memberRole);
+        $violations = $this->validator->validate($memberRole);
         $this->assertGreaterThanOrEqual(1, count($violations));
     }
 
     public function invalidMemberRoleProvider(): array
     {
         return [
-            ["driver"],
-            ["player"],
-            ["Jackson Richardson"],
-            ["Guy Forg€t"]
+            ["driver_"],
+            ["-player"],
+            ["Jâckson Richardson"],
+            ["Guy_Forg€t"],
+            [''],
+            ['  ']
         ];
     }
 }

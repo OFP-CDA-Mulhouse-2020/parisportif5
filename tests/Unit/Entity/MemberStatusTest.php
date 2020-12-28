@@ -6,7 +6,6 @@ namespace App\Tests\Unit\Entity;
 
 use App\Entity\MemberStatus;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
@@ -14,18 +13,19 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  */
 final class MemberStatusTest extends KernelTestCase
 {
-    private function initializeMemberStatus(): MemberStatus
+    private ValidatorInterface $validator;
+
+    public function setUp(): void
+    {
+        $kernel = self::bootKernel();
+        $this->validator = $kernel->getContainer()->get('validator');
+    }
+
+    private function createValidMemberStatus(): MemberStatus
     {
         $status =  new MemberStatus();
         $status->setName("titular");
         return $status;
-    }
-
-    private function initializeKernel(): KernelInterface
-    {
-        $kernel = self::bootKernel();
-        $kernel->boot();
-        return $kernel;
     }
 
     /**
@@ -33,11 +33,9 @@ final class MemberStatusTest extends KernelTestCase
      */
     public function testIfMemberStatusIsCorrect(string $mS): void
     {
-        $kernel = $this->initializeKernel();
-        $status = $this->initializeMemberStatus();
+        $status = $this->createValidMemberStatus();
         $status->setName($mS);
-        $validator = $kernel->getContainer()->get('validator');
-        $violations = $validator->validate($status);
+        $violations = $this->validator->validate($status);
         $this->assertCount(0, $violations);
     }
 
@@ -47,7 +45,9 @@ final class MemberStatusTest extends KernelTestCase
             ["titular"],
             ["substitute"],
             ["injured"],
-            ["suspended"]
+            ["suspended"],
+            ["suspended_and_injured"],
+            ["titular-or-suspended"]
         ];
     }
 
@@ -56,11 +56,9 @@ final class MemberStatusTest extends KernelTestCase
      */
     public function testIfMemberStatusIsIncorrect(string $mS): void
     {
-        $kernel = $this->initializeKernel();
-        $status = $this->initializeMemberStatus();
+        $status = $this->createValidMemberStatus();
         $status->setName($mS);
-        $validator = $kernel->getContainer()->get('validator');
-        $violations = $validator->validate($status);
+        $violations = $this->validator->validate($status);
         $this->assertGreaterThanOrEqual(1, count($violations));
     }
 
@@ -68,9 +66,11 @@ final class MemberStatusTest extends KernelTestCase
     {
         return [
             ["field player"],
-            ["benched"],
-            ["hurt"],
-            ["on hold"]
+            ["benched_"],
+            ["-hurt"],
+            ["onhôld"],
+            [''],
+            ['  ']
         ];
     }
 }

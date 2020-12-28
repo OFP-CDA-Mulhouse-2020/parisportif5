@@ -70,17 +70,6 @@ class Competition
     private int $maxRuns;
 
     /**
-     * @var Collection<int,Team> $winners
-     * @ORM\ManyToMany(targetEntity=Team::class)
-     * @Assert\Valid
-     * @Assert\Count(
-     *      max = 3,
-     *      maxMessage = "Vous ne pouvez pas ajouter plus de {{ limit }} gagnants"
-     * )
-     */
-    private Collection $winners;
-
-    /**
      * @var Collection<int,Run> $runs
      * @ORM\OneToMany(targetEntity=Run::class, mappedBy="competition", orphanRemoval=true)
      * @Assert\Valid
@@ -96,7 +85,6 @@ class Competition
 
     public function __construct()
     {
-        $this->winners = new ArrayCollection();
         $this->runs = new ArrayCollection();
     }
 
@@ -175,43 +163,6 @@ class Competition
         return ($currentDate >= $this->startDate->setTimezone($timezoneUTC)
             && $currentDate <= $this->endDate->setTimezone($timezoneUTC));
     }
-
-    /**
-     * @return Collection<int,Team>
-     */
-    public function getWinners(): Collection
-    {
-        return $this->winners;
-    }
-
-    public function addWinner(Team $winner): self
-    {
-        if (!$this->winners->contains($winner)) {
-            $this->winners[] = $winner;
-        }
-        return $this;
-    }
-
-    public function removeWinner(Team $winner): self
-    {
-        $this->winners->removeElement($winner);
-        return $this;
-    }
-
-    /*
-     * @Assert\IsFalse(
-     *     message="Le nombre maximum de course ou de rencontre (Run) a été atteint"
-     * )
-     *
-    public function isOverMaxRuns(): bool
-    {
-        if (isset($this->maxRuns)) {
-            if ($this->maxRuns > 0 && count($this->runs) >= $this->maxRuns) {
-                return true;
-            }
-        }
-        return false;
-    }*/
 
     /**
      * @return Collection<int,Run>

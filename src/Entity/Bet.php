@@ -82,13 +82,6 @@ class Bet implements FundStorageInterface
      */
     private ?Member $teamMember;
 
-    /**
-     * @ORM\OneToOne(targetEntity=BetType::class, cascade={"persist", "remove"})
-     * @ORM\JoinColumn(nullable=false)
-     * @Assert\Valid
-     */
-    private BetType $betType;
-
     public function __construct()
     {
         $this->isWinning = null;
@@ -184,17 +177,6 @@ class Bet implements FundStorageInterface
     public function setTeamMember(?Member $teamMember): self
     {
         $this->teamMember = $teamMember;
-        return $this;
-    }
-
-    public function getBetType(): ?BetType
-    {
-        return $this->betType;
-    }
-
-    public function setBetType(BetType $betType): self
-    {
-        $this->betType = $betType;
         return $this;
     }
 

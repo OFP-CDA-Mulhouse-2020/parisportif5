@@ -79,7 +79,7 @@ final class RunTest extends KernelTestCase
         $sport
             ->setName("Football")
             ->setMaxMembersByTeam(11)
-            ->setMaxTeams(2)
+            ->setMaxTeamsByRun(2)
             ->setCountry($country)
             ->setRunType("fixture")
             ->setIndividualType(false)
@@ -321,7 +321,7 @@ final class RunTest extends KernelTestCase
         $run->addTeam($this->createTeamObject('US'));
         $violations = $this->validator->validate($run);
         $this->assertCount(0, $violations);
-        $maxTeams = $run->getCompetition()->getSport()->getMaxTeams();
+        $maxTeams = $run->getCompetition()->getSport()->getMaxTeamsByRun();
         $this->assertCount($maxTeams, $run->getTeams());
     }
 
@@ -353,29 +353,6 @@ final class RunTest extends KernelTestCase
         $this->assertCount(0, $violations);
         $run->removeTeam($team);
         $this->assertNotContains($team, $run->getTeams());
-    }
-
-    public function testResultCompatible()
-    {
-        $run = $this->createValidRun();
-        $team = $this->createTeamObject();
-        $run->setResult($team);
-        $this->assertSame($team, $run->getResult());
-        $violations = $this->validator->validate($run);
-        $this->assertCount(0, $violations);
-        $run->setResult(null);
-        $this->assertNull($run->getResult());
-        $violations = $this->validator->validate($run);
-        $this->assertCount(0, $violations);
-    }
-
-    public function testResultUncompatible()
-    {
-        $run = $this->createValidRun();
-        $team = $this->createTeamObject('XD');
-        $run->setResult($team);
-        $violations = $this->validator->validate($run);
-        $this->assertCount(1, $violations);
     }
 
     /*public function testAddResultCompatible()

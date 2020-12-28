@@ -22,8 +22,13 @@ class MemberStatus
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Assert\ExpressionLanguageSyntax(
-     *     allowedVariables={"titular", "substitute", "suspended", "injured"}
+     * @Assert\NotBlank(
+     *     normalizer="trim",
+     *     message="Le statut du membre ne peut pas être vide"
+     * )
+     * @Assert\Regex(
+     *     pattern="/^(?<![\_\-])([a-z]([\_\-][a-z])?)+(?![\_\-])$/i",
+     *     message="Le statut du membre n'accepte que des lettres sans accents, le tiret et le underscore"
      * )
      */
     private string $name;

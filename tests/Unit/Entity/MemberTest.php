@@ -161,7 +161,7 @@ final class MemberTest extends WebTestCase
     {
         $kernel = $this->initializeKernel();
         $member = $this->initializeMember();
-        $memberRole = $this->initializeMemberRole("player");
+        $memberRole = $this->initializeMemberRole("player_");
         $member->setMemberRole($memberRole);
         $validator = $kernel->getContainer()->get('validator');
         $violations = $validator->validate($member);

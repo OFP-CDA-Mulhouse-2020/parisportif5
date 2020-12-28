@@ -8,6 +8,33 @@ use App\Repository\BetCategoryRepository;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
+/*// liste des catégories :
+    Foot :
+        résultat => result
+        butteur (membre) => score
+        nombre de but => goals Line
+        score => points
+        mi-temps la plus prolifique => most prolific half-time
+    Handball :
+        résultat => result
+        butteur (membre) => (player) ToScore
+        nombre de but => goals Line
+        mi-temps la plus prolifique => most prolific half-time
+    Formule 1 :
+        résultat => result
+        podium (top 3)
+        points (top10)
+        termine la course => finish the race
+    Tennis :
+        résultat => result
+        atteindre la finale => reach the final
+        nombre de sets
+    Tennis de table :
+        résultat => result
+        atteindre la finale => reach the final
+        nombre de sets
+    */
+
 /**
  * @ORM\Entity(repositoryClass=BetCategoryRepository::class)
  */

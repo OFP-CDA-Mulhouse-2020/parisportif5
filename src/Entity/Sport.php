@@ -52,15 +52,18 @@ class Sport
      *     message="Le pays doit être renseigné",
      *     normalizer="trim"
      * )
-     * @Assert\Country
+     * @Assert\Country(
+     *     message="Le pays {{ value }} n'est pas valide",
+     * )
      */
     private string $country;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Assert\NotBlank,
-     *     normalizer="trim"
-     * @Assert\Choice({"fixture", "race"})
+     * @Assert\Choice(
+     *     choices=Sport::RUN_TYPES,
+     *     message="Choisisez un type de résultat valide"
+     * )
      */
     private string $runType;
 
@@ -82,19 +85,9 @@ class Sport
      *     message="Le nombre d'équipes doit être supérieur ou égal à 1"
      * )
      */
-    private int $maxTeams;
+    private int $maxTeamsByRun;
 
-    /**
-     * @var Collection<int,BetCategory> $betCategories
-     * @ORM\ManyToMany(targetEntity=BetCategory::class)
-     * @Assert\Valid
-     */
-    private Collection $betCategories;
-
-    public function __construct()
-    {
-        $this->betCategories = new ArrayCollection();
-    }
+    public const RUN_TYPES = ["fixture", "race"];
 
     public function getId(): ?int
     {
@@ -173,38 +166,14 @@ class Sport
         return $this;
     }
 
-    public function getMaxTeams(): ?int
+    public function getMaxTeamsByRun(): ?int
     {
-        return $this->maxTeams;
+        return $this->maxTeamsByRun;
     }
 
-    public function setMaxTeams(int $maxTeams): self
+    public function setMaxTeamsByRun(int $maxTeamsByRun): self
     {
-        $this->maxTeams = $maxTeams;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int,BetCategory>
-     */
-    public function getBetCategories(): Collection
-    {
-        return $this->betCategories;
-    }
-
-    public function addBetCategory(BetCategory $betCategory): self
-    {
-        if (!$this->betCategories->contains($betCategory)) {
-            $this->betCategories[] = $betCategory;
-        }
-
-        return $this;
-    }
-
-    public function removeBetCategory(BetCategory $betCategory): self
-    {
-        $this->betCategories->removeElement($betCategory);
+        $this->maxTeamsByRun = $maxTeamsByRun;
 
         return $this;
     }

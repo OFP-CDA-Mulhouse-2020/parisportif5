@@ -66,12 +66,6 @@ class Run
     private Competition $competition;
 
     /**
-     * @ORM\OneToOne(targetEntity=Team::class, cascade={"persist", "remove"})
-     * @Assert\Valid
-     */
-    private ?Team $result;
-
-    /**
      * @ORM\OneToOne(targetEntity=Location::class, inversedBy="run", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=false)
      * @Assert\Valid
@@ -165,17 +159,6 @@ class Run
         return $this;
     }
 
-    public function getResult(): ?Team
-    {
-        return $this->result;
-    }
-
-    public function setResult(?Team $result): self
-    {
-        $this->result = $result;
-        return $this;
-    }
-
     public function getLocation(): ?Location
     {
         return $this->location;
@@ -204,7 +187,7 @@ class Run
             if (empty($this->competition->getSport())) {
                 return $this;
             }
-            $maxTeams = $this->competition->getSport()->getMaxTeams();
+            $maxTeams = $this->competition->getSport()->getMaxTeamsByRun();
             if ($maxTeams > 0 && count($this->teams) >= $maxTeams) {
                 return $this;
             }

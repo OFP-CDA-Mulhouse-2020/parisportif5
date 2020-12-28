@@ -42,7 +42,9 @@ class Team
      *     message="Le pays doit être renseigné",
      *     normalizer="trim"
      * )
-     * @Assert\Country
+     * @Assert\Country(
+     *     message="Le pays {{ value }} n'est pas valide",
+     * )
      */
     private string $country;
 
