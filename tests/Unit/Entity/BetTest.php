@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Entity;
 
 use App\Entity\Bet;
-use App\Entity\BetType;
 use App\Entity\Competition;
 use App\Entity\Member;
 use App\Entity\Run;
@@ -95,14 +94,6 @@ final class BetTest extends KernelTestCase
             ->setLastName($lastName)
             ->setFirstName("Jean-Pierre");
         return $member;
-    }
-
-    private function createBetTypeObject(string $target = 'run'): BetType
-    {
-        $betType = new BetType();
-        $betType
-            ->setTarget($target);
-        return $betType;
     }
 
     /**
@@ -353,25 +344,6 @@ final class BetTest extends KernelTestCase
         $member = $this->createMemberObject();
         $bet->setTeamMember($member);
         $this->assertSame($member, $bet->getTeamMember());
-        $violations = $this->validator->validate($bet);
-        $this->assertCount(0, $violations);
-    }
-
-    public function testBetTypeUncompatible(): void
-    {
-        $bet = $this->createValidBet();
-        $betType = $this->createBetTypeObject('other');
-        $bet->setBetType($betType);
-        $violations = $this->validator->validate($bet);
-        $this->assertCount(1, $violations);
-    }
-
-    public function testBetTypeCompatible(): void
-    {
-        $bet = $this->createValidBet();
-        $betType = $this->createBetTypeObject();
-        $bet->setBetType($betType);
-        $this->assertSame($betType, $bet->getBetType());
         $violations = $this->validator->validate($bet);
         $this->assertCount(0, $violations);
     }

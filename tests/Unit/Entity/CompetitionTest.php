@@ -68,7 +68,7 @@ final class CompetitionTest extends KernelTestCase
         $sport
             ->setName("Football")
             ->setMaxMembersByTeam(11)
-            ->setMaxTeams(2)
+            ->setMaxTeamsByRun(2)
             ->setCountry($country)
             ->setRunType("fixture")
             ->setIndividualType(false)
@@ -285,59 +285,6 @@ final class CompetitionTest extends KernelTestCase
         $competition->setEndDate($date->modify('+2 day'));
         $result = $competition->isOngoing();
         $this->assertFalse($result);
-    }
-
-    public function testAddWinnerCompatible()
-    {
-        $competition = $this->createValidCompetition();
-        $team = $this->createTeamObject();
-        $competition->addWinner($team);
-        $this->assertContains($team, $competition->getWinners());
-        $violations = $this->validator->validate($competition);
-        $this->assertCount(0, $violations);
-    }
-
-    public function testAddWinnerUncompatible()
-    {
-        $competition = $this->createValidCompetition();
-        $team = $this->createTeamObject('XD');
-        $competition->addWinner($team);
-        $violations = $this->validator->validate($competition);
-        $this->assertCount(1, $violations);
-    }
-
-    public function testAddWinnerCompatibleOverLimit()
-    {
-        $competition = $this->createValidCompetition();
-        $team = $this->createTeamObject();
-        $competition->addWinner($team);
-        $competition->addWinner($this->createTeamObject('DE'));
-        $competition->addWinner($this->createTeamObject('GB'));
-        $competition->addWinner($this->createTeamObject('US'));
-        $violations = $this->validator->validate($competition);
-        $this->assertCount(1, $violations);
-    }
-
-    public function testRemoveWinnerUncompatible(): void
-    {
-        $competition = $this->createValidCompetition();
-        $team = $this->createTeamObject('XD');
-        $competition->addWinner($team);
-        $violations = $this->validator->validate($competition);
-        $this->assertCount(1, $violations);
-        $competition->removeWinner($team);
-        $this->assertNotContains($team, $competition->getWinners());
-    }
-
-    public function testRemoveWinnerCompatible(): void
-    {
-        $competition = $this->createValidCompetition();
-        $team = $this->createTeamObject();
-        $competition->addWinner($team);
-        $violations = $this->validator->validate($competition);
-        $this->assertCount(0, $violations);
-        $competition->removeWinner($team);
-        $this->assertNotContains($team, $competition->getWinners());
     }
 
     public function testAddRunCompatible()

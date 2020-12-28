@@ -188,7 +188,7 @@ skinparam linetype ortho
         -collectiveType : bool
         -individualType : bool
         -country : string
-        -resultType : string
+        -runType : string
         +isCollective() : bool
         +isIndividual() : bool
         +isBothIndividualAndCollective() : bool
@@ -236,6 +236,7 @@ skinparam linetype ortho
         -identifier : int
         -lastName : string
         -firstName : string
+        -country : string
     }
     'Équipes qui participe à une rencontre, à une course
     class Team {

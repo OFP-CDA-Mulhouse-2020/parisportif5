@@ -22,21 +22,12 @@ final class SportTest extends WebTestCase
         $sport
             ->setName("Football")
             ->setMaxMembersByTeam(11)
-            ->setMaxTeams(2)
+            ->setMaxTeamsByRun(2)
             ->setCountry("FR")
             ->setRunType("fixture")
             ->setIndividualType(false)
             ->setCollectiveType(true);
         return $sport;
-    }
-
-    public function createBetCategoryObject(array $items = ["winner", "null"]): BetCategory
-    {
-        $betCategory = new BetCategory();
-        $betCategory
-            ->setTitle("result")
-            ->setItems($items);
-        return $betCategory;
     }
 
     private function initializeKernel(): KernelInterface
@@ -155,65 +146,10 @@ final class SportTest extends WebTestCase
     {
         $kernel = $this->initializeKernel();
         $sport = $this->createValidSport();
-        $sport->setMaxTeams(-1);
+        $sport->setMaxTeamsByRun(-1);
         /** @var ValidatorInterface $validator */
         $validator = $kernel->getContainer()->get('validator');
         $violations = $validator->validate($sport);
         $this->assertGreaterThanOrEqual(1, count($violations));
-    }
-
-    public function testAddBetCategoryCompatible()
-    {
-        $kernel = $this->initializeKernel();
-        $sport = $this->createValidSport();
-        $betCategory = $this->createBetCategoryObject();
-        $sport->addBetCategory($betCategory);
-        $this->assertCount(1, $sport->getBetCategories());
-        $this->assertContains($betCategory, $sport->getBetCategories());
-        /** @var ValidatorInterface $validator */
-        $validator = $kernel->getContainer()->get('validator');
-        $violations = $validator->validate($sport);
-        $this->assertCount(0, $violations);
-    }
-
-    public function testAddBetCategoryUncompatible()
-    {
-        $kernel = $this->initializeKernel();
-        $sport = $this->createValidSport();
-        $betCategory = $this->createBetCategoryObject([]);
-        $sport->addBetCategory($betCategory);
-        $this->assertCount(1, $sport->getBetCategories());
-        /** @var ValidatorInterface $validator */
-        $validator = $kernel->getContainer()->get('validator');
-        $violations = $validator->validate($sport);
-        $this->assertCount(1, $violations);
-    }
-
-    public function testRemoveBetCategoryUncompatible(): void
-    {
-        $kernel = $this->initializeKernel();
-        $sport = $this->createValidSport();
-        $betCategory = $this->createBetCategoryObject([]);
-        $sport->addBetCategory($betCategory);
-        /** @var ValidatorInterface $validator */
-        $validator = $kernel->getContainer()->get('validator');
-        $violations = $validator->validate($sport);
-        $this->assertCount(1, $violations);
-        $sport->removeBetCategory($betCategory);
-        $this->assertNotContains($betCategory, $sport->getBetCategories());
-    }
-
-    public function testRemoveBetCategoryCompatible(): void
-    {
-        $kernel = $this->initializeKernel();
-        $sport = $this->createValidSport();
-        $betCategory = $this->createBetCategoryObject();
-        $sport->addBetCategory($betCategory);
-        /** @var ValidatorInterface $validator */
-        $validator = $kernel->getContainer()->get('validator');
-        $violations = $validator->validate($sport);
-        $this->assertCount(0, $violations);
-        $sport->removeBetCategory($betCategory);
-        $this->assertNotContains($betCategory, $sport->getBetCategories());
     }
 }
