@@ -27,10 +27,10 @@ skinparam linetype ortho
     Result "0..*" -- "0..1" Run
     Result "0..*" --> "0..1" Team
     Result "0..*" --> "0..1" Member
-    BetCategory "1..*" <-- "0..*" Run
-    Sport "1" <-- "0..*" Team
-    BetCategory "1" <-- "0..*" Result
     Result "0..1" -- "0..1" Competition
+    BetCategory "1" <-- "0..*" Result
+    BetCategory "1..*" <-- "0..*" Competition
+    Sport "1" <-- "0..*" Team
     'Un membre a un rôle (fonction) tel que pilote, joueur
     MemberRole "1" <-- "0..*" Member
     'Un membre a un status (blessé, titulaire)
