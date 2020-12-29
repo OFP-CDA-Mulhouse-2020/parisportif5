@@ -168,7 +168,6 @@ skinparam linetype ortho
     'Catégorie de paris (ex: Paris sur le résultat)
     class BetCategory {
         -identifier : int
-        -title : string
         -name : string
         -description : string
     }
@@ -201,8 +200,8 @@ skinparam linetype ortho
         -endDate : DateTime
         -country : string
         -maxRuns : int
-        -winner : Result
-        +hasWinner() : bool
+        -result : Result
+        +hasResult() : bool
         +hasRuns() : bool
         +isFinish() : bool
         +isOngoing() : bool

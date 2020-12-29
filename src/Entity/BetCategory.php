@@ -50,40 +50,34 @@ class BetCategory
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(
-     *     message="Le titre de la catégorie de paris ne peut pas être vide",
+     *     message="Le nom de la catégorie de paris ne peut pas être vide",
      *     normalizer="trim"
      * )
+     * @Assert\Regex(
+     *     pattern="/^(?<![\_\-])([a-z]([\_\-][a-z])?)+(?![\_\-])$/i",
+     *     message="Le nom de la catégorie de paris n'accepte que des lettres sans accents, le tiret et le underscore"
+     * )
      */
-    private string $title;
+    private string $name;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private ?string $description;
 
-    /**
-     * @var array<string> $items
-     * @ORM\Column(type="array")
-     * @Assert\Count(
-     *      min = 1,
-     *      minMessage = "Vous devez indiquer au moins un élément dans la catégorie de paris",
-     * )
-     */
-    private array $items = [];
-
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getTitle(): ?string
+    public function getName(): ?string
     {
-        return $this->title;
+        return $this->name;
     }
 
-    public function setTitle(string $title): self
+    public function setName(string $name): self
     {
-        $this->title = $title;
+        $this->name = $name;
         return $this;
     }
 
@@ -95,19 +89,6 @@ class BetCategory
     public function setDescription(?string $description): self
     {
         $this->description = $description;
-        return $this;
-    }
-
-    /** @return array<string> */
-    public function getItems(): ?array
-    {
-        return $this->items;
-    }
-
-    /** @param array<string> $items */
-    public function setItems(array $items): self
-    {
-        $this->items = $items;
         return $this;
     }
 }

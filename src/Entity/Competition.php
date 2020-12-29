@@ -83,9 +83,27 @@ class Competition
      */
     private Sport $sport;
 
+    /**
+     * @var Collection<int,BetCategory> $betCategories
+     * @ORM\ManyToMany(targetEntity=BetCategory::class)
+     * @Assert\Count(
+     *      min = 1,
+     *      minMessage = "Vous devez ajouter au moins {{ limit }} un objet BetCategory",
+     * )
+     * @Assert\Valid
+     */
+    private Collection $betCategories;
+
+    /**
+     * @ORM\OneToOne(targetEntity=Result::class, cascade={"persist", "remove"})
+     * @Assert\Valid
+     */
+    private ?Result $result = null;
+
     public function __construct()
     {
         $this->runs = new ArrayCollection();
+        $this->betCategories = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -209,5 +227,46 @@ class Competition
     {
         $this->sport = $sport;
         return $this;
+    }
+
+    /**
+     * @return Collection<int,BetCategory>
+     */
+    public function getBetCategories(): Collection
+    {
+        return $this->betCategories;
+    }
+
+    public function addBetCategory(BetCategory $betCategory): self
+    {
+        if (!$this->betCategories->contains($betCategory)) {
+            $this->betCategories[] = $betCategory;
+        }
+
+        return $this;
+    }
+
+    public function removeBetCategory(BetCategory $betCategory): self
+    {
+        $this->betCategories->removeElement($betCategory);
+
+        return $this;
+    }
+
+    public function getResult(): ?Result
+    {
+        return $this->result;
+    }
+
+    public function setResult(?Result $result): self
+    {
+        $this->result = $result;
+
+        return $this;
+    }
+
+    public function hasResult(): bool
+    {
+        return isset($this->result) ? true : false;
     }
 }
