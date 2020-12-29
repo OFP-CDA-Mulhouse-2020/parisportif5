@@ -79,9 +79,22 @@ class Run
      */
     private Collection $teams;
 
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private ?bool $noWinner = null;
+
+    /**
+     * @var Collection<int,Result> $scores
+     * @ORM\ManyToMany(targetEntity=Result::class)
+     * @Assert\Valid
+     */
+    private Collection $scores;
+
     public function __construct()
     {
         $this->teams = new ArrayCollection();
+        $this->scores = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -200,6 +213,42 @@ class Run
     public function removeTeam(Team $team): self
     {
         $this->teams->removeElement($team);
+
+        return $this;
+    }
+
+    public function getNoWinner(): ?bool
+    {
+        return $this->noWinner;
+    }
+
+    public function setNoWinner(?bool $noWinner): self
+    {
+        $this->noWinner = $noWinner;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int,Result>
+     */
+    public function getScores(): Collection
+    {
+        return $this->scores;
+    }
+
+    public function addScore(Result $score): self
+    {
+        if (!$this->scores->contains($score)) {
+            $this->scores[] = $score;
+        }
+
+        return $this;
+    }
+
+    public function removeScore(Result $score): self
+    {
+        $this->scores->removeElement($score);
 
         return $this;
     }

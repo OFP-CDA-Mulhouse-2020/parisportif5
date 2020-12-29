@@ -82,6 +82,13 @@ class Bet implements FundStorageInterface
      */
     private ?Member $teamMember;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=BetCategory::class)
+     * @ORM\JoinColumn(nullable=false)
+     * @Assert\Valid
+     */
+    private BetCategory $betCategory;
+
     public function __construct()
     {
         $this->isWinning = null;
@@ -223,5 +230,17 @@ class Bet implements FundStorageInterface
     public function getTarget(): ?object
     {
         return $this->teamMember ?? $this->team ?? $this->run ?? $this->competition;
+    }
+
+    public function getBetCategory(): ?BetCategory
+    {
+        return $this->betCategory;
+    }
+
+    public function setBetCategory(BetCategory $betCategory): self
+    {
+        $this->betCategory = $betCategory;
+
+        return $this;
     }
 }

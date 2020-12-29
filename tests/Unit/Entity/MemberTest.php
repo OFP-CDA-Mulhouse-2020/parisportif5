@@ -23,6 +23,7 @@ final class MemberTest extends WebTestCase
         $member =  new Member();
         $member->setLastName("Papin");
         $member->setFirstName("Jean-Pierre");
+        $member->setCountry("FR");
         return $member;
     }
 
@@ -142,6 +143,38 @@ final class MemberTest extends WebTestCase
             ["Moumoute2"],
             ["♥"],
             [""]
+        ];
+    }
+
+    public function testIfCountryIsValid(): void
+    {
+        $kernel = $this->initializeKernel();
+        $member = $this->initializeMember();
+        $validator = $kernel->getContainer()->get('validator');
+        $violations = $validator->validate($member);
+        $this->assertCount(0, $violations);
+    }
+
+    /**
+     * @dataProvider invalidCountryProvider
+     */
+    public function testIfCountryIsInvalid(string $c): void
+    {
+        $kernel = $this->initializeKernel();
+        $member = $this->initializeMember();
+        $member->setCountry($c);
+        $validator = $kernel->getContainer()->get('validator');
+        $violations = $validator->validate($member);
+        $this->assertGreaterThanOrEqual(1, count($violations));
+    }
+
+    public function invalidCountryProvider(): array
+    {
+        return [
+            ["La France, mais pas n'importe laquelle, celle du général De Gaulle"],
+            ["huit"],
+            ["KZK"],
+            ["Almagne"]
         ];
     }
 

@@ -9,6 +9,7 @@ use App\Entity\Competition;
 use App\Entity\Member;
 use App\Entity\Result;
 use App\Entity\Run;
+use App\Entity\Sport;
 use App\Entity\Team;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -20,7 +21,6 @@ final class ResultTest extends KernelTestCase
 {
     private ValidatorInterface $validator;
 
-    //throw new \Exception($violations);
     public function setUp(): void
     {
         $kernel = self::bootKernel();
@@ -40,12 +40,10 @@ final class ResultTest extends KernelTestCase
         return $result;
     }
 
-    public function createBetCategoryObject(array $items = ["winner", "null"]): BetCategory
+    public function createBetCategoryObject(string $name = "result"): BetCategory
     {
         $betCategory = new BetCategory();
-        $betCategory
-            ->setTitle("result")
-            ->setItems($items);
+        $betCategory->setName($name);
         return $betCategory;
     }
 
@@ -57,8 +55,24 @@ final class ResultTest extends KernelTestCase
             ->setName('name')
             ->setStartDate($date->setTime(23, 59, 59, 1000000))
             ->setCountry($country)
-            ->setMaxRuns(1);
+            ->setMaxRuns(1)
+            ->setSport($this->createSportObject())
+            ->addBetCategory($this->createBetCategoryObject());
         return $competition;
+    }
+
+    private function createSportObject(string $country = "FR"): Sport
+    {
+        $sport =  new Sport();
+        $sport
+            ->setName("Football")
+            ->setMaxMembersByTeam(11)
+            ->setMaxTeamsByRun(2)
+            ->setCountry($country)
+            ->setRunType("fixture")
+            ->setIndividualType(false)
+            ->setCollectiveType(true);
+        return $sport;
     }
 
     private function createRunObject(\DateTimeImmutable $date = null): Run
@@ -81,12 +95,13 @@ final class ResultTest extends KernelTestCase
         return $team;
     }
 
-    private function createMemberObject(string $lastName = "Jean"): Member
+    private function createMemberObject(string $lastName = "Poirot"): Member
     {
         $member = new Member();
         $member
             ->setLastName($lastName)
-            ->setFirstName("Jean-Pierre");
+            ->setFirstName("Jean-Pierre")
+            ->setCountry("FR");
         return $member;
     }
 
@@ -232,7 +247,7 @@ final class ResultTest extends KernelTestCase
     public function testBetCategoryUncompatible(): void
     {
         $result = $this->createValidResult();
-        $betCategory = $this->createBetCategoryObject([]);
+        $betCategory = $this->createBetCategoryObject("result-");
         $result->setBetCategory($betCategory);
         $violations = $this->validator->validate($result);
         $this->assertCount(1, $violations);

@@ -15,7 +15,6 @@ final class BetCategoryTest extends KernelTestCase
 {
     private ValidatorInterface $validator;
 
-    //throw new \Exception($violations);
     public function setUp(): void
     {
         $kernel = self::bootKernel();
@@ -26,57 +25,50 @@ final class BetCategoryTest extends KernelTestCase
     {
         $betCategory = new BetCategory();
         $betCategory
-            ->setTitle("result")
-            ->setItems(["winner", "null"]);
+            ->setName("result");
         return $betCategory;
     }
 
-    public function testTitleUncompatible()
-    {
-        $title1 = "";
-        $title2 = "   ";
-        $betCategory = $this->createValidBetCategory();
-        $betCategory->setTitle($title1);
-        $violations = $this->validator->validate($betCategory);
-        $this->assertCount(1, $violations);
-        $betCategory->setTitle($title2);
-        $violations = $this->validator->validate($betCategory);
-        $this->assertCount(1, $violations);
-    }
-
-    public function testTitleCompatible()
-    {
-        $title = "result";
-        $betCategory = $this->createValidBetCategory();
-        $betCategory->setTitle($title);
-        $violations = $this->validator->validate($betCategory);
-        $this->assertCount(0, $violations);
-    }
-
     /**
-     * @dataProvider itemsCompatibleProvider
+     * @dataProvider validBetCategoryProvider
      */
-    public function testItemsCompatible(array $items)
+    public function testIfBetCategoryIsCorrect(string $name): void
     {
         $betCategory = $this->createValidBetCategory();
-        $betCategory->setItems($items);
+        $betCategory->setName($name);
         $violations = $this->validator->validate($betCategory);
         $this->assertCount(0, $violations);
     }
 
-    public function itemsCompatibleProvider(): array
+    public function validBetCategoryProvider(): array
     {
         return [
-            [["winner", "null"]],
-            [["toscore"]]
+            ["result"],
+            ["result-and-points"],
+            ["result_points"]
         ];
     }
 
-    public function testItemsUncompatible()
+    /**
+     * @dataProvider invalidBetCategoryProvider
+     */
+    public function testIfBetCategoryIsIncorrect(string $name): void
     {
         $betCategory = $this->createValidBetCategory();
-        $betCategory->setItems([]);
+        $betCategory->setName($name);
         $violations = $this->validator->validate($betCategory);
-        $this->assertCount(1, $violations);
+        $this->assertGreaterThanOrEqual(1, count($violations));
+    }
+
+    public function invalidBetCategoryProvider(): array
+    {
+        return [
+            ["result player"],
+            ["resultbenched_"],
+            ["-result"],
+            ["poïnts"],
+            [''],
+            ['  ']
+        ];
     }
 }
