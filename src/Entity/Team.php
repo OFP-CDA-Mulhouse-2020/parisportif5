@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Repository\TeamRepository;
 use Doctrine\ORM\Mapping as ORM;
@@ -46,6 +48,24 @@ class Team
      */
     private string $country;
 
+    /**
+     * @var Collection<int,Member> $members
+     * @ORM\OneToMany(targetEntity=Member::class, mappedBy="team")
+     * @Assert\Valid
+     */
+    private Collection $members;
+
+    /**
+     * @ORM\Column(type="integer")
+     * @Assert\GreaterThan(0)
+     */
+    private int $maxMembers;
+
+    public function __construct()
+    {
+        $this->members = new ArrayCollection();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -71,6 +91,48 @@ class Team
     public function setCountry(string $country): self
     {
         $this->country = $country;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int,Member>
+     */
+    public function getMembers(): Collection
+    {
+        return $this->members;
+    }
+
+    public function addMember(Member $member): self
+    {
+        if (!$this->members->contains($member)) {
+            $this->members[] = $member;
+            $member->setTeam($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMember(Member $member): self
+    {
+        if ($this->members->removeElement($member)) {
+            // set the owning side to null (unless already changed)
+            // if ($member->getTeam() === $this) {
+            //     $member->setTeam(null);
+            // }
+        }
+
+        return $this;
+    }
+
+    public function getMaxMembers(): ?int
+    {
+        return $this->maxMembers;
+    }
+
+    public function setMaxMembers(int $maxMembers): self
+    {
+        $this->maxMembers = $maxMembers;
 
         return $this;
     }
