@@ -48,6 +48,18 @@ class Member
     private string $firstName;
 
     /**
+     * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(
+     *     message="Le pays doit être renseigné",
+     *     normalizer="trim"
+     * )
+     * @Assert\Country(
+     *     message="Le pays {{ value }} n'est pas valide",
+     * )
+     */
+    private string $country;
+
+    /**
      * @ORM\ManyToOne(targetEntity=MemberRole::class)
      * @ORM\JoinColumn(nullable=false)
      * @Assert\Valid
@@ -102,6 +114,18 @@ class Member
         return $this;
     }
 
+    public function getCountry(): ?string
+    {
+        return $this->country;
+    }
+
+    public function setCountry(string $country): self
+    {
+        $this->country = $country;
+
+        return $this;
+    }
+
     public function getMemberRole(): ?MemberRole
     {
         return $this->memberRole;
@@ -122,18 +146,6 @@ class Member
     public function setMemberStatus(MemberStatus $memberStatus): self
     {
         $this->memberStatus = $memberStatus;
-
-        return $this;
-    }
-
-    public function getResultType(): ?ResultType
-    {
-        return $this->resultType;
-    }
-
-    public function setResultType(ResultType $resultType): self
-    {
-        $this->resultType = $resultType;
 
         return $this;
     }

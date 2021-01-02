@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use App\Entity\Exception\WalletAmountException;
 use App\Repository\WalletRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -23,17 +22,15 @@ class Wallet implements FundStorageInterface
 
     /**
      * @ORM\Column(type="integer")
-     * @Assert\NotNull(
-     *     message="Le montant du wallet ne peut pas être null"
-     * )
-     * @Assert\GreaterThanOrEqual(0)(
-     *     message="Le montant du wallet ne peut pas être négatif"
+     * @Assert\PositiveOrZero(
+     *     message="Le montant du porte monnaie ne peut pas être négatif"
      * )
      */
     private int $amount;
 
     /**
      * @ORM\OneToOne(targetEntity=User::class, mappedBy="wallet", cascade={"persist", "remove"})
+     * @Assert\Valid
      */
     private User $user;
 

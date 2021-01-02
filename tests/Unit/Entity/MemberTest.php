@@ -23,6 +23,7 @@ final class MemberTest extends WebTestCase
         $member =  new Member();
         $member->setLastName("Papin");
         $member->setFirstName("Jean-Pierre");
+        $member->setCountry("FR");
         return $member;
     }
 
@@ -38,13 +39,6 @@ final class MemberTest extends WebTestCase
         $memberStatus =  new MemberStatus();
         $memberStatus->setName($memberStatusName);
         return $memberStatus;
-    }
-
-    private function initializeResultType(string $resultTypeName): ResultType
-    {
-        $resultType =  new ResultType();
-        $resultType->setName($resultTypeName);
-        return $resultType;
     }
 
     private function initializeKernel(): KernelInterface
@@ -152,6 +146,38 @@ final class MemberTest extends WebTestCase
         ];
     }
 
+    public function testIfCountryIsValid(): void
+    {
+        $kernel = $this->initializeKernel();
+        $member = $this->initializeMember();
+        $validator = $kernel->getContainer()->get('validator');
+        $violations = $validator->validate($member);
+        $this->assertCount(0, $violations);
+    }
+
+    /**
+     * @dataProvider invalidCountryProvider
+     */
+    public function testIfCountryIsInvalid(string $c): void
+    {
+        $kernel = $this->initializeKernel();
+        $member = $this->initializeMember();
+        $member->setCountry($c);
+        $validator = $kernel->getContainer()->get('validator');
+        $violations = $validator->validate($member);
+        $this->assertGreaterThanOrEqual(1, count($violations));
+    }
+
+    public function invalidCountryProvider(): array
+    {
+        return [
+            ["La France, mais pas n'importe laquelle, celle du général De Gaulle"],
+            ["huit"],
+            ["KZK"],
+            ["Almagne"]
+        ];
+    }
+
     public function testIfMemberRoleIsValid(): void
     {
         $kernel = $this->initializeKernel();
@@ -168,7 +194,7 @@ final class MemberTest extends WebTestCase
     {
         $kernel = $this->initializeKernel();
         $member = $this->initializeMember();
-        $memberRole = $this->initializeMemberRole("player");
+        $memberRole = $this->initializeMemberRole("player_");
         $member->setMemberRole($memberRole);
         $validator = $kernel->getContainer()->get('validator');
         $violations = $validator->validate($member);
@@ -193,29 +219,6 @@ final class MemberTest extends WebTestCase
         $member = $this->initializeMember();
         $memberStatus = $this->initializeMemberStatus("on the bench");
         $member->setMemberStatus($memberStatus);
-        $validator = $kernel->getContainer()->get('validator');
-        $violations = $validator->validate($member);
-        $this->assertCount(1, $violations);
-    }
-
-    public function testIfResultTypeIsValid(): void
-    {
-        $kernel = $this->initializeKernel();
-        $member = $this->initializeMember();
-        $resultType = $this->initializeResultType("draw");
-        $member->setResultType($resultType);
-        $this->assertSame($resultType, $member->getResultType());
-        $validator = $kernel->getContainer()->get('validator');
-        $violations = $validator->validate($member);
-        $this->assertCount(0, $violations);
-    }
-
-    public function testIfResultTypeIsInvalid(): void
-    {
-        $kernel = $this->initializeKernel();
-        $member = $this->initializeMember();
-        $resultType = $this->initializeResultType("victoire");
-        $member->setResultType($resultType);
         $validator = $kernel->getContainer()->get('validator');
         $violations = $validator->validate($member);
         $this->assertCount(1, $violations);

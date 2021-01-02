@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Entity;
 
+use App\Entity\BetCategory;
 use App\Entity\Sport;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpKernel\KernelInterface;
@@ -15,16 +16,17 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 final class SportTest extends WebTestCase
 {
 
-    private function initializeSport(): Sport
+    private function createValidSport(): Sport
     {
         $sport =  new Sport();
-        $sport->setName("Football");
-        $sport->setMaxMembersByTeam(11);
-        $sport->setMaxTeams(2);
-        $sport->setCountry("FR");
-        $sport->setRunType("fixture");
-        $sport->setIndividualType(false);
-        $sport->setCollectiveType(true);
+        $sport
+            ->setName("Football")
+            ->setMaxMembersByTeam(11)
+            ->setMaxTeamsByRun(2)
+            ->setCountry("FR")
+            ->setRunType("fixture")
+            ->setIndividualType(false)
+            ->setCollectiveType(true);
         return $sport;
     }
 
@@ -38,7 +40,7 @@ final class SportTest extends WebTestCase
     public function testIfNameIsNotNull(): void
     {
         $kernel = $this->initializeKernel();
-        $sport = $this->initializeSport();
+        $sport = $this->createValidSport();
         $validator = $kernel->getContainer()->get('validator');
         $violations = $validator->validate($sport);
         $this->assertCount(0, $violations);
@@ -47,7 +49,7 @@ final class SportTest extends WebTestCase
     public function testIfNameIsNull(): void
     {
         $kernel = $this->initializeKernel();
-        $sport = $this->initializeSport();
+        $sport = $this->createValidSport();
         $sport->setName("");
         $validator = $kernel->getContainer()->get('validator');
         $violations = $validator->validate($sport);
@@ -57,7 +59,7 @@ final class SportTest extends WebTestCase
     public function testIfNumberOfCompetitorsIsNotNull(): void
     {
         $kernel = $this->initializeKernel();
-        $sport = $this->initializeSport();
+        $sport = $this->createValidSport();
         $validator = $kernel->getContainer()->get('validator');
         $violations = $validator->validate($sport);
         $this->assertCount(0, $violations);
@@ -66,7 +68,7 @@ final class SportTest extends WebTestCase
     public function testIfNumberOfCompetitorsIsIncorrect(): void
     {
         $kernel = $this->initializeKernel();
-        $sport = $this->initializeSport();
+        $sport = $this->createValidSport();
         $sport->setMaxMembersByTeam(-2);
         /** @var ValidatorInterface $validator */
         $validator = $kernel->getContainer()->get('validator');
@@ -77,7 +79,7 @@ final class SportTest extends WebTestCase
     public function testIfCountryIsValid(): void
     {
         $kernel = $this->initializeKernel();
-        $sport = $this->initializeSport();
+        $sport = $this->createValidSport();
         /** @var ValidatorInterface $validator */
         $validator = $kernel->getContainer()->get('validator');
         $violations = $validator->validate($sport);
@@ -87,7 +89,7 @@ final class SportTest extends WebTestCase
     public function testIfRunTypeIsValid(): void
     {
         $kernel = $this->initializeKernel();
-        $sport = $this->initializeSport();
+        $sport = $this->createValidSport();
         /** @var ValidatorInterface $validator */
         $validator = $kernel->getContainer()->get('validator');
         $violations = $validator->validate($sport);
@@ -100,7 +102,7 @@ final class SportTest extends WebTestCase
     public function testIfSportTypeIsValid(bool $individualType, bool $collectiveType): void
     {
         $kernel = $this->initializeKernel();
-        $sport = $this->initializeSport();
+        $sport = $this->createValidSport();
         $sport->setIndividualType($individualType);
         $sport->setCollectiveType($collectiveType);
         /** @var ValidatorInterface $validator */
@@ -121,7 +123,7 @@ final class SportTest extends WebTestCase
     public function testIfSportTypeIsNotValid(): void
     {
         $kernel = $this->initializeKernel();
-        $sport = $this->initializeSport();
+        $sport = $this->createValidSport();
         $sport->setIndividualType(false);
         $sport->setCollectiveType(false);
         /** @var ValidatorInterface $validator */
@@ -133,7 +135,7 @@ final class SportTest extends WebTestCase
     public function testIfTeamLimitIsValid(): void
     {
         $kernel = $this->initializeKernel();
-        $sport = $this->initializeSport();
+        $sport = $this->createValidSport();
         /** @var ValidatorInterface $validator */
         $validator = $kernel->getContainer()->get('validator');
         $violations = $validator->validate($sport);
@@ -143,8 +145,8 @@ final class SportTest extends WebTestCase
     public function testIfTeamLimitIsNotValid(): void
     {
         $kernel = $this->initializeKernel();
-        $sport = $this->initializeSport();
-        $sport->setMaxTeams(-1);
+        $sport = $this->createValidSport();
+        $sport->setMaxTeamsByRun(-1);
         /** @var ValidatorInterface $validator */
         $validator = $kernel->getContainer()->get('validator');
         $violations = $validator->validate($sport);

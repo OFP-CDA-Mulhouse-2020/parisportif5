@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Entity;
 
+use App\Entity\BetCategory;
 use App\Entity\Competition;
+use App\Entity\Result;
 use App\Entity\Run;
 use App\Entity\Sport;
 use App\Entity\Team;
@@ -18,7 +20,6 @@ final class CompetitionTest extends KernelTestCase
 {
     private ValidatorInterface $validator;
 
-    //throw new \Exception($violations);
     public function setUp(): void
     {
         $kernel = self::bootKernel();
@@ -33,7 +34,9 @@ final class CompetitionTest extends KernelTestCase
             ->setName('name')
             ->setStartDate($date->setTime(23, 59, 59, 1000000))
             ->setCountry('FR')
-            ->setMaxRuns(1);
+            ->setMaxRuns(1)
+            ->setSport($this->createSportObject())
+            ->addBetCategory($this->createBetCategoryObject());
         return $competition;
     }
 
@@ -68,12 +71,34 @@ final class CompetitionTest extends KernelTestCase
         $sport
             ->setName("Football")
             ->setMaxMembersByTeam(11)
-            ->setMaxTeams(2)
+            ->setMaxTeamsByRun(2)
             ->setCountry($country)
             ->setRunType("fixture")
             ->setIndividualType(false)
             ->setCollectiveType(true);
         return $sport;
+    }
+
+    private function createResultObject(Competition $competition, int $value = 0): Result
+    {
+        $result = new Result();
+        $result
+            ->setType("time")
+            ->setValue($value)
+            ->setWinner(false)
+            ->setBetCategory($this->createBetCategoryObject())
+            ->setCompetition($competition)
+            ->setRun(null)
+            ->setTeam($this->createTeamObject())
+            ->setTeamMember(null);
+        return $result;
+    }
+
+    public function createBetCategoryObject(string $name = "result"): BetCategory
+    {
+        $betCategory = new BetCategory();
+        $betCategory->setName($name);
+        return $betCategory;
     }
 
     /**
@@ -287,59 +312,6 @@ final class CompetitionTest extends KernelTestCase
         $this->assertFalse($result);
     }
 
-    public function testAddWinnerCompatible()
-    {
-        $competition = $this->createValidCompetition();
-        $team = $this->createTeamObject();
-        $competition->addWinner($team);
-        $this->assertContains($team, $competition->getWinners());
-        $violations = $this->validator->validate($competition);
-        $this->assertCount(0, $violations);
-    }
-
-    public function testAddWinnerUncompatible()
-    {
-        $competition = $this->createValidCompetition();
-        $team = $this->createTeamObject('XD');
-        $competition->addWinner($team);
-        $violations = $this->validator->validate($competition);
-        $this->assertCount(1, $violations);
-    }
-
-    public function testAddWinnerCompatibleOverLimit()
-    {
-        $competition = $this->createValidCompetition();
-        $team = $this->createTeamObject();
-        $competition->addWinner($team);
-        $competition->addWinner($this->createTeamObject('DE'));
-        $competition->addWinner($this->createTeamObject('GB'));
-        $competition->addWinner($this->createTeamObject('US'));
-        $violations = $this->validator->validate($competition);
-        $this->assertCount(1, $violations);
-    }
-
-    public function testRemoveWinnerUncompatible(): void
-    {
-        $competition = $this->createValidCompetition();
-        $team = $this->createTeamObject('XD');
-        $competition->addWinner($team);
-        $violations = $this->validator->validate($competition);
-        $this->assertCount(1, $violations);
-        $competition->removeWinner($team);
-        $this->assertNotContains($team, $competition->getWinners());
-    }
-
-    public function testRemoveWinnerCompatible(): void
-    {
-        $competition = $this->createValidCompetition();
-        $team = $this->createTeamObject();
-        $competition->addWinner($team);
-        $violations = $this->validator->validate($competition);
-        $this->assertCount(0, $violations);
-        $competition->removeWinner($team);
-        $this->assertNotContains($team, $competition->getWinners());
-    }
-
     public function testAddRunCompatible()
     {
         $competition = $this->createValidCompetition();
@@ -385,7 +357,7 @@ final class CompetitionTest extends KernelTestCase
         $violations = $this->validator->validate($competition);
         $this->assertCount(1, $violations);
         $competition->removeRun($run);
-        $this->assertNotContains($run, $competition->getWinners());
+        $this->assertNotContains($run, $competition->getRuns());
     }
 
     public function testRemoveRunCompatible(): void
@@ -396,7 +368,7 @@ final class CompetitionTest extends KernelTestCase
         $violations = $this->validator->validate($competition);
         $this->assertCount(0, $violations);
         $competition->removeRun($run);
-        $this->assertNotContains($run, $competition->getWinners());
+        $this->assertNotContains($run, $competition->getRuns());
     }
 
     public function testSportCompatible()
@@ -416,5 +388,51 @@ final class CompetitionTest extends KernelTestCase
         $competition->setSport($sport);
         $violations = $this->validator->validate($competition);
         $this->assertCount(1, $violations);
+    }
+
+    public function testResultCompatible()
+    {
+        $competition = $this->createValidCompetition();
+        $result = $this->createResultObject($competition);
+        $competition->setResult($result);
+        $this->assertSame($result, $competition->getResult());
+        $violations = $this->validator->validate($competition);
+        $this->assertCount(0, $violations);
+    }
+
+    public function testResultUncompatible()
+    {
+        $competition = $this->createValidCompetition();
+        $result = $this->createResultObject($competition, -1);
+        $competition->setResult($result);
+        $violations = $this->validator->validate($competition);
+        $this->assertCount(1, $violations);
+    }
+
+    public function testValidBetCategoryUncompatible()
+    {
+        $competition = $this->createValidCompetition();
+        $betCategory = $this->createBetCategoryObject("result-");
+        $competition->addBetCategory($betCategory);
+        $violations = $this->validator->validate($competition);
+        $this->assertCount(1, $violations);
+    }
+
+    public function testMinimumBetCategoryUncompatible()
+    {
+        $competition = $this->createValidCompetition();
+        $betCategory = $competition->getBetCategories()->get(0);
+        $competition->removeBetCategory($betCategory);
+        $violations = $this->validator->validate($competition);
+        $this->assertCount(1, $violations);
+    }
+
+    public function testBetCategoryCompatible()
+    {
+        $competition = $this->createValidCompetition();
+        $betCategory = $this->createBetCategoryObject();
+        $competition->addBetCategory($betCategory);
+        $violations = $this->validator->validate($competition);
+        $this->assertCount(0, $violations);
     }
 }

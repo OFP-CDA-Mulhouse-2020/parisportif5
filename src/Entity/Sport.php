@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Repository\SportRepository;
 use Doctrine\ORM\Mapping as ORM;
@@ -50,15 +52,18 @@ class Sport
      *     message="Le pays doit être renseigné",
      *     normalizer="trim"
      * )
-     * @Assert\Country
+     * @Assert\Country(
+     *     message="Le pays {{ value }} n'est pas valide",
+     * )
      */
     private string $country;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Assert\NotBlank,
-     *     normalizer="trim"
-     * @Assert\Choice({"fixture", "race"})
+     * @Assert\Choice(
+     *     choices=Sport::RUN_TYPES,
+     *     message="Choisisez un type de résultat valide"
+     * )
      */
     private string $runType;
 
@@ -80,7 +85,9 @@ class Sport
      *     message="Le nombre d'équipes doit être supérieur ou égal à 1"
      * )
      */
-    private int $maxTeams;
+    private int $maxTeamsByRun;
+
+    public const RUN_TYPES = ["fixture", "race"];
 
     public function getId(): ?int
     {
@@ -159,14 +166,14 @@ class Sport
         return $this;
     }
 
-    public function getMaxTeams(): ?int
+    public function getMaxTeamsByRun(): ?int
     {
-        return $this->maxTeams;
+        return $this->maxTeamsByRun;
     }
 
-    public function setMaxTeams(int $maxTeams): self
+    public function setMaxTeamsByRun(int $maxTeamsByRun): self
     {
-        $this->maxTeams = $maxTeams;
+        $this->maxTeamsByRun = $maxTeamsByRun;
 
         return $this;
     }

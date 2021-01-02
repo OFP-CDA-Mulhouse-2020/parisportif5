@@ -21,11 +21,14 @@ class MemberRole
     private int $id;
 
     /**
-     * @ORM\Column(type="string", length=255)@Assert\NotBlank(
-     *     normalizer="trim"
+     * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(
+     *     normalizer="trim",
+     *     message="Le rôle du membre ne peut pas être vide"
      * )
-     * @Assert\ExpressionLanguageSyntax(
-     *     allowedVariables={"pilot", "footballer", "handballer", "tennsiplayer", "tabletennisplayer"}
+     * @Assert\Regex(
+     *     pattern="/^(?<![\_\-])([a-z]([\_\-][a-z])?)+(?![\_\-])$/i",
+     *     message="Le rôle du membre n'accepte que des lettres sans accents, le tiret et le underscore"
      * )
      */
     private string $name;

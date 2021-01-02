@@ -51,14 +51,6 @@ final class WalletTest extends WebTestCase
         $this->assertInstanceOf(Wallet::class, $wallet);
     }
 
-    // public function testIfWalletIsNull(): void
-    // {
-    //     $wallet = null;
-    //     $validator = Validation::createValidator();
-    //     $violations = $validator->validate($wallet);
-    //     $this->assertGreaterThanOrEqual(1, count($violations));
-    // }
-
     public function testIfWalletIsNotNegative(): void
     {
         $kernel = $this->initializeKernel();

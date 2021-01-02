@@ -70,17 +70,6 @@ class Competition
     private int $maxRuns;
 
     /**
-     * @var Collection<int,Team> $winners
-     * @ORM\ManyToMany(targetEntity=Team::class)
-     * @Assert\Valid
-     * @Assert\Count(
-     *      max = 3,
-     *      maxMessage = "Vous ne pouvez pas ajouter plus de {{ limit }} gagnants"
-     * )
-     */
-    private Collection $winners;
-
-    /**
      * @var Collection<int,Run> $runs
      * @ORM\OneToMany(targetEntity=Run::class, mappedBy="competition", orphanRemoval=true)
      * @Assert\Valid
@@ -94,10 +83,27 @@ class Competition
      */
     private Sport $sport;
 
+    /**
+     * @var Collection<int,BetCategory> $betCategories
+     * @ORM\ManyToMany(targetEntity=BetCategory::class)
+     * @Assert\Count(
+     *      min = 1,
+     *      minMessage = "Vous devez ajouter au moins {{ limit }} un objet BetCategory",
+     * )
+     * @Assert\Valid
+     */
+    private Collection $betCategories;
+
+    /**
+     * @ORM\OneToOne(targetEntity=Result::class, cascade={"persist", "remove"})
+     * @Assert\Valid
+     */
+    private ?Result $result = null;
+
     public function __construct()
     {
-        $this->winners = new ArrayCollection();
         $this->runs = new ArrayCollection();
+        $this->betCategories = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -177,43 +183,6 @@ class Competition
     }
 
     /**
-     * @return Collection<int,Team>
-     */
-    public function getWinners(): Collection
-    {
-        return $this->winners;
-    }
-
-    public function addWinner(Team $winner): self
-    {
-        if (!$this->winners->contains($winner)) {
-            $this->winners[] = $winner;
-        }
-        return $this;
-    }
-
-    public function removeWinner(Team $winner): self
-    {
-        $this->winners->removeElement($winner);
-        return $this;
-    }
-
-    /*
-     * @Assert\IsFalse(
-     *     message="Le nombre maximum de course ou de rencontre (Run) a été atteint"
-     * )
-     *
-    public function isOverMaxRuns(): bool
-    {
-        if (isset($this->maxRuns)) {
-            if ($this->maxRuns > 0 && count($this->runs) >= $this->maxRuns) {
-                return true;
-            }
-        }
-        return false;
-    }*/
-
-    /**
      * @return Collection<int,Run>
      */
     public function getRuns(): Collection
@@ -258,5 +227,46 @@ class Competition
     {
         $this->sport = $sport;
         return $this;
+    }
+
+    /**
+     * @return Collection<int,BetCategory>
+     */
+    public function getBetCategories(): Collection
+    {
+        return $this->betCategories;
+    }
+
+    public function addBetCategory(BetCategory $betCategory): self
+    {
+        if (!$this->betCategories->contains($betCategory)) {
+            $this->betCategories[] = $betCategory;
+        }
+
+        return $this;
+    }
+
+    public function removeBetCategory(BetCategory $betCategory): self
+    {
+        $this->betCategories->removeElement($betCategory);
+
+        return $this;
+    }
+
+    public function getResult(): ?Result
+    {
+        return $this->result;
+    }
+
+    public function setResult(?Result $result): self
+    {
+        $this->result = $result;
+
+        return $this;
+    }
+
+    public function hasResult(): bool
+    {
+        return isset($this->result) ? true : false;
     }
 }
