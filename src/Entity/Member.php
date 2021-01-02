@@ -73,6 +73,18 @@ class Member
      */
     private MemberStatus $memberStatus;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=ResultType::class)
+     * @Assert\Valid
+     */
+    private ResultType $resultType;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Team::class, inversedBy="members")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private Team $team;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -134,6 +146,18 @@ class Member
     public function setMemberStatus(MemberStatus $memberStatus): self
     {
         $this->memberStatus = $memberStatus;
+
+        return $this;
+    }
+
+    public function getTeam(): ?Team
+    {
+        return $this->team;
+    }
+
+    public function setTeam(Team $team): self
+    {
+        $this->team = $team;
 
         return $this;
     }
