@@ -62,12 +62,16 @@ class Competition
     private string $country;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true)
      * @Assert\Positive(
-     *     message="Le nombre maximum de course ou de rencontre (Run) doit être un entier positif"
+     *     message="Le nombre maximum de course ou de rencontre (Run) doit être positif"
+     * )
+     * @Assert\GreaterThanOrEqual(
+     *     propertyPath="minRuns",
+     *     message="Le nombre de course ou de rencontre (Run) doit être supérieur ou égal au nombre minimum"
      * )
      */
-    private int $maxRuns;
+    private ?int $maxRuns;
 
     /**
      * @var Collection<int,Run> $runs
@@ -99,6 +103,14 @@ class Competition
      * @Assert\Valid
      */
     private ?Result $result = null;
+
+    /**
+     * @ORM\Column(type="integer")
+     * @Assert\PositiveOrZero(
+     *     message="Le nombre minimum de course ou de rencontre (Run) doit être positif ou égal à zéro"
+     * )
+     */
+    private int $minRuns = 0;
 
     public function __construct()
     {
@@ -161,7 +173,7 @@ class Competition
         return $this->maxRuns;
     }
 
-    public function setMaxRuns(int $maxRuns): self
+    public function setMaxRuns(?int $maxRuns): self
     {
         $this->maxRuns = $maxRuns;
         return $this;
@@ -193,10 +205,8 @@ class Competition
     public function addRun(Run $run): self
     {
         if (!$this->runs->contains($run)) {
-            if (!isset($this->maxRuns)) {
-                return $this;
-            }
-            if ($this->maxRuns > 0 && count($this->runs) >= $this->maxRuns) {
+            $maxRuns = $this->maxRuns ?? 0;
+            if ($maxRuns > 0 && count($this->runs) >= $maxRuns) {
                 return $this;
             }
             $this->runs[] = $run;
@@ -268,5 +278,31 @@ class Competition
     public function hasResult(): bool
     {
         return isset($this->result) ? true : false;
+    }
+
+    public function getMinRuns(): ?int
+    {
+        return $this->minRuns;
+    }
+
+    public function setMinRuns(int $minRuns): self
+    {
+        $this->minRuns = $minRuns;
+
+        return $this;
+    }
+
+    /**
+     * @Assert\IsTrue(
+     *     message="Le nombre de course ou de rencontre (Run) n'est pas atteint ou est dépassé"
+     * )
+     */
+    public function hasRequiredNumberOfRuns(): bool
+    {
+        $runsCount = $this->getRuns()->count();
+        $minRuns = $this->getMinRuns();
+        $maxRuns = $this->getMaxRuns() ?? $minRuns;
+        return ($minRuns == 0 && $maxRuns == 0) ?:
+            ($minRuns <= $runsCount && $maxRuns >= $runsCount);
     }
 }

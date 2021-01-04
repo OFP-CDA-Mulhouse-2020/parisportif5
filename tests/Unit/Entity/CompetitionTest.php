@@ -35,9 +35,11 @@ final class CompetitionTest extends KernelTestCase
             ->setName('name')
             ->setStartDate($date->setTime(23, 59, 59, 1000000))
             ->setCountry('FR')
-            ->setMaxRuns(1)
+            ->setMaxRuns(2)
+            ->setMinRuns(1)
             ->setSport($this->createSportObject())
-            ->addBetCategory($this->createBetCategoryObject());
+            ->addBetCategory($this->createBetCategoryObject())
+            ->addRun($this->createRunObject($competition));
         return $competition;
     }
 
@@ -284,7 +286,7 @@ final class CompetitionTest extends KernelTestCase
     public function testMaxRunsCompatible()
     {
         $maxRuns1 = 1;
-        $maxRuns2 = 50;
+        $maxRuns2 = null;
         $competition = $this->createValidCompetition();
         $competition->setMaxRuns($maxRuns1);
         $violations = $this->validator->validate($competition);
@@ -296,15 +298,37 @@ final class CompetitionTest extends KernelTestCase
 
     public function testMaxRunsUncompatible()
     {
-        $maxRuns1 = 0;
-        $maxRuns2 = -1;
+        $maxRuns1 = -1;
+        $maxRuns2 = 0;
         $competition = $this->createValidCompetition();
         $competition->setMaxRuns($maxRuns1);
         $violations = $this->validator->validate($competition);
-        $this->assertCount(1, $violations);
+        $this->assertGreaterThanOrEqual(1, count($violations));
         $competition->setMaxRuns($maxRuns2);
         $violations = $this->validator->validate($competition);
-        $this->assertCount(1, $violations);
+        $this->assertGreaterThanOrEqual(1, count($violations));
+    }
+
+    public function testMinRunsCompatible()
+    {
+        $minRuns1 = 0;
+        $minRuns2 = 1;
+        $competition = $this->createValidCompetition();
+        $competition->setMinRuns($minRuns1);
+        $violations = $this->validator->validate($competition);
+        $this->assertCount(0, $violations);
+        $competition->setMinRuns($minRuns2);
+        $violations = $this->validator->validate($competition);
+        $this->assertCount(0, $violations);
+    }
+
+    public function testMinRunsUncompatible()
+    {
+        $minRuns = -1;
+        $competition = $this->createValidCompetition();
+        $competition->setMinRuns($minRuns);
+        $violations = $this->validator->validate($competition);
+        $this->assertGreaterThanOrEqual(1, count($violations));
     }
 
     public function testMethodIsFinishReturnFalse()
@@ -335,7 +359,7 @@ final class CompetitionTest extends KernelTestCase
         $run = $this->createRunObject($competition);
         $competition->addRun($run);
         $competition->addRun($this->createRunObject($competition));
-        $this->assertCount(1, $competition->getRuns());
+        $this->assertCount(2, $competition->getRuns());
         $this->assertContains($run, $competition->getRuns());
         $violations = $this->validator->validate($competition);
         $this->assertCount(0, $violations);
@@ -347,7 +371,7 @@ final class CompetitionTest extends KernelTestCase
         $date = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
         $run = $this->createRunObject($competition, $date);
         $competition->addRun($run);
-        $this->assertCount(1, $competition->getRuns());
+        $this->assertCount(2, $competition->getRuns());
         $violations = $this->validator->validate($competition);
         $this->assertGreaterThanOrEqual(1, count($violations));
     }

@@ -109,6 +109,13 @@ class Team
     public function addMember(Member $member): self
     {
         if (!$this->members->contains($member)) {
+            if (empty($this->sport)) {
+                return $this;
+            }
+            $maxMembers = $this->sport->getMaxMembersByTeam() ?? 0;
+            if ($maxMembers > 0 && count($this->members) >= $maxMembers) {
+                return $this;
+            }
             $this->members[] = $member;
             $member->setTeam($this);
         }

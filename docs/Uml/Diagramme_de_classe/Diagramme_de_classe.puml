@@ -201,7 +201,8 @@ skinparam linetype ortho
         -startDate : DateTime
         -endDate : DateTime
         -country : string
-        -maxRuns : int
+        -maxRuns : int|null
+        -minRuns : int
         -result : Result
         +hasResult() : bool
         +hasRuns() : bool
@@ -209,6 +210,7 @@ skinparam linetype ortho
         +isOngoing() : bool
         +getEventsCount() : int
         +getRunsCount() : int
+        +hasRequiredNumberOfRuns() : bool
     }
     'Un match, une rencontre, une course
     class Run {
