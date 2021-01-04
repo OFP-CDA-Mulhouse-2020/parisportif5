@@ -84,7 +84,8 @@ final class RunTest extends KernelTestCase
             ->setName('name')
             ->setStartDate($date->setTime(23, 59, 59, 1000000))
             ->setCountry($country)
-            ->setMaxRuns(1)
+            ->setMaxRuns(2)
+            ->setMinRuns(0)
             ->setSport($this->createSportObject())
             ->addBetCategory($this->createBetCategoryObject());
         return $competition;

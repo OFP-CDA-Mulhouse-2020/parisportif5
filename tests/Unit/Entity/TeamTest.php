@@ -198,7 +198,6 @@ final class TeamTest extends KernelTestCase
         $sport = $this->createSportObject();
         $footMember = $this->createValidFootballMember();
         $team->addMember($footMember);
-        $team->getMembers();
         $currentMembers = count($team->getMembers());
         $maxMembers = $sport->getMaxMembersByTeam();
         $validator = $kernel->getContainer()->get('validator');
@@ -212,20 +211,12 @@ final class TeamTest extends KernelTestCase
         $kernel = $this->initializeKernel();
         $team = $this->initializeTeam();
         $sport = $this->createSportObject();
-        $member = $this->createValidFootballMember();
-        $mambo = $this->createValidFootballMember();
-        $mimoune = $this->createValidFootballMember();
-        $momo = $this->createValidFootballMember();
-        $team->addMember($member);
-        $team->addMember($mambo);
-        $team->addMember($mimoune);
-        $team->addMember($momo);
-        $team->getMembers();
-        $currentMembers = count($team->getMembers());
-        $maxMembers = $sport->getMaxMembersByTeam();
+        $currentMember = $team->getMembers()->get(0);
+        $team->removeMember($currentMember);
+        $minMembers = $sport->getMinMembersByTeam();
         $validator = $kernel->getContainer()->get('validator');
         $violations = $validator->validate($team);
         $this->assertCount(1, $violations);
-        $this->assertGreaterThan($maxMembers, $currentMembers);
+        $this->assertLessThan($minMembers, count($team->getMembers()));
     }
 }

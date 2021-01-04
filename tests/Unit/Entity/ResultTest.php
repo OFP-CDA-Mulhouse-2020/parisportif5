@@ -55,7 +55,8 @@ final class ResultTest extends KernelTestCase
             ->setName('name')
             ->setStartDate($date->setTime(23, 59, 59, 1000000))
             ->setCountry($country)
-            ->setMaxRuns(1)
+            ->setMaxRuns(2)
+            ->setMinRuns(0)
             ->setSport($this->createSportObject())
             ->addBetCategory($this->createBetCategoryObject());
         return $competition;
@@ -77,7 +78,7 @@ final class ResultTest extends KernelTestCase
         return $sport;
     }
 
-    private function createRunObject(\DateTimeImmutable $date = null): Run
+    private function createRunObject(Competition $competition, \DateTimeImmutable $date = null): Run
     {
         $run = new Run();
         $startDate = $date ?? new \DateTimeImmutable('+1 day', new \DateTimeZone('UTC'));
@@ -85,7 +86,7 @@ final class ResultTest extends KernelTestCase
             ->setName('run name')
             ->setEvent('event name')
             ->setStartDate($startDate)
-            ->setCompetition($this->createCompetitionObject())
+            ->setCompetition($competition)
             ->addTeam($this->createTeamObject());
         return $run;
     }
@@ -196,7 +197,8 @@ final class ResultTest extends KernelTestCase
     {
         $date = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
         $result = $this->createValidResult();
-        $run = $this->createRunObject($date);
+        $competition = $this->createCompetitionObject();
+        $run = $this->createRunObject($competition, $date);
         $result->setRun($run);
         $violations = $this->validator->validate($result);
         $this->assertCount(1, $violations);
@@ -205,7 +207,8 @@ final class ResultTest extends KernelTestCase
     public function testRunCompatible(): void
     {
         $result = $this->createValidResult();
-        $run = $this->createRunObject();
+        $competition = $this->createCompetitionObject();
+        $run = $this->createRunObject($competition);
         $result->setRun($run);
         $this->assertSame($run, $result->getRun());
         $violations = $this->validator->validate($result);
