@@ -26,14 +26,34 @@ final class TeamTest extends KernelTestCase
         $team =  new Team();
         $team->setName("RC Strasbourg Alsace");
         $team->setCountry("FR");
+        $team->setSport($this->createSportObject());
+        $team->addMember($this->createMemberObject());
         return $team;
     }
 
-    private function initializeSport(): Sport
+    private function createMemberObject(string $lastName = "Poirot"): Member
     {
-        $sport = new Sport();
-        $sport->setName("Football");
-        $sport->setMaxMembersByTeam(3);
+        $member = new Member();
+        $member
+            ->setLastName($lastName)
+            ->setFirstName("Jean-Pierre")
+            ->setCountry("FR");
+        return $member;
+    }
+
+    private function createSportObject(string $country = "FR"): Sport
+    {
+        $sport =  new Sport();
+        $sport
+            ->setName("Football")
+            ->setMaxMembersByTeam(2)
+            ->setMinMembersByTeam(1)
+            ->setMaxTeamsByRun(2)
+            ->setMinTeamsByRun(1)
+            ->setCountry($country)
+            ->setRunType("fixture")
+            ->setIndividualType(false)
+            ->setCollectiveType(true);
         return $sport;
     }
 
@@ -175,7 +195,7 @@ final class TeamTest extends KernelTestCase
     {
         $kernel = $this->initializeKernel();
         $team = $this->initializeTeam();
-        $sport = $this->initializeSport();
+        $sport = $this->createSportObject();
         $footMember = $this->createValidFootballMember();
         $team->addMember($footMember);
         $team->getMembers();
@@ -191,7 +211,7 @@ final class TeamTest extends KernelTestCase
     {
         $kernel = $this->initializeKernel();
         $team = $this->initializeTeam();
-        $sport = $this->initializeSport();
+        $sport = $this->createSportObject();
         $member = $this->createValidFootballMember();
         $mambo = $this->createValidFootballMember();
         $mimoune = $this->createValidFootballMember();
@@ -202,12 +222,10 @@ final class TeamTest extends KernelTestCase
         $team->addMember($momo);
         $team->getMembers();
         $currentMembers = count($team->getMembers());
-        // var_dump($currentMembers);
-        // die();
         $maxMembers = $sport->getMaxMembersByTeam();
         $validator = $kernel->getContainer()->get('validator');
         $violations = $validator->validate($team);
-        $this->assertCount(0, $violations);
+        $this->assertCount(1, $violations);
         $this->assertGreaterThan($maxMembers, $currentMembers);
     }
 }

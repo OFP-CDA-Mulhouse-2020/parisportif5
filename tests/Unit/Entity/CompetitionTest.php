@@ -6,6 +6,7 @@ namespace App\Tests\Unit\Entity;
 
 use App\Entity\BetCategory;
 use App\Entity\Competition;
+use App\Entity\Member;
 use App\Entity\Result;
 use App\Entity\Run;
 use App\Entity\Sport;
@@ -50,19 +51,33 @@ final class CompetitionTest extends KernelTestCase
         $team =  new Team();
         $team
             ->setName("RC Strasbourg Alsace")
-            ->setCountry($country);
+            ->setCountry($country)
+            ->setSport($this->createSportObject())
+            ->addMember($this->createMemberObject());
         return $team;
     }
 
-    private function createRunObject(\DateTimeImmutable $date = null): Run
+    private function createRunObject(Competition $competition, \DateTimeImmutable $date = null): Run
     {
         $run = new Run();
         $startDate = $date ?? new \DateTimeImmutable('+1 day', new \DateTimeZone('UTC'));
         $run
             ->setName('run name')
             ->setEvent('event name')
-            ->setStartDate($startDate);
+            ->setStartDate($startDate)
+            ->setCompetition($competition)
+            ->addTeam($this->createTeamObject());
         return $run;
+    }
+
+    private function createMemberObject(string $lastName = "Poirot"): Member
+    {
+        $member = new Member();
+        $member
+            ->setLastName($lastName)
+            ->setFirstName("Jean-Pierre")
+            ->setCountry("FR");
+        return $member;
     }
 
     private function createSportObject(string $country = "FR"): Sport
@@ -70,8 +85,10 @@ final class CompetitionTest extends KernelTestCase
         $sport =  new Sport();
         $sport
             ->setName("Football")
-            ->setMaxMembersByTeam(11)
+            ->setMaxMembersByTeam(2)
+            ->setMinMembersByTeam(1)
             ->setMaxTeamsByRun(2)
+            ->setMinTeamsByRun(1)
             ->setCountry($country)
             ->setRunType("fixture")
             ->setIndividualType(false)
@@ -315,8 +332,9 @@ final class CompetitionTest extends KernelTestCase
     public function testAddRunCompatible()
     {
         $competition = $this->createValidCompetition();
-        $run = $this->createRunObject();
+        $run = $this->createRunObject($competition);
         $competition->addRun($run);
+        $competition->addRun($this->createRunObject($competition));
         $this->assertCount(1, $competition->getRuns());
         $this->assertContains($run, $competition->getRuns());
         $violations = $this->validator->validate($competition);
@@ -327,22 +345,22 @@ final class CompetitionTest extends KernelTestCase
     {
         $competition = $this->createValidCompetition();
         $date = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
-        $run = $this->createRunObject($date);
+        $run = $this->createRunObject($competition, $date);
         $competition->addRun($run);
         $this->assertCount(1, $competition->getRuns());
         $violations = $this->validator->validate($competition);
-        $this->assertCount(1, $violations);
+        $this->assertGreaterThanOrEqual(1, count($violations));
     }
 
     public function testAddRunCompatibleOverLimit()
     {
         $competition = $this->createValidCompetition();
-        $run = $this->createRunObject();
+        $run = $this->createRunObject($competition);
         $competition->setMaxRuns(3);
         $competition->addRun($run);
-        $competition->addRun($this->createRunObject());
-        $competition->addRun($this->createRunObject());
-        $competition->addRun($this->createRunObject());
+        $competition->addRun($this->createRunObject($competition));
+        $competition->addRun($this->createRunObject($competition));
+        $competition->addRun($this->createRunObject($competition));
         $violations = $this->validator->validate($competition);
         $this->assertCount(0, $violations);
         $this->assertCount(3, $competition->getRuns());
@@ -352,10 +370,10 @@ final class CompetitionTest extends KernelTestCase
     {
         $competition = $this->createValidCompetition();
         $date = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
-        $run = $this->createRunObject($date);
+        $run = $this->createRunObject($competition, $date);
         $competition->addRun($run);
         $violations = $this->validator->validate($competition);
-        $this->assertCount(1, $violations);
+        $this->assertGreaterThanOrEqual(1, count($violations));
         $competition->removeRun($run);
         $this->assertNotContains($run, $competition->getRuns());
     }
@@ -363,8 +381,9 @@ final class CompetitionTest extends KernelTestCase
     public function testRemoveRunCompatible(): void
     {
         $competition = $this->createValidCompetition();
-        $run = $this->createRunObject();
+        $run = $this->createRunObject($competition);
         $competition->addRun($run);
+        $competition->addRun($this->createRunObject($competition));
         $violations = $this->validator->validate($competition);
         $this->assertCount(0, $violations);
         $competition->removeRun($run);

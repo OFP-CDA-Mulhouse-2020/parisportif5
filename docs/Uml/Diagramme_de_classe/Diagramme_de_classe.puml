@@ -182,8 +182,10 @@ skinparam linetype ortho
     class Sport {
         -identifier : int
         -name : string
-        -maxTeamsByRun : int
-        -maxMembersByTeam : int
+        -maxTeamsByRun : int|null
+        -maxMembersByTeam : int|null
+        -minTeamsByRun : int
+        -minMembersByTeam : int
         -collectiveType : bool
         -individualType : bool
         -country : string
@@ -222,6 +224,7 @@ skinparam linetype ortho
         +hasTeams() : bool
         +hasResult() : bool
         +getTeamsCount() : int
+        +hasRequiredNumberOfTeams() : bool
     }
     'Résultat du match ou de la course
     class Result {
@@ -245,5 +248,6 @@ skinparam linetype ortho
         +hasMembers() : bool
         +getMembersCount() : int
         +getScoresCount() : int
+        +hasRequiredNumberOfMembers() : bool
     }
 @enduml

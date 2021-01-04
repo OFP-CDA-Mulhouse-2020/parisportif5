@@ -21,8 +21,10 @@ final class SportTest extends WebTestCase
         $sport =  new Sport();
         $sport
             ->setName("Football")
-            ->setMaxMembersByTeam(11)
+            ->setMaxMembersByTeam(2)
+            ->setMinMembersByTeam(1)
             ->setMaxTeamsByRun(2)
+            ->setMinTeamsByRun(2)
             ->setCountry("FR")
             ->setRunType("fixture")
             ->setIndividualType(false)
@@ -56,22 +58,34 @@ final class SportTest extends WebTestCase
         $this->assertGreaterThanOrEqual(1, count($violations));
     }
 
-    public function testIfNumberOfCompetitorsIsNotNull(): void
+    public function testIfMaxNumberOfCompetitorsIsCorrect(): void
     {
         $kernel = $this->initializeKernel();
         $sport = $this->createValidSport();
+        $maxNumberOfCompetitors1 = 1;
+        $maxNumberOfCompetitors2 = null;
+        $sport->setMaxMembersByTeam($maxNumberOfCompetitors1);
+        /** @var ValidatorInterface $validator */
         $validator = $kernel->getContainer()->get('validator');
+        $violations = $validator->validate($sport);
+        $this->assertCount(0, $violations);
+        $sport->setMaxMembersByTeam($maxNumberOfCompetitors2);
         $violations = $validator->validate($sport);
         $this->assertCount(0, $violations);
     }
 
-    public function testIfNumberOfCompetitorsIsIncorrect(): void
+    public function testIfMaxNumberOfCompetitorsIsIncorrect(): void
     {
         $kernel = $this->initializeKernel();
         $sport = $this->createValidSport();
-        $sport->setMaxMembersByTeam(-2);
+        $maxNumberOfCompetitors1 = 0;
+        $maxNumberOfCompetitors2 = -1;
+        $sport->setMaxMembersByTeam($maxNumberOfCompetitors1);
         /** @var ValidatorInterface $validator */
         $validator = $kernel->getContainer()->get('validator');
+        $violations = $validator->validate($sport);
+        $this->assertGreaterThanOrEqual(1, count($violations));
+        $sport->setMaxMembersByTeam($maxNumberOfCompetitors2);
         $violations = $validator->validate($sport);
         $this->assertGreaterThanOrEqual(1, count($violations));
     }
@@ -132,21 +146,54 @@ final class SportTest extends WebTestCase
         $this->assertGreaterThanOrEqual(1, count($violations));
     }
 
-    public function testIfTeamLimitIsValid(): void
+    public function testIfMaxTeamLimitIsValid(): void
     {
         $kernel = $this->initializeKernel();
         $sport = $this->createValidSport();
+        $maxNumberOfTeams1 = 2;
+        $maxNumberOfTeams2 = null;
+        $sport->setMaxTeamsByRun($maxNumberOfTeams1);
         /** @var ValidatorInterface $validator */
         $validator = $kernel->getContainer()->get('validator');
         $violations = $validator->validate($sport);
         $this->assertCount(0, $violations);
+        $sport->setMaxTeamsByRun($maxNumberOfTeams2);
+        $violations = $validator->validate($sport);
+        $this->assertCount(0, $violations);
     }
 
-    public function testIfTeamLimitIsNotValid(): void
+    public function testIfMaxTeamLimitIsNotValid(): void
     {
         $kernel = $this->initializeKernel();
         $sport = $this->createValidSport();
-        $sport->setMaxTeamsByRun(-1);
+        $maxNumberOfTeams1 = 0;
+        $maxNumberOfTeams2 = 1;
+        $sport->setMaxTeamsByRun($maxNumberOfTeams1);
+        /** @var ValidatorInterface $validator */
+        $validator = $kernel->getContainer()->get('validator');
+        $violations = $validator->validate($sport);
+        $this->assertGreaterThanOrEqual(1, count($violations));
+        $sport->setMaxTeamsByRun($maxNumberOfTeams2);
+        $violations = $validator->validate($sport);
+        $this->assertGreaterThanOrEqual(1, count($violations));
+    }
+
+    public function testIfMinTeamLimitIsNotValid(): void
+    {
+        $kernel = $this->initializeKernel();
+        $sport = $this->createValidSport();
+        $sport->setMinTeamsByRun(-1);
+        /** @var ValidatorInterface $validator */
+        $validator = $kernel->getContainer()->get('validator');
+        $violations = $validator->validate($sport);
+        $this->assertGreaterThanOrEqual(1, count($violations));
+    }
+
+    public function testIfMinNumberOfCompetitorsIsIncorrect(): void
+    {
+        $kernel = $this->initializeKernel();
+        $sport = $this->createValidSport();
+        $sport->setMinMembersByTeam(-2);
         /** @var ValidatorInterface $validator */
         $validator = $kernel->getContainer()->get('validator');
         $violations = $validator->validate($sport);

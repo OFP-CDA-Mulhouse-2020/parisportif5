@@ -7,6 +7,7 @@ namespace App\Tests\Unit\Entity;
 use App\Entity\BetCategory;
 use App\Entity\Competition;
 use App\Entity\Location;
+use App\Entity\Member;
 use App\Entity\Result;
 use App\Entity\Run;
 use App\Entity\Sport;
@@ -34,7 +35,8 @@ final class RunTest extends KernelTestCase
         $run
             ->setName('run name')
             ->setEvent('event name')
-            ->setStartDate($date->setTime(23, 59, 59, 1000000));
+            ->setStartDate($date->setTime(23, 59, 59, 1000000))
+            ->addTeam($this->createTeamObject());
         return $run;
     }
 
@@ -48,8 +50,20 @@ final class RunTest extends KernelTestCase
         $team =  new Team();
         $team
             ->setName("RC Strasbourg Alsace")
-            ->setCountry($country);
+            ->setCountry($country)
+            ->setSport($this->createSportObject())
+            ->addMember($this->createMemberObject());
         return $team;
+    }
+
+    private function createMemberObject(string $lastName = "Poirot"): Member
+    {
+        $member = new Member();
+        $member
+            ->setLastName($lastName)
+            ->setFirstName("Jean-Pierre")
+            ->setCountry("FR");
+        return $member;
     }
 
     private function createLocationObject(string $country = "FR"): Location
@@ -81,8 +95,10 @@ final class RunTest extends KernelTestCase
         $sport =  new Sport();
         $sport
             ->setName("Football")
-            ->setMaxMembersByTeam(11)
+            ->setMaxMembersByTeam(2)
+            ->setMinMembersByTeam(1)
             ->setMaxTeamsByRun(2)
+            ->setMinTeamsByRun(1)
             ->setCountry($country)
             ->setRunType("fixture")
             ->setIndividualType(false)

@@ -183,6 +183,11 @@ class Run
         return $this;
     }
 
+    public function getTeamsCounts(): int
+    {
+        return $this->teams->count();
+    }
+
     /**
      * @return Collection<int,Team>
      */
@@ -200,7 +205,7 @@ class Run
             if (empty($this->competition->getSport())) {
                 return $this;
             }
-            $maxTeams = $this->competition->getSport()->getMaxTeamsByRun();
+            $maxTeams = $this->competition->getSport()->getMaxTeamsByRun() ?? 0;
             if ($maxTeams > 0 && count($this->teams) >= $maxTeams) {
                 return $this;
             }
@@ -251,5 +256,29 @@ class Run
         $this->scores->removeElement($score);
 
         return $this;
+    }
+
+    /**
+     * @Assert\IsTrue(
+     *     message="Le nombre requis d'équipe n'est pas atteint ou est dépassé"
+     * )
+     */
+    public function hasRequiredNumberOfTeams(): bool
+    {
+        $teamsCount = $this->getTeams()->count();
+        $minTeams = 0;
+        if (!empty($this->competition)) {
+            if (!empty($this->competition->getSport())) {
+                $minTeams = $this->competition->getSport()->getMinTeamsByRun();
+            }
+        }
+        $maxTeams = 0;
+        if (!empty($this->competition)) {
+            if (!empty($this->competition->getSport())) {
+                $maxTeams = $this->competition->getSport()->getMaxTeamsByRun() ?? $minTeams;
+            }
+        }
+        return ($minTeams == 0 && $maxTeams == 0) ?:
+            ($minTeams <= $teamsCount && $maxTeams >= $teamsCount);
     }
 }

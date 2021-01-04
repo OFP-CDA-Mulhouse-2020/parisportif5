@@ -66,8 +66,10 @@ final class ResultTest extends KernelTestCase
         $sport =  new Sport();
         $sport
             ->setName("Football")
-            ->setMaxMembersByTeam(11)
+            ->setMaxMembersByTeam(2)
+            ->setMinMembersByTeam(1)
             ->setMaxTeamsByRun(2)
+            ->setMinTeamsByRun(1)
             ->setCountry($country)
             ->setRunType("fixture")
             ->setIndividualType(false)
@@ -82,7 +84,9 @@ final class ResultTest extends KernelTestCase
         $run
             ->setName('run name')
             ->setEvent('event name')
-            ->setStartDate($startDate);
+            ->setStartDate($startDate)
+            ->setCompetition($this->createCompetitionObject())
+            ->addTeam($this->createTeamObject());
         return $run;
     }
 
@@ -91,7 +95,9 @@ final class ResultTest extends KernelTestCase
         $team =  new Team();
         $team
             ->setName("RC Strasbourg Alsace")
-            ->setCountry($country);
+            ->setCountry($country)
+            ->setSport($this->createSportObject())
+            ->addMember($this->createMemberObject());
         return $team;
     }
 
