@@ -60,32 +60,23 @@ final class UserControllerTest extends WebTestCase
         $client = static::createClient();
         $crawler = $client->request('GET', '/account/creation');
         // Balise form
-        $this->assertSelectorExists('form[name=user_creation]', "Aucune balise form n'est présente dans ce formulaire");
-        $this->assertCount(1, $crawler->filter('form[name=user_creation]'), "Il existe plusieurs balise form dans ce formulaire");
+        $this->assertCount(1, $crawler->filter('form[name=user_creation]'), "Il existe plusieurs ou pas de balise form dans ce formulaire");
         // Civilité
-        $this->assertSelectorExists('form[name=user_creation] *[name*=civility]', "Aucun champs de civilité n'est présent dans ce formulaire");
-        $this->assertCount(1, $crawler->filter('form[name=user_creation] *[name*=civility]'), "Il existe plusieurs champs de civilité dans ce formulaire");
+        $this->assertCount(1, $crawler->filter('form[name=user_creation] *[name*=civility]'), "Il existe plusieurs ou pas de champs de civilité dans ce formulaire");
         // Nom
-        $this->assertSelectorExists('form[name=user_creation] input[name*=lastName]', "Aucun champs de nom n'est présent dans ce formulaire");
-        $this->assertCount(1, $crawler->filter('form[name=user_creation] input[name*=lastName]'), "Il existe plusieurs champs de nom dans ce formulaire");
+        $this->assertCount(1, $crawler->filter('form[name=user_creation] input[name*=lastName]'), "Il existe plusieurs ou pas de champs de nom dans ce formulaire");
         // Prénom
-        $this->assertSelectorExists('form[name=user_creation] input[name*=firstName]', "Aucun champs de prénom n'est présent dans ce formulaire");
-        $this->assertCount(1, $crawler->filter('form[name=user_creation] input[name*=firstName]'), "Il existe plusieurs champs de prénom dans ce formulaire");
+        $this->assertCount(1, $crawler->filter('form[name=user_creation] input[name*=firstName]'), "Il existe plusieurs ou pas de champs de prénom dans ce formulaire");
         // Adresse
-        $this->assertSelectorExists('form[name=user_creation] input[name*=Address]', "Aucun champs d'adresse n'est présent dans ce formulaire");
-        $this->assertCount(1, $crawler->filter('form[name=user_creation] input[name*=Address]'), "Il existe plusieurs champs d'adresse' dans ce formulaire");
+        $this->assertCount(1, $crawler->filter('form[name=user_creation] input[name*=Address]'), "Il existe plusieurs ou pas de champs d'adresse' dans ce formulaire");
         // Ville
-        $this->assertSelectorExists('form[name=user_creation] input[name*=City]', "Aucun champs de ville n'est présent dans ce formulaire");
-        $this->assertCount(1, $crawler->filter('form[name=user_creation] input[name*=City]'), "Il existe plusieurs champs de ville dans ce formulaire");
+        $this->assertCount(1, $crawler->filter('form[name=user_creation] input[name*=City]'), "Il existe plusieurs ou pas de champs de ville dans ce formulaire");
         // Code postal
-        $this->assertSelectorExists('form[name=user_creation] input[name*=Postcode]', "Aucun champs de code postal n'est présent dans ce formulaire");
-        $this->assertCount(1, $crawler->filter('form[name=user_creation] input[name*=Postcode]'), "Il existe plusieurs champs de code postal dans ce formulaire");
+        $this->assertCount(1, $crawler->filter('form[name=user_creation] input[name*=Postcode]'), "Il existe plusieurs ou pas de champs de code postal dans ce formulaire");
         // Pays
-        $this->assertSelectorExists('form[name=user_creation] *[name*=Country]', "Aucun champs de pays n'est présent dans ce formulaire");
-        $this->assertCount(1, $crawler->filter('form[name=user_creation] *[name*=Country]'), "Il existe plusieurs champs de pays dans ce formulaire");
+        $this->assertCount(1, $crawler->filter('form[name=user_creation] *[name*=Country]'), "Il existe plusieurs ou pas de champs de pays dans ce formulaire");
         // Date de naissance
-        $this->assertSelectorExists('form[name=user_creation] *[name*=birthDate]', "Aucun champs pour la date de naissance n'est présent dans ce formulaire");
-        $this->assertCount(1, $crawler->filter('form[name=user_creation] *[name*=birthDate]'), "Il existe plus de 3 champs pour la date de naissance dans ce formulaire");
+        $this->assertCount(1, $crawler->filter('form[name=user_creation] *[name*=birthDate]'), "Il existe plusieurs ou pas de champs pour la date de naissance dans ce formulaire");
         // Mot de passe
         $this->assertSelectorExists('form[name=user_creation] input[name*=password]', "Aucun champs de mot de passe n'est présent dans ce formulaire");
         $this->assertCount(2, $crawler->filter('form[name=user_creation] input[name*=password]'), "Il existe plus de 2 champs de mot de passe dans ce formulaire");
@@ -93,8 +84,7 @@ final class UserControllerTest extends WebTestCase
         $this->assertSelectorExists('form[name=user_creation] input[name*=email]', "Aucun champs email n'est présent dans ce formulaire");
         $this->assertCount(2, $crawler->filter('form[name=user_creation] input[name*=email]'), "Il existe plus de 2 champs email dans ce formulaire");
         // Bouton submit
-        $this->assertSelectorExists('form[name=user_creation] *[type=submit]', "Aucun bouton submit n'est présent dans ce formulaire");
-        $this->assertCount(1, $crawler->filter('form[name=user_creation] *[type=submit]'), "Il existe plusieurs bouton submit dans ce formulaire");
+        $this->assertCount(1, $crawler->filter('form[name=user_creation] *[type=submit]'), "Il existe plusieurs ou pas de bouton d'envoi dans ce formulaire");
     }
 
     public function testCreationFormValidation(): void

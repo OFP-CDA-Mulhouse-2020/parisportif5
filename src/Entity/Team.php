@@ -57,12 +57,6 @@ class Team
      */
     private Collection $members;
 
-    /**
-     * @ORM\Column(type="integer")
-     * @Assert\GreaterThan(0)
-     */
-    private int $maxMembers;
-
     public function __construct()
     {
         $this->members = new ArrayCollection();
@@ -123,18 +117,6 @@ class Team
             //     $member->setTeam(null);
             // }
         }
-
-        return $this;
-    }
-
-    public function getMaxMembers(): ?int
-    {
-        return $this->maxMembers;
-    }
-
-    public function setMaxMembers(int $maxMembers): self
-    {
-        $this->maxMembers = $maxMembers;
 
         return $this;
     }
