@@ -74,12 +74,6 @@ class Member
     private MemberStatus $memberStatus;
 
     /**
-     * @ORM\ManyToOne(targetEntity=ResultType::class)
-     * @Assert\Valid
-     */
-    private ResultType $resultType;
-
-    /**
      * @ORM\ManyToOne(targetEntity=Team::class, inversedBy="members")
      * @ORM\JoinColumn(nullable=false)
      */

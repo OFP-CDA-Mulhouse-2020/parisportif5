@@ -127,6 +127,7 @@ final class TeamTest extends KernelTestCase
         $pgasly = new Member();
         $pgasly->setLastName("Gasly");
         $pgasly->setFirstName("Pierre");
+        $pgasly->setCountry("FR");
         $pilot = new MemberRole();
         $pilot->setName("pilot");
         $pgasly->setMemberRole($pilot);
