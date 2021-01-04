@@ -58,10 +58,10 @@ class Team
     private Collection $members;
 
     /**
-     * @ORM\Column(type="integer")
-     * @Assert\GreaterThan(0)
+     * @ORM\ManyToOne(targetEntity=Sport::class)
+     * @ORM\JoinColumn(nullable=false)
      */
-    private int $maxMembers;
+    private Sport $sport;
 
     public function __construct()
     {
@@ -127,14 +127,14 @@ class Team
         return $this;
     }
 
-    public function getMaxMembers(): ?int
+    public function getSport(): ?Sport
     {
-        return $this->maxMembers;
+        return $this->sport;
     }
 
-    public function setMaxMembers(int $maxMembers): self
+    public function setSport(Sport $sport): self
     {
-        $this->maxMembers = $maxMembers;
+        $this->sport = $sport;
 
         return $this;
     }
