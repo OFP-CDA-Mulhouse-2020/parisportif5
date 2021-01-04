@@ -36,15 +36,16 @@ class Sport
     private string $name;
 
     /**
-     * @ORM\Column(type="integer")
-     * @Assert\NotNull(
-     *     message="Le nombre de compétiteurs ne peut être vide"
+     * @ORM\Column(type="integer", nullable=true)
+     * @Assert\Positive(
+     *     message="Le nombre de compétiteurs maxinum doit être positif"
      * )
-     * @Assert\GreaterThanOrEqual(1)(
-     *     message="Le nombre de compétiteurs doit être supérieur ou égal à 1"
+     * @Assert\GreaterThanOrEqual(
+     *     propertyPath="minMembersByTeam",
+     *     message="Le nombre de compétiteurs doit être supérieur ou égal au nombre minimum"
      * )
      */
-    private int $maxMembersByTeam;
+    private ?int $maxMembersByTeam;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -87,6 +88,14 @@ class Sport
      */
     private int $maxTeamsByRun;
 
+    /**
+     * @ORM\Column(type="integer")
+     * @Assert\PositiveOrZero(
+     *     message="Le nombre de compétiteurs minimum doit être positif ou égal à zéro"
+     * )
+     */
+    private int $minMembersByTeam = 0;
+
     public const RUN_TYPES = ["fixture", "race"];
 
     public function getId(): ?int
@@ -111,7 +120,7 @@ class Sport
         return $this->maxMembersByTeam;
     }
 
-    public function setMaxMembersByTeam(int $maxMembersByTeam): self
+    public function setMaxMembersByTeam(?int $maxMembersByTeam): self
     {
         $this->maxMembersByTeam = $maxMembersByTeam;
 
@@ -174,6 +183,18 @@ class Sport
     public function setMaxTeamsByRun(int $maxTeamsByRun): self
     {
         $this->maxTeamsByRun = $maxTeamsByRun;
+
+        return $this;
+    }
+
+    public function getMinMembersByTeam(): ?int
+    {
+        return $this->minMembersByTeam;
+    }
+
+    public function setMinMembersByTeam(int $minMembersByTeam): self
+    {
+        $this->minMembersByTeam = $minMembersByTeam;
 
         return $this;
     }
