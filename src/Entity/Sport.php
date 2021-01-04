@@ -79,14 +79,16 @@ class Sport
     private bool $collectiveType;
 
     /**
-     * @ORM\Column(type="integer")
-     * @Assert\NotBlank,
-     *     normalizer="trim"
-     * @Assert\GreaterThanOrEqual(1)(
-     *     message="Le nombre d'équipes doit être supérieur ou égal à 1"
+     * @ORM\Column(type="integer", nullable=true)
+     * @Assert\Positive(
+     *     message="Le nombre d'équipes maxinum doit être positif"
+     * )
+     * @Assert\GreaterThanOrEqual(
+     *     propertyPath="minTeamsByRun",
+     *     message="Le nombre d'équipes doit être supérieur ou égal au nombre minimum"
      * )
      */
-    private int $maxTeamsByRun;
+    private ?int $maxTeamsByRun;
 
     /**
      * @ORM\Column(type="integer")
@@ -95,6 +97,14 @@ class Sport
      * )
      */
     private int $minMembersByTeam = 0;
+
+    /**
+     * @ORM\Column(type="integer")
+     * @Assert\PositiveOrZero(
+     *     message="Le nombre d'équipes minimum doit être positif ou égal à zéro"
+     * )
+     */
+    private int $minTeamsByRun = 0;
 
     public const RUN_TYPES = ["fixture", "race"];
 
@@ -180,7 +190,7 @@ class Sport
         return $this->maxTeamsByRun;
     }
 
-    public function setMaxTeamsByRun(int $maxTeamsByRun): self
+    public function setMaxTeamsByRun(?int $maxTeamsByRun): self
     {
         $this->maxTeamsByRun = $maxTeamsByRun;
 
@@ -195,6 +205,18 @@ class Sport
     public function setMinMembersByTeam(int $minMembersByTeam): self
     {
         $this->minMembersByTeam = $minMembersByTeam;
+
+        return $this;
+    }
+
+    public function getMinTeamsByRun(): ?int
+    {
+        return $this->minTeamsByRun;
+    }
+
+    public function setMinTeamsByRun(int $minTeamsByRun): self
+    {
+        $this->minTeamsByRun = $minTeamsByRun;
 
         return $this;
     }

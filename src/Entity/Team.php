@@ -60,6 +60,7 @@ class Team
     /**
      * @ORM\ManyToOne(targetEntity=Sport::class)
      * @ORM\JoinColumn(nullable=false)
+     * @Assert\Valid
      */
     private Sport $sport;
 
@@ -137,5 +138,25 @@ class Team
         $this->sport = $sport;
 
         return $this;
+    }
+
+    /**
+     * @Assert\IsTrue(
+     *     message="Le nombre requis de membre n'est pas atteint ou est dépassé"
+     * )
+     */
+    public function hasRequiredNumberOfMembers(): bool
+    {
+        $membersCount = $this->getMembers()->count();
+        $minMembers = 0;
+        if (!empty($this->sport)) {
+            $minMembers = $this->sport->getMinMembersByTeam();
+        }
+        $maxMembers = 0;
+        if (!empty($this->sport)) {
+            $maxMembers = $this->sport->getMaxMembersByTeam() ?? $minMembers;
+        }
+        return ($minMembers == 0 && $maxMembers == 0) ?:
+            ($minMembers <= $membersCount && $maxMembers >= $membersCount);
     }
 }
