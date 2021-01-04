@@ -7,6 +7,7 @@ namespace App\Tests\Unit\Entity;
 use App\Entity\Member;
 use App\Entity\MemberRole;
 use App\Entity\MemberStatus;
+use App\Entity\Sport;
 use App\Entity\Team;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpKernel\KernelInterface;
@@ -26,6 +27,14 @@ final class TeamTest extends KernelTestCase
         $team->setName("RC Strasbourg Alsace");
         $team->setCountry("FR");
         return $team;
+    }
+
+    private function initializeSport(): Sport
+    {
+        $sport = new Sport();
+        $sport->setName("Football");
+        $sport->setMaxMembersByTeam(3);
+        return $sport;
     }
 
     private function initializeKernel(): KernelInterface
@@ -127,6 +136,7 @@ final class TeamTest extends KernelTestCase
         $pgasly = new Member();
         $pgasly->setLastName("Gasly");
         $pgasly->setFirstName("Pierre");
+        $pgasly->setCountry("FR");
         $pilot = new MemberRole();
         $pilot->setName("pilot");
         $pgasly->setMemberRole($pilot);
@@ -135,7 +145,21 @@ final class TeamTest extends KernelTestCase
         return $pgasly;
     }
 
-    /*public function testIfMembersAreValid(): void
+    public function createValidFootballMember(): Member
+    {
+        $dlienard = new Member();
+        $dlienard->setLastName("Liénard");
+        $dlienard->setFirstName("Dimitri");
+        $dlienard->setCountry("FR");
+        $footballer = new MemberRole();
+        $footballer->setName("footballer");
+        $dlienard->setMemberRole($footballer);
+        $titular = new MemberStatus();
+        $titular->setName("titular");
+        return $dlienard;
+    }
+
+    public function testIfMembersAreValid(): void
     {
         $kernel = $this->initializeKernel();
         $team = $this->initializeTeam();
@@ -145,18 +169,18 @@ final class TeamTest extends KernelTestCase
         $validator = $kernel->getContainer()->get('validator');
         $violations = $validator->validate($team);
         $this->assertCount(0, $violations);
-    }*/
+    }
 
-    /*public function testIfNumberOfMembersIsValid()
+    public function testIfNumberOfMembersIsValid()
     {
         $kernel = $this->initializeKernel();
         $team = $this->initializeTeam();
-        $member = $this->createValidMember();
-        $team->addMember($member);
+        $sport = $this->initializeSport();
+        $footMember = $this->createValidFootballMember();
+        $team->addMember($footMember);
         $team->getMembers();
         $currentMembers = count($team->getMembers());
-        $maxMembers = 2;
-        $team->setMaxMembers($maxMembers);
+        $maxMembers = $sport->getMaxMembersByTeam();
         $validator = $kernel->getContainer()->get('validator');
         $violations = $validator->validate($team);
         $this->assertCount(0, $violations);
@@ -167,21 +191,23 @@ final class TeamTest extends KernelTestCase
     {
         $kernel = $this->initializeKernel();
         $team = $this->initializeTeam();
-        $member = $this->createValidMember();
-        $mambo = $this->createValidMember();
-        $mimoune = $this->createValidMember();
+        $sport = $this->initializeSport();
+        $member = $this->createValidFootballMember();
+        $mambo = $this->createValidFootballMember();
+        $mimoune = $this->createValidFootballMember();
+        $momo = $this->createValidFootballMember();
         $team->addMember($member);
         $team->addMember($mambo);
         $team->addMember($mimoune);
+        $team->addMember($momo);
         $team->getMembers();
         $currentMembers = count($team->getMembers());
         // var_dump($currentMembers);
         // die();
-        $maxMembers = 2;
-        $team->setMaxMembers($maxMembers);
+        $maxMembers = $sport->getMaxMembersByTeam();
         $validator = $kernel->getContainer()->get('validator');
         $violations = $validator->validate($team);
         $this->assertCount(0, $violations);
         $this->assertGreaterThan($maxMembers, $currentMembers);
-    }*/
+    }
 }

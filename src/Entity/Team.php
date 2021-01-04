@@ -57,6 +57,12 @@ class Team
      */
     private Collection $members;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=Sport::class)
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private Sport $sport;
+
     public function __construct()
     {
         $this->members = new ArrayCollection();
@@ -117,6 +123,18 @@ class Team
             //     $member->setTeam(null);
             // }
         }
+
+        return $this;
+    }
+
+    public function getSport(): ?Sport
+    {
+        return $this->sport;
+    }
+
+    public function setSport(Sport $sport): self
+    {
+        $this->sport = $sport;
 
         return $this;
     }
