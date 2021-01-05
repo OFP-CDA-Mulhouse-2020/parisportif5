@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
-use App\Form\UserCreationType;
+use App\Form\UserRegistrationType;
 use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,12 +13,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class UserController extends AbstractController
 {
     /**
-     * @Route("/account/creation", name="user_creation")
+     * @Route("/inscription", name="user_registration")
      */
-    public function creationForm(Request $request, UserRepository $userRepository): Response
+    public function registrationForm(Request $request, UserRepository $userRepository): Response
     {
         $user = new User();
-        $form = $this->createForm(UserCreationType::class, $user);
+        $form = $this->createForm(UserRegistrationType::class, $user);
         $form->handleRequest($request);
         if ($form->isSubmitted()) {
             if ($form->isValid()) {
@@ -34,6 +34,7 @@ class UserController extends AbstractController
                         'success',
                         'Succès'
                     );
+                    return $this->redirectToRoute('main');
                 } else {
                     $this->addFlash(
                         'notice',
@@ -41,13 +42,13 @@ class UserController extends AbstractController
                     );
                 }
                 $entityManager->flush();
-            } else {
+            } /*else {
                 $this->addFlash(
                     'warning',
                     'Erreur'
                 );
             }
-            return $this->redirectToRoute('main');
+            return $this->redirectToRoute('main');*/
         }
         return $this->render('user/new.html.twig', [
             'site_title' => 'Paris Sportif',

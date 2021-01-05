@@ -388,11 +388,12 @@ class User implements UserInterface
     /**
      * @Assert\IsTrue(
      *     message="Le mot de passe ne doit pas contenir le prénom et/ou le nom",
-     *     groups={"registration", "profile"}
+     *     groups={"profile"}
      * )
      */
     public function isPasswordSafe(): bool
     {
+ //"registration"
         return (stripos($this->password, $this->lastName) === false
             && stripos($this->password, $this->firstName) === false);
     }
