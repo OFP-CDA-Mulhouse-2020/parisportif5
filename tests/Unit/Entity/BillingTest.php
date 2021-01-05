@@ -513,7 +513,7 @@ final class BillingTest extends KernelTestCase
         $billing = $this->createValidBilling();
         $user = $this->createUserObject('XD');
         $billing->setUser($user);
-        $violations = $this->validator->validate($billing);
+        $violations = $this->validator->validate($billing, null, ['registration']);
         $this->assertCount(1, $violations);
     }
 
