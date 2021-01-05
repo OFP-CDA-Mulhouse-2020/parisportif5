@@ -289,7 +289,7 @@ final class BetTest extends KernelTestCase
         $bet = $this->createValidBet();
         $user = $this->createUserObject('XD');
         $bet->setUser($user);
-        $violations = $this->validator->validate($bet, null, ['registration']);
+        $violations = $this->validator->validate($bet, null, ['registration', 'login', 'profile']);
         $this->assertCount(1, $violations);
     }
 
@@ -299,7 +299,7 @@ final class BetTest extends KernelTestCase
         $user = $this->createUserObject();
         $bet->setUser($user);
         $this->assertSame($user, $bet->getUser());
-        $violations = $this->validator->validate($bet);
+        $violations = $this->validator->validate($bet, null, ['registration', 'login', 'profile']);
         $this->assertCount(0, $violations);
     }
 

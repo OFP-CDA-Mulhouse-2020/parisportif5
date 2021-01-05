@@ -28,11 +28,13 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=180, unique=true)
      * @Assert\NotBlank(
      *     message="L'adresse email ne peut pas être vide",
-     *     normalizer="trim", groups={"registration", "login"}
+     *     normalizer="trim",
+     *     groups={"login", "registration", "profile"}
      * )
      * @Assert\Email(
      *     message="L'adresse email {{ value }}' n'est pas valide",
-     *     mode="html5", groups={"registration", "login"}
+     *     mode="html5",
+     *     groups={"login", "registration", "profile"}
      * )
      */
     private string $email;
@@ -48,24 +50,29 @@ class User implements UserInterface
      * @ORM\Column(type="string")
      * @Assert\NotBlank(
      *     message="Le mot de passe ne peut pas être vide",
-     *     normalizer="trim", groups={"registration", "login"}
+     *     normalizer="trim",
+     *     groups={"login", "registration", "profile"}
      * )
      * @Assert\Length(
      *     min=7,
-     *     minMessage="Votre mot de passe doit avoir plus de {{ limit }} caractères", groups={"registration"}
+     *     minMessage="Votre mot de passe doit avoir plus de {{ limit }} caractères",
+     *     groups={"registration", "profile"}
      * )
      * @Assert\Regex(
      *     pattern="/^[\p{L}]+$/u",
      *     match=false,
-     *     message="Pour la sécurité de votre mot de passe, vous ne pouvez pas mettre uniquement des lettres", groups={"registration"}
+     *     message="Pour la sécurité de votre mot de passe, vous ne pouvez pas mettre uniquement des lettres",
+     *     groups={"registration", "profile"}
      * )
      * @Assert\Regex(
      *     pattern="/^\d+$/",
      *     match=false,
-     *     message="Pour la sécurité de votre mot de passe, vous ne pouvez pas mettre uniquement des chiffres", groups={"registration"}
+     *     message="Pour la sécurité de votre mot de passe, vous ne pouvez pas mettre uniquement des chiffres",
+     *     groups={"registration", "profile"}
      * )
      * @Assert\NotCompromisedPassword(
-     *     message="Mot de passe interdit", groups={"registration"}
+     *     message="Mot de passe interdit",
+     *     groups={"registration", "profile"}
      * )
      */
     private string $password;
@@ -74,30 +81,36 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=60, nullable=true)
      * @Assert\NotBlank(
      *     message="La civilité ne peut pas être vide",
-     *     normalizer="trim", groups={"registration"}
+     *     normalizer="trim",
+     *     allowNull=true,
+     *     groups={"profile"}
      * )
      * @Assert\Length(
      *      max = 15,
-     *      maxMessage = "La civilité ne peut pas être plus longue que {{ limit }} caractères", groups={"registration"}
+     *      maxMessage = "La civilité ne peut pas être plus longue que {{ limit }} caractères",
+     *      groups={"profile"}
      * )
      */
-    private string $civility;
+    private ?string $civility;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Assert\NotBlank(
      *     message="Le prénom ne peut pas être vide",
-     *     normalizer="trim", groups={"registration"}
+     *     normalizer="trim",
+     *     groups={"registration", "profile"}
      * )
      * @Assert\Length(
      *     min=2,
      *     max=26,
      *     minMessage="Votre prénom doit avoir plus de {{ limit }} caractères",
-     *     maxMessage="Votre prénom doit avoir moins de {{ limit }} caractères", groups={"registration"}
+     *     maxMessage="Votre prénom doit avoir moins de {{ limit }} caractères",
+     *     groups={"registration", "profile"}
      * )
      * @Assert\Regex(
      *     pattern="/^[\p{L}\-\'\s]+$/u",
-     *     message="Uniquement les lettres et les caractères suivants (-, ') sont autorisés", groups={"registration"}
+     *     message="Uniquement les lettres et les caractères suivants (-, ') sont autorisés",
+     *     groups={"registration", "profile"}
      * )
      */
     private string $firstName;
@@ -106,17 +119,20 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Assert\NotBlank(
      *     message="Le nom de famille ne peut pas être vide",
-     *     normalizer="trim", groups={"registration"}
+     *     normalizer="trim",
+     *     groups={"registration", "profile"}
      * )
      * @Assert\Length(
      *     min=2,
      *     max=26,
      *     minMessage="Votre nom de famille doit avoir plus de {{ limit }} caractères",
-     *     maxMessage="Votre nom de famille doit avoir moins de {{ limit }} caractères", groups={"registration"}
+     *     maxMessage="Votre nom de famille doit avoir moins de {{ limit }} caractères",
+     *     groups={"registration", "profile"}
      * )
      * @Assert\Regex(
      *     pattern="/^[\p{L}\-\'\s]+$/u",
-     *     message="Uniquement les lettres et les caractères suivants (-, ') sont autorisés", groups={"registration"}
+     *     message="Uniquement les lettres et les caractères suivants (-, ') sont autorisés",
+     *     groups={"registration", "profile"}
      * )
      */
     private string $lastName;
@@ -125,11 +141,13 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Assert\NotBlank(
      *     message="L'adresse ne peut pas être vide",
-     *     normalizer="trim", groups={"registration"}
+     *     normalizer="trim",
+     *     groups={"registration", "profile"}
      * )
      * @Assert\Regex(
      *     pattern="/^[\p{L}\-\'\s\d\,]+$/u",
-     *     message="Les caractères spéciaux ne sont pas autorisés pour l'adresse", groups={"registration"}
+     *     message="Les caractères spéciaux ne sont pas autorisés pour l'adresse",
+     *     groups={"registration", "profile"}
      * )
      */
     private string $billingAddress;
@@ -138,11 +156,13 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Assert\NotBlank(
      *     message="La ville ne peut pas être vide",
-     *     normalizer="trim", groups={"registration"}
+     *     normalizer="trim",
+     *     groups={"registration", "profile"}
      * )
      * @Assert\Regex(
      *     pattern="/^[\p{L}\-\'\s]+$/u",
-     *     message="Les chiffres et les caractères spéciaux ne sont pas autorisés pour la ville", groups={"registration"}
+     *     message="Les chiffres et les caractères spéciaux ne sont pas autorisés pour la ville",
+     *     groups={"registration", "profile"}
      * )
      */
     private string $billingCity;
@@ -151,11 +171,13 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Assert\NotBlank(
      *     message="Le code postal ne peut pas être vide",
-     *     normalizer="trim", groups={"registration"}
+     *     normalizer="trim",
+     *     groups={"registration", "profile"}
      * )
      * @Assert\Regex(
      *     pattern="/^[\p{L}\-\s\d]+$/u",
-     *     message="Les caractères spéciaux ne sont pas autorisés pour le code postal", groups={"registration"}
+     *     message="Les caractères spéciaux ne sont pas autorisés pour le code postal",
+     *     groups={"registration", "profile"}
      * )
      */
     private string $billingPostcode;
@@ -164,10 +186,12 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Assert\NotBlank(
      *     message="Le pays ne peut pas être vide.",
-     *     normalizer="trim", groups={"registration"}
+     *     normalizer="trim",
+     *     groups={"registration", "profile"}
      * )
      * @Assert\Country(
-     *     message="Le pays {{ value }} n'est pas valide", groups={"registration"}
+     *     message="Le pays {{ value }} n'est pas valide",
+     *     groups={"registration", "profile"}
      * )
      */
     private string $billingCountry;
@@ -176,9 +200,10 @@ class User implements UserInterface
      * @ORM\Column(type="date")
      * @Assert\NotBlank(
      *     message="La date de naissance ne peut pas être vide",
-     *     normalizer="trim", groups={"registration"}
+     *     normalizer="trim",
+     *     groups={"registration"}
      * )
-     * @UserAssert\HasLegalAge
+     * @UserAssert\HasLegalAge(groups={"registration"})
      */
     private \DateTimeImmutable $birthDate;
 
@@ -186,10 +211,12 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Assert\NotBlank(
      *     message="Le fuseau horaire ne peut pas être vide",
-     *     normalizer="trim", groups={"registration"}
+     *     normalizer="trim",
+     *     groups={"profile"}
      * )
      * @Assert\Timezone(
-     *     message="Le fuseau horaire {{ value }} n'est pas valide", groups={"registration"}
+     *     message="Le fuseau horaire {{ value }} n'est pas valide",
+     *     groups={"profile"}
      * )
      */
     private string $timeZoneSelected;
@@ -360,7 +387,8 @@ class User implements UserInterface
 
     /**
      * @Assert\IsTrue(
-     *     message="Le mot de passe ne doit pas contenir le prénom et/ou le nom", groups={"registration"}
+     *     message="Le mot de passe ne doit pas contenir le prénom et/ou le nom",
+     *     groups={"registration", "profile"}
      * )
      */
     public function isPasswordSafe(): bool
@@ -392,7 +420,7 @@ class User implements UserInterface
         return $this->civility;
     }
 
-    public function setCivility(string $civility): self
+    public function setCivility(?string $civility): self
     {
         $this->civility = $civility;
         return $this;
