@@ -9,10 +9,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class ConnexionFormController extends AbstractController //dossier
+class UserLoginController extends AbstractController //dossier
 {
     /**
-     * @Route("/account/connect", name="Connexion")
+     * @Route("/login", name="Connexion")
      */
     public function renderDummyForm(Request $request): Response
     {
@@ -29,12 +29,11 @@ class ConnexionFormController extends AbstractController //dossier
         //     throw new InvalidCredentialsException("Les identifiants sont incorrects");
         // }
 
-        return $this->render('dummy_form/index.html.twig', [
+        return $this->render('login_form/index.html.twig', [
+            'site_title' => 'Paris Sportif',
             'page_title' => 'Connexion',
             'form' => $form->createView()
         ]);
-        //dump($request);
-        //die();
     }
 
     /**
@@ -43,7 +42,8 @@ class ConnexionFormController extends AbstractController //dossier
 
     public function redirectsToLoggedIn(): Response
     {
-        return $this->render('dummy_form/userloggedin.html.twig', [
+        return $this->render('login_form/userloggedin.html.twig', [
+            'site_title' => 'Paris Sportif',
             'page_title' => 'User logged in',
         ]);
     }
