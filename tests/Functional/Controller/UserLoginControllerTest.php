@@ -4,9 +4,16 @@ namespace App\Tests\Functional\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DomCrawler\Crawler;
+use App\Entity\User;
 
 class UserLoginControllerTest extends WebTestCase
 {
+
+    /**
+     * @var \Doctrine\ORM\EntityManager
+     */
+    private $entityManager;
+
     public function testFormPage()
     {
         $client = static::createClient();
@@ -71,4 +78,26 @@ class UserLoginControllerTest extends WebTestCase
         $crawler = $client->submit($form);
         $this->assertResponseRedirects('/account/logged');
     }
+
+
+    // public function testIfUserExistsInDb()
+    // {
+    //     $client = static::createClient();
+    //     $crawler = $client->request('GET', '/login');
+
+    //     $form = $crawler->filter('form')->form();
+
+    //     $this->entityManager = $client->getContainer()
+    //         ->get('doctrine')
+    //         ->getManager();
+
+    //     // echo $client->getResponse()->getContent();
+    //     // die();
+
+    //     $user = $this->entityManager
+    //     ->getRepository(User::class)
+    //     ->findOneBy(['email' => 'tintin.dupont@test.fr'])
+    //     ;
+
+    // }
 }

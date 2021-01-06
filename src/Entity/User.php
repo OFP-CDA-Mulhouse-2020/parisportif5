@@ -197,7 +197,7 @@ class User implements UserInterface
     private string $billingCountry;
 
     /**
-     * @ORM\Column(type="date")
+     * @ORM\Column(type="date_immutable")
      * @Assert\NotBlank(
      *     message="La date de naissance ne peut pas être vide",
      *     normalizer="trim",
