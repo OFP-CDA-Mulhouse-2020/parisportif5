@@ -80,24 +80,20 @@ class UserLoginControllerTest extends WebTestCase
     }
 
 
-    // public function testIfUserExistsInDb()
-    // {
-    //     $client = static::createClient();
-    //     $crawler = $client->request('GET', '/login');
+    public function testIfUserExistsInDb()
+    {
+        $client = static::createClient();
 
-    //     $form = $crawler->filter('form')->form();
+        $this->entityManager = $client->getContainer()
+            ->get('doctrine')
+            ->getManager();
 
-    //     $this->entityManager = $client->getContainer()
-    //         ->get('doctrine')
-    //         ->getManager();
-
-    //     // echo $client->getResponse()->getContent();
-    //     // die();
-
-    //     $user = $this->entityManager
-    //     ->getRepository(User::class)
-    //     ->findOneBy(['email' => 'tintin.dupont@test.fr'])
-    //     ;
-
-    // }
+        $user = $this->entityManager
+        ->getRepository(User::class)
+        ->findOneBy(['email' => 'tintin.dupont@test.fr'])
+        ;
+        // var_dump($user->getEmail());
+        // die();
+        $this->assertSame('tintin.dupont@test.fr', $user->getEmail());
+    }
 }
