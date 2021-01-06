@@ -96,4 +96,19 @@ class UserLoginControllerTest extends WebTestCase
         // die();
         $this->assertSame('tintin.dupont@test.fr', $user->getEmail());
     }
+
+    public function testIfUserDoesNotExistInDb()
+    {
+        $client = static::createClient();
+
+        $this->entityManager = $client->getContainer()
+            ->get('doctrine')
+            ->getManager();
+
+        $user = $this->entityManager
+        ->getRepository(User::class)
+        ->findOneBy(['email' => 'tintin.dupont@test.fr'])
+        ;
+        $this->assertNotSame('tonton.dupont@test.fr', $user->getEmail());
+    }
 }
