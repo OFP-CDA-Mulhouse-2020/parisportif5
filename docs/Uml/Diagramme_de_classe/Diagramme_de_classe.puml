@@ -96,6 +96,7 @@ skinparam linetype ortho
         -birthDate : DateTime
         -timeZoneSelected : string
         +{static} MIN_AGE_FOR_BETTING : int = 18
+        +{static} MAX_AGE_FOR_BETTING : int = 140
         +{static} STORED_TIME_ZONE : string = 'UTC'
         +{static} SELECT_CURRENCY_CODE : string = "EUR"
         +{static} SELECT_CURRENCY_SYMBOL : string = "€"

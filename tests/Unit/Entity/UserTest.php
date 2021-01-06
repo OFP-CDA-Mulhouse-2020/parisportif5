@@ -106,7 +106,8 @@ final class UserTest extends KernelTestCase
             ["x"],
             ["mr"],
             ["Madame"],
-            ["Monsieur"]
+            ["Monsieur"],
+            ["tlonguecivilité"]
         ];
     }
 
@@ -114,7 +115,7 @@ final class UserTest extends KernelTestCase
     {
         $civility1 = "";
         $civility2 = "    ";
-        $civility3 = "beaucouptroplonguecivilité";
+        $civility3 = "trlonguecivilité";
         $user = $this->createValidUser();
         $user->setCivility($civility1);
         $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile']);
@@ -184,8 +185,9 @@ final class UserTest extends KernelTestCase
     {
         return [
             ["gab#"],
+            ["a"],
             ["fa25"],
-            ["monsieurdontlenomestbientroplong"],
+            ["nomquiestbeaucouptroplongg"],
             [""],
             ["   "]
         ];
@@ -209,7 +211,8 @@ final class UserTest extends KernelTestCase
             ["Anaïs"],
             ["édouârd"],
             ["Jean-Marc de l'Atour"],
-            ["ggg"]
+            ["ab"],
+            ["nomquiestbeaucouptroplong"]
         ];
     }
 
@@ -230,7 +233,8 @@ final class UserTest extends KernelTestCase
             [""],
             ["  "],
             ["quedeslettresà"],
-            ["61235478"]
+            ["61235478"],
+            ["a2c456"]
         ];
     }
 
@@ -252,14 +256,15 @@ final class UserTest extends KernelTestCase
             ["&123547"],
             ["aveccaracterespeciaux123"],
             ["Aveccaracterespeciaux#"],
-            ["Test1deP@sswordcorrect"]
+            ["Test1deP@sswordcorrect"],
+            ["a2c4567"]
         ];
     }
 
     /**
-     * @dataProvider birthDateUnconformityProvider
+     * @dataProvider birthDateLegalAgeUnconformityProvider
      */
-    public function testBirthDateUnconformity(\DateTimeImmutable $birthDate): void
+    public function testBirthDateLegalAgeUnconformity(\DateTimeImmutable $birthDate): void
     {
         $user = $this->createValidUser();
         $user->setBirthDate($birthDate);
@@ -267,15 +272,39 @@ final class UserTest extends KernelTestCase
         $this->assertGreaterThanOrEqual(1, count($violations));
     }
 
-    public function birthDateUnconformityProvider(): array
+    public function birthDateLegalAgeUnconformityProvider(): array
     {
         $timezone = $this->createDefaultTimeZone();
-        $legalAgeBirthDate = (new \DateTimeImmutable('now', $timezone))->sub(new \DateInterval('P18Y'));
+        $age = 18;
+        $legalAgeBirthDate = (new \DateTimeImmutable('now', $timezone))->sub(new \DateInterval('P' . $age . 'Y'));
         return [
             [$legalAgeBirthDate->setTime(23, 59, 59, 999999)],
             [$legalAgeBirthDate->modify('+1 day')->setTime(23, 59, 59, 999999)],
             [$legalAgeBirthDate->modify('+1 day')->setTime(0, 0)],
             [$legalAgeBirthDate->modify('+2 year')]
+        ];
+    }
+
+    /**
+     * @dataProvider birthDateOverMaxUnconformityProvider
+     */
+    public function testBirthDateOverMaxUnconformity(\DateTimeImmutable $birthDate): void
+    {
+        $user = $this->createValidUser();
+        $user->setBirthDate($birthDate);
+        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile']);
+        $this->assertGreaterThanOrEqual(1, count($violations));
+    }
+
+    public function birthDateOverMaxUnconformityProvider(): array
+    {
+        $timezone = $this->createDefaultTimeZone();
+        $age = 140;
+        $maxAgeBirthDate = (new \DateTimeImmutable('now', $timezone))->sub(new \DateInterval('P' . $age . 'Y'));
+        return [
+            [$maxAgeBirthDate->modify('-1 day')->setTime(23, 59, 59, 999999)],
+            [$maxAgeBirthDate->modify('-2 day')->setTime(0, 0)],
+            [$maxAgeBirthDate->modify('-1 year')]
         ];
     }
 
@@ -708,7 +737,18 @@ final class UserTest extends KernelTestCase
         $className = get_class($user);
         $result = defined($className . '::MIN_AGE_FOR_BETTING');
         $this->assertTrue($result);
-        $this->assertIsInt($user::MIN_AGE_FOR_BETTING);
+        $this->assertIsInt(User::MIN_AGE_FOR_BETTING);
+        $this->assertSame(18, User::MIN_AGE_FOR_BETTING);
+    }
+
+    public function testConstantTypeMaxAgeForBetting(): void
+    {
+        $user = $this->createValidUser();
+        $className = get_class($user);
+        $result = defined($className . '::MAX_AGE_FOR_BETTING');
+        $this->assertTrue($result);
+        $this->assertIsInt(User::MAX_AGE_FOR_BETTING);
+        $this->assertSame(140, User::MAX_AGE_FOR_BETTING);
     }
 
     public function testConstantTypeDatabaseTimeZone(): void

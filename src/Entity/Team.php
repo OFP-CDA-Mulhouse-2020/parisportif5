@@ -29,11 +29,11 @@ class Team
      * )
      * @Assert\Regex(
      *     pattern="/^\p{L}((?<!\')\'|\p{L}?\s?(?!\s)(\.(?!\.))?|\-(?!\-)|\s(?!\s)|\d)+\S$/u",
-     *     message="Seules les chiffres, les lettres et les caractères suivants (., -, ') sont autorisés"
+     *     message="Seules les chiffres, les lettres, les tirets, les apostrophes et les points sont autorisés"
      * )
      * @Assert\Length(
      *     min=2,
-     *     minMessage="Le nom de l'équipe doit avoir plus de {{ limit }} caractères",
+     *     minMessage="Le nom de l'équipe doit avoir au moins {{ limit }} caractères",
      * )
      */
     private string $name;

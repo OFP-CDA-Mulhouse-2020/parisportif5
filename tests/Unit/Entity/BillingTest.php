@@ -74,7 +74,8 @@ final class BillingTest extends KernelTestCase
             ["Anaïs"],
             ["édouârd"],
             ["Jean-Marc de l'Atour"],
-            ["ggg"]
+            ["ab"],
+            ["nomquiestbeaucouptroplong"]
         ];
     }
 
@@ -95,7 +96,8 @@ final class BillingTest extends KernelTestCase
             ["Anaïs"],
             ["édouârd"],
             ["Jean-Marc de l'Atour"],
-            ["ggg"]
+            ["ab"],
+            ["nomquiestbeaucouptroplong"]
         ];
     }
 
@@ -117,15 +119,15 @@ final class BillingTest extends KernelTestCase
             ["fabien25"],
             [""],
             ["    "],
-            ["g"],
-            ["monsieurdontlenomestbientroplong"]
+            ["a"],
+            ["nomquiestbeaucouptroplongg"]
         ];
     }
 
     /**
      * @dataProvider firstNameUncompatibleProvider
      */
-    public function testFirstNameUncompatibleException(string $name)
+    public function testFirstNameUncompatible(string $name)
     {
         $billing = $this->createValidBilling();
         $billing->setFirstName($name);
@@ -140,8 +142,8 @@ final class BillingTest extends KernelTestCase
             ["fabien25"],
             [""],
             ["    "],
-            ["g"],
-            ["monsieurdontleprénomestbientroplong"]
+            ["a"],
+            ["pnomquiestbeaucouptroplong"]
         ];
     }
 

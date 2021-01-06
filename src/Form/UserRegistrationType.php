@@ -24,21 +24,23 @@ class UserRegistrationType extends AbstractType
             ->add('email', RepeatedType::class, [
                 'type' => EmailType::class,
                 'required' => true,
-                'invalid_message' => "Veuillez saisir une adresse email valide",
+                'trim' => true,
+                'invalid_message' => "Veuillez saisir une adresse email valide.",
                 'first_options'  => ['label' => "Email"],
                 'second_options' => ['label' => "Confirmer l'email"]
             ])
             ->add('password', RepeatedType::class, [
                 'type' => PasswordType::class,
                 'required' => true,
-                'invalid_message' => "Veuillez saisir un mot de passe valide",
+                'trim' => false,
+                'invalid_message' => "Veuillez saisir un mot de passe valide.",
                 'first_options'  => ['label' => "Mot de passe"],
                 'second_options' => ['label' => "Confirmer le mot de passe"]
             ])
             ->add('birthDate', BirthdayType::class, [
                 'required' => true,
                 'label' => "Date de naissance",
-                'invalid_message' => "Veuillez sélectionner une date de naissance",
+                'invalid_message' => "Veuillez sélectionner une date de naissance.",
                 'input' => 'datetime_immutable',
                 'model_timezone' => User::STORED_TIME_ZONE,
                 'widget' => 'single_text'
@@ -46,32 +48,37 @@ class UserRegistrationType extends AbstractType
             ->add('firstName', TextType::class, [
                 'required' => true,
                 'label' => "Prénom",
-                'invalid_message' => "Veuillez saisir un prénom"
+                'trim' => true,
+                'invalid_message' => "Veuillez saisir un prénom."
             ])
             ->add('lastName', TextType::class, [
                 'required' => true,
                 'label' => "Nom",
-                'invalid_message' => "Veuillez saisir un nom de famille"
+                'trim' => true,
+                'invalid_message' => "Veuillez saisir un nom de famille."
             ])
             ->add('billingAddress', TextType::class, [
                 'required' => true,
                 'label' => "Adresse de facturation",
-                'invalid_message' => "Veuillez saisir une adresse de facturation"
+                'trim' => true,
+                'invalid_message' => "Veuillez saisir une adresse de facturation."
             ])
             ->add('billingCity', TextType::class, [
                 'required' => true,
                 'label' => "Ville de facturation",
-                'invalid_message' => "Veuillez saisir une ville de facturation"
+                'trim' => true,
+                'invalid_message' => "Veuillez saisir une ville de facturation."
             ])
             ->add('billingPostcode', TextType::class, [
                 'required' => true,
                 'label' => "Code Postal de facturation",
-                'invalid_message' => "Veuillez saisir un code postal de facturation"
+                'trim' => true,
+                'invalid_message' => "Veuillez saisir un code postal de facturation."
             ])
             ->add('billingCountry', CountryType::class, [
                 'required' => true,
                 'label' => "Pays de facturation",
-                'invalid_message' => "Veuillez saisir un pays de facturation",
+                'invalid_message' => "Veuillez saisir un pays de facturation.",
                 'data' => 'FR'
             ])
             ->add('save', SubmitType::class, [
@@ -80,65 +87,12 @@ class UserRegistrationType extends AbstractType
             ])
         ;
         /*$builder
-            ->add('email', RepeatedType::class, [
-                'type' => EmailType::class,
-                'required' => true,
-                'invalid_message' => "Veuillez saisir une adresse email valide",
-                'first_options'  => ['label' => "Email"],
-                'second_options' => ['label' => "Confirmer l'email"]
-            ])
-            ->add('password', RepeatedType::class, [
-                'type' => PasswordType::class,
-                'required' => true,
-                'invalid_message' => "Veuillez saisir un mot de passe valide",
-                'first_options'  => ['label' => "Mot de passe"],
-                'second_options' => ['label' => "Confirmer le mot de passe"]
-            ])
-            ->add('birthDate', BirthdayType::class, [
-                'required' => true,
-                'label' => "Date de naissance",
-                'invalid_message' => "Veuillez sélectionner une date de naissance",
-                'input' => 'datetime_immutable',
-                'model_timezone' => User::STORED_TIME_ZONE,
-                'widget' => 'single_text'
-            ])
             ->add('step1Cancel', SubmitType::class, [
                 'label' => "Annuler",
                 'validation_groups' => false
             ])
             ->add('step1Validation', SubmitType::class, [
                 'label' => "Suivant"
-            ])
-            ->add('firstName', TextType::class, [
-                'required' => true,
-                'label' => "Prénom",
-                'invalid_message' => "Veuillez saisir un prénom"
-            ])
-            ->add('lastName', TextType::class, [
-                'required' => true,
-                'label' => "Nom",
-                'invalid_message' => "Veuillez saisir un nom de famille"
-            ])
-            ->add('billingAddress', TextType::class, [
-                'required' => true,
-                'label' => "Adresse de facturation",
-                'invalid_message' => "Veuillez saisir une adresse de facturation"
-            ])
-            ->add('billingCity', TextType::class, [
-                'required' => true,
-                'label' => "Ville de facturation",
-                'invalid_message' => "Veuillez saisir une ville de facturation"
-            ])
-            ->add('billingPostcode', TextType::class, [
-                'required' => true,
-                'label' => "Code Postal de facturation",
-                'invalid_message' => "Veuillez saisir un code postal de facturation"
-            ])
-            ->add('billingCountry', CountryType::class, [
-                'required' => true,
-                'label' => "Pays de facturation",
-                'invalid_message' => "Veuillez saisir un pays de facturation",
-                'data' => 'FR'
             ])
             ->add('acceptTerms', CheckboxType::class, [
                 'label' => "J'accepte les conditions générales d'utilisation",
