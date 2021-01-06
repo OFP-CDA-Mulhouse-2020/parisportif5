@@ -2,7 +2,9 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Language;
 use App\Entity\User;
+use App\Entity\Wallet;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
@@ -30,12 +32,38 @@ class UserFixtures extends Fixture
                 'email' => "tintin.dupont@test.fr",
                 'password' => "@Hadock5",
                 'birthdate' => "2000-10-20",
-                'timezone' => "Europe/Paris"
+                'timezone' => "Europe/Paris",
+                'wallet' => 0,
+                'language' => 'français'
+            ],
+            [
+                'civility' => "Monsieur",
+                'firstname' => "Toto",
+                'lastname' => "Dupontel",
+                'address' => "3 avenue Hergé",
+                'city' => "COLMAR",
+                'postcode' => "68000",
+                'country' => "FR",
+                'email' => "toto.dupontel@test.fr",
+                'password' => "@Hadock123",
+                'birthdate' => "2000-11-21",
+                'timezone' => "Europe/Paris",
+                'wallet' => 0,
+                'language' => 'français'
             ]
         ];
         $count = count($testData);
         for ($i = 0; $i < $count; $i++) {
             $user = new User();
+            $userWallet = new Wallet();
+            $userLanguage = new Language();
+            $userLanguage
+                ->setName('français')
+                ->setCountry('france')
+                ->setCode('FR')
+                ->setDateFormat('dd-mm-yyyy')
+                ->setTimeFormat('hh-mm-ss');
+
             $user
                 ->setCivility($testData[$i]['civility'])
                 ->setFirstName($testData[$i]['firstname'])
@@ -50,7 +78,9 @@ class UserFixtures extends Fixture
                 ->setPassword($this->passwordEncoder->encodePassword(
                     $user,
                     $testData[$i]['password']
-                ));
+                ))
+                ->setWallet($userWallet->setAmount(0))
+                ->setLanguage($userLanguage);
             $manager->persist($user);
         }
         $manager->flush();

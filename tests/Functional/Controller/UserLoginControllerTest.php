@@ -4,9 +4,16 @@ namespace App\Tests\Functional\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DomCrawler\Crawler;
+use App\Entity\User;
 
 class UserLoginControllerTest extends WebTestCase
 {
+
+    /**
+     * @var \Doctrine\ORM\EntityManager
+     */
+    private $entityManager;
+
     public function testFormPage()
     {
         $client = static::createClient();
@@ -70,5 +77,38 @@ class UserLoginControllerTest extends WebTestCase
 
         $crawler = $client->submit($form);
         $this->assertResponseRedirects('/account/logged');
+    }
+
+
+    public function testIfUserExistsInDb()
+    {
+        $client = static::createClient();
+
+        $this->entityManager = $client->getContainer()
+            ->get('doctrine')
+            ->getManager();
+
+        $user = $this->entityManager
+        ->getRepository(User::class)
+        ->findOneBy(['email' => 'tintin.dupont@test.fr'])
+        ;
+        // var_dump($user->getEmail());
+        // die();
+        $this->assertSame('tintin.dupont@test.fr', $user->getEmail());
+    }
+
+    public function testIfUserDoesNotExistInDb()
+    {
+        $client = static::createClient();
+
+        $this->entityManager = $client->getContainer()
+            ->get('doctrine')
+            ->getManager();
+
+        $user = $this->entityManager
+        ->getRepository(User::class)
+        ->findOneBy(['email' => 'tintin.dupont@test.fr'])
+        ;
+        $this->assertNotSame('tonton.dupont@test.fr', $user->getEmail());
     }
 }
