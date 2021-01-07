@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\UserLoginType;
+use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,7 +15,7 @@ class UserLoginController extends AbstractController //dossier
     /**
      * @Route("/login", name="Connexion")
      */
-    public function renderDummyForm(Request $request): Response
+    public function renderDummyForm(Request $request, UserRepository $repo): Response
     {
         $user = new User();
         $user->setEmail('test123@mail.com');
@@ -23,7 +24,12 @@ class UserLoginController extends AbstractController //dossier
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            return $this->redirectToRoute('userloggedin');
+            // var_dump($user);
+            // die();
+            $test = $repo->findOneBy(['email' => $user->getEmail()]);
+           // if (!is_null($test)) {
+                return $this->redirectToRoute('userloggedin');
+            //}
         } else if ($form->isSubmitted() && !($form->isValid())) {
             return $this->render('login_form/loginlink.html.twig', [
                 'site_title' => 'Paris Sportif',

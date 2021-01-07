@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20210105140534 extends AbstractMigration
+final class Version20210107152330 extends AbstractMigration
 {
     public function getDescription() : string
     {
@@ -36,6 +36,7 @@ final class Version20210105140534 extends AbstractMigration
         $this->addSql('CREATE TABLE run_result (run_id INT NOT NULL, result_id INT NOT NULL, INDEX IDX_1956F02E84E3FEC4 (run_id), INDEX IDX_1956F02E7A7B643 (result_id), PRIMARY KEY(run_id, result_id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE sport (id INT AUTO_INCREMENT NOT NULL, name VARCHAR(255) NOT NULL, max_members_by_team INT DEFAULT NULL, country VARCHAR(255) NOT NULL, run_type VARCHAR(255) NOT NULL, individual_type TINYINT(1) NOT NULL, collective_type TINYINT(1) NOT NULL, max_teams_by_run INT DEFAULT NULL, min_members_by_team INT NOT NULL, min_teams_by_run INT NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE team (id INT AUTO_INCREMENT NOT NULL, sport_id INT NOT NULL, name VARCHAR(255) NOT NULL, country VARCHAR(255) NOT NULL, INDEX IDX_C4E0A61FAC78BCF8 (sport_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE user (id INT AUTO_INCREMENT NOT NULL, wallet_id INT NOT NULL, language_id INT NOT NULL, email VARCHAR(180) NOT NULL, roles JSON NOT NULL, password VARCHAR(255) NOT NULL, civility VARCHAR(60) DEFAULT NULL, first_name VARCHAR(255) DEFAULT NULL, last_name VARCHAR(255) DEFAULT NULL, billing_address VARCHAR(255) DEFAULT NULL, billing_city VARCHAR(255) DEFAULT NULL, billing_postcode VARCHAR(255) DEFAULT NULL, billing_country VARCHAR(255) DEFAULT NULL, birth_date DATE NOT NULL COMMENT \'(DC2Type:date_immutable)\', time_zone_selected VARCHAR(255) DEFAULT NULL, deleted_status TINYINT(1) NOT NULL, deleted_date DATETIME DEFAULT NULL COMMENT \'(DC2Type:datetime_immutable)\', suspended_status TINYINT(1) NOT NULL, suspended_date DATETIME DEFAULT NULL COMMENT \'(DC2Type:datetime_immutable)\', activated_status TINYINT(1) NOT NULL, activated_date DATETIME DEFAULT NULL COMMENT \'(DC2Type:datetime_immutable)\', UNIQUE INDEX UNIQ_8D93D649E7927C74 (email), UNIQUE INDEX UNIQ_8D93D649712520F3 (wallet_id), UNIQUE INDEX UNIQ_8D93D64982F1BAF4 (language_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE wallet (id INT AUTO_INCREMENT NOT NULL, amount INT NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('ALTER TABLE bet ADD CONSTRAINT FK_FBF0EC9BA76ED395 FOREIGN KEY (user_id) REFERENCES user (id)');
         $this->addSql('ALTER TABLE bet ADD CONSTRAINT FK_FBF0EC9B7B39D312 FOREIGN KEY (competition_id) REFERENCES competition (id)');
@@ -63,11 +64,8 @@ final class Version20210105140534 extends AbstractMigration
         $this->addSql('ALTER TABLE run_result ADD CONSTRAINT FK_1956F02E84E3FEC4 FOREIGN KEY (run_id) REFERENCES run (id) ON DELETE CASCADE');
         $this->addSql('ALTER TABLE run_result ADD CONSTRAINT FK_1956F02E7A7B643 FOREIGN KEY (result_id) REFERENCES result (id) ON DELETE CASCADE');
         $this->addSql('ALTER TABLE team ADD CONSTRAINT FK_C4E0A61FAC78BCF8 FOREIGN KEY (sport_id) REFERENCES sport (id)');
-        $this->addSql('ALTER TABLE user ADD wallet_id INT NOT NULL, ADD language_id INT NOT NULL, CHANGE civility civility VARCHAR(60) DEFAULT NULL, CHANGE deleted_date deleted_date DATETIME DEFAULT NULL COMMENT \'(DC2Type:datetime_immutable)\', CHANGE suspended_date suspended_date DATETIME DEFAULT NULL COMMENT \'(DC2Type:datetime_immutable)\', CHANGE activated_date activated_date DATETIME DEFAULT NULL COMMENT \'(DC2Type:datetime_immutable)\'');
         $this->addSql('ALTER TABLE user ADD CONSTRAINT FK_8D93D649712520F3 FOREIGN KEY (wallet_id) REFERENCES wallet (id)');
         $this->addSql('ALTER TABLE user ADD CONSTRAINT FK_8D93D64982F1BAF4 FOREIGN KEY (language_id) REFERENCES language (id)');
-        $this->addSql('CREATE UNIQUE INDEX UNIQ_8D93D649712520F3 ON user (wallet_id)');
-        $this->addSql('CREATE UNIQUE INDEX UNIQ_8D93D64982F1BAF4 ON user (language_id)');
     }
 
     public function down(Schema $schema) : void
@@ -98,6 +96,8 @@ final class Version20210105140534 extends AbstractMigration
         $this->addSql('ALTER TABLE `member` DROP FOREIGN KEY FK_70E4FA78296CD8AE');
         $this->addSql('ALTER TABLE result DROP FOREIGN KEY FK_136AC113296CD8AE');
         $this->addSql('ALTER TABLE run_team DROP FOREIGN KEY FK_581EF93B296CD8AE');
+        $this->addSql('ALTER TABLE bet DROP FOREIGN KEY FK_FBF0EC9BA76ED395');
+        $this->addSql('ALTER TABLE billing DROP FOREIGN KEY FK_EC224CAAA76ED395');
         $this->addSql('ALTER TABLE user DROP FOREIGN KEY FK_8D93D649712520F3');
         $this->addSql('DROP TABLE bet');
         $this->addSql('DROP TABLE bet_category');
@@ -115,9 +115,7 @@ final class Version20210105140534 extends AbstractMigration
         $this->addSql('DROP TABLE run_result');
         $this->addSql('DROP TABLE sport');
         $this->addSql('DROP TABLE team');
+        $this->addSql('DROP TABLE user');
         $this->addSql('DROP TABLE wallet');
-        $this->addSql('DROP INDEX UNIQ_8D93D649712520F3 ON user');
-        $this->addSql('DROP INDEX UNIQ_8D93D64982F1BAF4 ON user');
-        $this->addSql('ALTER TABLE user DROP wallet_id, DROP language_id, CHANGE civility civility VARCHAR(255) CHARACTER SET utf8mb4 DEFAULT NULL COLLATE `utf8mb4_unicode_ci`, CHANGE deleted_date deleted_date DATETIME DEFAULT NULL, CHANGE suspended_date suspended_date DATETIME DEFAULT NULL, CHANGE activated_date activated_date DATETIME DEFAULT NULL');
     }
 }
