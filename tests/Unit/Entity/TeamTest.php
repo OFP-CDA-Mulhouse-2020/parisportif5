@@ -86,7 +86,8 @@ final class TeamTest extends KernelTestCase
             ["Székesfehérvár Futball"],
             ["Cartagena 1444"],
             ["A.E.K"],
-            ["OLA"]
+            ["OLA"],
+            ["OL"]
         ];
     }
 

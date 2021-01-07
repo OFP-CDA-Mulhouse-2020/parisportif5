@@ -28,9 +28,9 @@ class Billing implements FundStorageInterface
      * )
      * @Assert\Length(
      *     min=2,
-     *     max=26,
-     *     minMessage="Votre prénom doit avoir plus de {{ limit }} caractères",
-     *     maxMessage="Votre prénom doit avoir moins de {{ limit }} caractères"
+     *     max=25,
+     *     minMessage="Votre prénom doit avoir au moins {{ limit }} caractères.",
+     *     maxMessage="Votre prénom ne doit pas avoir plus de {{ limit }} caractères."
      * )
      * @Assert\Regex(
      *     pattern="/^[\p{L}\-\'\s]+$/u",
@@ -47,9 +47,9 @@ class Billing implements FundStorageInterface
      * )
      * @Assert\Length(
      *     min=2,
-     *     max=26,
-     *     minMessage="Votre nom de famille doit avoir plus de {{ limit }} caractères",
-     *     maxMessage="Votre nom de famille doit avoir moins de {{ limit }} caractères"
+     *     max=25,
+     *     minMessage="Votre nom de famille doit avoir au moins {{ limit }} caractères.",
+     *     maxMessage="Votre nom de famille ne doit pas avoir plus de {{ limit }} caractères."
      * )
      * @Assert\Regex(
      *     pattern="/^[\p{L}\-\'\s]+$/u",
