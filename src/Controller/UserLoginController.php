@@ -24,10 +24,13 @@ class UserLoginController extends AbstractController //dossier
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             return $this->redirectToRoute('userloggedin');
+        } else if ($form->isSubmitted() && !($form->isValid())) {
+            return $this->render('login_form/loginlink.html.twig', [
+                'site_title' => 'Paris Sportif',
+                'page_title' => 'Connexion',
+                'form' => $form->createView()
+                ]);
         }
-        // else {
-        //     throw new InvalidCredentialsException("Les identifiants sont incorrects");
-        // }
 
         return $this->render('login_form/index.html.twig', [
             'site_title' => 'Paris Sportif',

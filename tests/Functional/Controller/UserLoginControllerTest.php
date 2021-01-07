@@ -100,6 +100,11 @@ class UserLoginControllerTest extends WebTestCase
     public function testIfUserDoesNotExistInDb()
     {
         $client = static::createClient();
+        $crawler = $client->request('GET', '/login');
+
+        $form = $crawler->filter('form')->form();
+        $form['user_login[email]'] = 'tonton.dupont';
+        $form['user_login[password]'] = 'Tssssss0';
 
         $this->entityManager = $client->getContainer()
             ->get('doctrine')
@@ -110,5 +115,8 @@ class UserLoginControllerTest extends WebTestCase
         ->findOneBy(['email' => 'tintin.dupont@test.fr'])
         ;
         $this->assertNotSame('tonton.dupont@test.fr', $user->getEmail());
+
+        $crawler = $client->submit($form);
+        $this->assertSelectorTextContains('li', 'n\'est pas valide');
     }
 }
