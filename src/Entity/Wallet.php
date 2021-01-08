@@ -61,9 +61,9 @@ class Wallet implements FundStorageInterface
         $this->user = $user;
 
         // set the owning side of the relation if necessary
-        if ($user->getWallet() !== $this) {
+        /*if ($user->getWallet() !== $this) {
             $user->setWallet($this);
-        }
+        }*/
 
         return $this;
     }

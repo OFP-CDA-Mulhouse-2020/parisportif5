@@ -59,7 +59,8 @@ final class UserTest extends KernelTestCase
         string $country = 'pays',
         string $code = 'fr_FR',
         string $dateFormat = 'd/m/Y',
-        string $timeFormat = 'H:i:s'
+        string $timeFormat = 'H:i:s',
+        string $timeZone = 'Europe/Paris'
     ): Language {
         $language = new Language();
         $language
@@ -67,7 +68,8 @@ final class UserTest extends KernelTestCase
             ->setCountry($country)
             ->setCode($code)
             ->setDateFormat($dateFormat)
-            ->setTimeFormat($timeFormat);
+            ->setTimeFormat($timeFormat)
+            ->setTimeZone($timeZone);
         return $language;
     }
 

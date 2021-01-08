@@ -25,11 +25,12 @@ final class LanguageTest extends KernelTestCase
     {
         $language = new Language();
         $language
-            ->setName('name')
+            ->setName('français France')
             ->setCountry('pays')
             ->setCode('fr_FR')
             ->setDateFormat('d/m/Y')
-            ->setTimeFormat('H:i:s');
+            ->setTimeFormat('H:i:s')
+            ->setTimeZone('Europe/Paris');
         return $language;
     }
 
@@ -208,7 +209,9 @@ final class LanguageTest extends KernelTestCase
             ["m-d-y"],
             ["le N F Y"],
             [""],
-            ["   "]
+            ["   "],
+            ["dd-mm-yyyy"],
+            ["dd/mm/Y"],
         ];
     }
 
@@ -262,7 +265,51 @@ final class LanguageTest extends KernelTestCase
             ["H:i:s P"],
             ["H"],
             [""],
-            ["   "]
+            ["   "],
+            ["hh:ii:ss"],
+            ["hh-mm-ss"]
+        ];
+    }
+
+    /**
+     * @dataProvider timeZoneUnconformityProvider
+     */
+    public function testTimeZoneUnconformity(string $timeZone): void
+    {
+        $language = $this->createValidLanguage();
+        $language->setTimeZone($timeZone);
+        $violations = $this->validator->validate($language);
+        $this->assertGreaterThanOrEqual(1, count($violations));
+    }
+
+    public function timeZoneUnconformityProvider(): array
+    {
+        return [
+            ['Antartica/Inconnu'],
+            ['Europe_Paris'],
+            ['europe/Paris'],
+            [''],
+            ['   ']
+        ];
+    }
+
+    /**
+     * @dataProvider timeZoneConformityProvider
+     */
+    public function testTimeZoneConformity(string $timeZone): void
+    {
+        $language = $this->createValidLanguage();
+        $language->setTimeZone($timeZone);
+        $violations = $this->validator->validate($language);
+        $this->assertCount(0, $violations);
+    }
+
+    public function timeZoneConformityProvider(): array
+    {
+        return [
+            ['Antarctica/McMurdo'],
+            ['Europe/Paris'],
+            ['Africa/Johannesburg']
         ];
     }
 
