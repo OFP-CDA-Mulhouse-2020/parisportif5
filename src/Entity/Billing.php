@@ -6,10 +6,16 @@ namespace App\Entity;
 
 use App\Repository\BillingRepository;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=BillingRepository::class)
+ * @UniqueEntity(
+ *     fields={"firstName", "lastName", "address", "city", "postcode", "country", "invoiceNumber", "orderNumber"},
+ *     errorPath="invoiceNumber",
+ *     message="Cette facture est déjà enregistrée."
+ * )
  */
 class Billing implements FundStorageInterface
 {

@@ -8,10 +8,16 @@ use App\Repository\RunRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=RunRepository::class)
+ * @UniqueEntity(
+ *     fields={"name", "event", "startDate", "endDate", "competition", "location"},
+ *     errorPath="name",
+ *     message="Cette rencontre ou course est déjà enregistrée."
+ * )
  */
 class Run
 {
@@ -66,7 +72,7 @@ class Run
     private Competition $competition;
 
     /**
-     * @ORM\OneToOne(targetEntity=Location::class, inversedBy="run", cascade={"persist", "remove"})
+     * @ORM\ManyToOne(targetEntity=Location::class)
      * @ORM\JoinColumn(nullable=false)
      * @Assert\Valid
      */

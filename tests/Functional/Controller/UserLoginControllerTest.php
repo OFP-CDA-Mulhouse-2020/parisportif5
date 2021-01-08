@@ -89,31 +89,38 @@ class UserLoginControllerTest extends WebTestCase
             ->getManager();
 
         $user = $this->entityManager
-        ->getRepository(User::class)
-        ->findOneBy(['email' => 'tintin.dupont@test.fr'])
-        ;
+            ->getRepository(User::class)
+            ->findOneBy(['email' => 'tintin.dupont@test.fr']);
         // var_dump($user->getEmail());
         // die();
-        $this->assertSame('tintin.dupont@test.fr', $user->getEmail());
+        //$this->assertSame('tintin.dupont@test.fr', $user->getEmail());
+        $this->assertNotNull($user);
     }
 
-    // public function testIfUserDoesNotExistInDb()
-    // {
-    //     $client = static::createClient();
-    //     $crawler = $client->request('GET', '/login');
+    public function testIfUserDoesNotExistInDb()
+    {
+        $client = static::createClient();
 
-    //     $form = $crawler->filter('form')->form();
-    //     $form['user_login[email]'] = 'tonton.dupont@mail.com';
-    //     $form['user_login[password]'] = 'Tssssss0';
+        $this->entityManager = $client->getContainer()
+            ->get('doctrine')
+            ->getManager();
 
-    //     $this->entityManager = $client->getContainer()
-    //         ->get('doctrine')
-    //         ->getManager();
+        $user = $this->entityManager
+            ->getRepository(User::class)
+            ->findOneBy(['email' => 'dodo.dupont@test.fr']);
+        //$this->assertNotSame('tonton.dupont@test.fr', $user->getEmail());
+        $this->assertNull($user);
+    }
 
+    /*public function testLoginMessageIfUserDoesNotExistInDb()
+    {
+         $client = static::createClient();
+         $crawler = $client->request('GET', '/login');
 
-    //     //$this->assertNull($user);
-
-    //     $crawler = $client->submit($form);
-    //     //$this->assertSelectorTextContains('li', 'n\'est pas valide');
-    // }
+         $form = $crawler->filter('form')->form();
+         $form['user_login[email]'] = 'tonton.dupont@mail.com';
+         $form['user_login[password]'] = 'Tssssss0';
+         $crawler = $client->submit($form);
+         $this->assertSelectorTextContains('li', 'n\'est pas valide');
+    }*/
 }

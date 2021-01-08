@@ -5,11 +5,16 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use App\Repository\MemberRoleRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=MemberRoleRepository::class)
+ * @UniqueEntity(
+ *     fields="name",
+ *     message="Ce rôle de membre est déjà enregistré."
+ * )
  */
 class MemberRole
 {

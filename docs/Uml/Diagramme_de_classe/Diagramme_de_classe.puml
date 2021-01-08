@@ -17,19 +17,26 @@ skinparam linetype ortho
     'Une compétition a plusieurs rencontre ou course
     Competition "1" o-- "0..*" Run
     'Une rencontre ou une course a un lieu
-    Run "1" -- "1" Location
+    Run "0..*" --> "1" Location
     'Une rencontre ou une course a plusieurs équipes
     Run "1" o--> "0..*" Team
     'Une équipe a plusieurs membre
     Team "1" *-- "1..*" Member
     'Une compétition a un sport
     Sport "1" <-- "0..*" Competition
+    'Une rencontre ou une course a un résultat
     Result "0..*" -- "0..1" Run
+    'Un résultat concerne une équipe
     Result "0..*" --> "0..1" Team
+    'Un résultat concerne un membre ou pas
     Result "0..*" --> "0..1" Member
+    'Une compétition a un résultat
     Result "0..1" -- "0..1" Competition
+    'Un résultat a une catégorie de paris
     BetCategory "1" <-- "0..*" Result
+    'Une compétition a une liste de catégorie de paris
     BetCategory "1..*" <-- "0..*" Competition
+    'Une équipe a un sport
     Sport "1" <-- "0..*" Team
     'Un membre a un rôle (fonction) tel que pilote, joueur
     MemberRole "1" <-- "0..*" Member
@@ -121,6 +128,7 @@ skinparam linetype ortho
         -code : string
         -dateFormat : string
         -timeFormat : string
+        -timeZone : string
         +isValidDateTimeFormat() : bool
         +getDateTimeFormat() : string|null
     }

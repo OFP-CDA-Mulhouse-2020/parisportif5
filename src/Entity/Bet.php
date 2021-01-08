@@ -6,10 +6,16 @@ namespace App\Entity;
 
 use App\Repository\BetRepository;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=BetRepository::class)
+ * @UniqueEntity(
+ *     fields={"user", "competition", "run", "team", "teamMember", "betCategory"},
+ *     errorPath="betCategory",
+ *     message="Ce paris est déjà enregistré."
+ * )
  */
 class Bet implements FundStorageInterface
 {

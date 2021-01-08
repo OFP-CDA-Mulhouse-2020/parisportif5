@@ -6,10 +6,15 @@ namespace App\Entity;
 
 use App\Repository\LanguageRepository;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=LanguageRepository::class)
+ * @UniqueEntity(
+ *     fields="code",
+ *     message="Cette langue est déjà enregistré."
+ * )
  */
 class Language
 {
@@ -87,6 +92,18 @@ class Language
      */
     private string $timeFormat;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(
+     *     message="Le fuseau horaire ne peut pas être vide.",
+     *     normalizer="trim"
+     * )
+     * @Assert\Timezone(
+     *     message="Le fuseau horaire {{ value }} n'est pas valide."
+     * )
+     */
+    private string $capitalTimeZone;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -144,6 +161,17 @@ class Language
     public function setTimeFormat(string $timeFormat): self
     {
         $this->timeFormat = $timeFormat;
+        return $this;
+    }
+
+    public function getCapitalTimeZone(): ?string
+    {
+        return $this->capitalTimeZone;
+    }
+
+    public function setCapitalTimeZone(string $capitalTimeZone): self
+    {
+        $this->capitalTimeZone = $capitalTimeZone;
         return $this;
     }
 

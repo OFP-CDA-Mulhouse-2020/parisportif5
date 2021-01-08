@@ -10,12 +10,10 @@ use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\DomCrawler\Form;
 use Symfony\Component\HttpKernel\KernelInterface;
 
-//use Symfony\Component\HttpKernel\KernelInterface;
-
 /**
- * @covers \UserController
+ * @covers \UserRegistrationController
  */
-final class UserControllerTest extends WebTestCase
+final class UserRegistrationControllerTest extends WebTestCase
 {
     private function initializeKernel(): KernelInterface
     {
@@ -76,7 +74,7 @@ final class UserControllerTest extends WebTestCase
         return $form;
     }
 
-    // Tests d'intégrations
+    // Tests fonctionnels d'intégrations
 
     public function testRegistrationFormPageValidResponseCode(): void
     {
@@ -172,7 +170,7 @@ final class UserControllerTest extends WebTestCase
         );
     }
 
-    /*public function testRegistrationFormValidation(): void
+    public function testDatabasePersistence(): void
     {
         $client = static::createClient();
         $crawler = $client->request('GET', '/inscription');
@@ -181,35 +179,17 @@ final class UserControllerTest extends WebTestCase
         $form = $this->getRegistrationForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
-        // asserts
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseRedirects('/main');
-        //$client->followRedirect();
-        //echo $client->getResponse()->getContent();
-    }*/
-
-    /*public function testDatabasePersist(): void
-    {
-        $newUser = $this->createValidUser();
+        // exist in bdd
         $kernel = $this->initializeKernel();
         $entityManager = $kernel->getContainer()
             ->get('doctrine')
             ->getManager();
-        $entityManager->persist($newUser);
-        $entityManager->flush();
-        $savedUser = $entityManager
+        $user = $entityManager
             ->getRepository(User::class)
-            ->findOneBy(['email' => 'dupond.t@orange.fr']);
+            ->findOneBy(['email' => $formData['email1']]);
         // asserts
-        $this->assertEquals($newUser, $savedUser);
-    }*/
-
-    /*//echo $client->getResponse()->getContent();
-    $nodesText = $crawler->filter('form[name=user_registration] li')->extract(['_text']);
-    //var_dump($nodesText);
-    $this->assertContains("Pour la sécurité de votre mot de passe, vous ne pouvez pas mettre uniquement des chiffres",
-        $nodesText);
-    $this->assertContains("Votre mot de passe doit avoir plus de 7 caractères", $nodesText);*/
+        $this->assertNotNull($user);
+    }
 
     public function testRegistrationFormPasswordUnderMin(): void
     {
@@ -692,6 +672,50 @@ final class UserControllerTest extends WebTestCase
         $this->assertSelectorTextContains(
             'form[name=user_registration]',
             "Les caractères spéciaux ne sont pas autorisés pour le code postal."
+        );
+    }
+
+    // Tests fonctionnels des comportements
+
+    public function testRegistrationFormValidationOk(): void
+    {
+        $client = static::createClient();
+        $crawler = $client->request('GET', '/inscription');
+        $formData = $this->getValidUserData();
+        $email = 'nouveau@gmail.com';
+        $formData['email1'] = $email;
+        $formData['email2'] = $email;
+        // set some values
+        $form = $this->getRegistrationForm($crawler, $formData);
+        // submit the form
+        $crawler = $client->submit($form);
+        // asserts
+        $this->assertResponseStatusCodeSame(302);
+        $this->assertResponseRedirects('/main');
+        $crawler = $client->followRedirect();
+        $this->assertSelectorTextContains(
+            'div.flash-success',
+            "Votre compte a été créé ! Son activation sera effective d'ici 24 heures."
+        );
+    }
+
+    public function testRegistrationFormValidationExistAlready(): void
+    {
+        $client = static::createClient();
+        $crawler = $client->request('GET', '/inscription');
+        $formData = $this->getValidUserData();
+        $email = 'tintin.dupont@test.fr';
+        $formData['email1'] = $email;
+        $formData['email2'] = $email;
+        // set some values
+        $form = $this->getRegistrationForm($crawler, $formData);
+        // submit the form
+        $crawler = $client->submit($form);
+        // asserts
+        $this->assertResponseStatusCodeSame(200);
+        $this->assertSelectorTextContains(
+            'form[name=user_registration]',
+            "Inscription impossible avec cette adresse email ! Veuillez en donner une autre pour vous inscrire."
         );
     }
 }

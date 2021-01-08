@@ -7,12 +7,18 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
+ * @UniqueEntity(
+ *    fields="email",
+ *    message="Inscription impossible avec cette adresse email ! Veuillez en donner une autre pour vous inscrire.",
+ *    groups={"registration", "profile"}
+ * )
  */
 class User implements UserInterface
 {
@@ -216,14 +222,14 @@ class User implements UserInterface
     private \DateTimeImmutable $birthDate;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(
-     *     message="Le fuseau horaire ne peut pas être vide.",
+     *     message="Le fuseau horaire sélectionné ne peut pas être vide.",
      *     normalizer="trim",
      *     groups={"profile"}
      * )
      * @Assert\Timezone(
-     *     message="Le fuseau horaire {{ value }} n'est pas valide.",
+     *     message="Le fuseau horaire sélectionné {{ value }} n'est pas valide.",
      *     groups={"profile"}
      * )
      */
