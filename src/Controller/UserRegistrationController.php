@@ -10,19 +10,38 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
-class UserController extends AbstractController
+class UserRegistrationController extends AbstractController
 {
+    private UserPasswordEncoderInterface $passwordEncoder;
+
+    public function __construct(UserPasswordEncoderInterface $passwordEncoder)
+    {
+        $this->passwordEncoder = $passwordEncoder;
+    }
+
     /**
      * @Route("/inscription", name="user_registration")
      */
     public function registrationForm(Request $request): Response
     {
         $user = new User();
+
         $form = $this->createForm(UserRegistrationType::class, $user);
+
         $form->handleRequest($request);
+
         if ($form->isSubmitted() && $form->isValid()) {
-            $user = $form->getData();
+            //$user = $form->getData();
+
+            // Encode the new users password
+            $user->setPassword($this->passwordEncoder->encodePassword($user, $user->getPassword()));
+
+            // Set user roles
+            $user->setRoles(['ROLE_USER']);
+
+            // Set others user values
             $userWallet = new Wallet();
             $userWallet
                 ->setUser($user)
@@ -34,26 +53,33 @@ class UserController extends AbstractController
                 ->setCode('fr_FR')
                 ->setDateFormat('d/m/Y')
                 ->setTimeFormat('h:i:s')
-                ->setTimeZone('Europe/Paris');
+                ->setCapitalTimeZone('Europe/Paris');
             /*$preferredLanguageCode = $this->getICUPreferredLanguageCode($request);
             $userLanguage => findOneByLanguageCode($preferredLanguageCode)
             if (is_null($userLanguage)) {
                 $userLanguage => findOneByDefault('fr_FR')
             }*/
+            $selectedTimezone = $userLanguage->getCapitalTimeZone() ?? 'UTC';
             $user
                 ->setLanguage($userLanguage)
                 ->setWallet($userWallet)
-                ->setTimeZoneSelected($userLanguage->getTimeZone());
+                ->setTimeZoneSelected($selectedTimezone);
+
+            // Persist user
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($user);
             $entityManager->flush();
+
+            // Add success message
             $this->addFlash(
                 'success',
                 "Votre compte a été créé ! Son activation sera effective d'ici 24 heures."
             );
+
             return $this->redirectToRoute('main');
         }
-        return $this->render('user/new.html.twig', [
+
+        return $this->render('user_registration/index.html.twig', [
             'site_title' => 'Paris Sportif',
             'page_title' => 'Créer un compte',
             'form' => $form->createView()

@@ -27,10 +27,10 @@ final class LanguageTest extends KernelTestCase
         $language
             ->setName('français France')
             ->setCountry('pays')
-            ->setCode('fr_FR')
-            ->setDateFormat('d/m/Y')
+            ->setCode('en_US')
+            ->setDateFormat('Y-m-d')
             ->setTimeFormat('H:i:s')
-            ->setTimeZone('Europe/Paris');
+            ->setCapitalTimeZone('Europe/Paris');
         return $language;
     }
 
@@ -133,8 +133,7 @@ final class LanguageTest extends KernelTestCase
     public function codeCompatibleProvider(): array
     {
         return [
-            ["fr_FR"],
-            ["de_DE"],
+            ["es_ES"],
             ["FRA"],
             ["FR"],
             ["FRa_fr"],
@@ -272,17 +271,17 @@ final class LanguageTest extends KernelTestCase
     }
 
     /**
-     * @dataProvider timeZoneUnconformityProvider
+     * @dataProvider capitalTimeZoneUnconformityProvider
      */
-    public function testTimeZoneUnconformity(string $timeZone): void
+    public function testCapitalTimeZoneUnconformity(string $timeZone): void
     {
         $language = $this->createValidLanguage();
-        $language->setTimeZone($timeZone);
+        $language->setCapitalTimeZone($timeZone);
         $violations = $this->validator->validate($language);
         $this->assertGreaterThanOrEqual(1, count($violations));
     }
 
-    public function timeZoneUnconformityProvider(): array
+    public function capitalTimeZoneUnconformityProvider(): array
     {
         return [
             ['Antartica/Inconnu'],
@@ -294,17 +293,17 @@ final class LanguageTest extends KernelTestCase
     }
 
     /**
-     * @dataProvider timeZoneConformityProvider
+     * @dataProvider capitalTimeZoneConformityProvider
      */
-    public function testTimeZoneConformity(string $timeZone): void
+    public function testCapitalTimeZoneConformity(string $timeZone): void
     {
         $language = $this->createValidLanguage();
-        $language->setTimeZone($timeZone);
+        $language->setCapitalTimeZone($timeZone);
         $violations = $this->validator->validate($language);
         $this->assertCount(0, $violations);
     }
 
-    public function timeZoneConformityProvider(): array
+    public function capitalTimeZoneConformityProvider(): array
     {
         return [
             ['Antarctica/McMurdo'],

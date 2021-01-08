@@ -32,7 +32,15 @@ class UserFixtures extends Fixture
                 'email' => "tintin.dupont@test.fr",
                 'password' => "@Hadock5",
                 'birthdate' => "2000-10-20",
-                'timezone' => "Europe/Paris"
+                'timezone' => "Europe/Paris",
+                'language' => [
+                    'name' => 'allemand',
+                    'country' => 'Deutschland',
+                    'code' => 'de_DE',
+                    'dateFormat' => 'd/m/Y',
+                    'timeFormat' => 'h:i:s',
+                    'timezone' => 'Europe/Berlin'
+                ]
             ],
             [
                 'civility' => "Monsieur",
@@ -45,7 +53,15 @@ class UserFixtures extends Fixture
                 'email' => "toto.dupontel@test.fr",
                 'password' => "@Hadock123",
                 'birthdate' => "2000-11-21",
-                'timezone' => "Europe/Paris"
+                'timezone' => "Europe/Paris",
+                'language' => [
+                    'name' => 'anglais',
+                    'country' => 'Uinted Kingdom',
+                    'code' => 'en_GB',
+                    'dateFormat' => 'd-m-Y',
+                    'timeFormat' => 'h:i:s',
+                    'timezone' => 'Europe/London'
+                ]
             ]
         ];
         $count = count($testData);
@@ -57,13 +73,14 @@ class UserFixtures extends Fixture
                 ->setAmount(0);
             $userLanguage = new Language();
             $userLanguage
-                ->setName('français')
-                ->setCountry('france')
-                ->setCode('fr_FR')
-                ->setDateFormat('d/m/Y')
-                ->setTimeFormat('h:i:s')
-                ->setTimeZone('Europe/Paris');
+                ->setName($testData[$i]['language']['name'])
+                ->setCountry($testData[$i]['language']['country'])
+                ->setCode($testData[$i]['language']['code'])
+                ->setDateFormat($testData[$i]['language']['dateFormat'])
+                ->setTimeFormat($testData[$i]['language']['timeFormat'])
+                ->setCapitalTimeZone($testData[$i]['language']['timezone']);
             $user
+                ->setRoles(['ROLE_USER'])
                 ->setCivility($testData[$i]['civility'])
                 ->setFirstName($testData[$i]['firstname'])
                 ->setLastName($testData[$i]['lastname'])

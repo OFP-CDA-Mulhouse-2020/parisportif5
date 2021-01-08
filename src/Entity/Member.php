@@ -5,12 +5,18 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use App\Repository\MemberRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=MemberRepository::class)
  * @ORM\Table(name="`member`")
+ * @UniqueEntity(
+ *     fields={"firstName", "lastName", "team"},
+ *     errorPath="invoiceNumber",
+ *     message="Ce membre est déjà enregistrée."
+ * )
  */
 class Member
 {

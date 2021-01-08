@@ -6,10 +6,15 @@ namespace App\Entity;
 
 use App\Repository\LocationRepository;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=LocationRepository::class)
+ * @UniqueEntity(
+ *     fields="place",
+ *     message="Ce lieu est déjà enregistré."
+ * )
  */
 class Location
 {
@@ -32,11 +37,11 @@ class Location
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(
-     *     message="Le fuseau horaire ne peut pas être vide",
+     *     message="Le fuseau horaire du lieu ne peut pas être vide",
      *     normalizer="trim"
      * )
      * @Assert\Timezone(
-     *     message="Le fuseau horaire {{ value }} n'est pas valide"
+     *     message="Le fuseau horaire du lieu {{ value }} n'est pas valide"
      * )
      */
     private string $timeZone;
@@ -52,12 +57,6 @@ class Location
      * )
      */
     private string $country;
-
-    /**
-     * @ORM\OneToOne(targetEntity=Run::class, mappedBy="location", cascade={"persist", "remove"})
-     * @Assert\Valid
-     */
-    private Run $run;
 
     public function getId(): ?int
     {
@@ -94,23 +93,6 @@ class Location
     public function setCountry(string $country): self
     {
         $this->country = $country;
-        return $this;
-    }
-
-    public function getRun(): ?Run
-    {
-        return $this->run;
-    }
-
-    public function setRun(Run $run): self
-    {
-        $this->run = $run;
-
-        // set the owning side of the relation if necessary
-        if ($run->getLocation() !== $this) {
-            $run->setLocation($this);
-        }
-
         return $this;
     }
 }

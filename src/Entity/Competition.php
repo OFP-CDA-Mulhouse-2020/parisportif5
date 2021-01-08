@@ -8,10 +8,16 @@ use App\Repository\CompetitionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=CompetitionRepository::class)
+ * @UniqueEntity(
+ *     fields={"name", "startDate", "endDate", "country"},
+ *     errorPath="name",
+ *     message="Cette compétition est déjà enregistrée."
+ * )
  */
 class Competition
 {
@@ -62,6 +68,14 @@ class Competition
     private string $country;
 
     /**
+     * @ORM\Column(type="integer")
+     * @Assert\PositiveOrZero(
+     *     message="Le nombre minimum de course ou de rencontre (Run) doit être positif ou égal à zéro"
+     * )
+     */
+    private int $minRuns = 0;
+
+    /**
      * @ORM\Column(type="integer", nullable=true)
      * @Assert\Positive(
      *     message="Le nombre maximum de course ou de rencontre (Run) doit être positif"
@@ -103,14 +117,6 @@ class Competition
      * @Assert\Valid
      */
     private ?Result $result = null;
-
-    /**
-     * @ORM\Column(type="integer")
-     * @Assert\PositiveOrZero(
-     *     message="Le nombre minimum de course ou de rencontre (Run) doit être positif ou égal à zéro"
-     * )
-     */
-    private int $minRuns = 0;
 
     public function __construct()
     {

@@ -10,12 +10,10 @@ use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\DomCrawler\Form;
 use Symfony\Component\HttpKernel\KernelInterface;
 
-//use Symfony\Component\HttpKernel\KernelInterface;
-
 /**
- * @covers \UserController
+ * @covers \UserRegistrationController
  */
-final class UserControllerTest extends WebTestCase
+final class UserRegistrationControllerTest extends WebTestCase
 {
     private function initializeKernel(): KernelInterface
     {
@@ -190,7 +188,7 @@ final class UserControllerTest extends WebTestCase
             ->getRepository(User::class)
             ->findOneBy(['email' => $formData['email1']]);
         // asserts
-        $this->assertNull($user);
+        $this->assertNotNull($user);
     }
 
     public function testRegistrationFormPasswordUnderMin(): void
@@ -679,7 +677,7 @@ final class UserControllerTest extends WebTestCase
 
     // Tests fonctionnels des comportements
 
-    /*public function testRegistrationFormValidationOk(): void
+    public function testRegistrationFormValidationOk(): void
     {
         $client = static::createClient();
         $crawler = $client->request('GET', '/inscription');
@@ -719,5 +717,5 @@ final class UserControllerTest extends WebTestCase
             'form[name=user_registration]',
             "Inscription impossible avec cette adresse email ! Veuillez en donner une autre pour vous inscrire."
         );
-    }*/
+    }
 }

@@ -222,14 +222,14 @@ class User implements UserInterface
     private \DateTimeImmutable $birthDate;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(
-     *     message="Le fuseau horaire ne peut pas être vide.",
+     *     message="Le fuseau horaire sélectionné ne peut pas être vide.",
      *     normalizer="trim",
      *     groups={"profile"}
      * )
      * @Assert\Timezone(
-     *     message="Le fuseau horaire {{ value }} n'est pas valide.",
+     *     message="Le fuseau horaire sélectionné {{ value }} n'est pas valide.",
      *     groups={"profile"}
      * )
      */

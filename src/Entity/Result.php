@@ -4,10 +4,16 @@ namespace App\Entity;
 
 use App\Repository\ResultRepository;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=ResultRepository::class)
+ * @UniqueEntity(
+ *     fields={"competition", "run", "betCategory"},
+ *     errorPath="competition",
+ *     message="Ce résultat a déjà été enregistré."
+ * )
  * @Assert\Expression(
  *     "this.getTeam() or this.getTeamMember()",
  *     message="L'équipe ou le membre doit être renseigné mais pas les deux"

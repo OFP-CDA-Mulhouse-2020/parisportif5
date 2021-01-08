@@ -6,10 +6,15 @@ namespace App\Entity;
 
 use App\Repository\LanguageRepository;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=LanguageRepository::class)
+ * @UniqueEntity(
+ *     fields="code",
+ *     message="Cette langue est déjà enregistré."
+ * )
  */
 class Language
 {
@@ -97,7 +102,7 @@ class Language
      *     message="Le fuseau horaire {{ value }} n'est pas valide."
      * )
      */
-    private string $timeZone;
+    private string $capitalTimeZone;
 
     public function getId(): ?int
     {
@@ -159,14 +164,14 @@ class Language
         return $this;
     }
 
-    public function getTimeZone(): ?string
+    public function getCapitalTimeZone(): ?string
     {
-        return $this->timeZone;
+        return $this->capitalTimeZone;
     }
 
-    public function setTimeZone(string $timeZone): self
+    public function setCapitalTimeZone(string $capitalTimeZone): self
     {
-        $this->timeZone = $timeZone;
+        $this->capitalTimeZone = $capitalTimeZone;
         return $this;
     }
 

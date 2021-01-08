@@ -6,6 +6,7 @@ namespace App\Entity;
 
 use App\Repository\BetCategoryRepository;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
 
 /*// liste des catégories :
@@ -37,6 +38,10 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=BetCategoryRepository::class)
+ * @UniqueEntity(
+ *     fields="name",
+ *     message="Cette catégorie de paris est déjà enregistré."
+ * )
  */
 class BetCategory
 {

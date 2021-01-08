@@ -4,14 +4,18 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use App\Repository\SportRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=SportRepository::class)
+ * @UniqueEntity(
+ *     fields={"name", "country"},
+ *     errorPath="name",
+ *     message="Ce sport est déjà enregistré."
+ * )
  * @Assert\Expression(
  *      "this.getIndividualType() or this.getCollectiveType()",
  *      message="Le sport ne peut être ni individuel ni collectif et doit être au moins l'un des deux"
@@ -34,18 +38,6 @@ class Sport
      * )
      */
     private string $name;
-
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     * @Assert\Positive(
-     *     message="Le nombre de compétiteurs maxinum doit être positif"
-     * )
-     * @Assert\GreaterThanOrEqual(
-     *     propertyPath="minMembersByTeam",
-     *     message="Le nombre de compétiteurs doit être supérieur ou égal au nombre minimum"
-     * )
-     */
-    private ?int $maxMembersByTeam;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -79,6 +71,14 @@ class Sport
     private bool $collectiveType;
 
     /**
+     * @ORM\Column(type="integer")
+     * @Assert\PositiveOrZero(
+     *     message="Le nombre d'équipes minimum doit être positif ou égal à zéro"
+     * )
+     */
+    private int $minTeamsByRun = 0;
+
+    /**
      * @ORM\Column(type="integer", nullable=true)
      * @Assert\Positive(
      *     message="Le nombre d'équipes maxinum doit être positif"
@@ -99,12 +99,16 @@ class Sport
     private int $minMembersByTeam = 0;
 
     /**
-     * @ORM\Column(type="integer")
-     * @Assert\PositiveOrZero(
-     *     message="Le nombre d'équipes minimum doit être positif ou égal à zéro"
+     * @ORM\Column(type="integer", nullable=true)
+     * @Assert\Positive(
+     *     message="Le nombre de compétiteurs maxinum doit être positif"
+     * )
+     * @Assert\GreaterThanOrEqual(
+     *     propertyPath="minMembersByTeam",
+     *     message="Le nombre de compétiteurs doit être supérieur ou égal au nombre minimum"
      * )
      */
-    private int $minTeamsByRun = 0;
+    private ?int $maxMembersByTeam;
 
     public const RUN_TYPES = ["fixture", "race"];
 

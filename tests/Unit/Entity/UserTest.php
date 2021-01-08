@@ -55,8 +55,8 @@ final class UserTest extends KernelTestCase
     }
 
     private function createLanguageObject(
-        string $name = 'name',
-        string $country = 'pays',
+        string $name = 'nom de la langue',
+        string $country = 'pays de la langue',
         string $code = 'fr_FR',
         string $dateFormat = 'd/m/Y',
         string $timeFormat = 'H:i:s',
@@ -69,7 +69,7 @@ final class UserTest extends KernelTestCase
             ->setCode($code)
             ->setDateFormat($dateFormat)
             ->setTimeFormat($timeFormat)
-            ->setTimeZone($timeZone);
+            ->setCapitalTimeZone($timeZone);
         return $language;
     }
 
@@ -802,7 +802,7 @@ final class UserTest extends KernelTestCase
     public function testLanguageUncompatible(): void
     {
         $user = $this->createValidUser();
-        $language = $this->createLanguageObject('name', 'pays', 'XD');
+        $language = $this->createLanguageObject('langue', 'pays', 'XD');
         $user->setLanguage($language);
         $violations = $this->validator->validate($user);
         $this->assertCount(1, $violations);
