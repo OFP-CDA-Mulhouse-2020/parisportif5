@@ -38,7 +38,7 @@ class UserFixtures extends Fixture
                     'country' => 'Deutschland',
                     'code' => 'de_DE',
                     'dateFormat' => 'd/m/Y',
-                    'timeFormat' => 'h:i:s',
+                    'timeFormat' => 'H:i:s',
                     'timezone' => 'Europe/Berlin'
                 ]
             ],
@@ -59,7 +59,7 @@ class UserFixtures extends Fixture
                     'country' => 'Uinted Kingdom',
                     'code' => 'en_GB',
                     'dateFormat' => 'd-m-Y',
-                    'timeFormat' => 'h:i:s',
+                    'timeFormat' => 'H:i:s',
                     'timezone' => 'Europe/London'
                 ]
             ]

@@ -87,7 +87,7 @@ class Language
      * @Assert\Regex(
      *  message="Certains caractères spéciaux et paramètres pour le format de l'heure ne sont pas autorisés",
      *  pattern=
-     * "/^(\\T)?[HG](\s?(\:|(\\\p{L})+)\s?)i((\s?(\:|(\\\p{L})+)\s?)(s(\.u|\.vP?|P|O|\sO|\s?(\\\p{L})+)?)?)?(\s?T)?$/u"
+     * "/^(\\T)?[HGhg](\s?(\:|(\\\p{L})+)\s?)i((\s?(\:|[Aa]|(\\\p{L})+)\s?)(s(\.u|\.vP?|P|O|\sO|\s?[Aa]|\s?(\\\p{L})+)?)?)?(\s?T)?$/u"
      * )
      */
     private string $timeFormat;
