@@ -29,7 +29,8 @@ class Wallet implements FundStorageInterface
      * @ORM\Column(type="integer")
      * @Assert\PositiveOrZero(
      *     message="Le montant du porte monnaie ne peut pas être négatif"
-     * )
+     * ),
+     *    groups={"addfunds"}
      */
     private int $amount;
 
