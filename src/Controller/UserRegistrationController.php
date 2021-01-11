@@ -6,6 +6,7 @@ use App\Entity\Language;
 use App\Entity\User;
 use App\Entity\Wallet;
 use App\Form\UserRegistrationType;
+use App\Repository\LanguageRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,7 +25,7 @@ class UserRegistrationController extends AbstractController
     /**
      * @Route("/inscription", name="user_registration")
      */
-    public function registrationForm(Request $request): Response
+    public function registrationForm(Request $request, LanguageRepository $languageRepository): Response
     {
         $user = new User();
 
@@ -46,25 +47,16 @@ class UserRegistrationController extends AbstractController
             $userWallet
                 ->setUser($user)
                 ->setAmount(0);
-            $userLanguage = new Language();
-            $userLanguage
-                ->setName('français')
-                ->setCountry('france')
-                ->setCode('fr_FR')
-                ->setDateFormat('d/m/Y')
-                ->setTimeFormat('h:i:s')
-                ->setCapitalTimeZone('Europe/Paris');
-            /*$preferredLanguageCode = $this->getICUPreferredLanguageCode($request);
-            $userLanguage => findOneByLanguageCode($preferredLanguageCode)
+            $preferredLanguageCode = $this->getICUPreferredLanguageCode($request);
+            $userLanguage = $languageRepository->findOneByLanguageCode($preferredLanguageCode);
             if (is_null($userLanguage)) {
-                $userLanguage => findOneByDefault('fr_FR')
-            }*/
+                $userLanguage = $languageRepository->languageByDefault();
+            }
             $selectedTimezone = $userLanguage->getCapitalTimeZone() ?? 'UTC';
             $user
                 ->setLanguage($userLanguage)
                 ->setWallet($userWallet)
                 ->setTimeZoneSelected($selectedTimezone);
-
             // Persist user
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($user);

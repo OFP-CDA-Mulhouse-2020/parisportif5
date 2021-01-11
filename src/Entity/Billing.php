@@ -12,8 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity(repositoryClass=BillingRepository::class)
  * @UniqueEntity(
- *     fields={"firstName", "lastName", "address", "city", "postcode", "country", "invoiceNumber", "orderNumber"},
- *     errorPath="invoiceNumber",
+ *     fields="invoiceNumber",
  *     message="Cette facture est déjà enregistrée."
  * )
  */

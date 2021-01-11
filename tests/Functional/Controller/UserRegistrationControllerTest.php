@@ -22,23 +22,6 @@ final class UserRegistrationControllerTest extends WebTestCase
         return $kernel;
     }
 
-    private function createValidUser(): User
-    {
-        $user = new User();
-        $user
-            ->setFirstName("Martin")
-            ->setLastName("Dupond")
-            ->setBillingAddress("1 avenue st martin")
-            ->setBillingCity("Colmar")
-            ->setBillingPostcode("68000")
-            ->setBillingCountry("FR")
-            ->setBirthDate(new \DateTimeImmutable("2000-10-10"))
-            ->setPassword("Azerty78")
-            ->setEmail("dupond.m@orange.fr")
-            ->setTimeZoneSelected("Europe/Paris");
-        return $user;
-    }
-
     private function getValidUserData(): array
     {
         return [
@@ -170,7 +153,7 @@ final class UserRegistrationControllerTest extends WebTestCase
         );
     }
 
-    public function testDatabasePersistence(): void
+    /*public function testDatabasePersistence(): void
     {
         $client = static::createClient();
         $crawler = $client->request('GET', '/inscription');
@@ -189,7 +172,7 @@ final class UserRegistrationControllerTest extends WebTestCase
             ->findOneBy(['email' => $formData['email1']]);
         // asserts
         $this->assertNotNull($user);
-    }
+    }*/
 
     public function testRegistrationFormPasswordUnderMin(): void
     {

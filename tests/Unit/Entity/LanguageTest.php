@@ -233,8 +233,11 @@ final class LanguageTest extends KernelTestCase
             ['H:i:s O'],
             ['H:i:s T'],
             ['H:i:sP'],
-            ['H:i'],
-            ['\TH \h i:s \s\e\c T']
+            ['h:i'],
+            ['\TH \h i:s \s\e\c T'],
+            ['G:i a'],
+            ['g:iA'],
+            ['h:i:sA']
         ];
     }
 
@@ -263,10 +266,14 @@ final class LanguageTest extends KernelTestCase
             ["H:i:s .u"],
             ["H:i:s P"],
             ["H"],
+            ["G"],
+            ["GA"],
             [""],
             ["   "],
             ["hh:ii:ss"],
-            ["hh-mm-ss"]
+            ["hh-mm-ss"],
+            ["ha"],
+            ["g"]
         ];
     }
 
