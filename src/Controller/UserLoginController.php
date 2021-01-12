@@ -32,14 +32,12 @@ class UserLoginController extends AbstractController //dossier
             //}
         } else if ($form->isSubmitted() && !($form->isValid())) {
             return $this->render('login_form/loginlink.html.twig', [
-                'site_title' => 'Paris Sportif',
                 'page_title' => 'Connexion',
                 'form' => $form->createView()
-                ]);
+            ]);
         }
 
         return $this->render('login_form/index.html.twig', [
-            'site_title' => 'Paris Sportif',
             'page_title' => 'Connexion',
             'form' => $form->createView()
         ]);
@@ -52,8 +50,7 @@ class UserLoginController extends AbstractController //dossier
     public function redirectsToLoggedIn(): Response
     {
         return $this->render('login_form/userloggedin.html.twig', [
-            'site_title' => 'Paris Sportif',
-            'page_title' => 'User logged in',
+            'page_title' => 'User logged in'
         ]);
     }
 }

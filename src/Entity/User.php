@@ -34,12 +34,12 @@ class User implements UserInterface
      * @Assert\NotBlank(
      *     message="L'adresse email ne peut pas être vide.",
      *     normalizer="trim",
-     *     groups={"login", "registration", "profile"}
+     *     groups={"login", "registration", "identification"}
      * )
      * @Assert\Email(
      *     message="L'adresse email indiqué n'est pas valide.",
      *     mode="html5",
-     *     groups={"login", "registration", "profile"}
+     *     groups={"login", "registration", "identification"}
      * )
      */
     private string $email;
@@ -56,28 +56,28 @@ class User implements UserInterface
      * @Assert\NotBlank(
      *     message="Le mot de passe ne peut pas être vide.",
      *     normalizer="trim",
-     *     groups={"login", "registration", "profile"}
+     *     groups={"login", "registration", "identification"}
      * )
      * @Assert\Length(
      *     min=7,
      *     minMessage="Votre mot de passe doit avoir au moins {{ limit }} caractères alphanumérique et/ou spéciaux.",
-     *     groups={"registration", "profile"}
+     *     groups={"registration", "identification"}
      * )
      * @Assert\Regex(
      *     pattern="/^[\p{L}]+$/u",
      *     match=false,
      *     message="Pour la sécurité de votre mot de passe, vous ne pouvez pas mettre uniquement des lettres.",
-     *     groups={"registration", "profile"}
+     *     groups={"registration", "identification"}
      * )
      * @Assert\Regex(
      *     pattern="/^\d+$/",
      *     match=false,
      *     message="Pour la sécurité de votre mot de passe, vous ne pouvez pas mettre uniquement des chiffres.",
-     *     groups={"registration", "profile"}
+     *     groups={"registration", "identification"}
      * )
      * @Assert\NotCompromisedPassword(
      *     message="Mot de passe déclaré comme compromis.",
-     *     groups={"registration", "profile"}
+     *     groups={"registration", "identification"}
      * )
      */
     private string $password;
@@ -226,11 +226,11 @@ class User implements UserInterface
      * @Assert\NotBlank(
      *     message="Le fuseau horaire sélectionné ne peut pas être vide.",
      *     normalizer="trim",
-     *     groups={"profile"}
+     *     groups={"parameter"}
      * )
      * @Assert\Timezone(
      *     message="Le fuseau horaire sélectionné {{ value }} n'est pas valide.",
-     *     groups={"profile"}
+     *     groups={"parameter"}
      * )
      */
     private string $timeZoneSelected;
@@ -308,7 +308,7 @@ class User implements UserInterface
      * @const string STORED_TIME_ZONE
      * @Assert\Type(
      *     type="string",
-     *     message="Le fuseau horraire stocké {{ value }} n'est pas du type {{ type }}."
+     *     message="Le fuseau horaire stocké {{ value }} n'est pas du type {{ type }}."
      * )
      * @Assert\Timezone(
      *     message="Le fuseau horaire {{ value }} n'est pas valide"
@@ -411,7 +411,7 @@ class User implements UserInterface
     /**
      * @Assert\IsTrue(
      *     message="Le mot de passe ne doit pas contenir le prénom et/ou le nom.",
-     *     groups={"profile", "registration"}
+     *     groups={"profile_identifier", "registration"}
      * )
      */
     public function isPasswordSafe(): bool

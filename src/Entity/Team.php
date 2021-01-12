@@ -14,7 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity(repositoryClass=TeamRepository::class)
  * @UniqueEntity(
- *     fields={"name", "country"},
+ *     fields={"name", "country", "sport"},
  *     errorPath="name",
  *     message="Cette équipe est déjà enregistrée."
  * )

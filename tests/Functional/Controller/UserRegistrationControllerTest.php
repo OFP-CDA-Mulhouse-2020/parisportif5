@@ -4,27 +4,26 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Controller;
 
-use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\DomCrawler\Form;
-use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
  * @covers \UserRegistrationController
  */
 final class UserRegistrationControllerTest extends WebTestCase
 {
-    private function initializeKernel(): KernelInterface
+    /*private function initializeKernel(): KernelInterface
     {
         $kernel = self::bootKernel();
         $kernel->boot();
         return $kernel;
-    }
+    }*/
 
     private function getValidUserData(): array
     {
         return [
+            'civility' => '',
             'firstName' => "Martin",
             'lastName' => "Dupond",
             'address' => "1 avenue st martin",
@@ -36,9 +35,20 @@ final class UserRegistrationControllerTest extends WebTestCase
             'password2' => "Azerty78",
             'email1' => "dupond.m@orange.fr",
             'email2' => "dupond.m@orange.fr",
-            'timezone' => "Europe/Paris"
+            'timezone' => "Europe/Paris",
+            'residence' => 'filename.pdf',
+            'identity' => 'filename.pdf',
+            'accurate' => true,
+            'newsletters' => false
         ];
     }
+
+    /*
+        $form['user_profile_name[identityDocument]'] = $formData['identity'];
+        $form['user_profile_name[certifiesAccurate]'] = $formData['accurate'];
+        $form['user_profile_address[residenceProof]'] = $formData['residence'];
+        $form['user_profile_parameter[acceptNewsletters]'] = $formData['newsletters'];
+    */
 
     public function getRegistrationForm(Crawler $crawler, array $formData): Form
     {
@@ -59,14 +69,14 @@ final class UserRegistrationControllerTest extends WebTestCase
 
     // Tests fonctionnels d'intégrations
 
-    public function testRegistrationFormPageValidResponseCode(): void
+    public function testRegistrationFormValidResponseCode(): void
     {
         $client = static::createClient();
         $client->request('GET', '/inscription');
         $this->assertResponseStatusCodeSame(200);
     }
 
-    public function testRegistrationFormPageValidTitle(): void
+    public function testRegistrationFormValidTitle(): void
     {
         $client = static::createClient();
         $client->request('GET', '/inscription');
@@ -163,8 +173,9 @@ final class UserRegistrationControllerTest extends WebTestCase
         // submit the form
         $crawler = $client->submit($form);
         // exist in bdd
-        $kernel = $this->initializeKernel();
-        $entityManager = $kernel->getContainer()
+        //$kernel = $this->initializeKernel();
+        //$entityManager = $kernel->getContainer()
+        $entityManager = $client->getContainer()
             ->get('doctrine')
             ->getManager();
         $user = $entityManager
@@ -702,3 +713,30 @@ final class UserRegistrationControllerTest extends WebTestCase
         );
     }
 }
+
+/*
+        // Justificatif de domicile
+        $this->assertCount(
+            1,
+            $crawler->filter('form[name=user_profile_address] *[name*=residenceProof]'),
+            "Il doit y avoir un et un seul champ pour le justificatif de domicile dans ce formulaire"
+        );
+        // Certifie l'exactitude des informations
+        $this->assertCount(
+            1,
+            $crawler->filter('form[name=user_profile_address] *[name*=certifiesAccurate]'),
+            "Il doit y avoir un et un seul champ pour certifier l'exactitude des informations dans ce formulaire"
+        );
+        // Justificatif d'identité
+        $this->assertCount(
+            1,
+            $crawler->filter('form[name=user_profile_name] *[name*=identityDocument]'),
+            "Il doit y avoir un et un seul champ pour le justificatif d'identité dans ce formulaire"
+        );
+        // Certifie l'exactitude des informations
+        $this->assertCount(
+            1,
+            $crawler->filter('form[name=user_profile_name] *[name*=certifiesAccurate]'),
+            "Il doit y avoir un et un seul champ pour certifier l'exactitude des informations dans ce formulaire"
+        );
+*/
