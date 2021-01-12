@@ -2,6 +2,8 @@
 
 namespace App\Tests\Functional\Controller;
 
+use App\Entity\User;
+use App\Entity\Wallet;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class AddFundsControllerTest extends WebTestCase
@@ -73,5 +75,47 @@ class AddFundsControllerTest extends WebTestCase
         $crawler = $client->submit($form);
         $this->assertSelectorExists('li', "This value is not valid.");
         // $this->assertResponseRedirects('/account/addfunds');
+    }
+
+
+    public function testIfWalletCanBeAccessedInDb()
+    {
+        $client = static::createClient();
+
+        $this->entityManager = $client->getContainer()
+            ->get('doctrine')
+            ->getManager();
+
+        $user = $this->entityManager
+            ->getRepository(User::class)
+            ->findOneBy(['email' => 'tintin.dupont@test.fr']);
+        // var_dump($wallet->getAmount());
+        // die();
+        $this->assertNotNull($user->getWallet());
+    }
+
+    public function testIfWalletAmountIsUpdated()
+    {
+        $client = static::createClient();
+
+        $this->entityManager = $client->getContainer()
+            ->get('doctrine')
+            ->getManager();
+
+        $user = $this->entityManager
+            ->getRepository(User::class)
+            ->findOneBy(['email' => 'tintin.dupont@test.fr']);
+        $wallet = $user->getWallet();
+        $wallet->setAmount(0);
+        $amount = $wallet->getAmount();
+        $this->assertEquals(0, $amount);
+
+        $amountAdded = 10;
+        $wallet->setAmount($amount + $amountAdded);
+        $amount = $wallet->getAmount();
+        // var_dump($amount);
+        // die();
+
+        $this->assertGreaterThan(0, $amount);
     }
 }

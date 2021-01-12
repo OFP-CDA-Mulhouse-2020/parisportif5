@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
+use App\Entity\Wallet;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -17,9 +19,17 @@ class AddFundsController extends AbstractController
     {
         $form = $this->createForm(AddFundsType::class);
 
+
+
         $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            return $this->redirectToRoute('fundsadded');
+
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                $data = $form->getData();
+                // var_dump($data);
+                // die();
+                return $this->redirectToRoute('fundsadded');
+            }
         }
 
         return $this->render('add_funds/index.html.twig', [
@@ -36,7 +46,7 @@ class AddFundsController extends AbstractController
     {
         return $this->render('add_funds/fundsadded.html.twig', [
             'site_title' => 'Paris Sportif',
-            'page_title' => 'Fonds ajoutés',
+            'page_title' => 'Fonds ajoutés'
         ]);
     }
 }
