@@ -9,14 +9,24 @@
 </style>
 
 <div class="example-wrapper">
-
     <h1>{{ page_title }}</h1>
-
     
     {% if app.user %}
         <div class="mb-3">
-            You are logged in as {{ app.user.username }}, <a href="{{ path('Ajouter des fonds') }}">Ajouter des fonds au porte monnaie</a>
+            You are logged in as {{ app.user.username }}.
         </div>
+        </br>
+        <div>
+            <a>Porte monnaie actuel : {{ wallet_amount }}</a>
+        </div>
+        </br>
+    {% endif %}
+
+    {{ form(form, { 'attr': {'novalidate': 'novalidate'} }) }}
+
+    
+    {% if app.user %}
+        </br>
         <div class="mb-3">
             <a href="{{ path('userlogout') }}">Se déconnecter</a>
         </div>

@@ -12,15 +12,13 @@
 
     <h1>{{ page_title }}</h1>
 
-    
-    {% if app.user %}
+     {% if app.user %}
         <div class="mb-3">
             You are logged in as {{ app.user.username }}, <a href="{{ path('Ajouter des fonds') }}">Ajouter des fonds au porte monnaie</a>
         </div>
         <div class="mb-3">
             <a href="{{ path('userlogout') }}">Se déconnecter</a>
         </div>
-
     {% endif %}
 
 </div>
