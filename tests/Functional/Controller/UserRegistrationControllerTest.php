@@ -136,24 +136,16 @@ final class UserRegistrationControllerTest extends WebTestCase
             "Il doit y avoir un et un seul champ pour la date de naissance dans ce formulaire"
         );
         // Mot de passe
-        $this->assertSelectorExists(
-            'form[name=user_registration] input[name*=password]',
-            "Aucun champs de mot de passe n'est présent dans ce formulaire"
-        );
         $this->assertCount(
             2,
-            $crawler->filter('form[name=user_registration] input[name*=password]'),
-            "Il existe plus de 2 champs de mot de passe dans ce formulaire"
+            $crawler->filter('form[name=user_registration] input[name*=password][type=password]'),
+            "Il doit y avoir 2 et seulement 2 champs pour le mot de passe dans ce formulaire"
         );
         // Email
-        $this->assertSelectorExists(
-            'form[name=user_registration] input[name*=email]',
-            "Aucun champs email n'est présent dans ce formulaire"
-        );
         $this->assertCount(
             2,
-            $crawler->filter('form[name=user_registration] input[name*=email]'),
-            "Il existe plus de 2 champs email dans ce formulaire"
+            $crawler->filter('form[name=user_registration] input[name*=email][type=email]'),
+            "Il doit y avoir 2 et seulement 2 champs pour l'email dans ce formulaire"
         );
         // Bouton submit
         $this->assertCount(
@@ -685,7 +677,7 @@ final class UserRegistrationControllerTest extends WebTestCase
         $crawler = $client->submit($form);
         // asserts
         $this->assertResponseStatusCodeSame(302);
-        $this->assertResponseRedirects('/main');
+        $this->assertResponseRedirects('/login');
         $crawler = $client->followRedirect();
         $this->assertSelectorTextContains(
             'div.flash-success',

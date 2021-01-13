@@ -14,9 +14,12 @@ class UserProfileDocumentType extends AbstractType
     {
         $builder
             ->add(
-                $builder->create('identityDocuments', FormType::class, array('inherit_data' => true))
+                $builder->create('identityDocuments', FormType::class, [
+                    'inherit_data' => true,
+                    'label' => "Justificatif(s) d'identité"
+                ])
                 ->add('identityDocumentFile', FileType::class, [
-                    'label' => "Document d'identité (carte ID, passeport, permis de conduire ...)",
+                    'label' => "Chercher le document (carte d'identité, passeport, permis de conduire, carte vitale)",
                     'mapped' => false,
                     'required' => false
                 ])
@@ -25,9 +28,12 @@ class UserProfileDocumentType extends AbstractType
                 ])
             )
             ->add(
-                $builder->create('residenceProofs', FormType::class, array('inherit_data' => true))
+                $builder->create('residenceProofs', FormType::class, [
+                    'inherit_data' => true,
+                    'label' => "Justificatif(s) de domicile"
+                ])
                 ->add('residenceProofFile', FileType::class, [
-                    'label' => "Justificatif de domicile (Facture, avis d'imposition ...)",
+                    'label' => "Chercher le document (facture d'énergie, avis d'imposition)",
                     'mapped' => false,
                     'required' => false
                 ])

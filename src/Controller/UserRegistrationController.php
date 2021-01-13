@@ -85,7 +85,7 @@ class UserRegistrationController extends AbstractController
                 "Votre compte a été créé ! Son activation sera effective d'ici 24 heures."
             );
 
-            return $this->redirectToRoute('main');
+            return $this->redirectToRoute('Connexion');
         }
 
         return $this->render('user_registration/index.html.twig', [

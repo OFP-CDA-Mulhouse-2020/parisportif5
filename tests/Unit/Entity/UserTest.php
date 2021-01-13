@@ -95,10 +95,10 @@ final class UserTest extends KernelTestCase
     {
         $user = $this->createValidUser();
         $user->setCivility($civility);
-        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile']);
+        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile', 'password_update', 'identifier_update', 'parameter']);
         $this->assertCount(0, $violations);
         $user->setCivility(null);
-        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile']);
+        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile', 'password_update', 'identifier_update', 'parameter']);
         $this->assertCount(0, $violations);
     }
 
@@ -120,13 +120,13 @@ final class UserTest extends KernelTestCase
         $civility3 = "trlonguecivilité";
         $user = $this->createValidUser();
         $user->setCivility($civility1);
-        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile']);
+        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile', 'password_update', 'identifier_update', 'parameter']);
         $this->assertCount(1, $violations);
         $user->setCivility($civility2);
-        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile']);
+        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile', 'password_update', 'identifier_update', 'parameter']);
         $this->assertCount(1, $violations);
         $user->setCivility($civility3);
-        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile']);
+        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile', 'password_update', 'identifier_update', 'parameter']);
         $this->assertCount(1, $violations);
     }
 
@@ -137,7 +137,7 @@ final class UserTest extends KernelTestCase
     {
         $user = $this->createValidUser();
         $user->setEmail($emailAddress);
-        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile']);
+        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile', 'password_update', 'identifier_update', 'parameter']);
         $this->assertGreaterThanOrEqual(1, count($violations));
     }
 
@@ -158,7 +158,7 @@ final class UserTest extends KernelTestCase
     {
         $user = $this->createValidUser();
         $user->setEmail($emailAddress);
-        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile']);
+        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile', 'password_update', 'identifier_update', 'parameter']);
         $this->assertCount(0, $violations);
     }
 
@@ -179,7 +179,7 @@ final class UserTest extends KernelTestCase
         $user = $this->createValidUser();
         $user->setFirstName($firstName);
         $user->setLastName($firstName);
-        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile']);
+        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile', 'password_update', 'identifier_update', 'parameter']);
         $this->assertGreaterThanOrEqual(2, count($violations));
     }
 
@@ -203,7 +203,7 @@ final class UserTest extends KernelTestCase
         $user = $this->createValidUser();
         $user->setFirstName($firstName);
         $user->setLastName($firstName);
-        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile']);
+        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile', 'password_update', 'identifier_update', 'parameter']);
         $this->assertCount(0, $violations);
     }
 
@@ -225,7 +225,7 @@ final class UserTest extends KernelTestCase
     {
         $user = $this->createValidUser();
         $user->setPassword($password);
-        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile']);
+        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile', 'password_update', 'identifier_update', 'parameter']);
         $this->assertGreaterThanOrEqual(1, count($violations));
     }
 
@@ -247,7 +247,7 @@ final class UserTest extends KernelTestCase
     {
         $user = $this->createValidUser();
         $user->setPassword($password);
-        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile']);
+        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile', 'password_update', 'identifier_update', 'parameter']);
         $this->assertCount(0, $violations);
     }
 
@@ -270,7 +270,7 @@ final class UserTest extends KernelTestCase
     {
         $user = $this->createValidUser();
         $user->setBirthDate($birthDate);
-        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile']);
+        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile', 'password_update', 'identifier_update', 'parameter']);
         $this->assertGreaterThanOrEqual(1, count($violations));
     }
 
@@ -294,7 +294,7 @@ final class UserTest extends KernelTestCase
     {
         $user = $this->createValidUser();
         $user->setBirthDate($birthDate);
-        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile']);
+        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile', 'password_update', 'identifier_update', 'parameter']);
         $this->assertGreaterThanOrEqual(1, count($violations));
     }
 
@@ -317,7 +317,7 @@ final class UserTest extends KernelTestCase
     {
         $user = $this->createValidUser();
         $user->setBirthDate($birthDate);
-        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile']);
+        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile', 'password_update', 'identifier_update', 'parameter']);
         $this->assertCount(0, $violations);
     }
 
@@ -338,7 +338,7 @@ final class UserTest extends KernelTestCase
     {
         $user = $this->createValidUser();
         $user->setTimeZoneSelected($timeZone);
-        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile']);
+        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile', 'password_update', 'identifier_update', 'parameter']);
         $this->assertGreaterThanOrEqual(1, count($violations));
     }
 
@@ -360,7 +360,7 @@ final class UserTest extends KernelTestCase
     {
         $user = $this->createValidUser();
         $user->setTimeZoneSelected($timeZone);
-        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile']);
+        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile', 'password_update', 'identifier_update', 'parameter']);
         $this->assertCount(0, $violations);
     }
 
@@ -380,7 +380,7 @@ final class UserTest extends KernelTestCase
     {
         $user = $this->createValidUser();
         $user->setBillingAddress($address);
-        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile']);
+        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile', 'password_update', 'identifier_update', 'parameter']);
         $this->assertCount(0, $violations);
     }
 
@@ -401,7 +401,7 @@ final class UserTest extends KernelTestCase
     {
         $user = $this->createValidUser();
         $user->setBillingAddress($address);
-        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile']);
+        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile', 'password_update', 'identifier_update', 'parameter']);
         $this->assertGreaterThanOrEqual(1, count($violations));
     }
 
@@ -423,7 +423,7 @@ final class UserTest extends KernelTestCase
     {
         $user = $this->createValidUser();
         $user->setBillingCity($city);
-        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile']);
+        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile', 'password_update', 'identifier_update', 'parameter']);
         $this->assertCount(0, $violations);
     }
 
@@ -443,7 +443,7 @@ final class UserTest extends KernelTestCase
     {
         $user = $this->createValidUser();
         $user->setBillingCity($city);
-        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile']);
+        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile', 'password_update', 'identifier_update', 'parameter']);
         $this->assertGreaterThanOrEqual(1, count($violations));
     }
 
@@ -465,7 +465,7 @@ final class UserTest extends KernelTestCase
     {
         $user = $this->createValidUser();
         $user->setBillingPostcode($postcode);
-        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile']);
+        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile', 'password_update', 'identifier_update', 'parameter']);
         $this->assertCount(0, $violations);
     }
 
@@ -484,7 +484,7 @@ final class UserTest extends KernelTestCase
     {
         $user = $this->createValidUser();
         $user->setBillingPostcode($postcode);
-        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile']);
+        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile', 'password_update', 'identifier_update', 'parameter']);
         $this->assertGreaterThanOrEqual(1, count($violations));
     }
 
@@ -506,7 +506,7 @@ final class UserTest extends KernelTestCase
     {
         $user = $this->createValidUser();
         $user->setBillingCountry($country);
-        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile']);
+        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile', 'password_update', 'identifier_update', 'parameter']);
         $this->assertCount(0, $violations);
     }
 
@@ -525,7 +525,7 @@ final class UserTest extends KernelTestCase
     {
         $user = $this->createValidUser();
         $user->setBillingCountry($country);
-        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile']);
+        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile', 'password_update', 'identifier_update', 'parameter']);
         $this->assertGreaterThanOrEqual(1, count($violations));
     }
 
@@ -695,7 +695,7 @@ final class UserTest extends KernelTestCase
         $this->assertTrue($method);
         $result = $user->isPasswordSafe();
         $this->assertTrue($result);
-        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile']);
+        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile', 'password_update', 'identifier_update', 'parameter']);
         $this->assertCount(0, $violations);
     }
 
@@ -707,7 +707,7 @@ final class UserTest extends KernelTestCase
         $user->setPassword("tintin45335");
         $result = $user->isPasswordSafe();
         $this->assertFalse($result);
-        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile']);
+        $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile', 'password_update', 'identifier_update', 'parameter']);
         $this->assertCount(1, $violations);
     }
 

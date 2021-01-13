@@ -17,7 +17,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
  * @UniqueEntity(
  *    fields="email",
  *    message="Inscription impossible avec cette adresse email ! Veuillez en donner une autre pour vous inscrire.",
- *    groups={"registration", "profile"}
+ *    groups={"registration", "identifier_update"}
  * )
  */
 class User implements UserInterface
@@ -34,12 +34,12 @@ class User implements UserInterface
      * @Assert\NotBlank(
      *     message="L'adresse email ne peut pas être vide.",
      *     normalizer="trim",
-     *     groups={"login", "registration", "identification"}
+     *     groups={"login", "registration", "identifier_update"}
      * )
      * @Assert\Email(
      *     message="L'adresse email indiqué n'est pas valide.",
      *     mode="html5",
-     *     groups={"login", "registration", "identification"}
+     *     groups={"login", "registration", "identifier_update"}
      * )
      */
     private string $email;
@@ -56,28 +56,28 @@ class User implements UserInterface
      * @Assert\NotBlank(
      *     message="Le mot de passe ne peut pas être vide.",
      *     normalizer="trim",
-     *     groups={"login", "registration", "identification"}
+     *     groups={"login", "registration", "password_update"}
      * )
      * @Assert\Length(
      *     min=7,
      *     minMessage="Votre mot de passe doit avoir au moins {{ limit }} caractères alphanumérique et/ou spéciaux.",
-     *     groups={"registration", "identification"}
+     *     groups={"registration", "password_update"}
      * )
      * @Assert\Regex(
      *     pattern="/^[\p{L}]+$/u",
      *     match=false,
      *     message="Pour la sécurité de votre mot de passe, vous ne pouvez pas mettre uniquement des lettres.",
-     *     groups={"registration", "identification"}
+     *     groups={"registration", "password_update"}
      * )
      * @Assert\Regex(
      *     pattern="/^\d+$/",
      *     match=false,
      *     message="Pour la sécurité de votre mot de passe, vous ne pouvez pas mettre uniquement des chiffres.",
-     *     groups={"registration", "identification"}
+     *     groups={"registration", "password_update"}
      * )
      * @Assert\NotCompromisedPassword(
      *     message="Mot de passe déclaré comme compromis.",
-     *     groups={"registration", "identification"}
+     *     groups={"registration", "password_update"}
      * )
      */
     private string $password;
@@ -411,7 +411,7 @@ class User implements UserInterface
     /**
      * @Assert\IsTrue(
      *     message="Le mot de passe ne doit pas contenir le prénom et/ou le nom.",
-     *     groups={"profile_identifier", "registration"}
+     *     groups={"password_update", "registration"}
      * )
      */
     public function isPasswordSafe(): bool
