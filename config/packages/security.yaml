@@ -21,9 +21,11 @@ security:
             guard:
                 authenticators:
                     - App\Security\UserAuthenticator
+                    - App\Security\UserLoginAuthenticator
+                entry_point: App\Security\UserLoginAuthenticator
             logout:
-                path: app_logout
-                target: /
+                path: userlogout
+                target: /userlogout
                 # where to redirect after logout
                 # target: app_any_route
 
