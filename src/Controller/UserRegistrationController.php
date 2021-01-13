@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\Language;
 use App\Entity\User;
 use App\Entity\Wallet;
 use App\Form\UserRegistrationType;
@@ -20,6 +19,24 @@ class UserRegistrationController extends AbstractController
     public function __construct(UserPasswordEncoderInterface $passwordEncoder)
     {
         $this->passwordEncoder = $passwordEncoder;
+    }
+
+    protected function getICUPreferredLanguageCode(Request $request): string
+    {
+        $languagesCodes = $request->getLanguages();
+        $default = 'fr_FR';
+        if (empty($languagesCodes)) {
+            return $default;
+        }
+        $icuPreferredLanguages = array_map(function (string $language) {
+            if (mb_strlen($language) === 4) {
+                return $language;
+            }
+        }, $languagesCodes);
+        if (empty($icuPreferredLanguages)) {
+            $icuPreferredLanguages[0] = $languagesCodes[0];
+        }
+        return $icuPreferredLanguages[0] ?? $default;
     }
 
     /**
@@ -68,32 +85,13 @@ class UserRegistrationController extends AbstractController
                 "Votre compte a été créé ! Son activation sera effective d'ici 24 heures."
             );
 
-            return $this->redirectToRoute('main');
+            return $this->redirectToRoute('Connexion');
         }
 
         return $this->render('user_registration/index.html.twig', [
-            'site_title' => 'Paris Sportif',
             'page_title' => 'Créer un compte',
             'form' => $form->createView()
         ]);
-    }
-
-    protected function getICUPreferredLanguageCode(Request $request): string
-    {
-        $languagesCodes = $request->getLanguages();
-        $default = 'fr_FR';
-        if (empty($languagesCodes)) {
-            return $default;
-        }
-        $icuPreferredLanguages = array_map(function (string $language) {
-            if (mb_strlen($language) === 4) {
-                return $language;
-            }
-        }, $languagesCodes);
-        if (empty($icuPreferredLanguages)) {
-            $icuPreferredLanguages[0] = $languagesCodes[0];
-        }
-        return $icuPreferredLanguages[0] ?? $default;
     }
 
 
@@ -107,7 +105,6 @@ class UserRegistrationController extends AbstractController
         //$data = $request->getLanguages();
         //$this->addFlash('notice', $preferredLanguageCode . var_dump($data));
         return $this->render('base.html.twig', [
-            'site_title' => 'Paris Sportif',
             'page_title' => 'Accueil'
         ]);
     }

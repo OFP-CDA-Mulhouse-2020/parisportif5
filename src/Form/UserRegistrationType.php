@@ -82,8 +82,8 @@ class UserRegistrationType extends AbstractType
                 'data' => 'FR'
             ])
             ->add('save', SubmitType::class, [
-                'label' => "Valider",
-                'validation_groups' => ['registration']
+                'label' => "Valider"
+                //'validation_groups' => ['registration']
             ])
         ;
         /*$builder

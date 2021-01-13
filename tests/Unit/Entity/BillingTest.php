@@ -515,7 +515,7 @@ final class BillingTest extends KernelTestCase
         $billing = $this->createValidBilling();
         $user = $this->createUserObject('XD');
         $billing->setUser($user);
-        $violations = $this->validator->validate($billing, null, ['registration', 'login', 'profile']);
+        $violations = $this->validator->validate($billing, null, ['registration', 'login', 'profile', 'password_update', 'identifier_update', 'parameter']);
         $this->assertCount(1, $violations);
     }
 
@@ -525,7 +525,7 @@ final class BillingTest extends KernelTestCase
         $user = $this->createUserObject();
         $billing->setUser($user);
         $this->assertSame($user, $billing->getUser());
-        $violations = $this->validator->validate($billing, null, ['registration', 'login', 'profile']);
+        $violations = $this->validator->validate($billing, null, ['registration', 'login', 'profile', 'password_update', 'identifier_update', 'parameter']);
         $this->assertCount(0, $violations);
     }
 

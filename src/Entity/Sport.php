@@ -12,7 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity(repositoryClass=SportRepository::class)
  * @UniqueEntity(
- *     fields={"name", "country"},
+ *     fields={"name", "country", "runType"},
  *     errorPath="name",
  *     message="Ce sport est déjà enregistré."
  * )

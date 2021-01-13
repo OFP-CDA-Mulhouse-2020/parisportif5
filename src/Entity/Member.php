@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity(repositoryClass=MemberRepository::class)
  * @ORM\Table(name="`member`")
  * @UniqueEntity(
- *     fields={"firstName", "lastName", "team"},
+ *     fields={"firstName", "lastName", "country", "team"},
  *     errorPath="invoiceNumber",
  *     message="Ce membre est déjà enregistrée."
  * )
