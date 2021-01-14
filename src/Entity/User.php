@@ -287,6 +287,11 @@ class User implements UserInterface
     private Collection $onGoingBets;
 
     /**
+     * @ORM\Column(type="boolean")
+     */
+    private bool $isVerified = false;
+
+    /**
      * @const int MIN_AGE_FOR_BETTING
      * @Assert\Type(
      *     type="integer",
@@ -693,6 +698,18 @@ class User implements UserInterface
                 $onGoingBet->setUser(null);
             }*/
         }
+
+        return $this;
+    }
+
+    public function isVerified(): bool
+    {
+        return $this->isVerified;
+    }
+
+    public function setIsVerified(bool $isVerified): self
+    {
+        $this->isVerified = $isVerified;
 
         return $this;
     }

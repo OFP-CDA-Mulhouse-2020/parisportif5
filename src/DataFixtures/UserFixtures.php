@@ -30,6 +30,7 @@ class UserFixtures extends Fixture
                 'postcode' => "68000",
                 'country' => "FR",
                 'email' => "tintin.dupont@test.fr",
+                'verified' => true,
                 'password' => "@Hadock5",
                 'birthdate' => "2000-10-20",
                 'timezone' => "Europe/Paris",
@@ -51,6 +52,7 @@ class UserFixtures extends Fixture
                 'postcode' => "68000",
                 'country' => "FR",
                 'email' => "toto.dupontel@test.fr",
+                'verified' => true,
                 'password' => "@Hadock123",
                 'birthdate' => "2000-11-21",
                 'timezone' => "Europe/Paris",
@@ -90,6 +92,7 @@ class UserFixtures extends Fixture
                 ->setBillingCountry($testData[$i]['country'])
                 ->setBirthDate(new \DateTimeImmutable($testData[$i]['birthdate'], new \DateTimeZone("UTC")))
                 ->setTimeZoneSelected($testData[$i]['timezone'])
+                ->setIsVerified($testData[$i]['verified'])
                 ->setEmail($testData[$i]['email'])
                 ->setPassword($this->passwordEncoder->encodePassword(
                     $user,
