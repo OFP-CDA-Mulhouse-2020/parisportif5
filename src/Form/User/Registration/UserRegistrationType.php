@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Form;
+namespace App\Form\User\Registration;
 
 use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
@@ -13,6 +13,7 @@ use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\TimezoneType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -80,6 +81,13 @@ class UserRegistrationType extends AbstractType
                 'label' => "Pays de facturation",
                 'invalid_message' => "Veuillez saisir un pays de facturation.",
                 'data' => 'FR'
+            ])
+            ->add('timeZoneSelected', TimezoneType::class, [
+                'required' => true,
+                'label' => "Sélection du fuseau horaire",
+                'trim' => true,
+                'invalid_message' => "Veuillez sélectionner un fuseau horaire.",
+                'placeholder' => 'Choisissez un fuseau horaire'
             ])
             ->add('save', SubmitType::class, [
                 'label' => "Valider"

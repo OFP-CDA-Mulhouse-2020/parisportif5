@@ -3,11 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\User;
-use App\Form\Profile\UserProfileDocumentType;
-use App\Form\Profile\UserProfileIdentifierType;
-use App\Form\Profile\UserProfilePasswordType;
-use App\Form\Profile\UserProfileParameterType;
-use App\Form\Profile\UserProfilePersonalDataType;
+use App\Form\User\Update\UserUpdateDocumentType;
+use App\Form\User\Update\UserUpdateIdentifierType;
+use App\Form\User\Update\UserUpdatePasswordType;
+use App\Form\User\Update\UserUpdateParameterType;
+use App\Form\User\Update\UserUpdatePersonalDataType;
 use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -15,12 +15,12 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class UserProfileController extends AbstractController
+class UserUpdateController extends AbstractController
 {
     /**
      * @Route("/mon-compte/mes-informations", name="user_profile")
      */
-    public function profilePersonalDataForm(Request $request): Response
+    public function updatePersonalDatas(Request $request): Response
     {
         //$user = $this->getUser();
         $user = new User();
@@ -37,7 +37,7 @@ class UserProfileController extends AbstractController
             ->setEmail("dupond.t@orange.fr")
             ->setTimeZoneSelected("Europe/Paris");
 
-        $form = $this->createForm(UserProfilePersonalDataType::class, $user);
+        $form = $this->createForm(UserUpdatePersonalDataType::class, $user);
 
         $form->handleRequest($request);
 
@@ -45,7 +45,7 @@ class UserProfileController extends AbstractController
             //return new RedirectResponse('/mon-compte/mes-informations');
         }
 
-        return $this->render('user_profile/update.html.twig', [
+        return $this->render('user_update/index.html.twig', [
             'page_title' => "Données personnelles",
             'form' => $form->createView()
         ]);
@@ -54,7 +54,7 @@ class UserProfileController extends AbstractController
     /**
      * @Route("/mon-compte/modifier/mot-de-passe", name="user_password")
      */
-    public function profilePasswordForm(Request $request): Response
+    public function updatePassword(Request $request): Response
     {
         $user = new User();
         $user
@@ -70,7 +70,7 @@ class UserProfileController extends AbstractController
             ->setEmail("dupond.t@orange.fr")
             ->setTimeZoneSelected("Europe/Paris");
 
-        $form = $this->createForm(UserProfilePasswordType::class, $user);
+        $form = $this->createForm(UserUpdatePasswordType::class, $user);
 
         $form->handleRequest($request);
 
@@ -78,7 +78,7 @@ class UserProfileController extends AbstractController
             //return new RedirectResponse('/mon-compte/mes-informations');
         }
 
-        return $this->render('user_profile/update.html.twig', [
+        return $this->render('user_update/update.html.twig', [
             'page_title' => "Modifier le mot de passe du compte",
             'form' => $form->createView()
         ]);
@@ -87,7 +87,7 @@ class UserProfileController extends AbstractController
     /**
      * @Route("/mon-compte/modifier/identifiant", name="user_identifier")
      */
-    public function profileIdentifierForm(Request $request): Response
+    public function updateIdentifier(Request $request): Response
     {
         $user = new User();
         $user
@@ -103,7 +103,7 @@ class UserProfileController extends AbstractController
             ->setEmail("dupond.t@orange.fr")
             ->setTimeZoneSelected("Europe/Paris");
 
-        $form = $this->createForm(UserProfileIdentifierType::class, $user);
+        $form = $this->createForm(UserUpdateIdentifierType::class, $user);
 
         $form->handleRequest($request);
 
@@ -111,7 +111,7 @@ class UserProfileController extends AbstractController
             //return new RedirectResponse('/mon-compte/mes-informations');
         }
 
-        return $this->render('user_profile/update.html.twig', [
+        return $this->render('user_update/update.html.twig', [
             'page_title' => "Modifier l'identifiant du compte",
             'form' => $form->createView()
         ]);
@@ -120,7 +120,7 @@ class UserProfileController extends AbstractController
     /**
      * @Route("/mon-compte/mes-documents", name="user_document")
      */
-    public function profileDocumentForm(Request $request): Response
+    public function updateDocuments(Request $request): Response
     {
         $user = new User();
         $user
@@ -136,7 +136,7 @@ class UserProfileController extends AbstractController
             ->setEmail("dupond.t@orange.fr")
             ->setTimeZoneSelected("Europe/Paris");
 
-        $form = $this->createForm(UserProfileDocumentType::class, $user);
+        $form = $this->createForm(UserUpdateDocumentType::class, $user);
 
         $form->handleRequest($request);
 
@@ -144,7 +144,7 @@ class UserProfileController extends AbstractController
             //return new RedirectResponse('/mon-compte/mes-documents');
         }
 
-        return $this->render('user_profile/update.html.twig', [
+        return $this->render('user_update/index.html.twig', [
             'page_title' => "Vos documents",
             'form' => $form->createView()
         ]);
@@ -153,7 +153,7 @@ class UserProfileController extends AbstractController
     /**
      * @Route("/mon-compte/mes-parametres", name="user_parameter")
      */
-    public function profileParameterForm(Request $request): Response
+    public function updateParameters(Request $request): Response
     {
         $user = new User();
         $user
@@ -169,7 +169,7 @@ class UserProfileController extends AbstractController
             ->setEmail("dupond.t@orange.fr")
             ->setTimeZoneSelected("Europe/Paris");
 
-        $form = $this->createForm(UserProfileParameterType::class, $user);
+        $form = $this->createForm(UserUpdateParameterType::class, $user);
 
         $form->handleRequest($request);
 
@@ -177,7 +177,7 @@ class UserProfileController extends AbstractController
             //return new RedirectResponse('/mon-compte/mes-parametres');
         }
 
-        return $this->render('user_profile/update.html.twig', [
+        return $this->render('user_update/index.html.twig', [
             'page_title' => "Vos paramètres",
             'form' => $form->createView()
         ]);

@@ -53,6 +53,7 @@ final class UserRegistrationControllerTest extends WebTestCase
     public function getRegistrationForm(Crawler $crawler, array $formData): Form
     {
         $form = $crawler->selectButton('user_registration[save]')->form();
+        $form['user_registration[timeZoneSelected]'] = $formData['timezone'];
         $form['user_registration[lastName]'] = $formData['lastName'];
         $form['user_registration[firstName]'] = $formData['firstName'];
         $form['user_registration[billingAddress]'] = $formData['address'];
@@ -134,6 +135,12 @@ final class UserRegistrationControllerTest extends WebTestCase
             1,
             $crawler->filter('form[name=user_registration] *[name*=birthDate]'),
             "Il doit y avoir un et un seul champ pour la date de naissance dans ce formulaire"
+        );
+        // Fuseau horaire
+        $this->assertCount(
+            1,
+            $crawler->filter('form[name=user_registration] *[name*=timeZoneSelected]'),
+            "Il doit y avoir un et un seul champ pour le fuseau horaire dans ce formulaire"
         );
         // Mot de passe
         $this->assertCount(
@@ -677,7 +684,7 @@ final class UserRegistrationControllerTest extends WebTestCase
         $crawler = $client->submit($form);
         // asserts
         $this->assertResponseStatusCodeSame(302);
-        $this->assertResponseRedirects('/login');
+        $this->assertResponseRedirects('/main');
         $crawler = $client->followRedirect();
         $this->assertSelectorTextContains(
             'div.flash-success',

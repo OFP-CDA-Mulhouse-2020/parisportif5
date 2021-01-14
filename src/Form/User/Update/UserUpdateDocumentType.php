@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Form\Profile;
+namespace App\Form\User\Update;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
@@ -8,7 +8,7 @@ use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 
-class UserProfileDocumentType extends AbstractType
+class UserUpdateDocumentType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {

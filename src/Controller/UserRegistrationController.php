@@ -2,9 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\Language;
 use App\Entity\User;
 use App\Entity\Wallet;
-use App\Form\UserRegistrationType;
+use App\Form\User\Registration\UserRegistrationType;
 use App\Repository\LanguageRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,18 +16,19 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 class UserRegistrationController extends AbstractController
 {
     private UserPasswordEncoderInterface $passwordEncoder;
+    /** @const string ICU_DEFAULT_LANGUAGE_CODE */
+    public const ICU_DEFAULT_LANGUAGE_CODE = 'fr_FR';
 
     public function __construct(UserPasswordEncoderInterface $passwordEncoder)
     {
         $this->passwordEncoder = $passwordEncoder;
     }
 
-    protected function getICUPreferredLanguageCode(Request $request): string
+    /** @param array<int,string> $languagesCodes */
+    protected function getICUPreferredLanguageCode(array $languagesCodes): string
     {
-        $languagesCodes = $request->getLanguages();
-        $default = 'fr_FR';
         if (empty($languagesCodes)) {
-            return $default;
+            return self::ICU_DEFAULT_LANGUAGE_CODE;
         }
         $icuPreferredLanguages = array_map(function (string $language) {
             if (mb_strlen($language) === 4) {
@@ -36,15 +38,34 @@ class UserRegistrationController extends AbstractController
         if (empty($icuPreferredLanguages)) {
             $icuPreferredLanguages[0] = $languagesCodes[0];
         }
-        return $icuPreferredLanguages[0] ?? $default;
+        return $icuPreferredLanguages[0] ?? self::ICU_DEFAULT_LANGUAGE_CODE;
+    }
+
+    protected function getBrowserLanguage(Request $request, LanguageRepository $languageRepository): Language
+    {
+        $languagesCodes = $request->getLanguages();
+        $preferredLanguageCode = $this->getICUPreferredLanguageCode($languagesCodes);
+        $userLanguage = $languageRepository->findOneByLanguageCode($preferredLanguageCode);
+        if (is_null($userLanguage)) {
+            $userLanguage = $languageRepository->languageByDefault();
+        }
+        return $userLanguage;
     }
 
     /**
      * @Route("/inscription", name="user_registration")
      */
-    public function registrationForm(Request $request, LanguageRepository $languageRepository): Response
+    public function register(Request $request, LanguageRepository $languageRepository): Response
     {
         $user = new User();
+
+        $userLanguage = $this->getBrowserLanguage($request, $languageRepository);
+
+        $browserTimezone = $userLanguage->getCapitalTimeZone();
+
+        if (!empty($browserTimezone)) {
+            $user->setTimeZoneSelected($browserTimezone);
+        }
 
         $form = $this->createForm(UserRegistrationType::class, $user);
 
@@ -64,16 +85,9 @@ class UserRegistrationController extends AbstractController
             $userWallet
                 ->setUser($user)
                 ->setAmount(0);
-            $preferredLanguageCode = $this->getICUPreferredLanguageCode($request);
-            $userLanguage = $languageRepository->findOneByLanguageCode($preferredLanguageCode);
-            if (is_null($userLanguage)) {
-                $userLanguage = $languageRepository->languageByDefault();
-            }
-            $selectedTimezone = $userLanguage->getCapitalTimeZone() ?? 'UTC';
             $user
                 ->setLanguage($userLanguage)
-                ->setWallet($userWallet)
-                ->setTimeZoneSelected($selectedTimezone);
+                ->setWallet($userWallet);
             // Persist user
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($user);
@@ -85,7 +99,7 @@ class UserRegistrationController extends AbstractController
                 "Votre compte a été créé ! Son activation sera effective d'ici 24 heures."
             );
 
-            return $this->redirectToRoute('Connexion');
+            return $this->redirectToRoute('main');
         }
 
         return $this->render('user_registration/index.html.twig', [
@@ -98,7 +112,7 @@ class UserRegistrationController extends AbstractController
     /**
      * @Route("/main", name="main")
      */
-    public function mainPage(): Response
+    public function main(): Response
     {
         //Request $request
         //$preferredLanguageCode = $request->getPreferredLanguage();
