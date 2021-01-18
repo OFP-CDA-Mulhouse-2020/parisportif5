@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Form\User\Registration;
+namespace App\Form;
 
 use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
@@ -16,8 +16,11 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TimezoneType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\IsTrue;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\File;
 
-class UserRegistrationType extends AbstractType
+class RegistrationFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -30,7 +33,7 @@ class UserRegistrationType extends AbstractType
                 'first_options'  => ['label' => "Email"],
                 'second_options' => ['label' => "Confirmer l'email"]
             ])
-            ->add('password', RepeatedType::class, [
+            ->add('plainPassword', RepeatedType::class, [
                 'type' => PasswordType::class,
                 'required' => true,
                 'trim' => false,
@@ -89,59 +92,68 @@ class UserRegistrationType extends AbstractType
                 'invalid_message' => "Veuillez sélectionner un fuseau horaire.",
                 'placeholder' => 'Choisissez un fuseau horaire'
             ])
-            ->add('save', SubmitType::class, [
-                'label' => "Valider"
-                //'validation_groups' => ['registration']
-            ])
-        ;
-        /*$builder
-            ->add('step1Cancel', SubmitType::class, [
-                'label' => "Annuler",
-                'validation_groups' => false
-            ])
-            ->add('step1Validation', SubmitType::class, [
-                'label' => "Suivant"
-            ])
             ->add('acceptTerms', CheckboxType::class, [
+                'mapped' => false,
+                'required' => true,
                 'label' => "J'accepte les conditions générales d'utilisation",
-                'mapped' => false,
-                'required' => true
+                'constraints' => [
+                    new IsTrue([
+                        'message' => "Vous devez accepter les conditions générales d'utilisation pour vous inscrire.",
+                    ])
+                ]
             ])
-            ->add('acceptNewsletters', CheckboxType::class, [
+            ->add('newsletters', CheckboxType::class, [
                 'label' => "J'accepte de recevoir les offres promotionnelles de notre site",
-                'mapped' => false,
                 'required' => false
-            ])
-            ->add('step2Previous', SubmitType::class, [
-                'label' => "Précédent",
-                'validation_groups' => false
-            ])
-            ->add('step2Validation', SubmitType::class, [
-                'label' => "Suivant",
             ])
             ->add('identityDocument', FileType::class, [
                 'label' => "Document d'identité (carte ID, passeport, permis de conduire ...)",
                 'mapped' => false,
-                'required' => true
+                'required' => true,
+                'constraints' => [
+                    new NotBlank([
+                        'message' => "Fichier obligatoire pour l'inscription !",
+                    ]),
+                    new File([
+                        'maxSize' => "1M",
+                        'mimeTypes' => ["application/pdf", "image/jpeg", "image/png"],
+                        'mimeTypesMessage' => "Seule les fichiers au format PDF, PNG, JPG et JPEG sont accepté.",
+                        'disallowEmptyMessage' => "Le fichier spécifier est vide.",
+                        'maxSizeMessage' => "La taille maximale autorisée est de {{ limit }} {{ suffix }}."
+                    ])
+                ]
             ])
             ->add('residenceProof', FileType::class, [
                 'label' => "Justificatif de domicile (Facture, avis d'imposition ...)",
                 'mapped' => false,
-                'required' => true
+                'required' => true,
+                'constraints' => [
+                    new NotBlank([
+                        'message' => "Fichier obligatoire pour l'inscription !",
+                    ]),
+                    new File([
+                        'maxSize' => "1M",
+                        'mimeTypes' => ["application/pdf", "image/jpeg", "image/png"],
+                        'mimeTypesMessage' => "Seule les fichiers au format PDF, PNG, JPG et JPEG sont accepté.",
+                        'disallowEmptyMessage' => "Le fichier spécifier est vide.",
+                        'maxSizeMessage' => "La taille maximale autorisée est de {{ limit }} {{ suffix }}."
+                    ])
+                ]
             ])
             ->add('certifiesAccurate', CheckboxType::class, [
                 'label' => "Je certifie sur l'honneur que les données fournies sont exactes",
                 'mapped' => false,
-                'required' => true
+                'required' => true,
+                'constraints' => [
+                    new IsTrue([
+                        'message' => "Vous devez certifier sur l'honneur que les données fournies sont exactes.",
+                    ])
+                ]
             ])
-            ->add('step3Previous', SubmitType::class, [
-                'label' => "Précédent",
-                'validation_groups' => false
+            ->add('register', SubmitType::class, [
+                'label' => "S'inscrire"
             ])
-            ->add('step3Validation', SubmitType::class, [
-                'label' => "Terminer",
-            ])
-        ;*/
+        ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void

@@ -9,9 +9,9 @@ use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\DomCrawler\Form;
 
 /**
- * @covers \UserUpdateController
+ * @covers \AccountController
  */
-final class UserUpdateControllerTest extends WebTestCase
+final class AccountControllerTest extends WebTestCase
 {
     private function getUpdateUserData(): array
     {
@@ -41,9 +41,9 @@ final class UserUpdateControllerTest extends WebTestCase
     // Tests fonctionnels d'intégrations
 
     /**
-     * @dataProvider updateFormValidPageProvider
+     * @dataProvider accountFormValidPageProvider
      */
-    public function testUpdateFormValidPage(string $url, string $title): void
+    public function testAccountFormValidPage(string $url, string $title): void
     {
         $client = static::createClient();
         $client->request('GET', $url);
@@ -51,7 +51,7 @@ final class UserUpdateControllerTest extends WebTestCase
         $this->assertSelectorTextContains('h1', $title);
     }
 
-    public function updateFormValidPageProvider(): array
+    public function accountFormValidPageProvider(): array
     {
         /*
             ['/mon-compte/mes-informations', "Données personnelles"],
@@ -68,7 +68,7 @@ final class UserUpdateControllerTest extends WebTestCase
         ];
     }
 
-    public function testUpdatePersonalDataFormValidDisplay(): void
+    public function testAccountPersonalDataFormValidDisplay(): void
     {
         $client = static::createClient();
         $crawler = $client->request('GET', '/mon-compte/mes-informations');
@@ -128,7 +128,7 @@ final class UserUpdateControllerTest extends WebTestCase
         );
     }
 
-    public function getUpdatePersonalDataForm(Crawler $crawler, array $formData): Form
+    public function getAccountPersonalDataForm(Crawler $crawler, array $formData): Form
     {
         $form = $crawler->selectButton('user_update_personal_data[modify]')->form();
         $form['user_update_personal_data[civility]'] = $formData['civility'];
@@ -141,7 +141,7 @@ final class UserUpdateControllerTest extends WebTestCase
         return $form;
     }
 
-    /*public function testUpdatePersonalDataFormCivilityLengthOverMax(): void
+    /*public function testAccountPersonalDataFormCivilityLengthOverMax(): void
     {
         $client = static::createClient();
         $crawler = $client->request('GET', '/mon-compte/mes-informations');
@@ -149,7 +149,7 @@ final class UserUpdateControllerTest extends WebTestCase
         // set some values
         $civility = 'azertyuiopqsdfgh';
         $formData['civility'] = $civility;
-        $form = $this->getUpdatePersonalDataForm($crawler, $formData);
+        $form = $this->getAccountPersonalDataForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
@@ -160,7 +160,7 @@ final class UserUpdateControllerTest extends WebTestCase
         );
     }*/
 
-    /*public function testUpdatePersonalDataFormFirstNameEmpty(): void
+    /*public function testAccountPersonalDataFormFirstNameEmpty(): void
     {
         $client = static::createClient();
         $crawler = $client->request('GET', '/mon-compte/mes-informations');
@@ -168,7 +168,7 @@ final class UserUpdateControllerTest extends WebTestCase
         // set some values
         $firstName = ' ';
         $formData['firstName'] = $firstName;
-        $form = $this->getUpdatePersonalDataForm($crawler, $formData);
+        $form = $this->getAccountPersonalDataForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
@@ -179,7 +179,7 @@ final class UserUpdateControllerTest extends WebTestCase
         );
     }*/
 
-    public function testUpdatePersonalDataFormFirstNameNotValid(): void
+    public function testAccountPersonalDataFormFirstNameNotValid(): void
     {
         $client = static::createClient();
         $crawler = $client->request('GET', '/mon-compte/mes-informations');
@@ -187,7 +187,7 @@ final class UserUpdateControllerTest extends WebTestCase
         // set some values
         $firstName = 'k2000';
         $formData['firstName'] = $firstName;
-        $form = $this->getUpdatePersonalDataForm($crawler, $formData);
+        $form = $this->getAccountPersonalDataForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
@@ -198,7 +198,7 @@ final class UserUpdateControllerTest extends WebTestCase
         );
     }
 
-    public function testUpdatePersonalDataFormFirstNameLengthUnderMin(): void
+    public function testAccountPersonalDataFormFirstNameLengthUnderMin(): void
     {
         $client = static::createClient();
         $crawler = $client->request('GET', '/mon-compte/mes-informations');
@@ -206,7 +206,7 @@ final class UserUpdateControllerTest extends WebTestCase
         // set some values
         $firstName = 'a';
         $formData['firstName'] = $firstName;
-        $form = $this->getUpdatePersonalDataForm($crawler, $formData);
+        $form = $this->getAccountPersonalDataForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
@@ -217,7 +217,7 @@ final class UserUpdateControllerTest extends WebTestCase
         );
     }
 
-    public function testUpdatePersonalDataFormFirstNameLengthOverMax(): void
+    public function testAccountPersonalDataFormFirstNameLengthOverMax(): void
     {
         $client = static::createClient();
         $crawler = $client->request('GET', '/mon-compte/mes-informations');
@@ -225,7 +225,7 @@ final class UserUpdateControllerTest extends WebTestCase
         // set some values
         $firstName = 'nomquiestbeaucouptroplongg';
         $formData['firstName'] = $firstName;
-        $form = $this->getUpdatePersonalDataForm($crawler, $formData);
+        $form = $this->getAccountPersonalDataForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
@@ -236,7 +236,7 @@ final class UserUpdateControllerTest extends WebTestCase
         );
     }
 
-    /*public function testUpdatePersonalDataFormLastNameEmpty(): void
+    /*public function testAccountPersonalDataFormLastNameEmpty(): void
     {
         $client = static::createClient();
         $crawler = $client->request('GET', '/mon-compte/mes-informations');
@@ -244,7 +244,7 @@ final class UserUpdateControllerTest extends WebTestCase
         // set some values
         $lastName = ' ';
         $formData['lastName'] = $lastName;
-        $form = $this->getUpdatePersonalDataForm($crawler, $formData);
+        $form = $this->getAccountPersonalDataForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
@@ -255,7 +255,7 @@ final class UserUpdateControllerTest extends WebTestCase
         );
     }*/
 
-    public function testUpdatePersonalDataFormLastNameNotValid(): void
+    public function testAccountPersonalDataFormLastNameNotValid(): void
     {
         $client = static::createClient();
         $crawler = $client->request('GET', '/mon-compte/mes-informations');
@@ -263,7 +263,7 @@ final class UserUpdateControllerTest extends WebTestCase
         // set some values
         $lastName = 'k2000';
         $formData['lastName'] = $lastName;
-        $form = $this->getUpdatePersonalDataForm($crawler, $formData);
+        $form = $this->getAccountPersonalDataForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
@@ -274,7 +274,7 @@ final class UserUpdateControllerTest extends WebTestCase
         );
     }
 
-    public function testUpdatePersonalDataFormLastNameLengthUnderMin(): void
+    public function testAccountPersonalDataFormLastNameLengthUnderMin(): void
     {
         $client = static::createClient();
         $crawler = $client->request('GET', '/mon-compte/mes-informations');
@@ -282,7 +282,7 @@ final class UserUpdateControllerTest extends WebTestCase
         // set some values
         $lastName = 'a';
         $formData['lastName'] = $lastName;
-        $form = $this->getUpdatePersonalDataForm($crawler, $formData);
+        $form = $this->getAccountPersonalDataForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
@@ -293,7 +293,7 @@ final class UserUpdateControllerTest extends WebTestCase
         );
     }
 
-    public function testUpdatePersonalDataFormLastNameLengthOverMax(): void
+    public function testAccountPersonalDataFormLastNameLengthOverMax(): void
     {
         $client = static::createClient();
         $crawler = $client->request('GET', '/mon-compte/mes-informations');
@@ -301,7 +301,7 @@ final class UserUpdateControllerTest extends WebTestCase
         // set some values
         $lastName = 'nomquiestbeaucouptroplongg';
         $formData['lastName'] = $lastName;
-        $form = $this->getUpdatePersonalDataForm($crawler, $formData);
+        $form = $this->getAccountPersonalDataForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
@@ -312,7 +312,7 @@ final class UserUpdateControllerTest extends WebTestCase
         );
     }
 
-    /*public function testUpdatePersonalDataFormAddressEmpty(): void
+    /*public function testAccountPersonalDataFormAddressEmpty(): void
     {
         $client = static::createClient();
         $crawler = $client->request('GET', '/mon-compte/mes-informations');
@@ -320,7 +320,7 @@ final class UserUpdateControllerTest extends WebTestCase
         // set some values
         $address = ' ';
         $formData['address'] = $address;
-        $form = $this->getUpdatePersonalDataForm($crawler, $formData);
+        $form = $this->getAccountPersonalDataForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
@@ -331,7 +331,7 @@ final class UserUpdateControllerTest extends WebTestCase
         );
     }*/
 
-    public function testUpdatePersonalDataFormAddressNotValid(): void
+    public function testAccountPersonalDataFormAddressNotValid(): void
     {
         $client = static::createClient();
         $crawler = $client->request('GET', '/mon-compte/mes-informations');
@@ -339,7 +339,7 @@ final class UserUpdateControllerTest extends WebTestCase
         // set some values
         $address = '1 rue G@bin';
         $formData['address'] = $address;
-        $form = $this->getUpdatePersonalDataForm($crawler, $formData);
+        $form = $this->getAccountPersonalDataForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
@@ -350,7 +350,7 @@ final class UserUpdateControllerTest extends WebTestCase
         );
     }
 
-    /*public function testUpdatePersonalDataFormCityEmpty(): void
+    /*public function testAccountPersonalDataFormCityEmpty(): void
     {
         $client = static::createClient();
         $crawler = $client->request('GET', '/mon-compte/mes-informations');
@@ -358,7 +358,7 @@ final class UserUpdateControllerTest extends WebTestCase
         // set some values
         $city = ' ';
         $formData['city'] = $city;
-        $form = $this->getUpdatePersonalDataForm($crawler, $formData);
+        $form = $this->getAccountPersonalDataForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
@@ -369,7 +369,7 @@ final class UserUpdateControllerTest extends WebTestCase
         );
     }*/
 
-    public function testUpdatePersonalDataFormCityNotValid(): void
+    public function testAccountPersonalDataFormCityNotValid(): void
     {
         $client = static::createClient();
         $crawler = $client->request('GET', '/mon-compte/mes-informations');
@@ -377,7 +377,7 @@ final class UserUpdateControllerTest extends WebTestCase
         // set some values
         $city = 'St-Martin 1';
         $formData['city'] = $city;
-        $form = $this->getUpdatePersonalDataForm($crawler, $formData);
+        $form = $this->getAccountPersonalDataForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
@@ -388,7 +388,7 @@ final class UserUpdateControllerTest extends WebTestCase
         );
     }
 
-    /*public function testUpdatePersonalDataFormPostcodeEmpty(): void
+    /*public function testAccountPersonalDataFormPostcodeEmpty(): void
     {
         $client = static::createClient();
         $crawler = $client->request('GET', '/mon-compte/mes-informations');
@@ -396,7 +396,7 @@ final class UserUpdateControllerTest extends WebTestCase
         // set some values
         $postcode = ' ';
         $formData['postcode'] = $postcode;
-        $form = $this->getUpdatePersonalDataForm($crawler, $formData);
+        $form = $this->getAccountPersonalDataForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
@@ -407,7 +407,7 @@ final class UserUpdateControllerTest extends WebTestCase
         );
     }*/
 
-    public function testUpdatePersonalDataFormPostcodeNotValid(): void
+    public function testAccountPersonalDataFormPostcodeNotValid(): void
     {
         $client = static::createClient();
         $crawler = $client->request('GET', '/mon-compte/mes-informations');
@@ -415,7 +415,7 @@ final class UserUpdateControllerTest extends WebTestCase
         // set some values
         $postcode = '6800@';
         $formData['postcode'] = $postcode;
-        $form = $this->getUpdatePersonalDataForm($crawler, $formData);
+        $form = $this->getAccountPersonalDataForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
@@ -426,7 +426,7 @@ final class UserUpdateControllerTest extends WebTestCase
         );
     }
 
-    public function testUpdateDocumentFormValidDisplay(): void
+    public function testAccountDocumentFormValidDisplay(): void
     {
         $client = static::createClient();
         $crawler = $client->request('GET', '/mon-compte/mes-documents');
@@ -468,7 +468,7 @@ final class UserUpdateControllerTest extends WebTestCase
         );
     }
 
-    /*public function getUpdateDocumentForm(Crawler $crawler, array $formData): Form
+    /*public function getAccountDocumentForm(Crawler $crawler, array $formData): Form
     {
         $form = $crawler->selectButton('user_update_document[add]')->form();
         $form['user_update_document[residenceProof]'] = $formData['residence'];
@@ -476,7 +476,7 @@ final class UserUpdateControllerTest extends WebTestCase
         return $form;
     }*/
 
-    public function testUpdateIdentifierFormValidDisplay(): void
+    public function testAccountIdentifierFormValidDisplay(): void
     {
         $client = static::createClient();
         $crawler = $client->request('GET', '/mon-compte/modifier/identifiant');
@@ -508,7 +508,7 @@ final class UserUpdateControllerTest extends WebTestCase
         );
     }
 
-    public function getUpdateIdentifierForm(Crawler $crawler, array $formData): Form
+    public function getAccountIdentifierForm(Crawler $crawler, array $formData): Form
     {
         $form = $crawler->selectButton('user_update_identifier[modify]')->form();
         //$form['user_update_identifier[emailValidation]'] = $formData['emailValidationCode'];
@@ -517,7 +517,7 @@ final class UserUpdateControllerTest extends WebTestCase
         return $form;
     }
 
-    /*public function testUpdateIdentifierFormEmailEmpty(): void
+    /*public function testAccountIdentifierFormEmailEmpty(): void
     {
         $client = static::createClient();
         $crawler = $client->request('GET', '/mon-compte/modifier/identifiant');
@@ -526,7 +526,7 @@ final class UserUpdateControllerTest extends WebTestCase
         $email = ' ';
         $formData['newEmail1'] = $email;
         $formData['newEmail2'] = $email;
-        $form = $this->getUpdateIdentifierForm($crawler, $formData);
+        $form = $this->getAccountIdentifierForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
@@ -537,7 +537,7 @@ final class UserUpdateControllerTest extends WebTestCase
         );
     }*/
 
-    public function testUpdateIdentifierFormEmailNotEqual(): void
+    public function testAccountIdentifierFormEmailNotEqual(): void
     {
         $client = static::createClient();
         $crawler = $client->request('GET', '/mon-compte/modifier/identifiant');
@@ -545,7 +545,7 @@ final class UserUpdateControllerTest extends WebTestCase
         // set some values
         $email = 'dupond@orange.fr';
         $formData['newEmail2'] = $email;
-        $form = $this->getUpdateIdentifierForm($crawler, $formData);
+        $form = $this->getAccountIdentifierForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
@@ -556,7 +556,7 @@ final class UserUpdateControllerTest extends WebTestCase
         );
     }
 
-    public function testUpdateIdentifierFormEmailNotValid(): void
+    public function testAccountIdentifierFormEmailNotValid(): void
     {
         $client = static::createClient();
         $crawler = $client->request('GET', '/mon-compte/modifier/identifiant');
@@ -565,7 +565,7 @@ final class UserUpdateControllerTest extends WebTestCase
         $email = 'test';
         $formData['newEmail1'] = $email;
         $formData['newEmail2'] = $email;
-        $form = $this->getUpdateIdentifierForm($crawler, $formData);
+        $form = $this->getAccountIdentifierForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
@@ -576,7 +576,7 @@ final class UserUpdateControllerTest extends WebTestCase
         );
     }
 
-    public function testUpdatePasswordFormValidDisplay(): void
+    public function testAccountPasswordFormValidDisplay(): void
     {
         $client = static::createClient();
         $crawler = $client->request('GET', '/mon-compte/modifier/mot-de-passe');
@@ -620,16 +620,16 @@ final class UserUpdateControllerTest extends WebTestCase
         );
     }
 
-    public function getUpdatePasswordForm(Crawler $crawler, array $formData): Form
+    public function getAccountPasswordForm(Crawler $crawler, array $formData): Form
     {
         $form = $crawler->selectButton('user_update_password[modify]')->form();
         $form['user_update_password[oldPassword]'] = $formData['oldPassword'];
-        $form['user_update_password[password][first]'] = $formData['newPassword1'];
-        $form['user_update_password[password][second]'] = $formData['newPassword2'];
+        $form['user_update_password[plainPassword][first]'] = $formData['newPassword1'];
+        $form['user_update_password[plainPassword][second]'] = $formData['newPassword2'];
         return $form;
     }
 
-    /*public function testUpdatePasswordFormPasswordWithName(): void
+    /*public function testAccountPasswordFormPasswordWithName(): void
     {
         $client = static::createClient();
         $crawler = $client->request('GET', '/mon-compte/modifier/mot-de-passe');
@@ -638,7 +638,7 @@ final class UserUpdateControllerTest extends WebTestCase
         $password = 'Martin_Dupond';
         $formData['newPassword1'] = $password;
         $formData['newPassword2'] = $password;
-        $form = $this->getUpdatePasswordForm($crawler, $formData);
+        $form = $this->getAccountPasswordForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
@@ -650,7 +650,7 @@ final class UserUpdateControllerTest extends WebTestCase
         );
     }*/
 
-    /*public function testUpdatePasswordFormFalseOldPassword(): void
+    /*public function testAccountPasswordFormFalseOldPassword(): void
     {
         $client = static::createClient();
         $crawler = $client->request('GET', '/mon-compte/modifier/mot-de-passe');
@@ -658,7 +658,7 @@ final class UserUpdateControllerTest extends WebTestCase
         // set some values
         $passwordOld = 'a9c456';
         $formData['oldPassword'] = $passwordOld;
-        $form = $this->getUpdatePasswordForm($crawler, $formData);
+        $form = $this->getAccountPasswordForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
@@ -670,7 +670,7 @@ final class UserUpdateControllerTest extends WebTestCase
         );
     }*/
 
-    public function testUpdatePasswordFormPasswordUnderMin(): void
+    public function testAccountPasswordFormPasswordUnderMin(): void
     {
         $client = static::createClient();
         $crawler = $client->request('GET', '/mon-compte/modifier/mot-de-passe');
@@ -679,7 +679,7 @@ final class UserUpdateControllerTest extends WebTestCase
         $password = 'a2c456';
         $formData['newPassword1'] = $password;
         $formData['newPassword2'] = $password;
-        $form = $this->getUpdatePasswordForm($crawler, $formData);
+        $form = $this->getAccountPasswordForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
@@ -690,7 +690,7 @@ final class UserUpdateControllerTest extends WebTestCase
         );
     }
 
-    public function testUpdatePasswordFormPasswordOnlyNumbers(): void
+    public function testAccountPasswordFormPasswordOnlyNumbers(): void
     {
         $client = static::createClient();
         $crawler = $client->request('GET', '/mon-compte/modifier/mot-de-passe');
@@ -699,7 +699,7 @@ final class UserUpdateControllerTest extends WebTestCase
         $password = '12345678';
         $formData['newPassword1'] = $password;
         $formData['newPassword2'] = $password;
-        $form = $this->getUpdatePasswordForm($crawler, $formData);
+        $form = $this->getAccountPasswordForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
@@ -710,7 +710,7 @@ final class UserUpdateControllerTest extends WebTestCase
         );
     }
 
-    public function testUpdatePasswordFormPasswordOnlyLetters(): void
+    public function testAccountPasswordFormPasswordOnlyLetters(): void
     {
         $client = static::createClient();
         $crawler = $client->request('GET', '/mon-compte/modifier/mot-de-passe');
@@ -719,7 +719,7 @@ final class UserUpdateControllerTest extends WebTestCase
         $password = 'azertyuiop';
         $formData['newPassword1'] = $password;
         $formData['newPassword2'] = $password;
-        $form = $this->getUpdatePasswordForm($crawler, $formData);
+        $form = $this->getAccountPasswordForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
@@ -730,7 +730,7 @@ final class UserUpdateControllerTest extends WebTestCase
         );
     }
 
-    public function testUpdatePasswordFormPasswordNotEqual(): void
+    public function testAccountPasswordFormPasswordNotEqual(): void
     {
         $client = static::createClient();
         $crawler = $client->request('GET', '/mon-compte/modifier/mot-de-passe');
@@ -738,7 +738,7 @@ final class UserUpdateControllerTest extends WebTestCase
         // set some values
         $password = 'Azerty789';
         $formData['newPassword2'] = $password;
-        $form = $this->getUpdatePasswordForm($crawler, $formData);
+        $form = $this->getAccountPasswordForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
@@ -749,7 +749,7 @@ final class UserUpdateControllerTest extends WebTestCase
         );
     }
 
-    public function testUpdatePasswordFormPasswordEmpty(): void
+    public function testAccountPasswordFormPasswordEmpty(): void
     {
         $client = static::createClient();
         $crawler = $client->request('GET', '/mon-compte/modifier/mot-de-passe');
@@ -758,7 +758,7 @@ final class UserUpdateControllerTest extends WebTestCase
         $password = ' ';
         $formData['newPassword1'] = $password;
         $formData['newPassword2'] = $password;
-        $form = $this->getUpdatePasswordForm($crawler, $formData);
+        $form = $this->getAccountPasswordForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
@@ -769,7 +769,7 @@ final class UserUpdateControllerTest extends WebTestCase
         );
     }
 
-    public function testUpdateParameterFormValidDisplay(): void
+    public function testAccountParameterFormValidDisplay(): void
     {
         $client = static::createClient();
         $crawler = $client->request('GET', '/mon-compte/mes-parametres');
@@ -799,7 +799,7 @@ final class UserUpdateControllerTest extends WebTestCase
         );
     }
 
-    public function getUpdateParameterForm(Crawler $crawler, array $formData): Form
+    public function getAccountParameterForm(Crawler $crawler, array $formData): Form
     {
         $form = $crawler->selectButton('user_update_parameter[modify]')->form();
         $form['user_update_parameter[timeZoneSelected]'] = $formData['timezone'];

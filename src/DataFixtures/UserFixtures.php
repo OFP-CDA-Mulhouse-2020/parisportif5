@@ -34,6 +34,9 @@ class UserFixtures extends Fixture
                 'password' => "@Hadock5",
                 'birthdate' => "2000-10-20",
                 'timezone' => "Europe/Paris",
+                'newsletters' => false,
+                'identityDocument' => "identity_card.pdf",
+                'residenceProof' => "invoice.jpg",
                 'language' => [
                     'name' => 'allemand',
                     'country' => 'Deutschland',
@@ -56,6 +59,9 @@ class UserFixtures extends Fixture
                 'password' => "@Hadock123",
                 'birthdate' => "2000-11-21",
                 'timezone' => "Europe/Paris",
+                'newsletters' => false,
+                'identityDocument' => "identity_card.pdf",
+                'residenceProof' => "invoice.jpg",
                 'language' => [
                     'name' => 'anglais',
                     'country' => 'Uinted Kingdom',
@@ -94,6 +100,9 @@ class UserFixtures extends Fixture
                 ->setTimeZoneSelected($testData[$i]['timezone'])
                 ->setIsVerified($testData[$i]['verified'])
                 ->setEmail($testData[$i]['email'])
+                ->setNewsletters($testData[$i]['newsletters'])
+                ->setResidenceProof($testData[$i]['residenceProof'])
+                ->setIdentityDocument($testData[$i]['identityDocument'])
                 ->setPassword($this->passwordEncoder->encodePassword(
                     $user,
                     $testData[$i]['password']

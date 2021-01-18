@@ -6,7 +6,6 @@
         {% block stylesheets %}{% endblock %}
     </head>
     <body>
-        <!-- read and display several types of flash messages -->
         {% for label, messages in app.flashes(['success', 'warning', 'notice']) %}
             {% for message in messages %}
                 <div class="flash-{{ label }}">
@@ -14,8 +13,9 @@
                 </div>
             {% endfor %}
         {% endfor %}
-        <!---->
+
         {% block body %}{% endblock %}
+
         {% block javascripts %}{% endblock %}
     </body>
 </html>
