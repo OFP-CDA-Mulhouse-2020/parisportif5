@@ -14,8 +14,16 @@
 
      {% if app.user %}
         <div class="mb-3">
-            You are logged in as {{ app.user.username }}, <a href="{{ path('Ajouter des fonds') }}">Ajouter des fonds au porte monnaie</a>
+            You are logged in as {{ app.user.username }} 
         </div>
+        </br>
+        <a>Vos fonds ont bien été ajoutés au porte monnaie.</a>
+        </br>
+        <a>Votre porte monnaie est crédité de {{ app.user.wallet.amount }} thunes.</a>
+        </br>
+        <a href="{{ path('userloggedin') }}">Retour à l'accueil</a>
+        </br>
+        <a href="{{ path('Ajouter des fonds') }}">Ajouter des fonds au porte monnaie</a>
         <div class="mb-3">
             <a href="{{ path('userlogout') }}">Se déconnecter</a>
         </div>
