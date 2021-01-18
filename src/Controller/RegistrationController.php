@@ -26,9 +26,9 @@ class RegistrationController extends AbstractController
     }
 
     /**
-     * @Route("/inscription", name="app_register")
+     * @Route("/inscription", name="account_register")
      */
-    public function register(
+    public function registerAccount(
         Request $request,
         UserPasswordEncoderInterface $passwordEncoder,
         GuardAuthenticatorHandler $guardHandler,
@@ -44,7 +44,7 @@ class RegistrationController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
             $defaultLanguage = $languageRepository->languageByDefault();
-            $registrationFormHandler->handleForm(
+            $registrationFormHandler->handleAccountForm(
                 $form,
                 $defaultLanguage,
                 $entityManager,
@@ -91,7 +91,7 @@ class RegistrationController extends AbstractController
             } catch (VerifyEmailExceptionInterface $exception) {
                 $this->addFlash('verify_email_error', $exception->getReason());
 
-                return $this->redirectToRoute('app_register');
+                return $this->redirectToRoute('account_register');
             }
         }
         // else 'The "getUser" method don\'t return from Security Token Storage a object of User class.'
@@ -99,7 +99,7 @@ class RegistrationController extends AbstractController
         // @TODO Change the redirect on success and handle or remove the flash message in your templates
         $this->addFlash('success', 'Your email address has been verified.');
 
-        return $this->redirectToRoute('app_register');
+        return $this->redirectToRoute('account_register');
     }
 
     /**

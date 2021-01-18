@@ -69,7 +69,7 @@ final class RegistrationFormHandler
         return $icuPreferredLanguages[0] ?? null;
     }
 
-    public function handleForm(
+    public function handleAccountForm(
         FormInterface $form,
         Language $userLanguage,
         ObjectManager $entityManager,
@@ -88,6 +88,7 @@ final class RegistrationFormHandler
                 $this->user->getPlainPassword()
             )
         );
+        $this->user->eraseCredentials();
         // Set user roles
         $this->user->setRoles(['ROLE_USER']);
         // Set others user values
