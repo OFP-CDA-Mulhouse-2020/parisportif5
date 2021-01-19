@@ -9,6 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Form\AddFundsType;
+use App\Repository\WalletRepository;
 use Symfony\Component\HttpFoundation\Request;
 
 class AddFundsController extends AbstractController
@@ -16,14 +17,13 @@ class AddFundsController extends AbstractController
     /**
      * @Route("/account/addfunds", name="Ajouter des fonds")
      */
-    public function renderAddFundsPage(Request $request): Response
+    public function renderAddFundsPage(Request $request, WalletRepository $walletRepository): Response
     {
-        //$this->denyAccessUnlessGranted('IS_AUTHENTICATED'); //test de redirection
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY'); //test de redirection
         $user = $this->getUser();           //test d'accès à la donnée
-        // $wallet = $user->getWallet();           //test d'accès à la donnée
-        // $amount = $wallet->getAmount();           //test d'accès à la donnée
-        // var_dump($amount);
-        // die();
+        $wallet = $walletRepository->find($user->getWallet()->getId());           //test d'accès à la donnée
+        $amount = $wallet->getAmount();           //test d'accès à la donnée
+
 
         $form = $this->createForm(AddFundsType::class);
 
@@ -32,10 +32,15 @@ class AddFundsController extends AbstractController
         if ($form->isSubmitted()) {
             if ($form->isValid()) {
                 $data = $form->getData();
-                // var_dump($data['amount']);
-                // die();
-                // $wallet->setAmount($data['amount']);
+                // // var_dump($data['amount']);
+                // // die();
+                $wallet->setAmount($amount + $data['amount']);
                 // var_dump($amount);
+                $entityManager = $this->getDoctrine()->getManager();
+
+                $entityManager->persist($wallet);
+                $entityManager->flush();
+                // var_dump($wallet);
                 // die();
                 return $this->redirectToRoute('fundsadded');
             }
@@ -45,7 +50,7 @@ class AddFundsController extends AbstractController
             'site_title' => 'Paris Sportif',
             'page_title' => 'Ajouter des Fonds',
             'form' => $form->createView(),
-            // 'wallet_amount' => $amount
+            'wallet_amount' => $amount
             ]);
     }
 
