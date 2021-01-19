@@ -4,17 +4,15 @@ namespace App\Form\Account;
 
 use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ButtonType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CountryType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class AccountPersonalDataType extends AbstractType
+class AccountPersonalDataFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -34,18 +32,12 @@ class AccountPersonalDataType extends AbstractType
                 'label' => "Email",
                 'disabled' => true
             ])
-            ->add('modifyEmail', ButtonType::class, [
-                'label' => "Modifier l'adresse email"
-            ])
-            ->add('zeroPassword', PasswordType::class, [
+            ->add('zeroPassword', TextType::class, [
                 'required' => false,
                 'mapped' => false,
                 'label' => "Mot de passe",
-                'empty_data' => "00000000",
+                'data' => "********",
                 'disabled' => true
-            ])
-            ->add('modifyPassword', ButtonType::class, [
-                'label' => "Modifier le mot de passe"
             ])
             ->add('firstName', TextType::class, [
                 'required' => true,
@@ -87,6 +79,14 @@ class AccountPersonalDataType extends AbstractType
                 'label' => "Modifier"
             ])
         ;
+        /*
+            ->add('modifyEmail', ButtonType::class, [
+                'label' => "Modifier l'adresse email"
+            ])
+            ->add('modifyPassword', ButtonType::class, [
+                'label' => "Modifier le mot de passe"
+            ])
+        */
     }
 
     public function configureOptions(OptionsResolver $resolver): void

@@ -3,46 +3,60 @@
 namespace App\Controller;
 
 use App\Entity\User;
-use App\Form\Account\AccountDocumentType;
-use App\Form\Account\AccountParameterType;
-use App\Form\Account\AccountPersonalDataType;
-use App\Form\Account\AccountUpdateIdentifierType;
-use App\Form\Account\AccountUpdatePasswordType;
-use App\Repository\UserRepository;
+use App\Form\Account\AccountDocumentFormType;
+use App\Form\Account\AccountParameterFormType;
+use App\Form\Account\AccountPersonalDataFormType;
+use App\Form\Account\AccountUpdateIdentifierFormType;
+use App\Form\Account\AccountUpdatePasswordFormType;
+use App\Form\Handler\AccountFormHandler;
+use App\Security\EmailVerifier;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class AccountController extends AbstractController
 {
+    private EmailVerifier $emailVerifier;
+
+    public function __construct(EmailVerifier $emailVerifier)
+    {
+        $this->emailVerifier = $emailVerifier;
+    }
+
     /**
-     * @Route("/mon-compte/mes-informations", name="user_profile")
+     * @Route("/mon-compte/mes-informations", name="account_profile")
      */
     public function editPersonalDatas(Request $request): Response
     {
-        //$user = $this->getUser();
-        $user = new User();
-        $user
-            ->setCivility(null)
-            ->setFirstName("Tintin")
-            ->setLastName("Dupont")
-            ->setBillingAddress("1 avenue st martin")
-            ->setBillingCity("Colmar")
-            ->setBillingPostcode("68000")
-            ->setBillingCountry("FR")
-            ->setBirthDate(new \DateTimeImmutable("2000-10-10"))
-            ->setPassword("Azerty78")
-            ->setEmail("dupond.t@orange.fr")
-            ->setTimeZoneSelected("Europe/Paris");
+        // usually you'll want to make sure the user is authenticated first
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
-        $form = $this->createForm(AccountPersonalDataType::class, $user);
+        // returns your User object, or null if the user is not authenticated
+        // use inline documentation to tell your editor your exact User class
+        /** @var User $user */
+        $user = $this->getUser();
+
+        $form = $this->createForm(AccountPersonalDataFormType::class, $user);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             //return new RedirectResponse('/mon-compte/mes-informations');
+            $accountFormHandler = new AccountFormHandler();
+            $entityManager = $this->getDoctrine()->getManager();
+            $accountFormHandler->handleForm(
+                $form,
+                $user,
+                $entityManager
+            );
+
+             // Add success message
+             $this->addFlash(
+                 'success',
+                 "Vos informations personnelles ont été mis à jour."
+             );
         }
 
         return $this->render('account/index.html.twig', [
@@ -52,30 +66,38 @@ class AccountController extends AbstractController
     }
 
     /**
-     * @Route("/mon-compte/modifier/mot-de-passe", name="user_password")
+     * @Route("/mon-compte/modifier/mot-de-passe", name="account_password")
      */
-    public function editPassword(Request $request): Response
+    public function editPassword(Request $request, UserPasswordEncoderInterface $passwordEncoder): Response
     {
-        $user = new User();
-        $user
-            ->setCivility(null)
-            ->setFirstName("Tintin")
-            ->setLastName("Dupont")
-            ->setBillingAddress("1 avenue st martin")
-            ->setBillingCity("Colmar")
-            ->setBillingPostcode("68000")
-            ->setBillingCountry("FR")
-            ->setBirthDate(new \DateTimeImmutable("2000-10-10"))
-            ->setPassword("Azerty78")
-            ->setEmail("dupond.t@orange.fr")
-            ->setTimeZoneSelected("Europe/Paris");
+        // usually you'll want to make sure the user is authenticated first
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
-        $form = $this->createForm(AccountUpdatePasswordType::class, $user);
+        // returns your User object, or null if the user is not authenticated
+        // use inline documentation to tell your editor your exact User class
+        /** @var User $user */
+        $user = $this->getUser();
+
+        $form = $this->createForm(AccountUpdatePasswordFormType::class, $user);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             //return new RedirectResponse('/mon-compte/mes-informations');
+            $accountFormHandler = new AccountFormHandler();
+            $entityManager = $this->getDoctrine()->getManager();
+            $accountFormHandler->handleForm(
+                $form,
+                $user,
+                $entityManager,
+                $passwordEncoder
+            );
+
+             // Add success message
+             $this->addFlash(
+                 'success',
+                 "Votre mot de passe a été mis à jour."
+             );
         }
 
         return $this->render('account/update.html.twig', [
@@ -85,30 +107,39 @@ class AccountController extends AbstractController
     }
 
     /**
-     * @Route("/mon-compte/modifier/identifiant", name="user_identifier")
+     * @Route("/mon-compte/modifier/identifiant", name="account_identifier")
      */
     public function editIdentifier(Request $request): Response
     {
-        $user = new User();
-        $user
-            ->setCivility(null)
-            ->setFirstName("Tintin")
-            ->setLastName("Dupont")
-            ->setBillingAddress("1 avenue st martin")
-            ->setBillingCity("Colmar")
-            ->setBillingPostcode("68000")
-            ->setBillingCountry("FR")
-            ->setBirthDate(new \DateTimeImmutable("2000-10-10"))
-            ->setPassword("Azerty78")
-            ->setEmail("dupond.t@orange.fr")
-            ->setTimeZoneSelected("Europe/Paris");
+        // usually you'll want to make sure the user is authenticated first
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
-        $form = $this->createForm(AccountUpdateIdentifierType::class, $user);
+        // returns your User object, or null if the user is not authenticated
+        // use inline documentation to tell your editor your exact User class
+        /** @var User $user */
+        $user = $this->getUser();
+
+        $form = $this->createForm(AccountUpdateIdentifierFormType::class, $user);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             //return new RedirectResponse('/mon-compte/mes-informations');
+            $accountFormHandler = new AccountFormHandler();
+            $entityManager = $this->getDoctrine()->getManager();
+            $accountFormHandler->handleForm(
+                $form,
+                $user,
+                $entityManager,
+                null,
+                $this->emailVerifier
+            );
+
+             // Add success message
+             $this->addFlash(
+                 'success',
+                 "Votre identifiant a été mis à jour."
+             );
         }
 
         return $this->render('account/update.html.twig', [
@@ -118,30 +149,37 @@ class AccountController extends AbstractController
     }
 
     /**
-     * @Route("/mon-compte/mes-documents", name="user_document")
+     * @Route("/mon-compte/mes-documents", name="account_document")
      */
     public function editDocuments(Request $request): Response
     {
-        $user = new User();
-        $user
-            ->setCivility(null)
-            ->setFirstName("Tintin")
-            ->setLastName("Dupont")
-            ->setBillingAddress("1 avenue st martin")
-            ->setBillingCity("Colmar")
-            ->setBillingPostcode("68000")
-            ->setBillingCountry("FR")
-            ->setBirthDate(new \DateTimeImmutable("2000-10-10"))
-            ->setPassword("Azerty78")
-            ->setEmail("dupond.t@orange.fr")
-            ->setTimeZoneSelected("Europe/Paris");
+        // usually you'll want to make sure the user is authenticated first
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
-        $form = $this->createForm(AccountDocumentType::class, $user);
+        // returns your User object, or null if the user is not authenticated
+        // use inline documentation to tell your editor your exact User class
+        /** @var User $user */
+        $user = $this->getUser();
+
+        $form = $this->createForm(AccountDocumentFormType::class, $user);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             //return new RedirectResponse('/mon-compte/mes-documents');
+            $accountFormHandler = new AccountFormHandler();
+            $entityManager = $this->getDoctrine()->getManager();
+            $accountFormHandler->handleForm(
+                $form,
+                $user,
+                $entityManager
+            );
+
+             // Add success message
+             $this->addFlash(
+                 'success',
+                 "Vos documents ont été mis à jour."
+             );
         }
 
         return $this->render('account/index.html.twig', [
@@ -151,30 +189,37 @@ class AccountController extends AbstractController
     }
 
     /**
-     * @Route("/mon-compte/mes-parametres", name="user_parameter")
+     * @Route("/mon-compte/mes-parametres", name="account_parameter")
      */
     public function editParameters(Request $request): Response
     {
-        $user = new User();
-        $user
-            ->setCivility(null)
-            ->setFirstName("Tintin")
-            ->setLastName("Dupont")
-            ->setBillingAddress("1 avenue st martin")
-            ->setBillingCity("Colmar")
-            ->setBillingPostcode("68000")
-            ->setBillingCountry("FR")
-            ->setBirthDate(new \DateTimeImmutable("2000-10-10"))
-            ->setPassword("Azerty78")
-            ->setEmail("dupond.t@orange.fr")
-            ->setTimeZoneSelected("Europe/Paris");
+        // usually you'll want to make sure the user is authenticated first
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
-        $form = $this->createForm(AccountParameterType::class, $user);
+        // returns your User object, or null if the user is not authenticated
+        // use inline documentation to tell your editor your exact User class
+        /** @var User $user */
+        $user = $this->getUser();
+
+        $form = $this->createForm(AccountParameterFormType::class, $user);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             //return new RedirectResponse('/mon-compte/mes-parametres');
+            $accountFormHandler = new AccountFormHandler();
+            $entityManager = $this->getDoctrine()->getManager();
+            $accountFormHandler->handleForm(
+                $form,
+                $user,
+                $entityManager
+            );
+
+             // Add success message
+             $this->addFlash(
+                 'success',
+                 "Vos paramètres ont été mis à jour."
+             );
         }
 
         return $this->render('account/index.html.twig', [

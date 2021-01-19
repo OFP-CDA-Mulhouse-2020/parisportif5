@@ -78,7 +78,7 @@ final class RegistrationControllerTest extends WebTestCase
         //dump($client->getResponse()->getContent());
     }
 
-    /*public function testRegistrationFormValidTitle(): void
+    public function testRegistrationFormValidTitle(): void
     {
         $client = static::createClient();
         $client->request('GET', "/inscription");
@@ -191,7 +191,7 @@ final class RegistrationControllerTest extends WebTestCase
             $crawler->filter('form[name=registration_form] *[type=submit]'),
             "Il doit y avoir un et un seul bouton d'envoi dans ce formulaire"
         );
-    }*/
+    }
 
     /*public function testDatabasePersistence(): void
     {
@@ -215,7 +215,7 @@ final class RegistrationControllerTest extends WebTestCase
         $this->assertNotNull($user);
     }*/
 
-    /*public function testRegistrationFormPasswordUnderMin(): void
+    public function testRegistrationFormPasswordUnderMin(): void
     {
         $client = static::createClient();
         $crawler = $client->request('GET', '/inscription');
@@ -741,7 +741,7 @@ final class RegistrationControllerTest extends WebTestCase
             'form[name=registration_form]',
             "Inscription impossible avec cette adresse email ! Veuillez en donner une autre pour vous inscrire."
         );
-    }*/
+    }
 }
 
 /*

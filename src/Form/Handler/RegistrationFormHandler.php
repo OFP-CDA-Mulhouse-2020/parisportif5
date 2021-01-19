@@ -69,7 +69,7 @@ final class RegistrationFormHandler
         return $icuPreferredLanguages[0] ?? null;
     }
 
-    public function handleAccountForm(
+    public function handleForm(
         FormInterface $form,
         Language $userLanguage,
         ObjectManager $entityManager,
@@ -88,17 +88,18 @@ final class RegistrationFormHandler
                 $this->user->getPlainPassword()
             )
         );
+        // delete the plain password
         $this->user->eraseCredentials();
         // Set user roles
         $this->user->setRoles(['ROLE_USER']);
         // Set others user values
         $this->createUserWallet();
         $this->user->setLanguage($userLanguage);
+        // Verify user email
+        //$this->verifyEmail($emailVerifier);
         // Persist user
         $entityManager->persist($this->user);
         $entityManager->flush();
-        // Verify user email
-        //$this->verifyEmail($emailVerifier);
     }
 
     private function createUserWallet(): void
@@ -114,7 +115,7 @@ final class RegistrationFormHandler
     {
         // generate a signed url and email it to the user
         $emailVerifier->sendEmailConfirmation(
-            'app_verify_email',
+            'account_verify_email',
             $this->user,
             (new TemplatedEmail())
                 ->from(new Address('confirmation@bet-project.com', 'Confirmation Mail'))

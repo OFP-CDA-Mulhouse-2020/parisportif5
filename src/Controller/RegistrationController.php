@@ -26,6 +26,16 @@ class RegistrationController extends AbstractController
     }
 
     /**
+     * @Route("/main", name="main")
+     */
+    public function main(): Response
+    {
+        return $this->render('base.html.twig', [
+            'page_title' => 'Accueil'
+        ]);
+    }
+
+    /**
      * @Route("/inscription", name="account_register")
      */
     public function registerAccount(
@@ -44,7 +54,7 @@ class RegistrationController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
             $defaultLanguage = $languageRepository->languageByDefault();
-            $registrationFormHandler->handleAccountForm(
+            $registrationFormHandler->handleForm(
                 $form,
                 $defaultLanguage,
                 $entityManager,
@@ -77,7 +87,7 @@ class RegistrationController extends AbstractController
     }
 
     /**
-     * @Route("/verify/email", name="app_verify_email")
+     * @Route("/verification/email", name="account_verify_email")
      */
     public function verifyUserEmail(Request $request): Response
     {
@@ -100,15 +110,5 @@ class RegistrationController extends AbstractController
         $this->addFlash('success', 'Your email address has been verified.');
 
         return $this->redirectToRoute('account_register');
-    }
-
-    /**
-     * @Route("/main", name="main")
-     */
-    public function main(): Response
-    {
-        return $this->render('base.html.twig', [
-            'page_title' => 'Accueil'
-        ]);
     }
 }
