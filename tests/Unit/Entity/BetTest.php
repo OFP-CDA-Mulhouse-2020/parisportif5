@@ -52,7 +52,7 @@ final class BetTest extends KernelTestCase
             ->setBirthDate(new \DateTimeImmutable("2000-10-10"))
             ->setPlainPassword("Azerty78")
             ->setPassword("hashpassword")
-            ->setEmail("dupond.t@orange.fr")
+            ->setEmail("haddock@gmail.fr")
             ->setTimeZoneSelected("Europe/Paris")
             ->setResidenceProof("identity_card.pdf")
             ->setIdentityDocument("invoice.jpg");
@@ -64,7 +64,7 @@ final class BetTest extends KernelTestCase
         $competition = new Competition();
         $date = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
         $competition
-            ->setName('name')
+            ->setName('Championnat inter-club')
             ->setStartDate($date->setTime(23, 59, 59, 1000000))
             ->setCountry($country)
             ->setMaxRuns(2)
@@ -124,7 +124,7 @@ final class BetTest extends KernelTestCase
         return $member;
     }
 
-    private function createBetCategoryObject(string $name = "result"): BetCategory
+    private function createBetCategoryObject(string $name = "resultw"): BetCategory
     {
         $betCategory = new BetCategory();
         $betCategory->setName($name);

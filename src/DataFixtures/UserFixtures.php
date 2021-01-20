@@ -28,6 +28,26 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
     {
         $testData = [
             [
+                'roles' => ['ROLE_USER', 'ROLE_ADMIN'],
+                'civility' => null,
+                'firstname' => "Admin",
+                'lastname' => "Admin",
+                'address' => "admin",
+                'city' => "COLMAR",
+                'postcode' => "68000",
+                'country' => "FR",
+                'email' => "admin@admin.fr",
+                'verified' => true,
+                'password' => "administrateur1",
+                'birthdate' => "2000-10-20",
+                'timezone' => "Europe/Paris",
+                'newsletters' => false,
+                'identityDocument' => "identity_card.pdf",
+                'residenceProof' => "invoice.jpg",
+                'language' => 'fr_FR'
+            ],
+            [
+                'roles' => ['ROLE_USER'],
                 'civility' => "Monsieur",
                 'firstname' => "Tintin",
                 'lastname' => "Dupont",
@@ -46,6 +66,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
                 'language' => 'fr_FR'
             ],
             [
+                'roles' => ['ROLE_USER'],
                 'civility' => "Monsieur",
                 'firstname' => "Toto",
                 'lastname' => "Dupontel",
@@ -87,6 +108,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
                 ->setBirthDate(new \DateTimeImmutable($testData[$i]['birthdate'], new \DateTimeZone("UTC")))
                 ->setTimeZoneSelected($testData[$i]['timezone'])
                 ->setIsVerified($testData[$i]['verified'])
+                ->setRoles($testData[$i]['roles'])
                 ->setEmail($testData[$i]['email'])
                 ->setNewsletters($testData[$i]['newsletters'])
                 ->setResidenceProof($testData[$i]['residenceProof'])
