@@ -5,6 +5,7 @@ namespace App\DataFixtures;
 use App\Entity\Language;
 use App\Entity\User;
 use App\Entity\Wallet;
+use App\Repository\LanguageRepository;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
@@ -12,10 +13,14 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 class UserFixtures extends Fixture
 {
     private UserPasswordEncoderInterface $passwordEncoder;
+    private LanguageRepository $languageRepository;
 
-    public function __construct(UserPasswordEncoderInterface $passwordEncoder)
-    {
+    public function __construct(
+        UserPasswordEncoderInterface $passwordEncoder,
+        LanguageRepository $languageRepository
+    ) {
         $this->passwordEncoder = $passwordEncoder;
+        $this->languageRepository = $languageRepository;
     }
 
     public function load(ObjectManager $manager): void
@@ -30,17 +35,14 @@ class UserFixtures extends Fixture
                 'postcode' => "68000",
                 'country' => "FR",
                 'email' => "tintin.dupont@test.fr",
+                'verified' => true,
                 'password' => "@Hadock5",
                 'birthdate' => "2000-10-20",
                 'timezone' => "Europe/Paris",
-                'language' => [
-                    'name' => 'allemand',
-                    'country' => 'Deutschland',
-                    'code' => 'de_DE',
-                    'dateFormat' => 'd/m/Y',
-                    'timeFormat' => 'H:i:s',
-                    'timezone' => 'Europe/Berlin'
-                ]
+                'newsletters' => false,
+                'identityDocument' => "identity_card.pdf",
+                'residenceProof' => "invoice.jpg",
+                'language' => 'fr_FR'
             ],
             [
                 'civility' => "Monsieur",
@@ -51,17 +53,14 @@ class UserFixtures extends Fixture
                 'postcode' => "68000",
                 'country' => "FR",
                 'email' => "toto.dupontel@test.fr",
+                'verified' => true,
                 'password' => "@Hadock123",
                 'birthdate' => "2000-11-21",
                 'timezone' => "Europe/Paris",
-                'language' => [
-                    'name' => 'anglais',
-                    'country' => 'Uinted Kingdom',
-                    'code' => 'en_GB',
-                    'dateFormat' => 'd-m-Y',
-                    'timeFormat' => 'H:i:s',
-                    'timezone' => 'Europe/London'
-                ]
+                'newsletters' => false,
+                'identityDocument' => "identity_card.pdf",
+                'residenceProof' => "invoice.jpg",
+                'language' => 'fr_FR'
             ]
         ];
         $count = count($testData);
@@ -71,14 +70,10 @@ class UserFixtures extends Fixture
             $userWallet
                 ->setUser($user)
                 ->setAmount(0);
-            $userLanguage = new Language();
-            $userLanguage
-                ->setName($testData[$i]['language']['name'])
-                ->setCountry($testData[$i]['language']['country'])
-                ->setCode($testData[$i]['language']['code'])
-                ->setDateFormat($testData[$i]['language']['dateFormat'])
-                ->setTimeFormat($testData[$i]['language']['timeFormat'])
-                ->setCapitalTimeZone($testData[$i]['language']['timezone']);
+            $userLanguage = $this->languageRepository->findOneByLanguageCode($testData[$i]['language']);
+            if (is_null($userLanguage)) {
+                $userLanguage = $this->languageRepository->languageByDefault();
+            }
             $user
                 ->setRoles(['ROLE_USER'])
                 ->setCivility($testData[$i]['civility'])
@@ -90,7 +85,11 @@ class UserFixtures extends Fixture
                 ->setBillingCountry($testData[$i]['country'])
                 ->setBirthDate(new \DateTimeImmutable($testData[$i]['birthdate'], new \DateTimeZone("UTC")))
                 ->setTimeZoneSelected($testData[$i]['timezone'])
+                ->setIsVerified($testData[$i]['verified'])
                 ->setEmail($testData[$i]['email'])
+                ->setNewsletters($testData[$i]['newsletters'])
+                ->setResidenceProof($testData[$i]['residenceProof'])
+                ->setIdentityDocument($testData[$i]['identityDocument'])
                 ->setPassword($this->passwordEncoder->encodePassword(
                     $user,
                     $testData[$i]['password']

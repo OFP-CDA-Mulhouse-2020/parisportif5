@@ -30,7 +30,7 @@ class UserLoginController extends AbstractController //dossier
            // if (!is_null($test)) {
                 return $this->redirectToRoute('userloggedin');
             //}
-        } else if ($form->isSubmitted() && !($form->isValid())) {
+        } elseif ($form->isSubmitted() && !($form->isValid())) {
             return $this->render('login_form/loginlink.html.twig', [
                 'page_title' => 'Connexion',
                 'form' => $form->createView()

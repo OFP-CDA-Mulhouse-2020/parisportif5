@@ -1,17 +1,18 @@
 <?php
 
-namespace App\Form\Profile;
+namespace App\Form\Account;
 
 use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CountryType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class UserProfilePersonalDataType extends AbstractType
+class AccountPersonalDataFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -25,6 +26,18 @@ class UserProfilePersonalDataType extends AbstractType
                     'Madame' => 'Madame',
                     'Monsieur' => 'Monsieur'
                 ]
+            ])
+            ->add('email', EmailType::class, [
+                'required' => false,
+                'label' => "Email",
+                'disabled' => true
+            ])
+            ->add('zeroPassword', TextType::class, [
+                'required' => false,
+                'mapped' => false,
+                'label' => "Mot de passe",
+                'data' => "********",
+                'disabled' => true
             ])
             ->add('firstName', TextType::class, [
                 'required' => true,
@@ -66,6 +79,14 @@ class UserProfilePersonalDataType extends AbstractType
                 'label' => "Modifier"
             ])
         ;
+        /*
+            ->add('modifyEmail', ButtonType::class, [
+                'label' => "Modifier l'adresse email"
+            ])
+            ->add('modifyPassword', ButtonType::class, [
+                'label' => "Modifier le mot de passe"
+            ])
+        */
     }
 
     public function configureOptions(OptionsResolver $resolver): void

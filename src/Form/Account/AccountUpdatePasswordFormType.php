@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Form\Profile;
+namespace App\Form\Account;
 
 use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
@@ -12,7 +12,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Security\Core\Validator\Constraints\UserPassword;
 
-class UserProfilePasswordType extends AbstractType
+class AccountUpdatePasswordFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {

@@ -51,16 +51,17 @@ class User implements UserInterface
     private array $roles = [];
 
     /**
-     * @var string The hashed password
-     * @ORM\Column(type="string")
      * @Assert\NotBlank(
      *     message="Le mot de passe ne peut pas être vide.",
      *     normalizer="trim",
+     *     allowNull=true,
      *     groups={"login", "registration", "password_update"}
      * )
      * @Assert\Length(
      *     min=7,
+     *     max=4096,
      *     minMessage="Votre mot de passe doit avoir au moins {{ limit }} caractères alphanumérique et/ou spéciaux.",
+     *     maxMessage="Longueur maximale autorisée par Symfony pour des raisons de sécurité.",
      *     groups={"registration", "password_update"}
      * )
      * @Assert\Regex(
@@ -78,6 +79,16 @@ class User implements UserInterface
      * @Assert\NotCompromisedPassword(
      *     message="Mot de passe déclaré comme compromis.",
      *     groups={"registration", "password_update"}
+     * )
+     */
+    private ?string $plainPassword;
+
+    /**
+     * @var string Le mot de passe haché
+     * @ORM\Column(type="string")
+     * @Assert\NotBlank(
+     *     message="Le mot de passe encodé ne peut pas être vide.",
+     *     normalizer="trim"
      * )
      */
     private string $password;
@@ -287,6 +298,42 @@ class User implements UserInterface
     private Collection $onGoingBets;
 
     /**
+     * @ORM\Column(type="boolean")
+     */
+    private bool $isVerified = false;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private bool $newsletters = false;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(
+     *     message="Le nom du fichier justifiant l'identité ne peut pas être vide.",
+     *     normalizer="trim"
+     * )
+     * @Assert\Regex(
+     *     pattern="/\.(pdf|png|jpeg|jpg)$/i",
+     *     message="Seule les fichiers au format PDF, PNG, JPG et JPEG sont accepté"
+     * )
+     */
+    private string $identityDocument;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(
+     *     message="Le nom du fichier justifiant le domicile ne peut pas être vide.",
+     *     normalizer="trim"
+     * )
+     * @Assert\Regex(
+     *     pattern="/\.(pdf|png|jpeg|jpg)$/i",
+     *     message="Seule les fichiers au format PDF, PNG, JPG et JPEG sont accepté"
+     * )
+     */
+    private string $residenceProof;
+
+    /**
      * @const int MIN_AGE_FOR_BETTING
      * @Assert\Type(
      *     type="integer",
@@ -408,6 +455,17 @@ class User implements UserInterface
         return $this;
     }
 
+    public function getPlainPassword(): ?string
+    {
+        return $this->plainPassword;
+    }
+
+    public function setPlainPassword(string $plainPassword): self
+    {
+        $this->plainPassword = $plainPassword;
+        return $this;
+    }
+
     /**
      * @Assert\IsTrue(
      *     message="Le mot de passe ne doit pas contenir le prénom et/ou le nom.",
@@ -416,8 +474,8 @@ class User implements UserInterface
      */
     public function isPasswordSafe(): bool
     {
-        return (stripos($this->password ?? '', $this->lastName ?? '') === false
-            && stripos($this->password ?? '', $this->firstName ?? '') === false);
+        return (stripos($this->plainPassword ?? '', $this->lastName ?? '') === false
+            && stripos($this->plainPassword ?? '', $this->firstName ?? '') === false);
     }
 
     /**
@@ -435,7 +493,7 @@ class User implements UserInterface
     public function eraseCredentials(): void
     {
         // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
+        $this->plainPassword = null;
     }
 
     public function getCivility(): ?string
@@ -693,6 +751,54 @@ class User implements UserInterface
                 $onGoingBet->setUser(null);
             }*/
         }
+
+        return $this;
+    }
+
+    public function isVerified(): bool
+    {
+        return $this->isVerified;
+    }
+
+    public function setIsVerified(bool $isVerified): self
+    {
+        $this->isVerified = $isVerified;
+
+        return $this;
+    }
+
+    public function getNewsletters(): ?bool
+    {
+        return $this->newsletters;
+    }
+
+    public function setNewsletters(bool $newsletters): self
+    {
+        $this->newsletters = $newsletters;
+
+        return $this;
+    }
+
+    public function getIdentityDocument(): ?string
+    {
+        return $this->identityDocument;
+    }
+
+    public function setIdentityDocument(string $identityDocument): self
+    {
+        $this->identityDocument = $identityDocument;
+
+        return $this;
+    }
+
+    public function getResidenceProof(): ?string
+    {
+        return $this->residenceProof;
+    }
+
+    public function setResidenceProof(string $residenceProof): self
+    {
+        $this->residenceProof = $residenceProof;
 
         return $this;
     }
