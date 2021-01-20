@@ -6,9 +6,10 @@ use App\Entity\Run;
 use App\Repository\CompetitionRepository;
 use App\Repository\LocationRepository;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
-class RunFixtures extends Fixture
+class RunFixtures extends Fixture implements DependentFixtureInterface
 {
     private LocationRepository $locationRepository;
     private CompetitionRepository $competitionRepository;
@@ -68,5 +69,13 @@ class RunFixtures extends Fixture
             $manager->persist($run);
         }
         $manager->flush();
+    }
+
+    public function getDependencies(): array
+    {
+        return array(
+            CompetitionFixtures::class,
+            LocationFixtures::class
+        );
     }
 }
