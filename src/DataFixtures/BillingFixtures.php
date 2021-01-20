@@ -5,9 +5,10 @@ namespace App\DataFixtures;
 use App\Entity\Billing;
 use App\Repository\UserRepository;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
-class BillingFixtures extends Fixture
+class BillingFixtures extends Fixture implements DependentFixtureInterface
 {
     private UserRepository $userRepository;
 
@@ -63,5 +64,12 @@ class BillingFixtures extends Fixture
             $manager->persist($billing);
         }
         $manager->flush();
+    }
+
+    public function getDependencies(): array
+    {
+        return array(
+            UserFixtures::class
+        );
     }
 }

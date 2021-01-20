@@ -7,10 +7,11 @@ use App\Entity\User;
 use App\Entity\Wallet;
 use App\Repository\LanguageRepository;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
-class UserFixtures extends Fixture
+class UserFixtures extends Fixture implements DependentFixtureInterface
 {
     private UserPasswordEncoderInterface $passwordEncoder;
     private LanguageRepository $languageRepository;
@@ -99,5 +100,12 @@ class UserFixtures extends Fixture
             $manager->persist($user);
         }
         $manager->flush();
+    }
+
+    public function getDependencies(): array
+    {
+        return array(
+            LanguageFixtures::class
+        );
     }
 }
