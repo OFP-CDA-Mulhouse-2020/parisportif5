@@ -41,7 +41,7 @@ final class TeamTest extends KernelTestCase
         return $member;
     }
 
-    private function createSportObject(string $country = "FR"): Sport
+    private function createSportObject(string $country = "PT"): Sport
     {
         $sport =  new Sport();
         $sport
@@ -159,10 +159,10 @@ final class TeamTest extends KernelTestCase
         $pgasly->setFirstName("Pierre");
         $pgasly->setCountry("FR");
         $pilot = new MemberRole();
-        $pilot->setName("pilot");
+        $pilot->setName("pilots");
         $pgasly->setMemberRole($pilot);
         $titular = new MemberStatus();
-        $titular->setName("titular");
+        $titular->setName("titulars");
         return $pgasly;
     }
 
@@ -173,10 +173,10 @@ final class TeamTest extends KernelTestCase
         $dlienard->setFirstName("Dimitri");
         $dlienard->setCountry("FR");
         $footballer = new MemberRole();
-        $footballer->setName("footballer");
+        $footballer->setName("footballeur");
         $dlienard->setMemberRole($footballer);
         $titular = new MemberStatus();
-        $titular->setName("titular");
+        $titular->setName("titulair");
         return $dlienard;
     }
 

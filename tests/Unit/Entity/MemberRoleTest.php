@@ -42,11 +42,11 @@ final class MemberRoleTest extends KernelTestCase
     public function validMemberRoleProvider(): array
     {
         return [
-            ["PILOT"],
-            ["footballer"],
-            ["handballer"],
-            ["tennis-player"],
-            ["table-tennis_player"]
+            ["PILOTz"],
+            ["footballerz"],
+            ["handballerz"],
+            ["tennis-playerz"],
+            ["table-tennis_playerz"]
         ];
     }
 

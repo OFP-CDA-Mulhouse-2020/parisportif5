@@ -71,7 +71,7 @@ final class BetTest extends KernelTestCase
         return $competition;
     }
 
-    private function createSportObject(string $country = "FR"): Sport
+    private function createSportObject(string $country = "BL"): Sport
     {
         $sport =  new Sport();
         $sport
@@ -100,11 +100,11 @@ final class BetTest extends KernelTestCase
         return $run;
     }
 
-    private function createTeamObject(string $country = "FR"): Team
+    private function createTeamObject(string $country = "BL"): Team
     {
         $team =  new Team();
         $team
-            ->setName("RC Strasbourg Alsace")
+            ->setName("Trololo Futbol Klub")
             ->setCountry($country)
             ->setSport($this->createSportObject())
             ->addMember($this->createMemberObject());

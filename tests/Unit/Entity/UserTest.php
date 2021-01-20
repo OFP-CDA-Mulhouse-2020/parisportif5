@@ -57,7 +57,7 @@ final class UserTest extends KernelTestCase
     private function createLanguageObject(
         string $name = 'nom de la langue',
         string $country = 'pays de la langue',
-        string $code = 'fr_FR',
+        string $code = 'it_IT',
         string $dateFormat = 'd/m/Y',
         string $timeFormat = 'H:i:s',
         string $timeZone = 'Europe/Paris'

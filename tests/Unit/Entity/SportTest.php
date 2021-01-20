@@ -25,7 +25,7 @@ final class SportTest extends WebTestCase
             ->setMinMembersByTeam(1)
             ->setMaxTeamsByRun(2)
             ->setMinTeamsByRun(2)
-            ->setCountry("FR")
+            ->setCountry("BR")
             ->setRunType("fixture")
             ->setIndividualType(false)
             ->setCollectiveType(true);
