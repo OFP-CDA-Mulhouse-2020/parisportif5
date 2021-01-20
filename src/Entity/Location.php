@@ -12,7 +12,8 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity(repositoryClass=LocationRepository::class)
  * @UniqueEntity(
- *     fields="place",
+ *     fields={"place", "country"},
+ *     errorPath="place",
  *     message="Ce lieu est déjà enregistré."
  * )
  */

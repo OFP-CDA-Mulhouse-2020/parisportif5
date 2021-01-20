@@ -12,6 +12,7 @@ class MemberStatusFixtures extends Fixture
     {
         $testData = [
             [
+
                 'name' => "suspended"
             ],
             [
