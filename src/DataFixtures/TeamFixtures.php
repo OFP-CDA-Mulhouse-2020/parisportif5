@@ -2,18 +2,14 @@
 
 namespace App\DataFixtures;
 
-
 use App\Entity\Sport;
 use App\Entity\Team;
 use App\Repository\SportRepository;
-
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
 class TeamFixtures extends Fixture
 {
-
-
     private SportRepository $sportRepository;
 
     public function __construct(SportRepository $sportRepository)
@@ -76,7 +72,5 @@ class TeamFixtures extends Fixture
             $manager->persist($team);
         }
         $manager->flush();
-
-  
     }
 }
