@@ -43,7 +43,7 @@ final class UserTest extends KernelTestCase
             ->setBirthDate(new \DateTimeImmutable("2000-10-10"))
             ->setPlainPassword("Azerty78")
             ->setPassword("hashpassword")
-            ->setEmail("dupond.t@orange.fr")
+            ->setEmail("haddock@gmail.fr")
             ->setTimeZoneSelected("Europe/Paris")
             ->setResidenceProof("identity_card.pdf")
             ->setIdentityDocument("invoice.jpg");
@@ -58,12 +58,12 @@ final class UserTest extends KernelTestCase
     }
 
     private function createLanguageObject(
-        string $name = 'nom de la langue',
-        string $country = 'pays de la langue',
-        string $code = 'fr_FR',
+        string $name = 'espagnol',
+        string $country = 'Espagne',
+        string $code = 'es_ES',
         string $dateFormat = 'd/m/Y',
         string $timeFormat = 'H:i:s',
-        string $timeZone = 'Europe/Paris'
+        string $timeZone = 'Europe/Madrid'
     ): Language {
         $language = new Language();
         $language

@@ -53,7 +53,7 @@ final class BillingTest extends KernelTestCase
             ->setBirthDate(new \DateTimeImmutable("2000-10-10"))
             ->setPlainPassword("Azerty78")
             ->setPassword("hashpassword")
-            ->setEmail("dupond.t@orange.fr")
+            ->setEmail("haddock@gmail.fr")
             ->setTimeZoneSelected("Europe/Paris")
             ->setResidenceProof("identity_card.pdf")
             ->setIdentityDocument("invoice.jpg");

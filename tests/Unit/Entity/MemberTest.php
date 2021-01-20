@@ -182,7 +182,7 @@ final class MemberTest extends WebTestCase
     {
         $kernel = $this->initializeKernel();
         $member = $this->initializeMember();
-        $memberRole = $this->initializeMemberRole("footballer");
+        $memberRole = $this->initializeMemberRole("footballer-avant");
         $member->setMemberRole($memberRole);
         $this->assertSame($memberRole, $member->getMemberRole());
         $validator = $kernel->getContainer()->get('validator');
@@ -205,7 +205,7 @@ final class MemberTest extends WebTestCase
     {
         $kernel = $this->initializeKernel();
         $member = $this->initializeMember();
-        $memberStatus = $this->initializeMemberStatus("titular");
+        $memberStatus = $this->initializeMemberStatus("titularization");
         $member->setMemberStatus($memberStatus);
         $this->assertSame($memberStatus, $member->getMemberStatus());
         $validator = $kernel->getContainer()->get('validator');

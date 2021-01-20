@@ -24,7 +24,7 @@ final class MemberRoleTest extends KernelTestCase
     private function createValidMemberRole(): MemberRole
     {
         $memberRole =  new MemberRole();
-        $memberRole->setName("pilot");
+        $memberRole->setName("pilot-uno");
         return $memberRole;
     }
 
@@ -42,9 +42,9 @@ final class MemberRoleTest extends KernelTestCase
     public function validMemberRoleProvider(): array
     {
         return [
-            ["PILOT"],
-            ["footballer"],
-            ["handballer"],
+            ["PILOT-uno"],
+            ["footballer-avant"],
+            ["handballer-arriere"],
             ["tennis-player"],
             ["table-tennis_player"]
         ];
