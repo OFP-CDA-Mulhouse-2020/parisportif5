@@ -42,12 +42,14 @@ final class MemberStatusTest extends KernelTestCase
     public function validMemberStatusProvider(): array
     {
         return [
+
             ["titular-a"],
             ["substitute-b"],
             ["injured-c"],
             ["suspended-d"],
             ["suspended_and_injured"],
             ["titular-or-suspended"]
+
         ];
     }
 

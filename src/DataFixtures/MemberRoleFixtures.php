@@ -12,7 +12,17 @@ class MemberRoleFixtures extends Fixture
     {
         $testData = [
             [
-                'name' => "player"
+              
+                'name' => "footballer"
+            ],
+            [
+                'name' => "handballer"
+            ],
+            [
+                'name' => "tennisplayer"
+            ],
+            [
+                'name' => "tabletennisplayer"
             ],
             [
                 'name' => "pilot"

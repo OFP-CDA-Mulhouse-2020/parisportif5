@@ -62,7 +62,7 @@ final class ResultTest extends KernelTestCase
         return $competition;
     }
 
-    private function createSportObject(string $country = "FR"): Sport
+    private function createSportObject(string $country = "NZ"): Sport
     {
         $sport =  new Sport();
         $sport
