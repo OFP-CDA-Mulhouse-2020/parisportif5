@@ -37,8 +37,8 @@ class BetFixtures extends Fixture
                 'categoryName' => "result",
                 'competition' => [
                     'name' => "Championnat",
-                    'start' => "2021-01-01 08:00",
-                    'end' => "2021-01-10 20:00",
+                    'start' => "2021-02-01 08:00",
+                    'end' => "2021-02-10 20:00",
                     'country' => "FR"
                 ]
             ]
@@ -47,10 +47,9 @@ class BetFixtures extends Fixture
         for ($i = 0; $i < $count; $i++) {
             $betCompetition = $this->competitionRepository->findOneBy([
                 'name' => $testData[$i]['competition']['name'],
-                'startDate' => new \DateTimeImmutable($testData[$i]['competition']['start'], new \DateTimeZone("UTC")),
-                'endDate' => new \DateTimeImmutable($testData[$i]['competition']['end'], new \DateTimeZone("UTC")),
                 'country' => $testData[$i]['competition']['country']
             ]);
+            //$betCompetition = $this->getReference(CompetitionFixtures::COMPETITION_OBJECT);
             $betUser = $this->userRepository->findOneByEmail($testData[$i]['user']);
             $betCategory = $this->betCategoryRepository->findOneBy([
                 "name" => $testData[$i]['categoryName']
@@ -72,12 +71,12 @@ class BetFixtures extends Fixture
     public function getDependencies(): array
     {
         return array(
-            CompetitionFixtures::class,
             UserFixtures::class,
             BetCategoryFixtures::class,
-            RunFixtures::class,
+            CompetitionFixtures::class,
+            MemberFixtures::class,
             TeamFixtures::class,
-            MemberFixtures::class
+            RunFixtures::class
         );
     }
 }

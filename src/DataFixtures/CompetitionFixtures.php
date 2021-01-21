@@ -13,6 +13,7 @@ class CompetitionFixtures extends Fixture implements DependentFixtureInterface
 {
     private SportRepository $sportRepository;
     private BetCategoryRepository $betCategoryRepository;
+    //public const COMPETITION_OBJECT = 'valid-competition';
 
     public function __construct(
         SportRepository $sportRepository,
@@ -27,12 +28,12 @@ class CompetitionFixtures extends Fixture implements DependentFixtureInterface
         $testData = [
             [
                 'name' => "Championnat",
-                'start' => "2021-01-01 08:00",
-                'end' => "2021-01-10 20:00",
+                'start' => "2021-02-01 08:00",
+                'end' => "2021-02-10 20:00",
+                'country' => "FR",
                 'betCategoryName' => "result",
                 'sport' => [
                     'name' => "foot",
-                    'runType' => "fixture",
                     'country' => "FR"
                 ]
             ]
@@ -41,7 +42,6 @@ class CompetitionFixtures extends Fixture implements DependentFixtureInterface
         for ($i = 0; $i < $count; $i++) {
             $competitionSport = $this->sportRepository->findOneBy([
                 'name' => $testData[$i]['sport']['name'],
-                'runType' => $testData[$i]['sport']['runType'],
                 'country' => $testData[$i]['sport']['country']
             ]);
             $betCategory = $this->betCategoryRepository->findOneBy([
@@ -50,6 +50,7 @@ class CompetitionFixtures extends Fixture implements DependentFixtureInterface
             $competition = new Competition();
             $competition
                 ->setName($testData[$i]['name'])
+                ->setCountry($testData[$i]['country'])
                 ->setStartDate(new \DateTimeImmutable($testData[$i]['start'], new \DateTimeZone("UTC")))
                 ->setEndDate(new \DateTimeImmutable($testData[$i]['end'], new \DateTimeZone("UTC")))
                 ->setSport($competitionSport)
@@ -57,6 +58,7 @@ class CompetitionFixtures extends Fixture implements DependentFixtureInterface
             $manager->persist($competition);
         }
         $manager->flush();
+        //$this->addReference(self::COMPETITION_OBJECT, $competition);
     }
 
     public function getDependencies(): array

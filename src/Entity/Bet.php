@@ -98,6 +98,9 @@ class Bet implements FundStorageInterface
     public function __construct()
     {
         $this->isWinning = null;
+        $this->run = null;
+        $this->team = null;
+        $this->teamMember = null;
     }
 
     public function getId(): ?int
