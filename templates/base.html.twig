@@ -1,12 +1,17 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
     <head>
         <meta charset="UTF-8">
         <title>Paris Sportif{% block title %}{% endblock %}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Bootstrap CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css"
+            rel="stylesheet" 
+            integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1"
+            crossorigin="anonymous">
         {% block stylesheets %}{% endblock %}
     </head>
     <body>
-        <!-- read and display several types of flash messages -->
         {% for label, messages in app.flashes(['success', 'warning', 'notice']) %}
             {% for message in messages %}
                 <div class="flash-{{ label }}">
@@ -14,8 +19,13 @@
                 </div>
             {% endfor %}
         {% endfor %}
-        <!---->
+
         {% block body %}{% endblock %}
+
+        <!-- Bootstrap JS -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW"
+            crossorigin="anonymous"></script>
         {% block javascripts %}{% endblock %}
     </body>
 </html>

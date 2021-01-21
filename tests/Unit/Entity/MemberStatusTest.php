@@ -24,7 +24,7 @@ final class MemberStatusTest extends KernelTestCase
     private function createValidMemberStatus(): MemberStatus
     {
         $status =  new MemberStatus();
-        $status->setName("titular");
+        $status->setName("titularization");
         return $status;
     }
 
@@ -42,12 +42,14 @@ final class MemberStatusTest extends KernelTestCase
     public function validMemberStatusProvider(): array
     {
         return [
-            ["titulart"],
-            ["substitutte"],
-            ["injuredt"],
-            ["suspendedt"],
-            ["suspended_and_injuredt"],
-            ["titular-or-suspendedt"]
+
+            ["titular-a"],
+            ["substitute-b"],
+            ["injured-c"],
+            ["suspended-d"],
+            ["suspended_and_injured"],
+            ["titular-or-suspended"]
+
         ];
     }
 

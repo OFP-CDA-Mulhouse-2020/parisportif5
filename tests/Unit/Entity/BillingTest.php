@@ -51,9 +51,12 @@ final class BillingTest extends KernelTestCase
             ->setBillingPostcode("68000")
             ->setBillingCountry($country)
             ->setBirthDate(new \DateTimeImmutable("2000-10-10"))
-            ->setPassword("Azerty78")
-            ->setEmail("dupond.t@orange.fr")
-            ->setTimeZoneSelected("Europe/Paris");
+            ->setPlainPassword("Azerty78")
+            ->setPassword("hashpassword")
+            ->setEmail("haddock@gmail.fr")
+            ->setTimeZoneSelected("Europe/Paris")
+            ->setResidenceProof("identity_card.pdf")
+            ->setIdentityDocument("invoice.jpg");
         return $user;
     }
 

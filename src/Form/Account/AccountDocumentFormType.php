@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Form\Profile;
+namespace App\Form\Account;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
@@ -8,7 +8,7 @@ use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 
-class UserProfileDocumentType extends AbstractType
+class AccountDocumentFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -23,8 +23,8 @@ class UserProfileDocumentType extends AbstractType
                     'mapped' => false,
                     'required' => false
                 ])
-                ->add('identityDocumentAdd', SubmitType::class, [
-                    'label' => "Ajouter"
+                ->add('identityDocumentReplace', SubmitType::class, [
+                    'label' => "Remplacer"
                 ])
             )
             ->add(
@@ -37,8 +37,8 @@ class UserProfileDocumentType extends AbstractType
                     'mapped' => false,
                     'required' => false
                 ])
-                ->add('residenceProofAdd', SubmitType::class, [
-                    'label' => "Ajouter"
+                ->add('residenceProofReplace', SubmitType::class, [
+                    'label' => "Remplacer"
                 ])
             )
         ;

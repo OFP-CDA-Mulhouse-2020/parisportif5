@@ -41,9 +41,12 @@ final class UserTest extends KernelTestCase
             ->setBillingPostcode("68000")
             ->setBillingCountry("FR")
             ->setBirthDate(new \DateTimeImmutable("2000-10-10"))
-            ->setPassword("Azerty78")
-            ->setEmail("dupond.t@orange.fr")
-            ->setTimeZoneSelected("Europe/Paris");
+            ->setPlainPassword("Azerty78")
+            ->setPassword("hashpassword")
+            ->setEmail("haddock@gmail.fr")
+            ->setTimeZoneSelected("Europe/Paris")
+            ->setResidenceProof("identity_card.pdf")
+            ->setIdentityDocument("invoice.jpg");
         return $user;
     }
 
@@ -58,9 +61,10 @@ final class UserTest extends KernelTestCase
         string $name = 'nom de la langue',
         string $country = 'pays de la langue',
         string $code = 'it_IT',
+
         string $dateFormat = 'd/m/Y',
         string $timeFormat = 'H:i:s',
-        string $timeZone = 'Europe/Paris'
+        string $timeZone = 'Europe/Madrid'
     ): Language {
         $language = new Language();
         $language
@@ -218,18 +222,124 @@ final class UserTest extends KernelTestCase
         ];
     }
 
+    public function testHashPasswordEmptyUnconformity(): void
+    {
+        $hashPassword = '';
+        $user = $this->createValidUser();
+        $user->setPassword($hashPassword);
+        $violations = $this->validator->validate($user);
+        $this->assertCount(1, $violations);
+    }
+
+    public function testHashPasswordConformity(): void
+    {
+        $hashPassword = 'hashPassword';
+        $user = $this->createValidUser();
+        $user->setPassword($hashPassword);
+        $violations = $this->validator->validate($user);
+        $this->assertCount(0, $violations);
+    }
+
     /**
-     * @dataProvider passwordUnconformityProvider
+     * @dataProvider identityDocumentUnconformityProvider
      */
-    public function testPasswordUnconformity(string $password): void
+    public function testIdentityDocumentUnconformity(string $identityDocumentFileName): void
     {
         $user = $this->createValidUser();
-        $user->setPassword($password);
+        $user->setIdentityDocument($identityDocumentFileName);
+        $violations = $this->validator->validate($user);
+        $this->assertGreaterThanOrEqual(1, count($violations));
+    }
+
+    public function identityDocumentUnconformityProvider(): array
+    {
+        return [
+            ["fichier"],
+            ["hack.html"],
+            ["fa25.gif"],
+            ["nomquiestbeaucouptroplongg."],
+            [""],
+            ["   "]
+        ];
+    }
+
+    /**
+     * @dataProvider identityDocumentConformityProvider
+     */
+    public function testIdentityDocumentConformity(string $identityDocumentFileName): void
+    {
+        $user = $this->createValidUser();
+        $user->setIdentityDocument($identityDocumentFileName);
+        $violations = $this->validator->validate($user);
+        $this->assertCount(0, $violations);
+    }
+
+    public function identityDocumentConformityProvider(): array
+    {
+        return [
+            ["fichier.jpg"],
+            ["doc.pdf"],
+            ["fa25.png"],
+            ["nomquiestbeaucouptroplongg.jpeg"]
+        ];
+    }
+
+    /**
+     * @dataProvider residenceProofUnconformityProvider
+     */
+    public function testResidenceProofUnconformity(string $residenceProofFileName): void
+    {
+        $user = $this->createValidUser();
+        $user->setResidenceProof($residenceProofFileName);
+        $violations = $this->validator->validate($user);
+        $this->assertGreaterThanOrEqual(1, count($violations));
+    }
+
+    public function residenceProofUnconformityProvider(): array
+    {
+        return [
+            ["fichier"],
+            ["hack.html"],
+            ["fa25.gif"],
+            ["nomquiestbeaucouptroplongg."],
+            [""],
+            ["   "]
+        ];
+    }
+
+    /**
+     * @dataProvider residenceProofConformityProvider
+     */
+    public function testResidenceProofConformity(string $residenceProofFileName): void
+    {
+        $user = $this->createValidUser();
+        $user->setResidenceProof($residenceProofFileName);
+        $violations = $this->validator->validate($user);
+        $this->assertCount(0, $violations);
+    }
+
+    public function residenceProofConformityProvider(): array
+    {
+        return [
+            ["fichier.jpg"],
+            ["doc.pdf"],
+            ["fa25.png"],
+            ["nomquiestbeaucouptroplongg.jpeg"]
+        ];
+    }
+
+    /**
+     * @dataProvider plainPasswordUnconformityProvider
+     */
+    public function testPlainPasswordUnconformity(string $plainPassword): void
+    {
+        $user = $this->createValidUser();
+        $user->setPlainPassword($plainPassword);
         $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile', 'password_update', 'identifier_update', 'parameter']);
         $this->assertGreaterThanOrEqual(1, count($violations));
     }
 
-    public function passwordUnconformityProvider(): array
+    public function plainPasswordUnconformityProvider(): array
     {
         return [
             [""],
@@ -241,17 +351,17 @@ final class UserTest extends KernelTestCase
     }
 
      /**
-     * @dataProvider passwordConformityProvider
+     * @dataProvider plainPasswordConformityProvider
      */
-    public function testPasswordConformity(string $password): void
+    public function testPlainPasswordConformity(string $plainPassword): void
     {
         $user = $this->createValidUser();
-        $user->setPassword($password);
+        $user->setPlainPassword($plainPassword);
         $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile', 'password_update', 'identifier_update', 'parameter']);
         $this->assertCount(0, $violations);
     }
 
-    public function passwordConformityProvider(): array
+    public function plainPasswordConformityProvider(): array
     {
         return [
             ["P123547"],
@@ -704,7 +814,7 @@ final class UserTest extends KernelTestCase
         $user = $this->createValidUser();
         $method = method_exists($user, 'isPasswordSafe');
         $this->assertTrue($method);
-        $user->setPassword("tintin45335");
+        $user->setPlainPassword("tintin45335");
         $result = $user->isPasswordSafe();
         $this->assertFalse($result);
         $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile', 'password_update', 'identifier_update', 'parameter']);

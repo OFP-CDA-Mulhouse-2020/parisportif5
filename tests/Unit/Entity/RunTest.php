@@ -81,7 +81,7 @@ final class RunTest extends KernelTestCase
         $competition = new Competition();
         $date = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
         $competition
-            ->setName('name')
+            ->setName('Championnat inter-club')
             ->setStartDate($date->setTime(23, 59, 59, 1000000))
             ->setCountry($country)
             ->setMaxRuns(2)
@@ -122,7 +122,7 @@ final class RunTest extends KernelTestCase
         return $result;
     }
 
-    public function createBetCategoryObject(string $name = "result"): BetCategory
+    public function createBetCategoryObject(string $name = "resultw"): BetCategory
     {
         $betCategory = new BetCategory();
         $betCategory->setName($name);

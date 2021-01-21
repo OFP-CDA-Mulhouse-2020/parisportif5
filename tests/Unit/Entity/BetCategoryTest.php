@@ -25,7 +25,7 @@ final class BetCategoryTest extends KernelTestCase
     {
         $betCategory = new BetCategory();
         $betCategory
-            ->setName("result");
+            ->setName("resultw");
         return $betCategory;
     }
 
@@ -43,7 +43,7 @@ final class BetCategoryTest extends KernelTestCase
     public function validBetCategoryProvider(): array
     {
         return [
-            ["result"],
+            ["resultw"],
             ["result-and-points"],
             ["result_points"]
         ];

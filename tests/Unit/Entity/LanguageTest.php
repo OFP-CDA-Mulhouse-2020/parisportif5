@@ -25,12 +25,12 @@ final class LanguageTest extends KernelTestCase
     {
         $language = new Language();
         $language
-            ->setName('français France')
-            ->setCountry('pays')
+            ->setName('anglais US')
+            ->setCountry('USA')
             ->setCode('en_US')
             ->setDateFormat('Y-m-d')
             ->setTimeFormat('H:i:s')
-            ->setCapitalTimeZone('Europe/Paris');
+            ->setCapitalTimeZone('America/New_York');
         return $language;
     }
 

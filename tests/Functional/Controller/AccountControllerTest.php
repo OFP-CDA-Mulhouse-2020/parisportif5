@@ -4,54 +4,80 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Controller;
 
+use App\Repository\UserRepository;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\DomCrawler\Form;
 
 /**
- * @covers \UserProfileController
+ * @covers \AccountController
  */
-final class UserProfileControllerTest extends WebTestCase
+final class AccountControllerTest extends WebTestCase
 {
-    private function getValidUserData(): array
+    /*private KernelBrowser $client;
+
+    protected function setUp(): void
+    {
+        $this->client = static::createClient();
+        $userRepository = static::$container->get(UserRepository::class);
+
+        // retrieve the test user
+        $testUser = $userRepository->findOneByEmail('tintin.dupont@test.fr');
+
+        // simulate $testUser being logged in
+        $this->client->loginUser($testUser);
+    }*/
+
+    protected function loginTestUser(): KernelBrowser
+    {
+        $client = static::createClient();
+        $userRepository = static::$container->get(UserRepository::class);
+        // retrieve the test user
+        $testUser = $userRepository->findOneByEmail('tintin.dupont@test.fr');
+        // simulate $testUser being logged in
+        $client->loginUser($testUser);
+        return $client;
+    }
+
+    private function getUpdateUserData(): array
     {
         return [
-            'civility' => '',
-            'firstName' => "Martin",
-            'lastName' => "Dupond",
-            'address' => "1 avenue st martin",
-            'city' => "Colmar",
-            'postcode' => "68000",
+            'civility' => 'Madame',
+            'firstName' => "Martine",
+            'lastName' => "Dupont",
+            'address' => "2 avenue st martin",
+            'city' => "Strasbourg",
+            'postcode' => "67000",
             'country' => "FR",
-            'birthDate' => "2000-10-10",
-            'newPassword1' => "Azerty78",
-            'newPassword2' => "Azerty78",
+            'birthDate' => "2000-10-01",
+            'newPassword1' => "Azerty80",
+            'newPassword2' => "Azerty80",
             'oldPassword' => "Azerty78",
-            'emailValidationCode' => 123456,
-            'newEmail1' => "dupond.m@orange.fr",
-            'newEmail2' => "dupond.m@orange.fr",
+            'newEmail1' => "dupont@orange.fr",
+            'newEmail2' => "dupont@orange.fr",
             'timezone' => "Europe/Paris",
             'residence' => 'filename.pdf',
             'identity' => 'filename.pdf',
             'accurate' => true,
-            'newsletters' => false
+            'newsletters' => true
         ];
     }
 
     // Tests fonctionnels d'intégrations
 
     /**
-     * @dataProvider profileFormValidPageProvider
+     * @dataProvider accountFormValidPageProvider
      */
-    public function testProfileFormValidPage(string $url, string $title): void
+    public function testAccountFormValidPage(string $url, string $title): void
     {
-        $client = static::createClient();
+        $client = $this->loginTestUser();
         $client->request('GET', $url);
         $this->assertResponseStatusCodeSame(200);
         $this->assertSelectorTextContains('h1', $title);
     }
 
-    public function profileFormValidPageProvider(): array
+    public function accountFormValidPageProvider(): array
     {
         /*
             ['/mon-compte/mes-informations', "Données personnelles"],
@@ -68,742 +94,754 @@ final class UserProfileControllerTest extends WebTestCase
         ];
     }
 
-    public function testProfilePersonalDataFormValidDisplay(): void
+    public function testAccountPersonalDataFormValidDisplay(): void
     {
-        $client = static::createClient();
+        $client = $this->loginTestUser();
         $crawler = $client->request('GET', '/mon-compte/mes-informations');
         // Balise form
         $this->assertCount(
             1,
-            $crawler->filter('form[name=user_profile_personal_data]'),
+            $crawler->filter('form[name=account_personal_data_form]'),
             "Il doit y avoir une et une seule balise form dans ce formulaire"
         );
         // Civilité
         $this->assertCount(
             1,
-            $crawler->filter('form[name=user_profile_personal_data] *[name*=civility]'),
+            $crawler->filter('form[name=account_personal_data_form] *[name*=civility]'),
             "Il doit y avoir un et un seul champ pour la civilité dans ce formulaire"
+        );
+        // Email à titre indicatif
+        $this->assertCount(
+            1,
+            $crawler->filter('form[name=account_personal_data_form] input[name*=email][type=email]'),
+            "Il doit y avoir un et un seul champ pour l'email à titre indicatif dans ce formulaire"
+        );
+        // Mot de passe vide à titre indicatif
+        $this->assertCount(
+            1,
+            $crawler->filter('form[name=account_personal_data_form] input[name*=zeroPassword][type=text]'),
+            "Il doit y avoir un et un seul champ pour le mot de passe vide à titre indicatif dans ce formulaire"
         );
         // Nom
         $this->assertCount(
             1,
-            $crawler->filter('form[name=user_profile_personal_data] input[name*=lastName]'),
+            $crawler->filter('form[name=account_personal_data_form] input[name*=lastName]'),
             "Il doit y avoir un et un seul champ pour le nom dans ce formulaire"
         );
         // Prénom
         $this->assertCount(
             1,
-            $crawler->filter('form[name=user_profile_personal_data] input[name*=firstName]'),
+            $crawler->filter('form[name=account_personal_data_form] input[name*=firstName]'),
             "Il doit y avoir un et un seul champ pour le prénom dans ce formulaire"
         );
         // Adresse
         $this->assertCount(
             1,
-            $crawler->filter('form[name=user_profile_personal_data] input[name*=Address]'),
+            $crawler->filter('form[name=account_personal_data_form] input[name*=Address]'),
             "Il doit y avoir un et un seul champ pour l'adresse dans ce formulaire"
         );
         // Ville
         $this->assertCount(
             1,
-            $crawler->filter('form[name=user_profile_personal_data] input[name*=City]'),
+            $crawler->filter('form[name=account_personal_data_form] input[name*=City]'),
             "Il doit y avoir un et un seul champ pour la ville dans ce formulaire"
         );
         // Code postal
         $this->assertCount(
             1,
-            $crawler->filter('form[name=user_profile_personal_data] input[name*=Postcode]'),
+            $crawler->filter('form[name=account_personal_data_form] input[name*=Postcode]'),
             "Il doit y avoir un et un seul champ pour le code postal dans ce formulaire"
         );
         // Pays
         $this->assertCount(
             1,
-            $crawler->filter('form[name=user_profile_personal_data] *[name*=Country]'),
+            $crawler->filter('form[name=account_personal_data_form] *[name*=Country]'),
             "Il doit y avoir un et un seul champ pour le pays dans ce formulaire"
         );
         // Bouton submit
         $this->assertCount(
             1,
-            $crawler->filter('form[name=user_profile_personal_data] *[type=submit]'),
+            $crawler->filter('form[name=account_personal_data_form] *[type=submit]'),
             "Il doit y avoir un et un seul bouton d'envoi dans ce formulaire"
         );
     }
 
-    public function getProfilePersonalDataForm(Crawler $crawler, array $formData): Form
+    public function getAccountPersonalDataForm(Crawler $crawler, array $formData): Form
     {
-        $form = $crawler->selectButton('user_profile_personal_data[modify]')->form();
-        $form['user_profile_personal_data[civility]'] = $formData['civility'];
-        $form['user_profile_personal_data[lastName]'] = $formData['lastName'];
-        $form['user_profile_personal_data[firstName]'] = $formData['firstName'];
-        $form['user_profile_personal_data[billingAddress]'] = $formData['address'];
-        $form['user_profile_personal_data[billingCity]'] = $formData['city'];
-        $form['user_profile_personal_data[billingPostcode]'] = $formData['postcode'];
-        $form['user_profile_personal_data[billingCountry]'] = $formData['country'];
+        $form = $crawler->selectButton('account_personal_data_form[modify]')->form();
+        $form['account_personal_data_form[civility]'] = $formData['civility'];
+        $form['account_personal_data_form[lastName]'] = $formData['lastName'];
+        $form['account_personal_data_form[firstName]'] = $formData['firstName'];
+        $form['account_personal_data_form[billingAddress]'] = $formData['address'];
+        $form['account_personal_data_form[billingCity]'] = $formData['city'];
+        $form['account_personal_data_form[billingPostcode]'] = $formData['postcode'];
+        $form['account_personal_data_form[billingCountry]'] = $formData['country'];
         return $form;
     }
 
-    /*public function testProfilePersonalDataFormCivilityLengthOverMax(): void
+    /*public function testAccountPersonalDataFormCivilityLengthOverMax(): void
     {
-        $client = static::createClient();
+        $client = $this->loginTestUser();
         $crawler = $client->request('GET', '/mon-compte/mes-informations');
-        $formData = $this->getValidUserData();
+        $formData = $this->getUpdateUserData();
         // set some values
         $civility = 'azertyuiopqsdfgh';
         $formData['civility'] = $civility;
-        $form = $this->getProfilePersonalDataForm($crawler, $formData);
+        $form = $this->getAccountPersonalDataForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
         // asserts
         $this->assertSelectorTextContains(
-            'form[name=user_profile_personal_data]',
+            'form[name=account_personal_data_form]',
             "La civilité ne peut pas être plus longue que 15 caractères."
         );
     }*/
 
-    /*public function testProfilePersonalDataFormFirstNameEmpty(): void
+    /*public function testAccountPersonalDataFormFirstNameEmpty(): void
     {
-        $client = static::createClient();
+        $client = $this->loginTestUser();
         $crawler = $client->request('GET', '/mon-compte/mes-informations');
-        $formData = $this->getValidUserData();
+        $formData = $this->getUpdateUserData();
         // set some values
         $firstName = ' ';
         $formData['firstName'] = $firstName;
-        $form = $this->getProfilePersonalDataForm($crawler, $formData);
+        $form = $this->getAccountPersonalDataForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
         // asserts
         $this->assertSelectorTextContains(
-            'form[name=user_profile_personal_data]',
+            'form[name=account_personal_data_form]',
             "Le prénom ne peut pas être vide."
         );
     }*/
 
-    public function testProfilePersonalDataFormFirstNameNotValid(): void
+    public function testAccountPersonalDataFormFirstNameNotValid(): void
     {
-        $client = static::createClient();
+        $client = $this->loginTestUser();
         $crawler = $client->request('GET', '/mon-compte/mes-informations');
-        $formData = $this->getValidUserData();
+        $formData = $this->getUpdateUserData();
         // set some values
         $firstName = 'k2000';
         $formData['firstName'] = $firstName;
-        $form = $this->getProfilePersonalDataForm($crawler, $formData);
+        $form = $this->getAccountPersonalDataForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
         // asserts
         $this->assertSelectorTextContains(
-            'form[name=user_profile_personal_data]',
+            'form[name=account_personal_data_form]',
             "Seules les lettres, les tirets et les apostrophes sont autorisés."
         );
     }
 
-    public function testProfilePersonalDataFormFirstNameLengthUnderMin(): void
+    public function testAccountPersonalDataFormFirstNameLengthUnderMin(): void
     {
-        $client = static::createClient();
+        $client = $this->loginTestUser();
         $crawler = $client->request('GET', '/mon-compte/mes-informations');
-        $formData = $this->getValidUserData();
+        $formData = $this->getUpdateUserData();
         // set some values
         $firstName = 'a';
         $formData['firstName'] = $firstName;
-        $form = $this->getProfilePersonalDataForm($crawler, $formData);
+        $form = $this->getAccountPersonalDataForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
         // asserts
         $this->assertSelectorTextContains(
-            'form[name=user_profile_personal_data]',
+            'form[name=account_personal_data_form]',
             "Votre prénom doit avoir au moins 2 caractères."
         );
     }
 
-    public function testProfilePersonalDataFormFirstNameLengthOverMax(): void
+    public function testAccountPersonalDataFormFirstNameLengthOverMax(): void
     {
-        $client = static::createClient();
+        $client = $this->loginTestUser();
         $crawler = $client->request('GET', '/mon-compte/mes-informations');
-        $formData = $this->getValidUserData();
+        $formData = $this->getUpdateUserData();
         // set some values
         $firstName = 'nomquiestbeaucouptroplongg';
         $formData['firstName'] = $firstName;
-        $form = $this->getProfilePersonalDataForm($crawler, $formData);
+        $form = $this->getAccountPersonalDataForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
         // asserts
         $this->assertSelectorTextContains(
-            'form[name=user_profile_personal_data]',
+            'form[name=account_personal_data_form]',
             "Votre prénom ne doit pas avoir plus de 25 caractères."
         );
     }
 
-    /*public function testProfilePersonalDataFormLastNameEmpty(): void
+    /*public function testAccountPersonalDataFormLastNameEmpty(): void
     {
-        $client = static::createClient();
+        $client = $this->loginTestUser();
         $crawler = $client->request('GET', '/mon-compte/mes-informations');
-        $formData = $this->getValidUserData();
+        $formData = $this->getUpdateUserData();
         // set some values
         $lastName = ' ';
         $formData['lastName'] = $lastName;
-        $form = $this->getProfilePersonalDataForm($crawler, $formData);
+        $form = $this->getAccountPersonalDataForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
         // asserts
         $this->assertSelectorTextContains(
-            'form[name=user_profile_personal_data]',
+            'form[name=account_personal_data_form]',
             "Le nom de famille ne peut pas être vide."
         );
     }*/
 
-    public function testProfilePersonalDataFormLastNameNotValid(): void
+    public function testAccountPersonalDataFormLastNameNotValid(): void
     {
-        $client = static::createClient();
+        $client = $this->loginTestUser();
         $crawler = $client->request('GET', '/mon-compte/mes-informations');
-        $formData = $this->getValidUserData();
+        $formData = $this->getUpdateUserData();
         // set some values
         $lastName = 'k2000';
         $formData['lastName'] = $lastName;
-        $form = $this->getProfilePersonalDataForm($crawler, $formData);
+        $form = $this->getAccountPersonalDataForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
         // asserts
         $this->assertSelectorTextContains(
-            'form[name=user_profile_personal_data]',
+            'form[name=account_personal_data_form]',
             "Seules les lettres, les tirets et les apostrophes sont autorisés."
         );
     }
 
-    public function testProfilePersonalDataFormLastNameLengthUnderMin(): void
+    public function testAccountPersonalDataFormLastNameLengthUnderMin(): void
     {
-        $client = static::createClient();
+        $client = $this->loginTestUser();
         $crawler = $client->request('GET', '/mon-compte/mes-informations');
-        $formData = $this->getValidUserData();
+        $formData = $this->getUpdateUserData();
         // set some values
         $lastName = 'a';
         $formData['lastName'] = $lastName;
-        $form = $this->getProfilePersonalDataForm($crawler, $formData);
+        $form = $this->getAccountPersonalDataForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
         // asserts
         $this->assertSelectorTextContains(
-            'form[name=user_profile_personal_data]',
+            'form[name=account_personal_data_form]',
             "Votre nom de famille doit avoir au moins 2 caractères."
         );
     }
 
-    public function testProfilePersonalDataFormLastNameLengthOverMax(): void
+    public function testAccountPersonalDataFormLastNameLengthOverMax(): void
     {
-        $client = static::createClient();
+        $client = $this->loginTestUser();
         $crawler = $client->request('GET', '/mon-compte/mes-informations');
-        $formData = $this->getValidUserData();
+        $formData = $this->getUpdateUserData();
         // set some values
         $lastName = 'nomquiestbeaucouptroplongg';
         $formData['lastName'] = $lastName;
-        $form = $this->getProfilePersonalDataForm($crawler, $formData);
+        $form = $this->getAccountPersonalDataForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
         // asserts
         $this->assertSelectorTextContains(
-            'form[name=user_profile_personal_data]',
+            'form[name=account_personal_data_form]',
             "Votre nom de famille ne doit pas avoir plus de 25 caractères."
         );
     }
 
-    /*public function testProfilePersonalDataFormAddressEmpty(): void
+    /*public function testAccountPersonalDataFormAddressEmpty(): void
     {
-        $client = static::createClient();
+        $client = $this->loginTestUser();
         $crawler = $client->request('GET', '/mon-compte/mes-informations');
-        $formData = $this->getValidUserData();
+        $formData = $this->getUpdateUserData();
         // set some values
         $address = ' ';
         $formData['address'] = $address;
-        $form = $this->getProfilePersonalDataForm($crawler, $formData);
+        $form = $this->getAccountPersonalDataForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
         // asserts
         $this->assertSelectorTextContains(
-            'form[name=user_profile_personal_data]',
+            'form[name=account_personal_data_form]',
             "L'adresse ne peut pas être vide."
         );
     }*/
 
-    public function testProfilePersonalDataFormAddressNotValid(): void
+    public function testAccountPersonalDataFormAddressNotValid(): void
     {
-        $client = static::createClient();
+        $client = $this->loginTestUser();
         $crawler = $client->request('GET', '/mon-compte/mes-informations');
-        $formData = $this->getValidUserData();
+        $formData = $this->getUpdateUserData();
         // set some values
         $address = '1 rue G@bin';
         $formData['address'] = $address;
-        $form = $this->getProfilePersonalDataForm($crawler, $formData);
+        $form = $this->getAccountPersonalDataForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
         // asserts
         $this->assertSelectorTextContains(
-            'form[name=user_profile_personal_data]',
+            'form[name=account_personal_data_form]',
             "Les caractères spéciaux ne sont pas autorisés pour l'adresse."
         );
     }
 
-    /*public function testProfilePersonalDataFormCityEmpty(): void
+    /*public function testAccountPersonalDataFormCityEmpty(): void
     {
-        $client = static::createClient();
+        $client = $this->loginTestUser();
         $crawler = $client->request('GET', '/mon-compte/mes-informations');
-        $formData = $this->getValidUserData();
+        $formData = $this->getUpdateUserData();
         // set some values
         $city = ' ';
         $formData['city'] = $city;
-        $form = $this->getProfilePersonalDataForm($crawler, $formData);
+        $form = $this->getAccountPersonalDataForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
         // asserts
         $this->assertSelectorTextContains(
-            'form[name=user_profile_personal_data]',
+            'form[name=account_personal_data_form]',
             "La ville ne peut pas être vide."
         );
     }*/
 
-    public function testProfilePersonalDataFormCityNotValid(): void
+    public function testAccountPersonalDataFormCityNotValid(): void
     {
-        $client = static::createClient();
+        $client = $this->loginTestUser();
         $crawler = $client->request('GET', '/mon-compte/mes-informations');
-        $formData = $this->getValidUserData();
+        $formData = $this->getUpdateUserData();
         // set some values
         $city = 'St-Martin 1';
         $formData['city'] = $city;
-        $form = $this->getProfilePersonalDataForm($crawler, $formData);
+        $form = $this->getAccountPersonalDataForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
         // asserts
         $this->assertSelectorTextContains(
-            'form[name=user_profile_personal_data]',
+            'form[name=account_personal_data_form]',
             "Les chiffres et les caractères spéciaux ne sont pas autorisés pour la ville."
         );
     }
 
-    /*public function testProfilePersonalDataFormPostcodeEmpty(): void
+    /*public function testAccountPersonalDataFormPostcodeEmpty(): void
     {
-        $client = static::createClient();
+        $client = $this->loginTestUser();
         $crawler = $client->request('GET', '/mon-compte/mes-informations');
-        $formData = $this->getValidUserData();
+        $formData = $this->getUpdateUserData();
         // set some values
         $postcode = ' ';
         $formData['postcode'] = $postcode;
-        $form = $this->getProfilePersonalDataForm($crawler, $formData);
+        $form = $this->getAccountPersonalDataForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
         // asserts
         $this->assertSelectorTextContains(
-            'form[name=user_profile_personal_data]',
+            'form[name=account_personal_data_form]',
             "Le code postal ne peut pas être vide."
         );
     }*/
 
-    public function testProfilePersonalDataFormPostcodeNotValid(): void
+    public function testAccountPersonalDataFormPostcodeNotValid(): void
     {
-        $client = static::createClient();
+        $client = $this->loginTestUser();
         $crawler = $client->request('GET', '/mon-compte/mes-informations');
-        $formData = $this->getValidUserData();
+        $formData = $this->getUpdateUserData();
         // set some values
         $postcode = '6800@';
         $formData['postcode'] = $postcode;
-        $form = $this->getProfilePersonalDataForm($crawler, $formData);
+        $form = $this->getAccountPersonalDataForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
         // asserts
         $this->assertSelectorTextContains(
-            'form[name=user_profile_personal_data]',
+            'form[name=account_personal_data_form]',
             "Les caractères spéciaux ne sont pas autorisés pour le code postal."
         );
     }
 
-    public function testProfileDocumentFormValidDisplay(): void
+    public function testAccountDocumentFormValidDisplay(): void
     {
-        $client = static::createClient();
+        $client = $this->loginTestUser();
         $crawler = $client->request('GET', '/mon-compte/mes-documents');
         // Balise form
         $this->assertCount(
             1,
-            $crawler->filter('form[name=user_profile_document]'),
+            $crawler->filter('form[name=account_document_form]'),
             "Il doit y avoir une et une seule balise form dans ce formulaire"
         );
         // Justificatif de domicile
         $this->assertCount(
             1,
-            $crawler->filter('form[name=user_profile_document] *[name*=residenceProofFile]'),
+            $crawler->filter('form[name=account_document_form] *[name*=residenceProofFile]'),
             "Il doit y avoir un et un seul champ pour le justificatif de domicile dans ce formulaire"
         );
         // Bouton d'ajout du justificatif de domicile
         $this->assertCount(
             1,
-            $crawler->filter('form[name=user_profile_document] *[name*=residenceProofAdd]'),
+            $crawler->filter('form[name=account_document_form] *[name*=residenceProofReplace]'),
             "Il doit y avoir un et un seul champ pour le bouton d'ajout du justificatif de domicile dans ce formulaire"
         );
         // Justificatif d'identité
         $this->assertCount(
             1,
-            $crawler->filter('form[name=user_profile_document] *[name*=identityDocumentFile]'),
+            $crawler->filter('form[name=account_document_form] *[name*=identityDocumentFile]'),
             "Il doit y avoir un et un seul champ pour le justificatif d'identité dans ce formulaire"
         );
         // Bouton d'ajout du justificatif d'identité
         $this->assertCount(
             1,
-            $crawler->filter('form[name=user_profile_document] *[name*=identityDocumentAdd]'),
+            $crawler->filter('form[name=account_document_form] *[name*=identityDocumentReplace]'),
             "Il doit y avoir un et un seul champ pour le bouton d'ajout du justificatif d'identité dans ce formulaire"
         );
         // Bouton total de submit
         $this->assertCount(
             2,
-            $crawler->filter('form[name=user_profile_document] *[type=submit]'),
+            $crawler->filter('form[name=account_document_form] *[type=submit]'),
             "Il doit y avoir un et un seul bouton d'envoi dans ce formulaire"
         );
     }
 
-    /*public function getProfileDocumentForm(Crawler $crawler, array $formData): Form
+    /*public function getAccountDocumentForm(Crawler $crawler, array $formData): Form
     {
-        $form = $crawler->selectButton('user_profile_document[add]')->form();
-        $form['user_profile_document[residenceProof]'] = $formData['residence'];
-        $form['user_profile_document[identityDocument]'] = $formData['identity'];
+        $form = $crawler->selectButton('account_document_form[add]')->form();
+        $form['account_document_form[residenceProof]'] = $formData['residence'];
+        $form['account_document_form[identityDocument]'] = $formData['identity'];
         return $form;
     }*/
 
-    public function testProfileIdentifierFormValidDisplay(): void
+    public function testAccountIdentifierFormValidDisplay(): void
     {
-        $client = static::createClient();
+        $client = $this->loginTestUser();
         $crawler = $client->request('GET', '/mon-compte/modifier/identifiant');
         // Balise form
         $this->assertCount(
             1,
-            $crawler->filter('form[name=user_profile_identifier]'),
+            $crawler->filter('form[name=account_update_identifier_form]'),
             "Il doit y avoir une et une seule balise form dans ce formulaire"
         );
         /*// Code de validation de l'email
         $this->assertCount(
             1,
-            $crawler->filter('form[name=user_profile_identifier] input[name*=emailValidation]'),
+            $crawler->filter('form[name=account_update_identifier_form] input[name*=emailValidation]'),
             "Il doit y avoir un et un seul champ pour le code reçu par la nouvelle adresse email dans ce formulaire"
         );*/
         // Nouveau email
         $this->assertCount(
             2,
             $crawler->filter(
-                'form[name=user_profile_identifier] input[id^=user_profile_identifier_email_][type=email]'
+                'form[name=account_update_identifier_form] input[id^=account_update_identifier_form_email_][type=email]'
             ),
             "Il doit y avoir 2 et seulement 2 champs pour la nouvelle adresse email dans ce formulaire"
         );
         // Bouton submit
         $this->assertCount(
             1,
-            $crawler->filter('form[name=user_profile_identifier] *[type=submit]'),
+            $crawler->filter('form[name=account_update_identifier_form] *[type=submit]'),
             "Il doit y avoir un et un seul bouton d'envoi dans ce formulaire"
         );
     }
 
-    public function getProfileIdentifierForm(Crawler $crawler, array $formData): Form
+    public function getAccountIdentifierForm(Crawler $crawler, array $formData): Form
     {
-        $form = $crawler->selectButton('user_profile_identifier[modify]')->form();
-        //$form['user_profile_identifier[emailValidation]'] = $formData['emailValidationCode'];
-        $form['user_profile_identifier[email][first]'] = $formData['newEmail1'];
-        $form['user_profile_identifier[email][second]'] = $formData['newEmail2'];
+        $form = $crawler->selectButton('account_update_identifier_form[modify]')->form();
+        //$form['account_update_identifier_form[emailValidation]'] = $formData['emailValidationCode'];
+        $form['account_update_identifier_form[email][first]'] = $formData['newEmail1'];
+        $form['account_update_identifier_form[email][second]'] = $formData['newEmail2'];
         return $form;
     }
 
-    /*public function testProfileIdentifierFormEmailEmpty(): void
+    /*public function testAccountIdentifierFormEmailEmpty(): void
     {
-        $client = static::createClient();
+        $client = $this->loginTestUser();
         $crawler = $client->request('GET', '/mon-compte/modifier/identifiant');
-        $formData = $this->getValidUserData();
+        $formData = $this->getUpdateUserData();
         // set some values
         $email = ' ';
         $formData['newEmail1'] = $email;
         $formData['newEmail2'] = $email;
-        $form = $this->getProfileIdentifierForm($crawler, $formData);
+        $form = $this->getAccountIdentifierForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
         // asserts
         $this->assertSelectorTextContains(
-            'form[name=user_profile_identifier]',
+            'form[name=account_update_identifier_form]',
             "L'adresse email ne peut pas être vide."
         );
     }*/
 
-    public function testProfileIdentifierFormEmailNotEqual(): void
+    public function testAccountIdentifierFormEmailNotEqual(): void
     {
-        $client = static::createClient();
+        $client = $this->loginTestUser();
         $crawler = $client->request('GET', '/mon-compte/modifier/identifiant');
-        $formData = $this->getValidUserData();
+        $formData = $this->getUpdateUserData();
         // set some values
         $email = 'dupond@orange.fr';
         $formData['newEmail2'] = $email;
-        $form = $this->getProfileIdentifierForm($crawler, $formData);
+        $form = $this->getAccountIdentifierForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
         // asserts
         $this->assertSelectorTextContains(
-            'form[name=user_profile_identifier]',
+            'form[name=account_update_identifier_form]',
             "Veuillez saisir une nouvelle adresse email valide."
         );
     }
 
-    public function testProfileIdentifierFormEmailNotValid(): void
+    public function testAccountIdentifierFormEmailNotValid(): void
     {
-        $client = static::createClient();
+        $client = $this->loginTestUser();
         $crawler = $client->request('GET', '/mon-compte/modifier/identifiant');
-        $formData = $this->getValidUserData();
+        $formData = $this->getUpdateUserData();
         // set some values
         $email = 'test';
         $formData['newEmail1'] = $email;
         $formData['newEmail2'] = $email;
-        $form = $this->getProfileIdentifierForm($crawler, $formData);
+        $form = $this->getAccountIdentifierForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
         // asserts
         $this->assertSelectorTextContains(
-            'form[name=user_profile_identifier]',
+            'form[name=account_update_identifier_form]',
             "L'adresse email indiqué n'est pas valide."
         );
     }
 
-    public function testProfilePasswordFormValidDisplay(): void
+    public function testAccountPasswordFormValidDisplay(): void
     {
-        $client = static::createClient();
+        $client = $this->loginTestUser();
         $crawler = $client->request('GET', '/mon-compte/modifier/mot-de-passe');
         // Balise form
         $this->assertCount(
             1,
-            $crawler->filter('form[name=user_profile_password]'),
+            $crawler->filter('form[name=account_update_password_form]'),
             "Il doit y avoir une et une seule balise form dans ce formulaire"
         );
         // Nom cacher pour validation
         $this->assertCount(
             1,
-            $crawler->filter('form[name=user_profile_password] input[name*=lastName][type=hidden]'),
+            $crawler->filter('form[name=account_update_password_form] input[name*=lastName][type=hidden]'),
             "Il doit y avoir un et un seul champ cacher pour le nom dans ce formulaire"
         );
         // Prénom cacher pour validation
         $this->assertCount(
             1,
-            $crawler->filter('form[name=user_profile_password] input[name*=firstName][type=hidden]'),
+            $crawler->filter('form[name=account_update_password_form] input[name*=firstName][type=hidden]'),
             "Il doit y avoir un et un seul champ cacher pour le prénom dans ce formulaire"
         );
         // Ancien mot de passe
         $this->assertCount(
             1,
-            $crawler->filter('form[name=user_profile_password] input[name*=oldPassword][type=password]'),
+            $crawler->filter('form[name=account_update_password_form] input[name*=oldPassword][type=password]'),
             "Il doit y avoir un et un seul champ pour l'ancien mot de passe dans ce formulaire"
         );
         // Nouveau mot de passe
         $this->assertCount(
             2,
             $crawler->filter(
-                'form[name=user_profile_password] input[id^=user_profile_password_password_][type=password]'
+                'form[name=account_update_password_form] input[id^=account_update_password_form_password_][type=password]'
             ),
             "Il doit y avoir 2 et seulement 2 champs pour le nouveau mot de passe dans ce formulaire"
         );
         // Bouton submit
         $this->assertCount(
             1,
-            $crawler->filter('form[name=user_profile_password] *[type=submit]'),
+            $crawler->filter('form[name=account_update_password_form] *[type=submit]'),
             "Il doit y avoir un et un seul bouton d'envoi dans ce formulaire"
         );
     }
 
-    public function getProfilePasswordForm(Crawler $crawler, array $formData): Form
+    public function getAccountPasswordForm(Crawler $crawler, array $formData): Form
     {
-        $form = $crawler->selectButton('user_profile_password[modify]')->form();
-        $form['user_profile_password[oldPassword]'] = $formData['oldPassword'];
-        $form['user_profile_password[password][first]'] = $formData['newPassword1'];
-        $form['user_profile_password[password][second]'] = $formData['newPassword2'];
+        $form = $crawler->selectButton('account_update_password_form[modify]')->form();
+        $form['account_update_password_form[oldPassword]'] = $formData['oldPassword'];
+        $form['account_update_password_form[plainPassword][first]'] = $formData['newPassword1'];
+        $form['account_update_password_form[plainPassword][second]'] = $formData['newPassword2'];
         return $form;
     }
 
-    /*public function testProfilePasswordFormPasswordWithName(): void
+    /*public function testAccountPasswordFormPasswordWithName(): void
     {
-        $client = static::createClient();
+        $client = $this->loginTestUser();
         $crawler = $client->request('GET', '/mon-compte/modifier/mot-de-passe');
-        $formData = $this->getValidUserData();
+        $formData = $this->getUpdateUserData();
         // set some values
         $password = 'Martin_Dupond';
         $formData['newPassword1'] = $password;
         $formData['newPassword2'] = $password;
-        $form = $this->getProfilePasswordForm($crawler, $formData);
+        $form = $this->getAccountPasswordForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
         dd($client->getResponse()->getContent());
         // asserts
         $this->assertSelectorTextContains(
-            'form[name=user_profile_password]',
+            'form[name=account_update_password_form]',
             "Le mot de passe ne doit pas contenir le prénom et/ou le nom."
         );
     }*/
 
-    /*public function testProfilePasswordFormFalseOldPassword(): void
+    /*public function testAccountPasswordFormFalseOldPassword(): void
     {
-        $client = static::createClient();
+        $client = $this->loginTestUser();
         $crawler = $client->request('GET', '/mon-compte/modifier/mot-de-passe');
-        $formData = $this->getValidUserData();
+        $formData = $this->getUpdateUserData();
         // set some values
         $passwordOld = 'a9c456';
         $formData['oldPassword'] = $passwordOld;
-        $form = $this->getProfilePasswordForm($crawler, $formData);
+        $form = $this->getAccountPasswordForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
         dd($client->getResponse()->getContent());
         // asserts
         $this->assertSelectorTextContains(
-            'form[name=user_profile_password]',
+            'form[name=account_update_password_form]',
             "Votre ancien mot de passe n'est pas le bon."
         );
     }*/
 
-    public function testProfilePasswordFormPasswordUnderMin(): void
+    public function testAccountPasswordFormPasswordUnderMin(): void
     {
-        $client = static::createClient();
+        $client = $this->loginTestUser();
         $crawler = $client->request('GET', '/mon-compte/modifier/mot-de-passe');
-        $formData = $this->getValidUserData();
+        $formData = $this->getUpdateUserData();
         // set some values
         $password = 'a2c456';
         $formData['newPassword1'] = $password;
         $formData['newPassword2'] = $password;
-        $form = $this->getProfilePasswordForm($crawler, $formData);
+        $form = $this->getAccountPasswordForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
         // asserts
         $this->assertSelectorTextContains(
-            'form[name=user_profile_password]',
+            'form[name=account_update_password_form]',
             "Votre mot de passe doit avoir au moins 7 caractères alphanumérique et/ou spéciaux."
         );
     }
 
-    public function testProfilePasswordFormPasswordOnlyNumbers(): void
+    public function testAccountPasswordFormPasswordOnlyNumbers(): void
     {
-        $client = static::createClient();
+        $client = $this->loginTestUser();
         $crawler = $client->request('GET', '/mon-compte/modifier/mot-de-passe');
-        $formData = $this->getValidUserData();
+        $formData = $this->getUpdateUserData();
         // set some values
         $password = '12345678';
         $formData['newPassword1'] = $password;
         $formData['newPassword2'] = $password;
-        $form = $this->getProfilePasswordForm($crawler, $formData);
+        $form = $this->getAccountPasswordForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
         // asserts
         $this->assertSelectorTextContains(
-            'form[name=user_profile_password]',
+            'form[name=account_update_password_form]',
             "Pour la sécurité de votre mot de passe, vous ne pouvez pas mettre uniquement des chiffres."
         );
     }
 
-    public function testProfilePasswordFormPasswordOnlyLetters(): void
+    public function testAccountPasswordFormPasswordOnlyLetters(): void
     {
-        $client = static::createClient();
+        $client = $this->loginTestUser();
         $crawler = $client->request('GET', '/mon-compte/modifier/mot-de-passe');
-        $formData = $this->getValidUserData();
+        $formData = $this->getUpdateUserData();
         // set some values
         $password = 'azertyuiop';
         $formData['newPassword1'] = $password;
         $formData['newPassword2'] = $password;
-        $form = $this->getProfilePasswordForm($crawler, $formData);
+        $form = $this->getAccountPasswordForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
         // asserts
         $this->assertSelectorTextContains(
-            'form[name=user_profile_password]',
+            'form[name=account_update_password_form]',
             "Pour la sécurité de votre mot de passe, vous ne pouvez pas mettre uniquement des lettres."
         );
     }
 
-    public function testProfilePasswordFormPasswordNotEqual(): void
+    public function testAccountPasswordFormPasswordNotEqual(): void
     {
-        $client = static::createClient();
+        $client = $this->loginTestUser();
         $crawler = $client->request('GET', '/mon-compte/modifier/mot-de-passe');
-        $formData = $this->getValidUserData();
+        $formData = $this->getUpdateUserData();
         // set some values
         $password = 'Azerty789';
         $formData['newPassword2'] = $password;
-        $form = $this->getProfilePasswordForm($crawler, $formData);
+        $form = $this->getAccountPasswordForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
         // asserts
         $this->assertSelectorTextContains(
-            'form[name=user_profile_password]',
+            'form[name=account_update_password_form]',
             "Veuillez saisir un nouveau mot de passe valide."
         );
     }
 
-    public function testProfilePasswordFormPasswordEmpty(): void
+    public function testAccountPasswordFormPasswordEmpty(): void
     {
-        $client = static::createClient();
+        $client = $this->loginTestUser();
         $crawler = $client->request('GET', '/mon-compte/modifier/mot-de-passe');
-        $formData = $this->getValidUserData();
+        $formData = $this->getUpdateUserData();
         // set some values
         $password = ' ';
         $formData['newPassword1'] = $password;
         $formData['newPassword2'] = $password;
-        $form = $this->getProfilePasswordForm($crawler, $formData);
+        $form = $this->getAccountPasswordForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
         // asserts
         $this->assertSelectorTextContains(
-            'form[name=user_profile_password]',
+            'form[name=account_update_password_form]',
             "Le mot de passe ne peut pas être vide."
         );
     }
 
-    public function testProfileParameterFormValidDisplay(): void
+    public function testAccountParameterFormValidDisplay(): void
     {
-        $client = static::createClient();
+        $client = $this->loginTestUser();
         $crawler = $client->request('GET', '/mon-compte/mes-parametres');
         // Balise form
         $this->assertCount(
             1,
-            $crawler->filter('form[name=user_profile_parameter]'),
+            $crawler->filter('form[name=user_update_parameter]'),
             "Il doit y avoir une et une seule balise form dans ce formulaire"
         );
         // Fuseau horaire
         $this->assertCount(
             1,
-            $crawler->filter('form[name=user_profile_parameter] *[name*=timeZoneSelected]'),
+            $crawler->filter('form[name=user_update_parameter] *[name*=timeZoneSelected]'),
             "Il doit y avoir un et un seul champ pour le fuseau horaire dans ce formulaire"
         );
         // Abonnement d'offre et de publicité (Newsletters)
         $this->assertCount(
             1,
-            $crawler->filter('form[name=user_profile_parameter] *[name*=acceptNewsletters]'),
+            $crawler->filter('form[name=user_update_parameter] *[name*=acceptNewsletters]'),
             "Il doit y avoir un et un seul champ pour accepter la newsletters dans ce formulaire"
         );
         // Bouton submit
         $this->assertCount(
             1,
-            $crawler->filter('form[name=user_profile_parameter] *[type=submit]'),
+            $crawler->filter('form[name=user_update_parameter] *[type=submit]'),
             "Il doit y avoir un et un seul bouton d'envoi dans ce formulaire"
         );
     }
 
-    public function getProfileParameterForm(Crawler $crawler, array $formData): Form
+    public function getAccountParameterForm(Crawler $crawler, array $formData): Form
     {
-        $form = $crawler->selectButton('user_profile_parameter[modify]')->form();
-        $form['user_profile_parameter[timeZoneSelected]'] = $formData['timezone'];
-        $form['user_profile_parameter[acceptNewsletters]'] = $formData['newsletters'];
+        $form = $crawler->selectButton('user_update_parameter[modify]')->form();
+        $form['user_update_parameter[timeZoneSelected]'] = $formData['timezone'];
+        $form['user_update_parameter[acceptNewsletters]'] = $formData['newsletters'];
         return $form;
     }
 }
