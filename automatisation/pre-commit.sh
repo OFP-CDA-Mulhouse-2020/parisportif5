@@ -38,4 +38,4 @@ __run "1/5" "Code Sniffer : Corrects PSR12 code styling standards" "${phpcbf} sr
 __run "2/5" "Code Sniffer : Detects violations of PSR12 coding standard" "${phpcs} src tests"
 __run "3/5" "PhpStan : Analyse the code" "vendor/bin/phpstan analyse -c phpstan.neon.dist"
 __run "4/5" "PhpUnit : Runs unit tests" 'php bin/phpunit -c phpunit.xml --process-isolation --filter "App\\Unit"'
-__run "5/5" "PhpUnit : Runs functional tests" 'php bin/phpunit -c phpunit.xml --process-isolation --filter "App\\Functional"'
+# __run "5/5" "PhpUnit : Runs functional tests" 'php bin/phpunit -c phpunit.xml --process-isolation --filter "App\\Functional"'

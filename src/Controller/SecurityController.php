@@ -36,18 +36,6 @@ class SecurityController extends AbstractController
     }
 
     /**
-     * @Route("/account/logged", name="userloggedin")
-     */
-
-    public function redirectsToLoggedIn(): Response
-    {
-        return $this->render('login_form/userloggedin.html.twig', [
-            'site_title' => 'Paris Sportif',
-            'page_title' => 'User logged in',
-        ]);
-    }
-
-    /**
      * @Route("/userlogout", name="userlogout")
      */
     public function logout(): Response

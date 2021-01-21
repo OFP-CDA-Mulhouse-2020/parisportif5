@@ -12,45 +12,34 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class UserLoginController extends AbstractController //dossier
 {
-    /**
-     * @Route("/login", name="Connexion")
-     */
-    public function renderDummyForm(Request $request, UserRepository $repo): Response
-    {
-        $user = new User();
-        $user->setEmail('test123@mail.com');
+    // /**
+    //  * @Route("/login", name="Connexion")
+    //  */
+    // public function renderDummyForm(Request $request, UserRepository $repo): Response
+    // {
+    //     $user = new User();
+    //     $user->setEmail('test123@mail.com');
 
-        $form = $this->createForm(UserLoginType::class, $user);
+    //     $form = $this->createForm(UserLoginType::class, $user);
 
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            // var_dump($user);
-            // die();
-            $test = $repo->findOneBy(['email' => $user->getEmail()]);
-           // if (!is_null($test)) {
-                return $this->redirectToRoute('userloggedin');
-            //}
-        } elseif ($form->isSubmitted() && !($form->isValid())) {
-            return $this->render('login_form/loginlink.html.twig', [
-                'page_title' => 'Connexion',
-                'form' => $form->createView()
-            ]);
-        }
+    //     $form->handleRequest($request);
+    //     if ($form->isSubmitted() && $form->isValid()) {
+    //         // var_dump($user);
+    //         // die();
+    //         $test = $repo->findOneBy(['email' => $user->getEmail()]);
+    //        // if (!is_null($test)) {
+    //             return $this->redirectToRoute('userloggedin');
+    //         //}
+    //     } else if ($form->isSubmitted() && !($form->isValid())) {
+    //         return $this->render('login_form/loginlink.html.twig', [
+    //             'page_title' => 'Connexion',
+    //             'form' => $form->createView()
+    //         ]);
+    //     }
 
-        return $this->render('login_form/index.html.twig', [
-            'page_title' => 'Connexion',
-            'form' => $form->createView()
-        ]);
-    }
-
-    /**
-     * @Route("/account/logged", name="userloggedin")
-     */
-
-    public function redirectsToLoggedIn(): Response
-    {
-        return $this->render('login_form/userloggedin.html.twig', [
-            'page_title' => 'User logged in'
-        ]);
-    }
+    //     return $this->render('login_form/index.html.twig', [
+    //         'page_title' => 'Connexion',
+    //         'form' => $form->createView()
+    //     ]);
+    // }
 }
