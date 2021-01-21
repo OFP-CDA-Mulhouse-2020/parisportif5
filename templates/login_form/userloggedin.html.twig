@@ -21,6 +21,14 @@
             </br>
             <a href="{{ path('Ajouter des fonds') }}">Ajouter des fonds au porte monnaie</a>
         </div>
+            </br>
+            </br>
+            {% for sport in sports %}
+                <a href="">{{ sport.name }}</a>
+                </br>
+            {% endfor %}
+            </br>
+            </br>
         <div class="mb-3">
             <a href="{{ path('userlogout') }}">Se déconnecter</a>
         </div>
