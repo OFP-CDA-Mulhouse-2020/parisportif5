@@ -22,8 +22,12 @@
             <a href="{{ path('Ajouter des fonds') }}">Ajouter des fonds au porte monnaie</a>
         </div>
             </br>
+            <a>Liste des équipes de football</a>
             </br>
-            
+            {% for team in teams %}
+                <a>{{ team.name }}</a>
+                </br>
+            {% endfor %}
             </br>
             </br>
         <div class="mb-3">

@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Team;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -17,9 +18,17 @@ class SportsController extends AbstractController
 
     public function redirectsToFootballPage(): Response
     {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY'); //test de redirection
+
+        $team = $this->getDoctrine()->getRepository(Team::class);
+        $teams = $team->findAll();
+        // var_dump($teams);
+        // die();
+
         return $this->render('sports/football.html.twig', [
             'site_title' => 'Paris Sportif',
             'page_title' => 'Football',
+            'teams' => $teams
         ]);
     }
 
