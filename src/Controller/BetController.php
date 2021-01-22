@@ -49,19 +49,20 @@ class BetController extends AbstractController
             $bet = $form->getData();
             $amount = $bet->getAmount();
             $wallet = $user->getWallet();
-            $walletAmmount = $wallet->getAmount();
+            $walletAmmount = $wallet->getAmount() ?? 0;
             $newWalletAmount = $walletAmmount - $amount;
-            //dump($bet);
+            //dd($bet);
+            //dd($user);
             if ($newWalletAmount >= 0) {
                 $wallet->setAmount($newWalletAmount);
                 $teamName = ($bet->getTeam() !== null) ? $bet->getTeam()->getName() : 'Nul';
                 $designation = $bet->getDesignation() . ' ' . $teamName;
                 $user->addOnGoingBet($bet);
                 $bet
-                    ->setOdds(2)
+                    ->setOdds($bet->convertOddsMultiplierToStoredData(2))
                     ->setUser($user)
                     ->setDesignation($designation);
-                dump($bet);
+                //dd($bet);
                 // Add success message
                 $this->addFlash(
                     'success',

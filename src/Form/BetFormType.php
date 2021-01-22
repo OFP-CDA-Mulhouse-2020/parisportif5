@@ -8,7 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -23,12 +23,15 @@ class BetFormType extends AbstractType
                 'class' => Team::class,
                 'choices' => $options['run_teams'],
                 'choice_label' => 'name',
-                'expanded' => true
+                'expanded' => true,
+                'placeholder' => 'Nul'
             ])
-            ->add('amount', IntegerType::class, [
+            ->add('amount', MoneyType::class, [
                 'required' => true,
                 'label' => "Montant",
-                'invalid_message' => "Veuillez saisir un chiffre entier."
+                'divisor' => 100,
+                'currency' => false,
+                'invalid_message' => "Veuillez saisir un montant avec des chiffres."
             ])
             ->add('betting', SubmitType::class, [
                 'label' => "Parier"

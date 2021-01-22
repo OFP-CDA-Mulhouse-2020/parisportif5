@@ -22,7 +22,8 @@ class BetAdminFormType extends AbstractType
                 'class' => Team::class,
                 'choices' => $options['run_teams'],
                 'choice_label' => 'name',
-                'expanded' => true
+                'expanded' => true,
+                'placeholder' => 'Nul'
             ])
             ->add('valid', SubmitType::class, [
                 'label' => "Valider"
