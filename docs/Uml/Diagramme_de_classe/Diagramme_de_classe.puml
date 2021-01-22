@@ -119,6 +119,7 @@ skinparam linetype ortho
         +activate() : bool
         +desactivate() : bool
         +cancelBet(in Bet bet) : void
+        +isAdmin() : bool
     }
     'Langue d'affichage de l'utilisateur
     class Language {
