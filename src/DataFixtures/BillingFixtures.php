@@ -33,8 +33,8 @@ class BillingFixtures extends Fixture implements DependentFixtureInterface
                 'city' => "COLMAR",
                 'postcode' => "68000",
                 'country' => "FR",
-                'issue' => "2021-01-05",
-                'delivery' => "2021-01-06",
+                'issue' => "2021-02-05",
+                'delivery' => "2021-02-06",
                 'user' => ''
             ]
         ];

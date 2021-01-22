@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\Handler\RegistrationFormHandler;
-use App\Form\RegistrationFormType;
+use App\Form\Registration\RegistrationFormType;
 use App\Repository\LanguageRepository;
 use App\Security\EmailVerifier;
 use App\Security\UserLoginAuthenticator;

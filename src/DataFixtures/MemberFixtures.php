@@ -15,13 +15,15 @@ use Doctrine\Persistence\ObjectManager;
 
 class MemberFixtures extends Fixture implements DependentFixtureInterface
 {
-
     private TeamRepository $teamRepository;
     private MemberRoleRepository $memberRoleRepository;
     private MemberStatusRepository $memberStatusRepository;
 
-    public function __construct(TeamRepository $teamRepository, MemberStatusRepository $memberStatusRepository, MemberRoleRepository $memberRoleRepository)
-    {
+    public function __construct(
+        TeamRepository $teamRepository,
+        MemberStatusRepository $memberStatusRepository,
+        MemberRoleRepository $memberRoleRepository
+    ) {
         $this->teamRepository = $teamRepository;
         $this->memberStatusRepository = $memberStatusRepository;
         $this->memberRoleRepository = $memberRoleRepository;

@@ -28,13 +28,13 @@ class RunFixtures extends Fixture implements DependentFixtureInterface
             [
                 'name' => "Match 1 vs2",
                 'event' => "pool 1",
-                'start' => "2021-01-01 08:00",
-                'end' => "2021-01-01 20:00",
+                'start' => "2021-02-01 08:00",
+                'end' => "2021-02-01 20:00",
                 'noWinner' => null,
                 'competition' => [
                     'name' => "Championnat",
-                    'start' => "2021-01-01 08:00",
-                    'end' => "2021-01-10 20:00",
+                    'start' => "2021-02-01 08:00",
+                    'end' => "2021-02-10 20:00",
                     'country' => "FR"
                 ],
                 'location' => [
@@ -47,8 +47,6 @@ class RunFixtures extends Fixture implements DependentFixtureInterface
         for ($i = 0; $i < $count; $i++) {
             $runCompetition = $this->competitionRepository->findOneBy([
                 'name' => $testData[$i]['competition']['name'],
-                'startDate' => new \DateTimeImmutable($testData[$i]['competition']['start'], new \DateTimeZone("UTC")),
-                'endDate' => new \DateTimeImmutable($testData[$i]['competition']['end'], new \DateTimeZone("UTC")),
                 'country' => $testData[$i]['competition']['country']
             ]);
             $runLocation = $this->locationRepository->findOneBy([
