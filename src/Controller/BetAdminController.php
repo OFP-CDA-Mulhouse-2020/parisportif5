@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Billing;
 use App\Entity\User;
-use App\Form\BetAdminFormType;
+use App\Form\Bet\BetAdminFormType;
 use App\Repository\BetCategoryRepository;
 use App\Repository\BetRepository;
 use App\Repository\RunRepository;

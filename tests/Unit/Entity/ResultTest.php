@@ -43,7 +43,10 @@ final class ResultTest extends KernelTestCase
     public function createBetCategoryObject(string $name = "resultw"): BetCategory
     {
         $betCategory = new BetCategory();
-        $betCategory->setName($name);
+        $betCategory
+            ->setName($name)
+            ->setAllowDraw(false)
+            ->setTarget("teams");
         return $betCategory;
     }
 
@@ -98,7 +101,8 @@ final class ResultTest extends KernelTestCase
             ->setName("RC Strasbourg Alsace")
             ->setCountry($country)
             ->setSport($this->createSportObject())
-            ->addMember($this->createMemberObject());
+            ->addMember($this->createMemberObject())
+            ->setOdds(20000);
         return $team;
     }
 
@@ -108,7 +112,8 @@ final class ResultTest extends KernelTestCase
         $member
             ->setLastName($lastName)
             ->setFirstName("Jean-Pierre")
-            ->setCountry("FR");
+            ->setCountry("FR")
+            ->setOdds(20000);
         return $member;
     }
 

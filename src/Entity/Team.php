@@ -70,6 +70,14 @@ class Team
      */
     private Sport $sport;
 
+    /**
+     * @ORM\Column(type="integer")
+     * @Assert\PositiveOrZero(
+     *     message="La côte de l'équipe (multiplier par 10000) doit être un entier positif ou zéro."
+     * )
+     */
+    private int $odds;
+
     public function __construct()
     {
         $this->members = new ArrayCollection();
@@ -171,5 +179,17 @@ class Team
         }
         return ($minMembers == 0 && $maxMembers == 0) ?:
             ($minMembers <= $membersCount && $maxMembers >= $membersCount);
+    }
+
+    public function getOdds(): ?int
+    {
+        return $this->odds;
+    }
+
+    public function setOdds(int $odds): self
+    {
+        $this->odds = $odds;
+
+        return $this;
     }
 }

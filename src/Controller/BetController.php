@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Entity\Bet;
-use App\Form\BetFormType;
+use App\Form\Bet\BetFormType;
 use App\Repository\BetCategoryRepository;
 use App\Repository\RunRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -58,10 +58,12 @@ class BetController extends AbstractController
                 $teamName = ($bet->getTeam() !== null) ? $bet->getTeam()->getName() : 'Nul';
                 $designation = $bet->getDesignation() . ' ' . $teamName;
                 $user->addOnGoingBet($bet);
+                $date = new \DateTimeImmutable("now", new \DateTimeZone("UTC"));
                 $bet
                     ->setOdds($bet->convertOddsMultiplierToStoredData(2))
                     ->setUser($user)
-                    ->setDesignation($designation);
+                    ->setDesignation($designation)
+                    ->setBetDate($date);
                 //dd($bet);
                 // Add success message
                 $this->addFlash(

@@ -172,6 +172,19 @@ class Billing implements FundStorageInterface
     private ?User $user;
 
     /**
+     * @ORM\Column(type="string", length=6)
+     * @Assert\NotBlank(
+     *     message="Le type d'opération ne peut pas être vide.",
+     *     normalizer="trim"
+     * )
+     * @Assert\Choice(
+     *     choices=Billing::OPERATION_TYPES,
+     *     message="Choisisez une opération valide."
+     * )
+     */
+    private string $operationType;
+
+    /**
      * @const float DEFAULT_COMMISSION_RATE
      * @Assert\Type(
      *     type="float",
@@ -200,6 +213,11 @@ class Billing implements FundStorageInterface
      * )
     */
     public const DEFAULT_CURRENCY_SYMBOL = "€";
+
+    /**
+     * @const string[] OPERATION_TYPES
+    */
+    public const OPERATION_TYPES = ["credit", "debit"];
 
     public function getId(): ?int
     {
@@ -371,6 +389,18 @@ class Billing implements FundStorageInterface
     public function setUser(?User $user): self
     {
         $this->user = $user;
+        return $this;
+    }
+
+    public function getOperationType(): ?string
+    {
+        return $this->operationType;
+    }
+
+    public function setOperationType(string $operationType): self
+    {
+        $this->operationType = $operationType;
+
         return $this;
     }
 

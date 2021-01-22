@@ -88,11 +88,11 @@ skinparam linetype ortho
         -password : string
         -roles : string[]
         -activatedStatus : bool
-        -activatedDate : DateTime
+        -activatedDate : DateTimeImmutable
         -suspendedStatus : bool
-        -suspendedDate : DateTime
+        -suspendedDate : DateTimeImmutable
         -deletedStatus : bool
-        -deletedDate : DateTime
+        -deletedDate : DateTimeImmutable
         -civility : string
         -firstName : string
         -lastName : string
@@ -100,7 +100,7 @@ skinparam linetype ortho
         -billingCity : string
         -billingPostcode : string
         -billingCountry : string
-        -birthDate : DateTime
+        -birthDate : DateTimeImmutable
         -timeZoneSelected : string
         +{static} MIN_AGE_FOR_BETTING : int = 18
         +{static} MAX_AGE_FOR_BETTING : int = 140
@@ -148,8 +148,8 @@ skinparam linetype ortho
         -amount : int
         -commissionRate : int
         -operationType : string
-        -issueDate : DateTime
-        -deliveryDate : DateTime
+        -issueDate : DateTimeImmutable
+        -deliveryDate : DateTimeImmutable
         +{static} DEFAULT_COMMISSION_RATE : float =  7.5
         +{static} DEFAULT_CURRENCY_CODE : string = "EUR"
         +{static} DEFAULT_CURRENCY_SYMBOL : string = "€"
@@ -166,7 +166,7 @@ skinparam linetype ortho
         -designation : string
         -amount : int
         -odds : int
-        -date : DateTime
+        -betDate : DateTimeImmutable
         -isWinning : bool|null
         +hasWon() : bool|null
         +won() : void
@@ -180,7 +180,7 @@ skinparam linetype ortho
     class BetCategory {
         -identifier : int
         -name : string
-        -allowNull : bool
+        -allowDraw : bool
         -target : string
         -description : string
         +{static} CATEGORY_TARGET : string[] = ["teams", "members"]
@@ -212,8 +212,8 @@ skinparam linetype ortho
     class Competition {
         -identifier : int
         -name : string
-        -startDate : DateTime
-        -endDate : DateTime
+        -startDate : DateTimeImmutable
+        -endDate : DateTimeImmutable
         -country : string
         -maxRuns : int|null
         -minRuns : int
@@ -231,8 +231,8 @@ skinparam linetype ortho
         -identifier : int
         -event : string
         -name : string
-        -startDate : DateTime
-        -endDate : DateTime
+        -startDate : DateTimeImmutable
+        -endDate : DateTimeImmutable
         -noWinner : bool
         -scores : Result[]
         +isFinish() : bool

@@ -12,7 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity(repositoryClass=BetRepository::class)
  * @UniqueEntity(
- *     fields={"user", "competition", "run", "team", "teamMember", "betCategory"},
+ *     fields={"user", "competition", "run", "betDate", "betCategory"},
  *     errorPath="betCategory",
  *     message="Ce paris est déjà enregistré."
  * )
@@ -46,7 +46,7 @@ class Bet implements FundStorageInterface
     /**
      * @ORM\Column(type="integer")
      * @Assert\PositiveOrZero(
-     *     message="La côte du paris (multiplier par 10000) doit être un entier positif ou zéro"
+     *     message="La côte du paris (multiplier par 10000) doit être un entier positif ou zéro."
      * )
      */
     private int $odds;
@@ -94,6 +94,11 @@ class Bet implements FundStorageInterface
      * @Assert\Valid
      */
     private BetCategory $betCategory;
+
+    /**
+     * @ORM\Column(type="datetime_immutable")
+     */
+    private \DateTimeImmutable $betDate;
 
     public function __construct()
     {
@@ -249,6 +254,18 @@ class Bet implements FundStorageInterface
     public function setBetCategory(BetCategory $betCategory): self
     {
         $this->betCategory = $betCategory;
+
+        return $this;
+    }
+
+    public function getBetDate(): ?\DateTimeImmutable
+    {
+        return $this->betDate;
+    }
+
+    public function setBetDate(\DateTimeImmutable $betDate): self
+    {
+        $this->betDate = $betDate;
 
         return $this;
     }

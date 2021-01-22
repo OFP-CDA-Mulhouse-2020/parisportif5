@@ -25,7 +25,9 @@ final class BetCategoryTest extends KernelTestCase
     {
         $betCategory = new BetCategory();
         $betCategory
-            ->setName("resultw");
+            ->setName("resultw")
+            ->setAllowDraw(false)
+            ->setTarget("teams");
         return $betCategory;
     }
 
@@ -69,6 +71,41 @@ final class BetCategoryTest extends KernelTestCase
             ["poïnts"],
             [''],
             ['  ']
+        ];
+    }
+
+    public function testTargetCompatible(): void
+    {
+        $target1 = 'teams';
+        $target2 = 'members';
+        $betCategory = $this->createValidBetCategory();
+        $betCategory->setTarget($target1);
+        $violations = $this->validator->validate($betCategory);
+        $this->assertCount(0, $violations);
+        $betCategory->setTarget($target2);
+        $violations = $this->validator->validate($betCategory);
+        $this->assertCount(0, $violations);
+    }
+
+    /**
+     * @dataProvider targetUncompatibleProvider
+     */
+    public function testTargetUncompatible(string $target): void
+    {
+        $betCategory = $this->createValidBetCategory();
+        $betCategory->setTarget($target);
+        $violations = $this->validator->validate($betCategory);
+        $this->assertGreaterThanOrEqual(1, count($violations));
+    }
+
+    public function targetUncompatibleProvider(): array
+    {
+        return [
+            ' ',
+            '',
+            'hibou',
+            "Teams",
+            "Members"
         ];
     }
 }

@@ -31,10 +31,12 @@ final class BetTest extends KernelTestCase
     private function createValidBet(): Bet
     {
         $bet = new Bet();
+        $date = new \DateTimeImmutable("now", new \DateTimeZone("UTC"));
         $bet
             ->setDesignation('paris')
             ->setAmount(100)
-            ->setOdds(12000);
+            ->setOdds(12000)
+            ->setBetDate($date);
         return $bet;
     }
 
@@ -110,7 +112,8 @@ final class BetTest extends KernelTestCase
             ->setName("Trololo Futbol Klub")
             ->setCountry($country)
             ->setSport($this->createSportObject())
-            ->addMember($this->createMemberObject());
+            ->addMember($this->createMemberObject())
+            ->setOdds(20000);
         return $team;
     }
 
@@ -120,14 +123,18 @@ final class BetTest extends KernelTestCase
         $member
             ->setLastName($lastName)
             ->setFirstName("Jean-Pierre")
-            ->setCountry("FR");
+            ->setCountry("FR")
+            ->setOdds(20000);
         return $member;
     }
 
     private function createBetCategoryObject(string $name = "resultw"): BetCategory
     {
         $betCategory = new BetCategory();
-        $betCategory->setName($name);
+        $betCategory
+            ->setName($name)
+            ->setAllowDraw(false)
+            ->setTarget("teams");
         return $betCategory;
     }
 

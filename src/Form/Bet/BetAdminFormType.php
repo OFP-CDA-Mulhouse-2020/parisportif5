@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Form;
+namespace App\Form\Bet;
 
 use App\Entity\Team;
 use Doctrine\Common\Collections\ArrayCollection;

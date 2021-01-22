@@ -70,6 +70,29 @@ class BetCategory
      */
     private ?string $description;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private bool $allowDraw;
+
+    /**
+     * @ORM\Column(type="string", length=7)
+     * @Assert\NotBlank(
+     *     message="Le type de cible ne peut pas être vide.",
+     *     normalizer="trim"
+     * )
+     * @Assert\Choice(
+     *     choices=Billing::TARGET_TYPES,
+     *     message="Choisisez une cible valide."
+     * )
+     */
+    private string $target;
+
+    /**
+     * @const string[] TARGET_TYPES
+    */
+    public const TARGET_TYPES = ["teams", "members"];
+
     public function getId(): ?int
     {
         return $this->id;
@@ -94,6 +117,30 @@ class BetCategory
     public function setDescription(?string $description): self
     {
         $this->description = $description;
+        return $this;
+    }
+
+    public function getAllowDraw(): ?bool
+    {
+        return $this->allowDraw;
+    }
+
+    public function setAllowDraw(bool $allowDraw): self
+    {
+        $this->allowDraw = $allowDraw;
+
+        return $this;
+    }
+
+    public function getTarget(): ?string
+    {
+        return $this->target;
+    }
+
+    public function setTarget(string $target): self
+    {
+        $this->target = $target;
+
         return $this;
     }
 }

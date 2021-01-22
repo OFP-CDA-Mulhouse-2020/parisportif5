@@ -80,14 +80,19 @@ final class UserTest extends KernelTestCase
         User $user,
         string $designation = 'paris',
         int $amount = 100,
-        int $odds = 12000
+        int $odds = 12000,
+        \DateTimeImmutable $date = null
     ): Bet {
         $bet = new Bet();
+        if (is_null($date)) {
+            $date = new \DateTimeImmutable("now", new \DateTimeZone("UTC"));
+        }
         $bet
             ->setDesignation($designation)
             ->setAmount($amount)
             ->setOdds($odds)
-            ->setUser($user);
+            ->setUser($user)
+            ->setBetDate($date);
         return $bet;
     }
 

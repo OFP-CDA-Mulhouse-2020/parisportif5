@@ -35,7 +35,8 @@ final class BillingTest extends KernelTestCase
             ->setDesignation("paris n1")
             ->setOrderNumber(1)
             ->setInvoiceNumber(1)
-            ->setAmount(5);
+            ->setAmount(5)
+            ->setOperationType("debit");
         return $billing;
     }
 
@@ -315,6 +316,41 @@ final class BillingTest extends KernelTestCase
             ["fr"],
             [''],
             ['   ']
+        ];
+    }
+
+    public function testOperationTypeCompatible(): void
+    {
+        $operationType1 = 'credit';
+        $operationType2 = 'debit';
+        $billing = $this->createValidBilling();
+        $billing->setOperationType($operationType1);
+        $violations = $this->validator->validate($billing);
+        $this->assertCount(0, $violations);
+        $billing->setOperationType($operationType2);
+        $violations = $this->validator->validate($billing);
+        $this->assertCount(0, $violations);
+    }
+
+    /**
+     * @dataProvider operationTypeUncompatibleProvider
+     */
+    public function testOperationTypeUncompatible(string $operationType): void
+    {
+        $billing = $this->createValidBilling();
+        $billing->setOperationType($operationType);
+        $violations = $this->validator->validate($billing);
+        $this->assertGreaterThanOrEqual(1, count($violations));
+    }
+
+    public function operationTypeUncompatibleProvider(): array
+    {
+        return [
+            ' ',
+            '',
+            'chouette',
+            "débit",
+            "crédit"
         ];
     }
 

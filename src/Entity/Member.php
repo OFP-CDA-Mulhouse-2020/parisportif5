@@ -85,6 +85,14 @@ class Member
      */
     private Team $team;
 
+    /**
+     * @ORM\Column(type="integer")
+     * @Assert\PositiveOrZero(
+     *     message="La côte du membre (multiplier par 10000) doit être un entier positif ou zéro."
+     * )
+     */
+    private int $odds;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -158,6 +166,18 @@ class Member
     public function setTeam(Team $team): self
     {
         $this->team = $team;
+
+        return $this;
+    }
+
+    public function getOdds(): ?int
+    {
+        return $this->odds;
+    }
+
+    public function setOdds(int $odds): self
+    {
+        $this->odds = $odds;
 
         return $this;
     }
