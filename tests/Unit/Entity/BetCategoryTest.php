@@ -101,11 +101,11 @@ final class BetCategoryTest extends KernelTestCase
     public function targetUncompatibleProvider(): array
     {
         return [
-            ' ',
-            '',
-            'hibou',
-            "Teams",
-            "Members"
+            [' '],
+            [''],
+            ['hibou'],
+            ["Teams"],
+            ["Members"]
         ];
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\DataConverter\DateTimeStorageDataConverter;
 use App\Entity\Competition;
 use App\Repository\BetCategoryRepository;
 use App\Repository\SportRepository;
@@ -39,6 +40,7 @@ class CompetitionFixtures extends Fixture implements DependentFixtureInterface
             ]
         ];
         $count = count($testData);
+        $converter = new DateTimeStorageDataConverter();
         for ($i = 0; $i < $count; $i++) {
             $competitionSport = $this->sportRepository->findOneBy([
                 'name' => $testData[$i]['sport']['name'],
@@ -49,12 +51,14 @@ class CompetitionFixtures extends Fixture implements DependentFixtureInterface
             ]);
             $competition = new Competition();
             $competition
+                ->setDateTimeConverter($converter)
                 ->setName($testData[$i]['name'])
                 ->setCountry($testData[$i]['country'])
                 ->setStartDate(new \DateTimeImmutable($testData[$i]['start'], new \DateTimeZone("UTC")))
                 ->setEndDate(new \DateTimeImmutable($testData[$i]['end'], new \DateTimeZone("UTC")))
                 ->setSport($competitionSport)
-                ->addBetCategory($betCategory);
+                ->addBetCategory($betCategory)
+                ;
             $manager->persist($competition);
         }
         $manager->flush();

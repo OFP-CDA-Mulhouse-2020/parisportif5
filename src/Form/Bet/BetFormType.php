@@ -2,6 +2,7 @@
 
 namespace App\Form\Bet;
 
+use App\DataConverter\OddsStorageDataConverter;
 use App\Entity\Bet;
 use App\Entity\Team;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -16,15 +17,25 @@ class BetFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        //ChoiceList::label();
+        //'choice_label' => 'name',
+        //dd($options);
+        $oddsStorageDataConverter = $options['converter'];
         $builder
             ->add('team', EntityType::class, [
-                'required' => false,
+                'required' => $options['team_required'],
                 'label' => "Vainqueur",
                 'class' => Team::class,
                 'choices' => $options['run_teams'],
-                'choice_label' => 'name',
-                'expanded' => true,
-                'placeholder' => 'Nul'
+                'choice_label' => function ($team) use ($oddsStorageDataConverter) {
+                    $label = $team->getName() ?? '';
+                    $odds = $team->getOdds() ?? 0;
+                    $odds = $oddsStorageDataConverter->convertToOddsMultiplier($odds);
+                    $label .= ' - ' . $odds;
+                    return $label;
+                },
+                'expanded' => $options['team_expanded'],
+                'placeholder' => $options['team_placeholder']
             ])
             ->add('amount', MoneyType::class, [
                 'required' => true,
@@ -43,7 +54,11 @@ class BetFormType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Bet::class,
-            'run_teams' => new ArrayCollection()
+            'run_teams' => new ArrayCollection(),
+            'converter' => new OddsStorageDataConverter(),
+            'team_required' => true,
+            'team_expanded' => true,
+            'team_placeholder' => ""
         ]);
     }
 }

@@ -6,8 +6,8 @@ namespace App\Entity;
 
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use App\Repository\SportRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\SportRepository;
 
 /**
  * @ORM\Entity(repositoryClass=SportRepository::class)
@@ -110,7 +110,16 @@ class Sport
      */
     private ?int $maxMembersByTeam;
 
-    public const RUN_TYPES = ["fixture", "race"];
+    /** @const string FIXTURE_TYPE */
+    public const FIXTURE_TYPE = "fixture";
+
+    /** @const string RACE_TYPE*/
+    public const RACE_TYPE = "race";
+
+    /**
+     * @const string[] RUN_TYPES
+    */
+    public const RUN_TYPES = [self::FIXTURE_TYPE, self::RACE_TYPE];
 
     public function getId(): ?int
     {

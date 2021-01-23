@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use App\Repository\LocationRepository;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\LocationRepository;
 
 /**
  * @ORM\Entity(repositoryClass=LocationRepository::class)

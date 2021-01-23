@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\DataConverter\DateTimeStorageDataConverter;
+use App\DataConverter\OddsStorageDataConverter;
 use App\Entity\Billing;
 use App\Entity\User;
 use App\Form\Bet\BetAdminFormType;
@@ -16,11 +18,15 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class BetAdminController extends AbstractController
 {
+    /** @const int LIMITATION_TO_SWITCH_TO_SELECT */
+    public const LIMITATION_TO_SWITCH_TO_SELECT = 3;
+
     /**
      * @Route("/{sportSlug}/{competitonSlug}/{eventSlug}/{runSlug}-{runId}/{betCategorySlug}-{betCategoryId}/admin", name="bet_admin")
      */
     public function index(Request $request, int $runId, int $betCategoryId, RunRepository $runRepository, BetCategoryRepository $betCategoryRepository, BetRepository $betRepository): Response
     {
+        //======================================>>>>>>>>>>>>>>>>>>>>>> donner resultat à run et competition
         //$this->denyAccessUnlessGranted('ROLE_ADMIN');
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         /** @var User $user */
@@ -45,8 +51,24 @@ class BetAdminController extends AbstractController
         if ($betCategory === null) {
             return $this->redirectToRoute('userlogin');
         }
+        $oddsStorageDataConverter = new OddsStorageDataConverter();
+        $runTeams = $run->getTeams();
+        $teamsCount = count($runTeams);
+        $teamExpanded = true;
+        if ($teamsCount > self::LIMITATION_TO_SWITCH_TO_SELECT) {
+            $teamExpanded = false;
+        }
+        $teamRequired = true;
+        $teamPlaceholder = "";
+        if (!empty($betCategory->getAllowDraw())) {
+            $teamRequired = false;
+            $teamPlaceholder = "Nul";
+        }
         $form = $this->createForm(BetAdminFormType::class, null, [
-            'run_teams' => $run->getTeams()
+            'run_teams' => $runTeams,
+            'team_placeholder' => $teamPlaceholder,
+            'team_expanded' => $teamExpanded,
+            'team_required' => $teamRequired
         ]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -79,15 +101,16 @@ class BetAdminController extends AbstractController
                         if (!is_null($betUserWallet)) {
                             $amountStore = $bet->getAmount() ?? 0;
                             $oddsStore = $bet->getOdds() ?? 0;
-                            $odds = $bet->convertToOddsMultiplier($oddsStore);
+                            $odds = $oddsStorageDataConverter->convertToOddsMultiplier($oddsStore);
                             $gains = $amountStore * $odds;
                             $profits = intval(round($gains * ((100 - Billing::DEFAULT_COMMISSION_RATE) * 0.01), 0, PHP_ROUND_HALF_UP));
                             $walletAmmount = $betUserWallet->getAmount() ?? 0;
                             $newWalletAmount = intval(($walletAmmount + $profits));
                             $betUserWallet->setAmount($newWalletAmount);
                             $billing = new Billing();
-                            $commissionRateStore = $bet->convertOddsMultiplierToStoredData(Billing::DEFAULT_COMMISSION_RATE);
-                            $billing = $this->makeBill($billing, $user, $bet->getDesignation(), $profits, $commissionRateStore, $bet->getId(), 'credit');
+                            $dateTimeConverter = new DateTimeStorageDataConverter();
+                            $commissionRateStore = $oddsStorageDataConverter->convertOddsMultiplierToStoredData(Billing::DEFAULT_COMMISSION_RATE);
+                            $billing = $this->makeBill($billing, $user, $bet->getDesignation(), $profits, $commissionRateStore, $bet->getId(), Billing::CREDIT, $dateTimeConverter);
                             $entityManager->persist($billing);
                         }
                     }
@@ -97,7 +120,8 @@ class BetAdminController extends AbstractController
                     if (!is_null($betUser)) {
                         $amountStore = $bet->getAmount() ?? 0;
                         $billing = new Billing();
-                        $billing = $this->makeBill($billing, $user, $bet->getDesignation(), $amountStore, 0, $bet->getId(), 'debit');
+                        $dateTimeConverter = new DateTimeStorageDataConverter();
+                        $billing = $this->makeBill($billing, $user, $bet->getDesignation(), $amountStore, 0, $bet->getId(), Billing::DEBIT, $dateTimeConverter);
                         $entityManager->persist($billing);
                     }
                 }
@@ -116,11 +140,12 @@ class BetAdminController extends AbstractController
         ]);
     }
 
-    protected function makeBill(Billing $billing, User $betUser, string $designation, int $amount, int $commissionRate, int $betId, string $operationType): Billing
+    protected function makeBill(Billing $billing, User $betUser, string $designation, int $amount, int $commissionRate, int $betId, string $operationType, DateTimeStorageDataConverter $dateTimeConverter): Billing
     {
-        $date = new \DateTimeImmutable("now", new \DateTimeZone("UTC"));
+        $date = new \DateTimeImmutable("now", new \DateTimeZone(DateTimeStorageDataConverter::STORED_TIME_ZONE));
         //\uniqid("$betId", true)
         $billing
+            ->setDateTimeConverter($dateTimeConverter)
             ->setFirstName($betUser->getFirstName())
             ->setLastName($betUser->getLastName())
             ->setAddress($betUser->getBillingAddress())
@@ -134,8 +159,8 @@ class BetAdminController extends AbstractController
             ->setOrderNumber($betId)
             ->setInvoiceNumber($betId)
             ->setIssueDate($date)
-            ->setDeliveryDate($date);
-            //->setOperationType($operationType);
+            ->setDeliveryDate($date)
+            ->setOperationType($operationType);
         return $billing;
     }
 }

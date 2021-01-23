@@ -16,16 +16,16 @@ class SecurityType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-        ->add('email', EmailType::class, [
-            'required' => 'true'
-        ])
-        ->add('password', PasswordType::class, [
-            'required' => 'true'
-        ])
-        ->add('connect', SubmitType::class)
-        ->add('_csrf_token', HiddenType::class, [
-            'data' => "{{ csrf_token('authenticate') }}"
-        ])
+            ->add('email', EmailType::class, [
+                'required' => 'true'
+            ])
+            ->add('password', PasswordType::class, [
+                'required' => 'true'
+            ])
+            ->add('connect', SubmitType::class)
+            ->add('_csrf_token', HiddenType::class, [
+                'data' => "{{ csrf_token('authenticate') }}"
+            ])
         ;
     }
 

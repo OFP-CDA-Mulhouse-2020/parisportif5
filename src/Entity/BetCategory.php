@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use App\Repository\BetCategoryRepository;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\BetCategoryRepository;
 
 /*// liste des catégories :
     Foot :
@@ -82,16 +82,22 @@ class BetCategory
      *     normalizer="trim"
      * )
      * @Assert\Choice(
-     *     choices=Billing::TARGET_TYPES,
+     *     choices=BetCategory::TARGET_TYPES,
      *     message="Choisisez une cible valide."
      * )
      */
     private string $target;
 
+    /** @const string TEAM_TYPE */
+    public const TEAM_TYPE = "teams";
+
+    /** @const string MEMBER_TYPE */
+    public const MEMBER_TYPE = "members";
+
     /**
      * @const string[] TARGET_TYPES
     */
-    public const TARGET_TYPES = ["teams", "members"];
+    public const TARGET_TYPES = [self::TEAM_TYPE, self::MEMBER_TYPE];
 
     public function getId(): ?int
     {

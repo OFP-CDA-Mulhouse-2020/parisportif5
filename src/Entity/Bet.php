@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use App\Repository\BetRepository;
+use App\DataConverter\DateTimeStorageDataConverter;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\BetRepository;
 
 /**
  * @ORM\Entity(repositoryClass=BetRepository::class)
@@ -17,7 +18,7 @@ use Doctrine\ORM\Mapping as ORM;
  *     message="Ce paris est déjà enregistré."
  * )
  */
-class Bet implements FundStorageInterface
+class Bet
 {
     /**
      * @ORM\Id
@@ -99,6 +100,9 @@ class Bet implements FundStorageInterface
      * @ORM\Column(type="datetime_immutable")
      */
     private \DateTimeImmutable $betDate;
+
+    /** Sécurise le stockage des dates et heures */
+    private DateTimeStorageDataConverter $dateTimeConverter;
 
     public function __construct()
     {
@@ -221,26 +225,6 @@ class Bet implements FundStorageInterface
         $this->isWinning = null;
     }
 
-    public function convertToCurrencyUnit(int $amount): float
-    {
-        return floatVal($amount * 0.01);
-    }
-
-    public function convertToOddsMultiplier(int $odds): float
-    {
-        return floatVal($odds * 0.0001);
-    }
-
-    public function convertCurrencyUnitToStoredData(float $amount): int
-    {
-        return intVal($amount * 100);
-    }
-
-    public function convertOddsMultiplierToStoredData(float $odds): int
-    {
-        return intVal($odds * 10000);
-    }
-
     public function getTarget(): ?object
     {
         return $this->teamMember ?? $this->team ?? $this->run ?? $this->competition;
@@ -263,9 +247,17 @@ class Bet implements FundStorageInterface
         return $this->betDate;
     }
 
-    public function setBetDate(\DateTimeImmutable $betDate): self
+    public function setBetDate(\DateTimeInterface $betDate): self
     {
+        $betDate = $this->dateTimeConverter->convertedToStoreDateTime($betDate);
         $this->betDate = $betDate;
+
+        return $this;
+    }
+
+    public function setDateTimeConverter(DateTimeStorageDataConverter $dateTimeConverter): self
+    {
+        $this->dateTimeConverter = $dateTimeConverter;
 
         return $this;
     }

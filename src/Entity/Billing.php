@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use App\Repository\BillingRepository;
+use App\DataConverter\DateTimeStorageDataConverter;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\BillingRepository;
 
 /**
  * @ORM\Entity(repositoryClass=BillingRepository::class)
@@ -16,7 +17,7 @@ use Doctrine\ORM\Mapping as ORM;
  *     message="Cette facture est déjà enregistrée."
  * )
  */
-class Billing implements FundStorageInterface
+class Billing
 {
     /**
      * @ORM\Id
@@ -184,6 +185,9 @@ class Billing implements FundStorageInterface
      */
     private string $operationType;
 
+    /** Sécurise le stockage des dates et heures */
+    private DateTimeStorageDataConverter $dateTimeConverter;
+
     /**
      * @const float DEFAULT_COMMISSION_RATE
      * @Assert\Type(
@@ -214,10 +218,16 @@ class Billing implements FundStorageInterface
     */
     public const DEFAULT_CURRENCY_SYMBOL = "€";
 
+    /** @const string CREDIT */
+    public const CREDIT = "credit";
+
+    /** @const string DEBIT */
+    public const DEBIT = "debit";
+
     /**
      * @const string[] OPERATION_TYPES
     */
-    public const OPERATION_TYPES = ["credit", "debit"];
+    public const OPERATION_TYPES = [self::DEBIT, self::CREDIT];
 
     public function getId(): ?int
     {
@@ -353,8 +363,9 @@ class Billing implements FundStorageInterface
         return $this->issueDate;
     }
 
-    public function setIssueDate(\DateTimeImmutable $issueDate): self
+    public function setIssueDate(\DateTimeInterface $issueDate): self
     {
+        $issueDate = $this->dateTimeConverter->convertedToStoreDateTime($issueDate);
         $this->issueDate = $issueDate;
         return $this;
     }
@@ -364,8 +375,9 @@ class Billing implements FundStorageInterface
         return $this->deliveryDate;
     }
 
-    public function setDeliveryDate(\DateTimeImmutable $deliveryDate): self
+    public function setDeliveryDate(\DateTimeInterface $deliveryDate): self
     {
+        $deliveryDate = $this->dateTimeConverter->convertedToStoreDateTime($deliveryDate);
         $this->deliveryDate = $deliveryDate;
         return $this;
     }
@@ -404,28 +416,15 @@ class Billing implements FundStorageInterface
         return $this;
     }
 
-    public function convertToCurrencyUnit(int $amount): float
-    {
-        return floatVal($amount * 0.01);
-    }
-
-    public function convertToCommissionRate(int $commissionRate): float
-    {
-        return floatVal($commissionRate * 0.0001);
-    }
-
-    public function convertCurrencyUnitToStoredData(float $amount): int
-    {
-        return intVal($amount * 100);
-    }
-
-    public function convertCommissionRateToStoredData(float $commissionRate): int
-    {
-        return intVal($commissionRate * 10000);
-    }
-
     public function hasUser(): bool
     {
         return empty($this->user) ? false : true;
+    }
+
+    public function setDateTimeConverter(DateTimeStorageDataConverter $dateTimeConverter): self
+    {
+        $this->dateTimeConverter = $dateTimeConverter;
+
+        return $this;
     }
 }

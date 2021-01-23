@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Entity;
+namespace App\DataConverter;
 
-interface FundStorageInterface
+interface FundsStorageInterface
 {
     public function convertToCurrencyUnit(int $amount): float;
     public function convertCurrencyUnitToStoredData(float $amount): int;

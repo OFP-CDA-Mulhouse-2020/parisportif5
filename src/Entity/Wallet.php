@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use App\Repository\WalletRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use App\Repository\WalletRepository;
 
 /**
  * @ORM\Entity(repositoryClass=WalletRepository::class)
@@ -16,7 +16,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  *     message="Ce porte-monnaie est déjà enregistré."
  * )
  */
-class Wallet implements FundStorageInterface
+class Wallet
 {
     /**
      * @ORM\Id
@@ -71,17 +71,5 @@ class Wallet implements FundStorageInterface
         }*/
 
         return $this;
-    }
-
-    public function convertToCurrencyUnit(int $amount): float
-    {
-        $this->amount = intval($amount / 100, 10);
-        return $this->amount;
-    }
-
-    public function convertCurrencyUnitToStoredData(float $amount): int
-    {
-        $this->amount = intval($amount * 100, 10);
-        return $this->amount;
     }
 }

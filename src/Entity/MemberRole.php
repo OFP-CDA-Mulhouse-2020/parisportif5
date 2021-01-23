@@ -6,8 +6,8 @@ namespace App\Entity;
 
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use App\Repository\MemberRoleRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\MemberRoleRepository;
 
 /**
  * @ORM\Entity(repositoryClass=MemberRoleRepository::class)

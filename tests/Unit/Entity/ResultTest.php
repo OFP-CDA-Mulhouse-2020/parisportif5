@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Entity;
 
+use App\DataConverter\DateTimeStorageDataConverter;
 use App\Entity\BetCategory;
 use App\Entity\Competition;
 use App\Entity\Member;
@@ -54,7 +55,9 @@ final class ResultTest extends KernelTestCase
     {
         $competition = new Competition();
         $date = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
+        $converter = new DateTimeStorageDataConverter();
         $competition
+            ->setDateTimeConverter($converter)
             ->setName('Championnat inter-club')
             ->setStartDate($date->setTime(23, 59, 59, 1000000))
             ->setCountry($country)
@@ -85,7 +88,9 @@ final class ResultTest extends KernelTestCase
     {
         $run = new Run();
         $startDate = $date ?? new \DateTimeImmutable('+1 day', new \DateTimeZone('UTC'));
+        $converter = new DateTimeStorageDataConverter();
         $run
+            ->setDateTimeConverter($converter)
             ->setName('run name')
             ->setEvent('event name')
             ->setStartDate($startDate)

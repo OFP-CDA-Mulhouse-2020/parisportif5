@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\DataConverter\DateTimeStorageDataConverter;
+use App\DataConverter\OddsStorageDataConverter;
 use App\Entity\User;
 use App\Entity\Bet;
 use App\Form\Bet\BetFormType;
@@ -14,6 +16,9 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class BetController extends AbstractController
 {
+    /** @const int LIMITATION_TO_SWITCH_TO_SELECT */
+    public const LIMITATION_TO_SWITCH_TO_SELECT = 3;
+
     /**
      * @Route("/{sportSlug}/{competitonSlug}/{eventSlug}/{runSlug}-{runId}/{betCategorySlug}-{betCategoryId}", name="bet_index")
      */
@@ -36,13 +41,37 @@ class BetController extends AbstractController
         }
         $bet = new Bet();
         $designation = $betCategory->getName();
+        $oddsStorageDataConverter = new OddsStorageDataConverter();
         $bet
             ->setCompetition($competition)
             ->setDesignation($designation)
             ->setRun($run)
             ->setBetCategory($betCategory);
+        $runTeams = $run->getTeams();
+        $teamsCount = count($runTeams);
+        $teamExpanded = true;
+        if ($teamsCount > self::LIMITATION_TO_SWITCH_TO_SELECT) {
+            $teamExpanded = false;
+        }
+        $teamRequired = true;
+        $teamPlaceholder = "";
+        if (!empty($betCategory->getAllowDraw())) {
+            $teamRequired = false;
+            $teamPlaceholder = "Nul - ";
+            $totalOdds = 0;
+            foreach ($runTeams as $team) {
+                $odds = $team->getOdds() ?? 0;
+                $totalOdds += $odds;
+            }
+            $averageOdds = intval(round(($totalOdds / $teamsCount), 0, PHP_ROUND_HALF_UP));
+            $teamPlaceholder .= $oddsStorageDataConverter->convertToOddsMultiplier($averageOdds);
+        }
         $form = $this->createForm(BetFormType::class, $bet, [
-            'run_teams' => $run->getTeams()
+            'run_teams' => $runTeams,
+            'converter' => $oddsStorageDataConverter,
+            'team_placeholder' => $teamPlaceholder,
+            'team_expanded' => $teamExpanded,
+            'team_required' => $teamRequired
         ]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -58,9 +87,11 @@ class BetController extends AbstractController
                 $teamName = ($bet->getTeam() !== null) ? $bet->getTeam()->getName() : 'Nul';
                 $designation = $bet->getDesignation() . ' ' . $teamName;
                 $user->addOnGoingBet($bet);
-                $date = new \DateTimeImmutable("now", new \DateTimeZone("UTC"));
+                $dateTimeConverter = new DateTimeStorageDataConverter();
+                $date = new \DateTimeImmutable("now", new \DateTimeZone(DateTimeStorageDataConverter::STORED_TIME_ZONE));
                 $bet
-                    ->setOdds($bet->convertOddsMultiplierToStoredData(2))
+                    ->setDateTimeConverter($dateTimeConverter)
+                    ->setOdds($oddsStorageDataConverter->convertOddsMultiplierToStoredData(2))
                     ->setUser($user)
                     ->setDesignation($designation)
                     ->setBetDate($date);

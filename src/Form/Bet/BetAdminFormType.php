@@ -17,13 +17,13 @@ class BetAdminFormType extends AbstractType
         $builder
             ->add('winner', EntityType::class, [
                 'mapped' => false,
-                'required' => false,
+                'required' => $options['team_required'],
                 'label' => "Paris vainqueur",
                 'class' => Team::class,
                 'choices' => $options['run_teams'],
                 'choice_label' => 'name',
-                'expanded' => true,
-                'placeholder' => 'Nul'
+                'expanded' => $options['team_expanded'],
+                'placeholder' => $options['team_placeholder']
             ])
             ->add('valid', SubmitType::class, [
                 'label' => "Valider"
@@ -34,7 +34,10 @@ class BetAdminFormType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'run_teams' => new ArrayCollection()
+            'run_teams' => new ArrayCollection(),
+            'team_required' => true,
+            'team_expanded' => true,
+            'team_placeholder' => ""
         ]);
     }
 }

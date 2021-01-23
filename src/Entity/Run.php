@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use App\Repository\RunRepository;
+use App\DataConverter\DateTimeStorageDataConverter;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\RunRepository;
 
 /**
  * @ORM\Entity(repositoryClass=RunRepository::class)
@@ -97,6 +98,9 @@ class Run
      */
     private Collection $scores;
 
+    /** Sécurise le stockage des dates et heures */
+    private DateTimeStorageDataConverter $dateTimeConverter;
+
     public function __construct()
     {
         $this->teams = new ArrayCollection();
@@ -135,8 +139,9 @@ class Run
         return $this->startDate;
     }
 
-    public function setStartDate(\DateTimeImmutable $startDate): self
+    public function setStartDate(\DateTimeInterface $startDate): self
     {
+        $startDate = $this->dateTimeConverter->convertedToStoreDateTime($startDate);
         $this->startDate = $startDate;
         return $this;
     }
@@ -146,22 +151,23 @@ class Run
         return $this->endDate;
     }
 
-    public function setEndDate(\DateTimeImmutable $endDate): self
+    public function setEndDate(\DateTimeInterface $endDate): self
     {
+        $endDate = $this->dateTimeConverter->convertedToStoreDateTime($endDate);
         $this->endDate = $endDate;
         return $this;
     }
 
     public function isFinish(): bool
     {
-        $timezoneUTC = new \DateTimeZone('UTC');
+        $timezoneUTC = new \DateTimeZone(DateTimeStorageDataConverter::STORED_TIME_ZONE);
         $currentDate = new \DateTime('now', $timezoneUTC);
         return ($currentDate > $this->endDate->setTimezone($timezoneUTC));
     }
 
     public function isOngoing(): bool
     {
-        $timezoneUTC = new \DateTimeZone('UTC');
+        $timezoneUTC = new \DateTimeZone(DateTimeStorageDataConverter::STORED_TIME_ZONE);
         $currentDate = new \DateTime('now', $timezoneUTC);
         return ($currentDate >= $this->startDate->setTimezone($timezoneUTC)
             && $currentDate <= $this->endDate->setTimezone($timezoneUTC));
@@ -286,5 +292,12 @@ class Run
         }
         return ($minTeams == 0 && $maxTeams == 0) ?:
             ($minTeams <= $teamsCount && $maxTeams >= $teamsCount);
+    }
+
+    public function setDateTimeConverter(DateTimeStorageDataConverter $dateTimeConverter): self
+    {
+        $this->dateTimeConverter = $dateTimeConverter;
+
+        return $this;
     }
 }

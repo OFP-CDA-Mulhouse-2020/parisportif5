@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\DataConverter\DateTimeStorageDataConverter;
 use App\Entity\Language;
 use App\Entity\User;
 use App\Entity\Wallet;
@@ -86,6 +87,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
             ]
         ];
         $count = count($testData);
+        $converter = new DateTimeStorageDataConverter();
         for ($i = 0; $i < $count; $i++) {
             $user = new User();
             $userWallet = new Wallet();
@@ -97,6 +99,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
                 $userLanguage = $this->languageRepository->languageByDefault();
             }
             $user
+                ->setDateTimeConverter($converter)
                 ->setRoles(['ROLE_USER'])
                 ->setCivility($testData[$i]['civility'])
                 ->setFirstName($testData[$i]['firstname'])
@@ -118,7 +121,8 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
                     $testData[$i]['password']
                 ))
                 ->setWallet($userWallet)
-                ->setLanguage($userLanguage);
+                ->setLanguage($userLanguage)
+                ;
             $manager->persist($user);
         }
         $manager->flush();

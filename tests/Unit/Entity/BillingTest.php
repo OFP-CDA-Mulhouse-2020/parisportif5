@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Entity;
 
+use App\DataConverter\DateTimeStorageDataConverter;
 use App\Entity\Billing;
 use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -25,7 +26,9 @@ final class BillingTest extends KernelTestCase
     private function createValidBilling(): Billing
     {
         $billing = new Billing();
+        $converter = new DateTimeStorageDataConverter();
         $billing
+            ->setDateTimeConverter($converter)
             ->setFirstName("Dupont")
             ->setLastName("Tintin")
             ->setAddress("1 avenue st martin")
@@ -43,7 +46,9 @@ final class BillingTest extends KernelTestCase
     private function createUserObject(string $country = "FR"): User
     {
         $user = new User();
+        $converter = new DateTimeStorageDataConverter();
         $user
+            ->setDateTimeConverter($converter)
             ->setCivility("Monsieur")
             ->setFirstName("Tintin")
             ->setLastName("Dupont")
@@ -346,11 +351,11 @@ final class BillingTest extends KernelTestCase
     public function operationTypeUncompatibleProvider(): array
     {
         return [
-            ' ',
-            '',
-            'chouette',
-            "débit",
-            "crédit"
+            [' '],
+            [''],
+            ['chouette'],
+            ["débit"],
+            ["crédit"]
         ];
     }
 
@@ -507,46 +512,6 @@ final class BillingTest extends KernelTestCase
         $result = defined($className . '::DEFAULT_CURRENCY_SYMBOL');
         $this->assertTrue($result);
         $this->assertIsString($billing::DEFAULT_CURRENCY_SYMBOL);
-    }
-
-    public function testMethodConvertToCurrencyUnitReturnValue(): void
-    {
-        $billing = $this->createValidBilling();
-        $result = method_exists($billing, 'convertToCurrencyUnit');
-        $this->assertTrue($result);
-        $result = $billing->convertToCurrencyUnit(1500);
-        $this->assertIsFloat($result);
-        //$this->assertSame(15.0, $result);
-    }
-
-    public function testMethodConvertToCommissionRateReturnValue(): void
-    {
-        $billing = $this->createValidBilling();
-        $result = method_exists($billing, 'convertToCommissionRate');
-        $this->assertTrue($result);
-        $result = $billing->convertToCommissionRate(75000);
-        $this->assertIsFloat($result);
-        //$this->assertSame(7.5, $result);
-    }
-
-    public function testMethodConvertCurrencyUnitToStoredDataReturnValue(): void
-    {
-        $billing = $this->createValidBilling();
-        $result = method_exists($billing, 'convertCurrencyUnitToStoredData');
-        $this->assertTrue($result);
-        $result = $billing->convertCurrencyUnitToStoredData(15.0);
-        $this->assertIsInt($result);
-        //$this->assertSame(1500, $result);
-    }
-
-    public function testMethodConvertCommissionRateToStoredDataReturnValue(): void
-    {
-        $billing = $this->createValidBilling();
-        $result = method_exists($billing, 'convertCommissionRateToStoredData');
-        $this->assertTrue($result);
-        $result = $billing->convertCommissionRateToStoredData(7.5);
-        $this->assertIsInt($result);
-        //$this->assertSame(75000, $result);
     }
 
     public function testUserUncompatible(): void

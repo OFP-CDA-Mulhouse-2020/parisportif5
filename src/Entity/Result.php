@@ -2,10 +2,10 @@
 
 namespace App\Entity;
 
-use App\Repository\ResultRepository;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\ResultRepository;
 
 /**
  * @ORM\Entity(repositoryClass=ResultRepository::class)
@@ -82,7 +82,16 @@ class Result
      */
     private ?Run $run = null;
 
-    public const RESULT_TYPES = ["time", "point"];
+    /** @const string TIME_TYPE */
+    public const TIME_TYPE = "time";
+
+    /** @const string POINT_TYPE */
+    public const POINT_TYPE = "point";
+
+    /**
+     * @const string[] RESULT_TYPES
+    */
+    public const RESULT_TYPES = [self::TIME_TYPE, self::POINT_TYPE];
 
     public function getId(): ?int
     {
