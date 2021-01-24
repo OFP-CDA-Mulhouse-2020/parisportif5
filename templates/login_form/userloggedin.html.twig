@@ -24,7 +24,9 @@
             </br>
             </br>
             {% for sport in sports %}
-                <a href="{{ path('page-football') }}">{{ sport.name }}</a>
+                <a>{{ sport.name }}</a>
+                </br>
+                <a href="sports/{{ sport.id }}">{{ sport.id }}</a>
                 </br>
             {% endfor %}
             </br>

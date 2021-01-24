@@ -11,14 +11,14 @@ use Symfony\Component\Routing\Annotation\Route;
 class UserLoggedInterfaceController extends AbstractController
 {
 
-
-
     /**
      * @Route("/account/logged", name="userloggedin")
      */
 
     public function redirectsToLoggedIn(): Response
     {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY'); //test de redirection
+
         $sport = $this->getDoctrine()->getRepository(Sport::class);
         // $sportRepository = $this->getDoctrine()->getRepository(SportRepository::class);
         $sports = $sport->findAll();
