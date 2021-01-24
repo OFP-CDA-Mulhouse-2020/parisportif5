@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\DataConverter\DateTimeStorageDataConverter;
+use App\DataConverter\DateTimeStorageInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -120,10 +121,11 @@ class Competition
     private ?Result $result = null;
 
     /** Sécurise le stockage des dates et heures */
-    private DateTimeStorageDataConverter $dateTimeConverter;
+    private DateTimeStorageInterface $dateTimeConverter;
 
-    public function __construct()
+    public function __construct(DateTimeStorageInterface $dateTimeConverter)
     {
+        $this->dateTimeConverter = $dateTimeConverter;
         $this->runs = new ArrayCollection();
         $this->betCategories = new ArrayCollection();
     }
@@ -318,7 +320,7 @@ class Competition
             ($minRuns <= $runsCount && $maxRuns >= $runsCount);
     }
 
-    public function setDateTimeConverter(DateTimeStorageDataConverter $dateTimeConverter): self
+    public function setDateTimeConverter(DateTimeStorageInterface $dateTimeConverter): self
     {
         $this->dateTimeConverter = $dateTimeConverter;
 

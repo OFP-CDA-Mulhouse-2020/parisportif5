@@ -6,9 +6,13 @@ use App\DataConverter\DateTimeStorageDataConverter;
 use App\DataConverter\OddsStorageDataConverter;
 use App\Entity\User;
 use App\Entity\Bet;
+use App\Entity\BetCategory;
+use App\Entity\Member;
+use App\Entity\Team;
 use App\Form\Bet\BetFormType;
 use App\Repository\BetCategoryRepository;
 use App\Repository\RunRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
@@ -39,39 +43,65 @@ class BetController extends AbstractController
         if ($betCategory === null) {
             return $this->redirectToRoute('userlogin');
         }
-        $bet = new Bet();
-        $designation = $betCategory->getName();
+        $targetType = $betCategory->getTarget();
+        $dateTimeConverter = new DateTimeStorageDataConverter();
+        $bet = new Bet($dateTimeConverter);
+        $betCategoryLabel = $betCategory->getName() ?? '';
+        $firstLetter = mb_convert_case(mb_substr($betCategoryLabel, 0, 1), MB_CASE_UPPER);
+        $betCategoryLabel = substr_replace($betCategoryLabel, $firstLetter, 0, 1);
+        $designation = $betCategoryLabel;
         $oddsStorageDataConverter = new OddsStorageDataConverter();
         $bet
             ->setCompetition($competition)
             ->setDesignation($designation)
             ->setRun($run)
             ->setBetCategory($betCategory);
-        $runTeams = $run->getTeams();
-        $teamsCount = count($runTeams);
-        $teamExpanded = true;
-        if ($teamsCount > self::LIMITATION_TO_SWITCH_TO_SELECT) {
-            $teamExpanded = false;
+        $runTargets = new ArrayCollection();
+        $targetClassName = Team::class;
+        $propertyMapped = 'team';
+        if ($targetType === BetCategory::TEAM_TYPE) {
+            $runTargets = $run->getTeams();
+            $propertyMapped = 'team';
+            $targetClassName = Team::class;
         }
-        $teamRequired = true;
-        $teamPlaceholder = "";
-        if (!empty($betCategory->getAllowDraw())) {
-            $teamRequired = false;
-            $teamPlaceholder = "Nul - ";
-            $totalOdds = 0;
+        if ($targetType === BetCategory::MEMBER_TYPE) {
+            $targetClassName = Member::class;
+            $propertyMapped = 'teamMember';
+            $runTeams = $run->getTeams();
+            $targetsArray = [];
             foreach ($runTeams as $team) {
-                $odds = $team->getOdds() ?? 0;
+                $memberCollection = $team->getMembers();
+                $targetsArray = array_merge($targetsArray, $memberCollection->toArray());
+            }
+            $runTargets = new ArrayCollection($targetsArray);
+        }
+        $targetsCount = count($runTargets);
+        $targetExpanded = true;
+        /*if ($targetsCount > self::LIMITATION_TO_SWITCH_TO_SELECT) {
+            $targetExpanded = false;
+        }*/
+        $targetRequired = true;
+        $targetPlaceholder = "";
+        if (!empty($betCategory->getAllowDraw())) {
+            $targetRequired = false;
+            $targetPlaceholder = "Nul";
+            $totalOdds = 0;
+            foreach ($runTargets as $target) {
+                $odds = $target->getOdds() ?? 0;
                 $totalOdds += $odds;
             }
-            $averageOdds = intval(round(($totalOdds / $teamsCount), 0, PHP_ROUND_HALF_UP));
-            $teamPlaceholder .= $oddsStorageDataConverter->convertToOddsMultiplier($averageOdds);
+            $averageOdds = intval(round(($totalOdds / $targetsCount), 0, PHP_ROUND_HALF_UP));
+            $targetPlaceholder = $oddsStorageDataConverter->convertToOddsMultiplier($averageOdds) . ' - ' . $targetPlaceholder;
         }
         $form = $this->createForm(BetFormType::class, $bet, [
-            'run_teams' => $runTeams,
+            'run_targets' => $runTargets,
             'converter' => $oddsStorageDataConverter,
-            'team_placeholder' => $teamPlaceholder,
-            'team_expanded' => $teamExpanded,
-            'team_required' => $teamRequired
+            'target_placeholder' => $targetPlaceholder,
+            'target_expanded' => $targetExpanded,
+            'target_required' => $targetRequired,
+            'property_mapped' => $propertyMapped,
+            'category_label' => $betCategoryLabel,
+            'class_name' => $targetClassName
         ]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -87,10 +117,10 @@ class BetController extends AbstractController
                 $teamName = ($bet->getTeam() !== null) ? $bet->getTeam()->getName() : 'Nul';
                 $designation = $bet->getDesignation() . ' ' . $teamName;
                 $user->addOnGoingBet($bet);
-                $dateTimeConverter = new DateTimeStorageDataConverter();
+                //$dateTimeConverter = new DateTimeStorageDataConverter();
                 $date = new \DateTimeImmutable("now", new \DateTimeZone(DateTimeStorageDataConverter::STORED_TIME_ZONE));
+                //->setDateTimeConverter($dateTimeConverter)
                 $bet
-                    ->setDateTimeConverter($dateTimeConverter)
                     ->setOdds($oddsStorageDataConverter->convertOddsMultiplierToStoredData(2))
                     ->setUser($user)
                     ->setDesignation($designation)

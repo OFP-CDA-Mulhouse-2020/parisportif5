@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\DataConverter\DateTimeStorageDataConverter;
+use App\DataConverter\DateTimeStorageInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -99,10 +100,11 @@ class Run
     private Collection $scores;
 
     /** Sécurise le stockage des dates et heures */
-    private DateTimeStorageDataConverter $dateTimeConverter;
+    private DateTimeStorageInterface $dateTimeConverter;
 
-    public function __construct()
+    public function __construct(DateTimeStorageInterface $dateTimeConverter)
     {
+        $this->dateTimeConverter = $dateTimeConverter;
         $this->teams = new ArrayCollection();
         $this->scores = new ArrayCollection();
     }
@@ -294,7 +296,7 @@ class Run
             ($minTeams <= $teamsCount && $maxTeams >= $teamsCount);
     }
 
-    public function setDateTimeConverter(DateTimeStorageDataConverter $dateTimeConverter): self
+    public function setDateTimeConverter(DateTimeStorageInterface $dateTimeConverter): self
     {
         $this->dateTimeConverter = $dateTimeConverter;
 

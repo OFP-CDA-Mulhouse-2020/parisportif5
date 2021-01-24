@@ -76,7 +76,7 @@ class RegistrationFormType extends AbstractType
             ])
             ->add('billingPostcode', TextType::class, [
                 'required' => true,
-                'label' => "Code Postal de facturation",
+                'label' => "Code postal de facturation",
                 'trim' => true,
                 'invalid_message' => "Veuillez saisir un code postal de facturation."
             ])

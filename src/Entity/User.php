@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\DataConverter\DateTimeStorageDataConverter;
+use App\DataConverter\DateTimeStorageInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -335,7 +336,7 @@ class User implements UserInterface
     private string $residenceProof;
 
     /** Sécurise le stockage des dates et heures */
-    private DateTimeStorageDataConverter $dateTimeConverter;
+    private DateTimeStorageInterface $dateTimeConverter;
 
     /**
      * @const int MIN_AGE_FOR_BETTING
@@ -376,8 +377,9 @@ class User implements UserInterface
     */
     public const SELECT_CURRENCY_SYMBOL = "€";
 
-    public function __construct()
+    public function __construct(DateTimeStorageInterface $dateTimeConverter)
     {
+        $this->dateTimeConverter = $dateTimeConverter;
         $creationDate = new \DateTimeImmutable('now', new \DateTimeZone(DateTimeStorageDataConverter::STORED_TIME_ZONE));
         $this->activatedStatus = true;
         $this->activatedDate = $creationDate;
@@ -801,7 +803,7 @@ class User implements UserInterface
         return $this;
     }
 
-    public function setDateTimeConverter(DateTimeStorageDataConverter $dateTimeConverter): self
+    public function setDateTimeConverter(DateTimeStorageInterface $dateTimeConverter): self
     {
         $this->dateTimeConverter = $dateTimeConverter;
 

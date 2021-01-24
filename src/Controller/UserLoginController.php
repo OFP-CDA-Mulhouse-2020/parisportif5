@@ -17,7 +17,8 @@ class UserLoginController extends AbstractController //dossier
     //  */
     // public function renderDummyForm(Request $request, UserRepository $repo): Response
     // {
-    //     $user = new User();
+    //     $converter = new DateTimeStorageDataConverter();
+    //     $user = new User($converter);
     //     $user->setEmail('test123@mail.com');
 
     //     $form = $this->createForm(UserLoginType::class, $user);

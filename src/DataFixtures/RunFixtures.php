@@ -57,7 +57,7 @@ class RunFixtures extends Fixture implements DependentFixtureInterface
             ]);
             //$runTeams
             //$runScores
-            $run = new Run();
+            $run = new Run($converter);
             $run
                 ->setDateTimeConverter($converter)
                 ->setName($testData[$i]['name'])

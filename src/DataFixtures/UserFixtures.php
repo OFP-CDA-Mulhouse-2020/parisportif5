@@ -89,7 +89,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
         $count = count($testData);
         $converter = new DateTimeStorageDataConverter();
         for ($i = 0; $i < $count; $i++) {
-            $user = new User();
+            $user = new User($converter);
             $userWallet = new Wallet();
             $userWallet
                 ->setUser($user)

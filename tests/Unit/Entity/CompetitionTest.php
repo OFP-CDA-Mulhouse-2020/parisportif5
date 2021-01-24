@@ -30,9 +30,9 @@ final class CompetitionTest extends KernelTestCase
 
     private function createValidCompetition(): Competition
     {
-        $competition = new Competition();
-        $date = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
         $converter = new DateTimeStorageDataConverter();
+        $competition = new Competition($converter);
+        $date = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
         $competition
             ->setDateTimeConverter($converter)
             ->setName('Championnat inter-club')
@@ -65,9 +65,9 @@ final class CompetitionTest extends KernelTestCase
 
     private function createRunObject(Competition $competition, \DateTimeImmutable $date = null): Run
     {
-        $run = new Run();
-        $startDate = $date ?? new \DateTimeImmutable('+1 day', new \DateTimeZone('UTC'));
         $converter = new DateTimeStorageDataConverter();
+        $run = new Run($converter);
+        $startDate = $date ?? new \DateTimeImmutable('+1 day', new \DateTimeZone('UTC'));
         $run
             ->setDateTimeConverter($converter)
             ->setName('run name')

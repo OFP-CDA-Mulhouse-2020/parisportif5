@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use App\DataConverter\DateTimeStorageDataConverter;
+use App\DataConverter\DateTimeStorageInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
@@ -186,7 +186,7 @@ class Billing
     private string $operationType;
 
     /** Sécurise le stockage des dates et heures */
-    private DateTimeStorageDataConverter $dateTimeConverter;
+    private DateTimeStorageInterface $dateTimeConverter;
 
     /**
      * @const float DEFAULT_COMMISSION_RATE
@@ -228,6 +228,11 @@ class Billing
      * @const string[] OPERATION_TYPES
     */
     public const OPERATION_TYPES = [self::DEBIT, self::CREDIT];
+
+    public function __construct(DateTimeStorageInterface $dateTimeConverter)
+    {
+        $this->dateTimeConverter = $dateTimeConverter;
+    }
 
     public function getId(): ?int
     {
@@ -421,7 +426,7 @@ class Billing
         return empty($this->user) ? false : true;
     }
 
-    public function setDateTimeConverter(DateTimeStorageDataConverter $dateTimeConverter): self
+    public function setDateTimeConverter(DateTimeStorageInterface $dateTimeConverter): self
     {
         $this->dateTimeConverter = $dateTimeConverter;
 

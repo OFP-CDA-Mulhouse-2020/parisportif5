@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use App\DataConverter\DateTimeStorageDataConverter;
+use App\DataConverter\DateTimeStorageInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
@@ -102,10 +102,11 @@ class Bet
     private \DateTimeImmutable $betDate;
 
     /** Sécurise le stockage des dates et heures */
-    private DateTimeStorageDataConverter $dateTimeConverter;
+    private DateTimeStorageInterface $dateTimeConverter;
 
-    public function __construct()
+    public function __construct(DateTimeStorageInterface $dateTimeConverter)
     {
+        $this->dateTimeConverter = $dateTimeConverter;
         $this->isWinning = null;
         $this->run = null;
         $this->team = null;
@@ -255,7 +256,7 @@ class Bet
         return $this;
     }
 
-    public function setDateTimeConverter(DateTimeStorageDataConverter $dateTimeConverter): self
+    public function setDateTimeConverter(DateTimeStorageInterface $dateTimeConverter): self
     {
         $this->dateTimeConverter = $dateTimeConverter;
 

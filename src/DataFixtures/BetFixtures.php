@@ -57,7 +57,7 @@ class BetFixtures extends Fixture
             $betCategory = $this->betCategoryRepository->findOneBy([
                 "name" => $testData[$i]['categoryName']
             ]);
-            $bet = new Bet();
+            $bet = new Bet($converter);
             $bet
                 ->setDateTimeConverter($converter)
                 ->setDesignation($testData[$i]['designation'])

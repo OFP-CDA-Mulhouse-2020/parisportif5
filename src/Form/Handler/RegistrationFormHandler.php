@@ -40,16 +40,17 @@ final class RegistrationFormHandler
 
     private function createUser(): void
     {
-        $this->user = new User();
+        $converter = new DateTimeStorageDataConverter();
+        $this->user = new User($converter);
         $this->initializeUserTimeZone();
-        $this->createUserDateTimeConverter();
+        //$this->createUserDateTimeConverter();
     }
 
-    private function createUserDateTimeConverter(): void
+    /*private function createUserDateTimeConverter(): void
     {
         $converter = new DateTimeStorageDataConverter();
         $this->user->setDateTimeConverter($converter);
-    }
+    }*/
 
     private function initializeUserTimeZone(): void
     {

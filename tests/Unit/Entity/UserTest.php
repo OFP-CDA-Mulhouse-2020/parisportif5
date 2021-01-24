@@ -32,8 +32,8 @@ final class UserTest extends KernelTestCase
 
     private function createValidUser(): User
     {
-        $user = new User();
         $converter = new DateTimeStorageDataConverter();
+        $user = new User($converter);
         $user
             ->setDateTimeConverter($converter)
             ->setCivility("Monsieur")
@@ -86,11 +86,11 @@ final class UserTest extends KernelTestCase
         int $odds = 12000,
         \DateTimeImmutable $date = null
     ): Bet {
-        $bet = new Bet();
+        $converter = new DateTimeStorageDataConverter();
+        $bet = new Bet($converter);
         if (is_null($date)) {
             $date = new \DateTimeImmutable("now", new \DateTimeZone("UTC"));
         }
-        $converter = new DateTimeStorageDataConverter();
         $bet
             ->setDateTimeConverter($converter)
             ->setDesignation($designation)

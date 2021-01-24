@@ -5,6 +5,7 @@ namespace App\Form\Bet;
 use App\DataConverter\OddsStorageDataConverter;
 use App\Entity\Bet;
 use App\Entity\Team;
+use App\Entity\Member;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -22,20 +23,28 @@ class BetFormType extends AbstractType
         //dd($options);
         $oddsStorageDataConverter = $options['converter'];
         $builder
-            ->add('team', EntityType::class, [
-                'required' => $options['team_required'],
-                'label' => "Vainqueur",
-                'class' => Team::class,
-                'choices' => $options['run_teams'],
-                'choice_label' => function ($team) use ($oddsStorageDataConverter) {
-                    $label = $team->getName() ?? '';
-                    $odds = $team->getOdds() ?? 0;
+            ->add($options['property_mapped'], EntityType::class, [
+                'required' => $options['target_required'],
+                'label' => $options['category_label'],
+                'class' => $options['class_name'],
+                'choices' => $options['run_targets'],
+                'choice_label' => function ($target) use ($oddsStorageDataConverter) {
+                    $label = '';
+                    if ($target instanceof Team) {
+                        $label = $target->getName() ?? '';
+                    }
+                    if ($target instanceof Member) {
+                        $team = $target->getTeam();
+                        $teamName = ($team->getName() ?? '');
+                        $label = ($target->getLastName() ?? '') . ' ' . ($target->getFirstName() ?? '') . ' - ' . $teamName;
+                    }
+                    $odds = $target->getOdds() ?? 0;
                     $odds = $oddsStorageDataConverter->convertToOddsMultiplier($odds);
-                    $label .= ' - ' . $odds;
+                    $label = $odds . ' - ' . $label;
                     return $label;
                 },
-                'expanded' => $options['team_expanded'],
-                'placeholder' => $options['team_placeholder']
+                'expanded' => $options['target_expanded'],
+                'placeholder' => $options['target_placeholder']
             ])
             ->add('amount', MoneyType::class, [
                 'required' => true,
@@ -54,11 +63,14 @@ class BetFormType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Bet::class,
-            'run_teams' => new ArrayCollection(),
+            'run_targets' => new ArrayCollection(),
             'converter' => new OddsStorageDataConverter(),
-            'team_required' => true,
-            'team_expanded' => true,
-            'team_placeholder' => ""
+            'target_required' => true,
+            'target_expanded' => true,
+            'target_placeholder' => "",
+            'property_mapped' => "",
+            'category_label' => "",
+            'class_name' => ""
         ]);
     }
 }

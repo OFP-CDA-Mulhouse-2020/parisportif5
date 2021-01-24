@@ -2,6 +2,7 @@
 
 namespace App\Form\Bet;
 
+use App\Entity\Member;
 use App\Entity\Team;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -17,13 +18,24 @@ class BetAdminFormType extends AbstractType
         $builder
             ->add('winner', EntityType::class, [
                 'mapped' => false,
-                'required' => $options['team_required'],
-                'label' => "Paris vainqueur",
-                'class' => Team::class,
-                'choices' => $options['run_teams'],
-                'choice_label' => 'name',
-                'expanded' => $options['team_expanded'],
-                'placeholder' => $options['team_placeholder']
+                'required' => $options['target_required'],
+                'label' => $options['category_label'],
+                'class' => $options['class_name'],
+                'choices' => $options['run_targets'],
+                'choice_label' => function ($target) {
+                    $label = '';
+                    if ($target instanceof Team) {
+                        $label = $target->getName() ?? '';
+                    }
+                    if ($target instanceof Member) {
+                        $team = $target->getTeam();
+                        $teamName = ($team->getName() ?? '');
+                        $label = ($target->getLastName() ?? '') . ' ' . ($target->getFirstName() ?? '') . ' - ' . $teamName;
+                    }
+                    return $label;
+                },
+                'expanded' => $options['target_expanded'],
+                'placeholder' => $options['target_placeholder']
             ])
             ->add('valid', SubmitType::class, [
                 'label' => "Valider"
@@ -34,10 +46,12 @@ class BetAdminFormType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'run_teams' => new ArrayCollection(),
-            'team_required' => true,
-            'team_expanded' => true,
-            'team_placeholder' => ""
+            'run_targets' => new ArrayCollection(),
+            'target_required' => true,
+            'target_expanded' => true,
+            'target_placeholder' => "",
+            'category_label' => "",
+            'class_name' => ""
         ]);
     }
 }

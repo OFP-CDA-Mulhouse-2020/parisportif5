@@ -49,7 +49,7 @@ class CompetitionFixtures extends Fixture implements DependentFixtureInterface
             $betCategory = $this->betCategoryRepository->findOneBy([
                 "name" => $testData[$i]['betCategoryName']
             ]);
-            $competition = new Competition();
+            $competition = new Competition($converter);
             $competition
                 ->setDateTimeConverter($converter)
                 ->setName($testData[$i]['name'])

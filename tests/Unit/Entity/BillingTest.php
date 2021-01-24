@@ -25,8 +25,8 @@ final class BillingTest extends KernelTestCase
 
     private function createValidBilling(): Billing
     {
-        $billing = new Billing();
         $converter = new DateTimeStorageDataConverter();
+        $billing = new Billing($converter);
         $billing
             ->setDateTimeConverter($converter)
             ->setFirstName("Dupont")
@@ -45,8 +45,8 @@ final class BillingTest extends KernelTestCase
 
     private function createUserObject(string $country = "FR"): User
     {
-        $user = new User();
         $converter = new DateTimeStorageDataConverter();
+        $user = new User($converter);
         $user
             ->setDateTimeConverter($converter)
             ->setCivility("Monsieur")

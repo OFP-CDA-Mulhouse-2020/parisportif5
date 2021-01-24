@@ -43,7 +43,7 @@ class BillingFixtures extends Fixture implements DependentFixtureInterface
         $count = count($testData);
         $converter = new DateTimeStorageDataConverter();
         for ($i = 0; $i < $count; $i++) {
-            $billing = new Billing();
+            $billing = new Billing($converter);
             $billingUser = null;
             if (!empty($testData[$i]['user'])) {
                 $billingUser = $this->userRepository->findOneByEmail($testData[$i]['user']);
