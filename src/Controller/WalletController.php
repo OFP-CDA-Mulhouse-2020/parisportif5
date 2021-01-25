@@ -8,20 +8,21 @@ use App\Security\UserLoginAuthenticator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Form\AddFundsType;
+use App\Form\Wallet\AddFundsType;
 use App\Repository\WalletRepository;
 use Symfony\Component\HttpFoundation\Request;
 
-class AddFundsController extends AbstractController
+class WalletController extends AbstractController
 {
     /**
-     * @Route("/account/addfunds", name="Ajouter des fonds")
+     * @Route("/mon-compte/ajouter-des-fonds", name="account_addfunds")
      */
     public function renderAddFundsPage(Request $request, WalletRepository $walletRepository): Response
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY'); //test de redirection
         $user = $this->getUser();           //test d'accès à la donnée
-        $wallet = $walletRepository->find($user->getWallet()->getId());           //test d'accès à la donnée
+        $wallet = $user->getWallet();
+        //$wallet = $walletRepository->find($user->getWallet()->getId());           //test d'accès à la donnée
         $amount = $wallet->getAmount();           //test d'accès à la donnée
 
 
@@ -46,7 +47,7 @@ class AddFundsController extends AbstractController
             }
         }
 
-        return $this->render('add_funds/index.html.twig', [
+        return $this->render('wallet/index.html.twig', [
             'site_title' => 'Paris Sportif',
             'page_title' => 'Ajouter des Fonds',
             'form' => $form->createView(),
@@ -55,11 +56,11 @@ class AddFundsController extends AbstractController
     }
 
     /**
-     * @Route("/account/fundsadded", name="fundsadded")
+     * @Route("/mon-compte/porte-monnaie", name="fundsadded")
      */
     public function redirectsToFundsAdded(): Response
     {
-        return $this->render('add_funds/fundsadded.html.twig', [
+        return $this->render('wallet/fundsadded.html.twig', [
             'site_title' => 'Paris Sportif',
             'page_title' => 'Fonds ajoutés'
         ]);

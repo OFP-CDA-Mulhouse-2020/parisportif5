@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Entity;
 
+use App\DataConverter\DateTimeStorageDataConverter;
 use App\Entity\BetCategory;
 use App\Entity\Competition;
 use App\Entity\Member;
-use App\Entity\Result;
 use App\Entity\Run;
 use App\Entity\Sport;
 use App\Entity\Team;
@@ -29,9 +29,11 @@ final class CompetitionTest extends KernelTestCase
 
     private function createValidCompetition(): Competition
     {
-        $competition = new Competition();
+        $converter = new DateTimeStorageDataConverter();
+        $competition = new Competition($converter);
         $date = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
         $competition
+            ->setDateTimeConverter($converter)
             ->setName('Championnat inter-club')
             ->setStartDate($date->setTime(23, 59, 59, 1000000))
             ->setCountry('FR')
@@ -55,15 +57,18 @@ final class CompetitionTest extends KernelTestCase
             ->setName("RC Strasbourg Alsace")
             ->setCountry($country)
             ->setSport($this->createSportObject())
-            ->addMember($this->createMemberObject());
+            ->addMember($this->createMemberObject())
+            ->setOdds(20000);
         return $team;
     }
 
     private function createRunObject(Competition $competition, \DateTimeImmutable $date = null): Run
     {
-        $run = new Run();
+        $converter = new DateTimeStorageDataConverter();
+        $run = new Run($converter);
         $startDate = $date ?? new \DateTimeImmutable('+1 day', new \DateTimeZone('UTC'));
         $run
+            ->setDateTimeConverter($converter)
             ->setName('run name')
             ->setEvent('event name')
             ->setStartDate($startDate)
@@ -78,7 +83,8 @@ final class CompetitionTest extends KernelTestCase
         $member
             ->setLastName($lastName)
             ->setFirstName("Jean-Pierre")
-            ->setCountry("FR");
+            ->setCountry("FR")
+            ->setOdds(20000);
         return $member;
     }
 
@@ -98,25 +104,13 @@ final class CompetitionTest extends KernelTestCase
         return $sport;
     }
 
-    private function createResultObject(Competition $competition, int $value = 0): Result
-    {
-        $result = new Result();
-        $result
-            ->setType("time")
-            ->setValue($value)
-            ->setWinner(false)
-            ->setBetCategory($this->createBetCategoryObject())
-            ->setCompetition($competition)
-            ->setRun(null)
-            ->setTeam($this->createTeamObject())
-            ->setTeamMember(null);
-        return $result;
-    }
-
     public function createBetCategoryObject(string $name = "resultw"): BetCategory
     {
         $betCategory = new BetCategory();
-        $betCategory->setName($name);
+        $betCategory
+            ->setName($name)
+            ->setAllowDraw(false)
+            ->setTarget("teams");
         return $betCategory;
     }
 
@@ -429,25 +423,6 @@ final class CompetitionTest extends KernelTestCase
         $competition = $this->createValidCompetition();
         $sport = $this->createSportObject('XD');
         $competition->setSport($sport);
-        $violations = $this->validator->validate($competition);
-        $this->assertCount(1, $violations);
-    }
-
-    public function testResultCompatible()
-    {
-        $competition = $this->createValidCompetition();
-        $result = $this->createResultObject($competition);
-        $competition->setResult($result);
-        $this->assertSame($result, $competition->getResult());
-        $violations = $this->validator->validate($competition);
-        $this->assertCount(0, $violations);
-    }
-
-    public function testResultUncompatible()
-    {
-        $competition = $this->createValidCompetition();
-        $result = $this->createResultObject($competition, -1);
-        $competition->setResult($result);
         $violations = $this->validator->validate($competition);
         $this->assertCount(1, $violations);
     }

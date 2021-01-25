@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Form\Handler;
 
+use App\DataConverter\DateTimeStorageDataConverter;
 use App\Entity\Language;
 use App\Entity\User;
 use App\Entity\Wallet;
@@ -39,9 +40,17 @@ final class RegistrationFormHandler
 
     private function createUser(): void
     {
-        $this->user = new User();
+        $converter = new DateTimeStorageDataConverter();
+        $this->user = new User($converter);
         $this->initializeUserTimeZone();
+        //$this->createUserDateTimeConverter();
     }
+
+    /*private function createUserDateTimeConverter(): void
+    {
+        $converter = new DateTimeStorageDataConverter();
+        $this->user->setDateTimeConverter($converter);
+    }*/
 
     private function initializeUserTimeZone(): void
     {

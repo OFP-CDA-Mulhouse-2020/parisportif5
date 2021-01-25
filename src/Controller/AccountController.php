@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\DataConverter\DateTimeStorageDataConverter;
 use App\Entity\User;
 use App\Form\Account\AccountDocumentFormType;
 use App\Form\Account\AccountParameterFormType;
@@ -37,6 +38,8 @@ class AccountController extends AbstractController
         // use inline documentation to tell your editor your exact User class
         /** @var User $user */
         $user = $this->getUser();
+        $converter = new DateTimeStorageDataConverter();
+        $user->setDateTimeConverter($converter);
 
         $form = $this->createForm(AccountPersonalDataFormType::class, $user);
 

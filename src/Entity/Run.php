@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use App\Repository\RunRepository;
+use App\DataConverter\DateTimeStorageDataConverter;
+use App\DataConverter\DateTimeStorageInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\RunRepository;
 
 /**
  * @ORM\Entity(repositoryClass=RunRepository::class)
@@ -85,22 +87,13 @@ class Run
      */
     private Collection $teams;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
-    private ?bool $noWinner = null;
+    /** Sécurise le stockage des dates et heures */
+    private DateTimeStorageInterface $dateTimeConverter;
 
-    /**
-     * @var Collection<int,Result> $scores
-     * @ORM\ManyToMany(targetEntity=Result::class)
-     * @Assert\Valid
-     */
-    private Collection $scores;
-
-    public function __construct()
+    public function __construct(DateTimeStorageInterface $dateTimeConverter)
     {
+        $this->dateTimeConverter = $dateTimeConverter;
         $this->teams = new ArrayCollection();
-        $this->scores = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -135,8 +128,9 @@ class Run
         return $this->startDate;
     }
 
-    public function setStartDate(\DateTimeImmutable $startDate): self
+    public function setStartDate(\DateTimeInterface $startDate): self
     {
+        $startDate = $this->dateTimeConverter->convertedToStoreDateTime($startDate);
         $this->startDate = $startDate;
         return $this;
     }
@@ -146,22 +140,23 @@ class Run
         return $this->endDate;
     }
 
-    public function setEndDate(\DateTimeImmutable $endDate): self
+    public function setEndDate(\DateTimeInterface $endDate): self
     {
+        $endDate = $this->dateTimeConverter->convertedToStoreDateTime($endDate);
         $this->endDate = $endDate;
         return $this;
     }
 
     public function isFinish(): bool
     {
-        $timezoneUTC = new \DateTimeZone('UTC');
+        $timezoneUTC = new \DateTimeZone(DateTimeStorageDataConverter::STORED_TIME_ZONE);
         $currentDate = new \DateTime('now', $timezoneUTC);
         return ($currentDate > $this->endDate->setTimezone($timezoneUTC));
     }
 
     public function isOngoing(): bool
     {
-        $timezoneUTC = new \DateTimeZone('UTC');
+        $timezoneUTC = new \DateTimeZone(DateTimeStorageDataConverter::STORED_TIME_ZONE);
         $currentDate = new \DateTime('now', $timezoneUTC);
         return ($currentDate >= $this->startDate->setTimezone($timezoneUTC)
             && $currentDate <= $this->endDate->setTimezone($timezoneUTC));
@@ -228,42 +223,6 @@ class Run
         return $this;
     }
 
-    public function getNoWinner(): ?bool
-    {
-        return $this->noWinner;
-    }
-
-    public function setNoWinner(?bool $noWinner): self
-    {
-        $this->noWinner = $noWinner;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int,Result>
-     */
-    public function getScores(): Collection
-    {
-        return $this->scores;
-    }
-
-    public function addScore(Result $score): self
-    {
-        if (!$this->scores->contains($score)) {
-            $this->scores[] = $score;
-        }
-
-        return $this;
-    }
-
-    public function removeScore(Result $score): self
-    {
-        $this->scores->removeElement($score);
-
-        return $this;
-    }
-
     /**
      * @Assert\IsTrue(
      *     message="Le nombre requis d'équipe n'est pas atteint ou est dépassé"
@@ -286,5 +245,12 @@ class Run
         }
         return ($minTeams == 0 && $maxTeams == 0) ?:
             ($minTeams <= $teamsCount && $maxTeams >= $teamsCount);
+    }
+
+    public function setDateTimeConverter(DateTimeStorageInterface $dateTimeConverter): self
+    {
+        $this->dateTimeConverter = $dateTimeConverter;
+
+        return $this;
     }
 }

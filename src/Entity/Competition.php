@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use App\Repository\CompetitionRepository;
+use App\DataConverter\DateTimeStorageDataConverter;
+use App\DataConverter\DateTimeStorageInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\CompetitionRepository;
 
 /**
  * @ORM\Entity(repositoryClass=CompetitionRepository::class)
@@ -112,14 +114,12 @@ class Competition
      */
     private Collection $betCategories;
 
-    /**
-     * @ORM\OneToOne(targetEntity=Result::class, cascade={"persist", "remove"})
-     * @Assert\Valid
-     */
-    private ?Result $result = null;
+    /** Sécurise le stockage des dates et heures */
+    private DateTimeStorageInterface $dateTimeConverter;
 
-    public function __construct()
+    public function __construct(DateTimeStorageInterface $dateTimeConverter)
     {
+        $this->dateTimeConverter = $dateTimeConverter;
         $this->runs = new ArrayCollection();
         $this->betCategories = new ArrayCollection();
     }
@@ -146,8 +146,9 @@ class Competition
         return $this->startDate;
     }
 
-    public function setStartDate(\DateTimeImmutable $startDate): self
+    public function setStartDate(\DateTimeInterface $startDate): self
     {
+        $startDate = $this->dateTimeConverter->convertedToStoreDateTime($startDate);
         $this->startDate = $startDate;
         return $this;
     }
@@ -157,8 +158,9 @@ class Competition
         return $this->endDate;
     }
 
-    public function setEndDate(\DateTimeImmutable $endDate): self
+    public function setEndDate(\DateTimeInterface $endDate): self
     {
+        $endDate = $this->dateTimeConverter->convertedToStoreDateTime($endDate);
         $this->endDate = $endDate;
         return $this;
     }
@@ -187,14 +189,14 @@ class Competition
 
     public function isFinish(): bool
     {
-        $timezoneUTC = new \DateTimeZone('UTC');
+        $timezoneUTC = new \DateTimeZone(DateTimeStorageDataConverter::STORED_TIME_ZONE);
         $currentDate = new \DateTime('now', $timezoneUTC);
         return ($currentDate > $this->endDate->setTimezone($timezoneUTC));
     }
 
     public function isOngoing(): bool
     {
-        $timezoneUTC = new \DateTimeZone('UTC');
+        $timezoneUTC = new \DateTimeZone(DateTimeStorageDataConverter::STORED_TIME_ZONE);
         $currentDate = new \DateTime('now', $timezoneUTC);
         return ($currentDate >= $this->startDate->setTimezone($timezoneUTC)
             && $currentDate <= $this->endDate->setTimezone($timezoneUTC));
@@ -269,23 +271,6 @@ class Competition
         return $this;
     }
 
-    public function getResult(): ?Result
-    {
-        return $this->result;
-    }
-
-    public function setResult(?Result $result): self
-    {
-        $this->result = $result;
-
-        return $this;
-    }
-
-    public function hasResult(): bool
-    {
-        return isset($this->result) ? true : false;
-    }
-
     public function getMinRuns(): ?int
     {
         return $this->minRuns;
@@ -310,5 +295,12 @@ class Competition
         $maxRuns = $this->getMaxRuns() ?? $minRuns;
         return ($minRuns == 0 && $maxRuns == 0) ?:
             ($minRuns <= $runsCount && $maxRuns >= $runsCount);
+    }
+
+    public function setDateTimeConverter(DateTimeStorageInterface $dateTimeConverter): self
+    {
+        $this->dateTimeConverter = $dateTimeConverter;
+
+        return $this;
     }
 }

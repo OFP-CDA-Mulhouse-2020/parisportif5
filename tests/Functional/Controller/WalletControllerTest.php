@@ -6,13 +6,13 @@ use App\Entity\User;
 use App\Entity\Wallet;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class AddFundsControllerTest extends WebTestCase
+class WalletControllerTest extends WebTestCase
 {
     // public function testIfPageIsDisplayed()
     // {
     //     $client = static::createClient();
 
-    //     $client->request('GET', '/account/addfunds');
+    //     $client->request('GET', '/mon-compte/ajouter-des-fonds');
 
     //     $this->assertEquals(200, $client->getResponse()->getStatusCode());
     // }
@@ -21,8 +21,8 @@ class AddFundsControllerTest extends WebTestCase
     // {
     //     $client = static::createClient();
 
-    //     $client->request('GET', '/account/addfunds');
-    //     // var_dump($client->request('GET', '/account/addfunds'));
+    //     $client->request('GET', '/mon-compte/ajouter-des-fonds');
+    //     // var_dump($client->request('GET', '/mon-compte/ajouter-des-fonds'));
     //     // die();
     //     $this->assertSelectorTextContains('h1', 'Ajouter des Fonds');
     //     $this->assertSelectorTextContains('title', 'Ajouter des Fonds');
@@ -32,7 +32,7 @@ class AddFundsControllerTest extends WebTestCase
     // {
     //     $client = static::createClient();
 
-    //     $crawler = $client->request('GET', '/account/addfunds');
+    //     $crawler = $client->request('GET', '/mon-compte/ajouter-des-fonds');
     //     $this->assertSelectorExists('form', "Le formulaire n'existe pas");
     //     $this->assertCount(1, $crawler->filter('form'));
     //     $this->assertSelectorExists('form input[name*="amount"]', "Le champ du montant n'existe pas");
@@ -42,7 +42,7 @@ class AddFundsControllerTest extends WebTestCase
     // public function testIfFormSubmits()
     // {
     //     $client = static::createClient();
-    //     $crawler = $client->request('GET', '/account/addfunds');
+    //     $crawler = $client->request('GET', '/mon-compte/ajouter-des-fonds');
 
     //     $form = $crawler->filter('form')->form();
     //     $form['add_funds[amount]'] = 10;
@@ -55,26 +55,26 @@ class AddFundsControllerTest extends WebTestCase
     // public function testFundsSuccesfullyAdded()
     // {
     //     $client = static::createClient();
-    //     $crawler = $client->request('GET', '/account/addfunds');
+    //     $crawler = $client->request('GET', '/mon-compte/ajouter-des-fonds');
 
     //     $form = $crawler->filter('form')->form();
     //     $form['add_funds[amount]'] = 10;
 
     //     $crawler = $client->submit($form);
-    //     $this->assertResponseRedirects('/account/fundsadded');
+    //     $this->assertResponseRedirects('/mon-compte/porte-monnaie');
     // }
 
     // public function testIfInputIsInvalid()
     // {
     //     $client = static::createClient();
-    //     $crawler = $client->request('GET', '/account/addfunds');
+    //     $crawler = $client->request('GET', '/mon-compte/ajouter-des-fonds');
 
     //     $form = $crawler->filter('form')->form();
     //     $form['add_funds[amount]'] = 's';
 
     //     $crawler = $client->submit($form);
     //     $this->assertSelectorExists('li', "This value is not valid.");
-    //     // $this->assertResponseRedirects('/account/addfunds');
+    //     // $this->assertResponseRedirects('/mon-compte/ajouter-des-fonds');
     // }
 
 

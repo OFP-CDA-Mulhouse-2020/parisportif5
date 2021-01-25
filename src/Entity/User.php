@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\DataConverter\DateTimeStorageDataConverter;
+use App\DataConverter\DateTimeStorageInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
+use App\Repository\UserRepository;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
@@ -333,6 +335,9 @@ class User implements UserInterface
      */
     private string $residenceProof;
 
+    /** Sécurise le stockage des dates et heures */
+    private DateTimeStorageInterface $dateTimeConverter;
+
     /**
      * @const int MIN_AGE_FOR_BETTING
      * @Assert\Type(
@@ -350,18 +355,6 @@ class User implements UserInterface
      * )
      */
     public const MAX_AGE_FOR_BETTING = 140;
-
-    /**
-     * @const string STORED_TIME_ZONE
-     * @Assert\Type(
-     *     type="string",
-     *     message="Le fuseau horaire stocké {{ value }} n'est pas du type {{ type }}."
-     * )
-     * @Assert\Timezone(
-     *     message="Le fuseau horaire {{ value }} n'est pas valide"
-     * )
-    */
-    public const STORED_TIME_ZONE = "UTC";
 
     /**
      * @const string SELECT_CURRENCY_SYMBOL
@@ -384,9 +377,10 @@ class User implements UserInterface
     */
     public const SELECT_CURRENCY_SYMBOL = "€";
 
-    public function __construct()
+    public function __construct(DateTimeStorageInterface $dateTimeConverter)
     {
-        $creationDate = new \DateTimeImmutable('now', new \DateTimeZone(self::STORED_TIME_ZONE));
+        $this->dateTimeConverter = $dateTimeConverter;
+        $creationDate = new \DateTimeImmutable('now', new \DateTimeZone(DateTimeStorageDataConverter::STORED_TIME_ZONE));
         $this->activatedStatus = true;
         $this->activatedDate = $creationDate;
         $this->suspendedStatus = true;
@@ -597,8 +591,9 @@ class User implements UserInterface
         return $this->birthDate;
     }
 
-    public function setBirthDate(\DateTimeImmutable $birthDate): self
+    public function setBirthDate(\DateTimeInterface $birthDate): self
     {
+        $birthDate = $this->dateTimeConverter->convertedToStoreDateTime($birthDate);
         $this->birthDate = $birthDate;
         return $this;
     }
@@ -649,7 +644,7 @@ class User implements UserInterface
     public function delete(): bool
     {
         if (empty($this->deletedDate) && $this->deletedStatus === false) {
-            $this->deletedDate = new \DateTimeImmutable('now', new \DateTimeZone(self::STORED_TIME_ZONE));
+            $this->deletedDate = new \DateTimeImmutable('now', new \DateTimeZone(DateTimeStorageDataConverter::STORED_TIME_ZONE));
             $this->deletedStatus = true;
             $this->activatedStatus = false;
             $this->suspendedStatus = true;
@@ -683,7 +678,7 @@ class User implements UserInterface
     public function suspend(): bool
     {
         if ($this->activatedStatus === true && empty($this->suspendedDate) && $this->suspendedStatus === false) {
-            $this->suspendedDate = new \DateTimeImmutable('now', new \DateTimeZone(self::STORED_TIME_ZONE));
+            $this->suspendedDate = new \DateTimeImmutable('now', new \DateTimeZone(DateTimeStorageDataConverter::STORED_TIME_ZONE));
             $this->suspendedStatus = true;
             return true;
         }
@@ -713,7 +708,7 @@ class User implements UserInterface
     public function activate(): bool
     {
         if (empty($this->activatedDate) && $this->activatedStatus === false) {
-            $this->activatedDate = new \DateTimeImmutable('now', new \DateTimeZone(self::STORED_TIME_ZONE));
+            $this->activatedDate = new \DateTimeImmutable('now', new \DateTimeZone(DateTimeStorageDataConverter::STORED_TIME_ZONE));
             $this->activatedStatus = true;
             return true;
         }
@@ -804,6 +799,13 @@ class User implements UserInterface
     public function setResidenceProof(string $residenceProof): self
     {
         $this->residenceProof = $residenceProof;
+
+        return $this;
+    }
+
+    public function setDateTimeConverter(DateTimeStorageInterface $dateTimeConverter): self
+    {
+        $this->dateTimeConverter = $dateTimeConverter;
 
         return $this;
     }

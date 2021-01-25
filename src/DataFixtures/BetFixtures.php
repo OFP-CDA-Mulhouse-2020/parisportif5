@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\DataConverter\DateTimeStorageDataConverter;
 use App\Entity\Bet;
 use App\Entity\Run;
 use App\Repository\BetCategoryRepository;
@@ -31,8 +32,9 @@ class BetFixtures extends Fixture
         $testData = [
             [
                 'designation' => "Mise 1",
-                'amount' => 10,
-                'odds' => 2,
+                'amount' => 1000,
+                'odds' => 20000,
+                'betdate' => "now",
                 'user' => "tintin.dupont@test.fr",
                 'categoryName' => "result",
                 'competition' => [
@@ -44,6 +46,7 @@ class BetFixtures extends Fixture
             ]
         ];
         $count = count($testData);
+        $converter = new DateTimeStorageDataConverter();
         for ($i = 0; $i < $count; $i++) {
             $betCompetition = $this->competitionRepository->findOneBy([
                 'name' => $testData[$i]['competition']['name'],
@@ -54,14 +57,17 @@ class BetFixtures extends Fixture
             $betCategory = $this->betCategoryRepository->findOneBy([
                 "name" => $testData[$i]['categoryName']
             ]);
-            $bet = new Bet();
+            $bet = new Bet($converter);
             $bet
+                ->setDateTimeConverter($converter)
                 ->setDesignation($testData[$i]['designation'])
                 ->setAmount($testData[$i]['amount'])
                 ->setOdds($testData[$i]['odds'])
                 ->setCompetition($betCompetition)
                 ->setUser($betUser)
-                ->setBetCategory($betCategory);
+                ->setBetCategory($betCategory)
+                ->setBetDate(new \DateTimeImmutable($testData[$i]['betdate'], new \DateTimeZone("UTC")))
+                ;
             $manager->persist($bet);
         }
         $manager->flush();

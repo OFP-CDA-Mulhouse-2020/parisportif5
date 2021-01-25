@@ -26,16 +26,6 @@ class RegistrationController extends AbstractController
     }
 
     /**
-     * @Route("/main", name="main")
-     */
-    public function main(): Response
-    {
-        return $this->render('base.html.twig', [
-            'page_title' => 'Accueil'
-        ]);
-    }
-
-    /**
      * @Route("/inscription", name="account_register")
      */
     public function registerAccount(

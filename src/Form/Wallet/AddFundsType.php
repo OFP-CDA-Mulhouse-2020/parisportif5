@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Form;
+namespace App\Form\Wallet;
 
 use App\Entity\User;
 use App\Entity\Wallet;
@@ -15,13 +15,13 @@ class AddFundsType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-        ->add('amount', NumberType::class, [
-            'required' => true,
-            'label' => "Montant à ajouter : ",
-            'invalid_message' => "Veuillez saisir le nombre du montant à ajouter au portefeuille.",
-            'input' => 'number'
-            ])
-        ->add('Ajouter', SubmitType::class)
+            ->add('amount', NumberType::class, [
+                'required' => true,
+                'label' => "Montant à ajouter : ",
+                'invalid_message' => "Veuillez saisir le nombre du montant à ajouter au portefeuille.",
+                'input' => 'number'
+                ])
+            ->add('Ajouter', SubmitType::class)
         ;
     }
 

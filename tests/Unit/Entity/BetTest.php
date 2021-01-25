@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Entity;
 
+use App\DataConverter\DateTimeStorageDataConverter;
 use App\Entity\Bet;
 use App\Entity\BetCategory;
 use App\Entity\Competition;
@@ -30,18 +31,24 @@ final class BetTest extends KernelTestCase
 
     private function createValidBet(): Bet
     {
-        $bet = new Bet();
+        $converter = new DateTimeStorageDataConverter();
+        $bet = new Bet($converter);
+        $date = new \DateTimeImmutable("now", new \DateTimeZone("UTC"));
         $bet
+            ->setDateTimeConverter($converter)
             ->setDesignation('paris')
             ->setAmount(100)
-            ->setOdds(12000);
+            ->setOdds(12000)
+            ->setBetDate($date);
         return $bet;
     }
 
     private function createUserObject(string $country = "FR"): User
     {
-        $user = new User();
+        $converter = new DateTimeStorageDataConverter();
+        $user = new User($converter);
         $user
+            ->setDateTimeConverter($converter)
             ->setCivility("Monsieur")
             ->setFirstName("Tintin")
             ->setLastName("Dupont")
@@ -61,9 +68,11 @@ final class BetTest extends KernelTestCase
 
     private function createCompetitionObject(string $country = "FR"): Competition
     {
-        $competition = new Competition();
+        $converter = new DateTimeStorageDataConverter();
+        $competition = new Competition($converter);
         $date = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
         $competition
+            ->setDateTimeConverter($converter)
             ->setName('Championnat inter-club')
             ->setStartDate($date->setTime(23, 59, 59, 1000000))
             ->setCountry($country)
@@ -92,9 +101,11 @@ final class BetTest extends KernelTestCase
 
     private function createRunObject(Competition $competition, \DateTimeImmutable $date = null): Run
     {
-        $run = new Run();
+        $converter = new DateTimeStorageDataConverter();
+        $run = new Run($converter);
         $startDate = $date ?? new \DateTimeImmutable('+1 day', new \DateTimeZone('UTC'));
         $run
+            ->setDateTimeConverter($converter)
             ->setName('run name')
             ->setEvent('event name')
             ->setStartDate($startDate)
@@ -110,7 +121,8 @@ final class BetTest extends KernelTestCase
             ->setName("Trololo Futbol Klub")
             ->setCountry($country)
             ->setSport($this->createSportObject())
-            ->addMember($this->createMemberObject());
+            ->addMember($this->createMemberObject())
+            ->setOdds(20000);
         return $team;
     }
 
@@ -120,14 +132,18 @@ final class BetTest extends KernelTestCase
         $member
             ->setLastName($lastName)
             ->setFirstName("Jean-Pierre")
-            ->setCountry("FR");
+            ->setCountry("FR")
+            ->setOdds(20000);
         return $member;
     }
 
     private function createBetCategoryObject(string $name = "resultw"): BetCategory
     {
         $betCategory = new BetCategory();
-        $betCategory->setName($name);
+        $betCategory
+            ->setName($name)
+            ->setAllowDraw(false)
+            ->setTarget("teams");
         return $betCategory;
     }
 
@@ -205,46 +221,6 @@ final class BetTest extends KernelTestCase
         $bet->setOdds($odds);
         $violations = $this->validator->validate($bet);
         $this->assertCount(1, $violations);
-    }
-
-    public function testMethodConvertToCurrencyUnitReturnValue(): void
-    {
-        $bet = $this->createValidBet();
-        $result = method_exists($bet, 'convertToCurrencyUnit');
-        $this->assertTrue($result);
-        $result = $bet->convertToCurrencyUnit(500);
-        $this->assertIsFloat($result);
-        //$this->assertSame(5.0, $result);
-    }
-
-    public function testMethodConvertToOddsMultiplierReturnValue(): void
-    {
-        $bet = $this->createValidBet();
-        $result = method_exists($bet, 'convertToOddsMultiplier');
-        $this->assertTrue($result);
-        $result = $bet->convertToOddsMultiplier(15000);
-        $this->assertIsFloat($result);
-        //$this->assertSame(1.5, $result);
-    }
-
-    public function testMethodConvertCurrencyUnitToStoredDataReturnValue(): void
-    {
-        $bet = $this->createValidBet();
-        $result = method_exists($bet, 'convertCurrencyUnitToStoredData');
-        $this->assertTrue($result);
-        $result = $bet->convertCurrencyUnitToStoredData(5.0);
-        $this->assertIsInt($result);
-        //$this->assertSame(500, $result);
-    }
-
-    public function testMethodConvertOddsMultiplierToStoredDataReturnValue(): void
-    {
-        $bet = $this->createValidBet();
-        $result = method_exists($bet, 'convertOddsMultiplierToStoredData');
-        $this->assertTrue($result);
-        $result = $bet->convertOddsMultiplierToStoredData(1.5);
-        $this->assertIsInt($result);
-        //$this->assertSame(15000, $result);
     }
 
     public function testWonBet(): void

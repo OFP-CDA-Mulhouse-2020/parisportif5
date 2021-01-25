@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\DataConverter\DateTimeStorageDataConverter;
 use App\Entity\Billing;
 use App\Repository\UserRepository;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -24,7 +25,7 @@ class BillingFixtures extends Fixture implements DependentFixtureInterface
             [
                 'order' => 12365563,
                 'invoice' => 12365563,
-                'amount' => 0,
+                'amount' => 1000,
                 'commission' => 75000,
                 'designation' => "Bet",
                 'firstname' => "Tintin",
@@ -35,17 +36,20 @@ class BillingFixtures extends Fixture implements DependentFixtureInterface
                 'country' => "FR",
                 'issue' => "2021-02-05",
                 'delivery' => "2021-02-06",
+                'operationType' => "debit",
                 'user' => ''
             ]
         ];
         $count = count($testData);
+        $converter = new DateTimeStorageDataConverter();
         for ($i = 0; $i < $count; $i++) {
-            $billing = new Billing();
+            $billing = new Billing($converter);
             $billingUser = null;
             if (!empty($testData[$i]['user'])) {
                 $billingUser = $this->userRepository->findOneByEmail($testData[$i]['user']);
             }
             $billing
+                ->setDateTimeConverter($converter)
                 ->setOrderNumber($testData[$i]['order'])
                 ->setInvoiceNumber($testData[$i]['invoice'])
                 ->setAmount($testData[$i]['amount'])
@@ -60,6 +64,7 @@ class BillingFixtures extends Fixture implements DependentFixtureInterface
                 ->setIssueDate(new \DateTimeImmutable($testData[$i]['issue'], new \DateTimeZone("UTC")))
                 ->setDeliveryDate(new \DateTimeImmutable($testData[$i]['delivery'], new \DateTimeZone("UTC")))
                 ->setUser($billingUser)
+                ->setOperationType($testData[$i]['operationType'])
                 ;
             $manager->persist($billing);
         }

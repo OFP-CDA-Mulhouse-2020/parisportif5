@@ -8,8 +8,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use App\Repository\TeamRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\TeamRepository;
 
 /**
  * @ORM\Entity(repositoryClass=TeamRepository::class)
@@ -69,6 +69,14 @@ class Team
      * @Assert\Valid
      */
     private Sport $sport;
+
+    /**
+     * @ORM\Column(type="integer")
+     * @Assert\PositiveOrZero(
+     *     message="La côte de l'équipe (multiplier par 10000) doit être un entier positif ou zéro."
+     * )
+     */
+    private int $odds;
 
     public function __construct()
     {
@@ -171,5 +179,17 @@ class Team
         }
         return ($minMembers == 0 && $maxMembers == 0) ?:
             ($minMembers <= $membersCount && $maxMembers >= $membersCount);
+    }
+
+    public function getOdds(): ?int
+    {
+        return $this->odds;
+    }
+
+    public function setOdds(int $odds): self
+    {
+        $this->odds = $odds;
+
+        return $this;
     }
 }

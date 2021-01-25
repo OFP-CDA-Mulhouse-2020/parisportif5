@@ -24,16 +24,6 @@ skinparam linetype ortho
     Team "1" *-- "1..*" Member
     'Une compétition a un sport
     Sport "1" <-- "0..*" Competition
-    'Une rencontre ou une course a un résultat
-    Result "0..*" -- "0..1" Run
-    'Un résultat concerne une équipe
-    Result "0..*" --> "0..1" Team
-    'Un résultat concerne un membre ou pas
-    Result "0..*" --> "0..1" Member
-    'Une compétition a un résultat
-    Result "0..1" -- "0..1" Competition
-    'Un résultat a une catégorie de paris
-    BetCategory "1" <-- "0..*" Result
     'Une compétition a une liste de catégorie de paris
     BetCategory "1..*" <-- "0..*" Competition
     'Une équipe a un sport
@@ -50,17 +40,59 @@ skinparam linetype ortho
     Bet "0..*" --> "0..1" Team
     'Liaison potentiel entre un paris et un membre
     Bet "0..*" --> "0..1" Member
-    'Implémentation de l'interface FundStorageInterface par l'entité Billing
-    FundStorageInterface <|.. Billing
-    'Implémentation de l'interface FundStorageInterface par l'entité Wallet
-    FundStorageInterface <|.. Wallet
-    'Implémentation de l'interface FundStorageInterface par l'entité Bet
-    FundStorageInterface <|.. Bet
+    'Implémentation de l'interface FundsStorageInterface par l'objet FundsStorageDataConverter
+    FundsStorageInterface <|.. FundsStorageDataConverter
+    'Implémentation de l'interface CommissionRateStorageInterface par l'objet CommissionRateStorageDataConverter
+    CommissionRateStorageInterface <|.. CommissionRateStorageDataConverter
+    'Implémentation de l'interface OddsStorageInterface par l'objet OddsStorageDataConverter
+    OddsStorageInterface <|.. OddsStorageDataConverter
+    'Implémentation de l'interface DateTimeStorageInterface par l'objet DateTimeStorageDataConverter
+    DateTimeStorageInterface <|.. DateTimeStorageDataConverter
+    'Implémentation de l'interface FundsStorageInterface par l'objet StorageDataConverter
+    FundsStorageInterface <|.. StorageDataConverter
+    'Implémentation de l'interface CommissionRateStorageInterface par l'objet StorageDataConverter
+    CommissionRateStorageInterface <|.. StorageDataConverter
+    'Implémentation de l'interface OddsStorageInterface par l'objet StorageDataConverter
+    OddsStorageInterface <|.. StorageDataConverter
+    'Implémentation de l'interface DateTimeStorageInterface par l'objet StorageDataConverter
+    DateTimeStorageInterface <|.. StorageDataConverter
+    '
+    DateTimeStorageDataConverter "1" <-- "0..*" Bet
+    '
+    DateTimeStorageDataConverter "1" <-- "0..*" Competition
+    '
+    DateTimeStorageDataConverter "1" <-- "0..*" Run
+    '
+    DateTimeStorageDataConverter "1" <-- "0..*" Billing
+    '
+    DateTimeStorageDataConverter "1" <-- "0..*" User
 'Définitions des classes :
-    'Pour convertir le montant enregistré dans la bdd en unité monétaire et vice versa
-    interface FundStorageInterface {
+    'DateTimeStorageDataConverter
+    'Pour convertir le montant enregistré dans la BDD en unité monétaire et vice versa
+    interface FundsStorageInterface {
         +convertToCurrencyUnit(in int amount) : float
         +convertCurrencyUnitToStoredData(in float amount) : int
+    }
+    'Pour convertir le taux de commission enregistré dans la BDD en pourcentage et vice versa
+    interface CommissionRateStorageInterface {
+        +convertToCommissionRate(in int commissionRate) : float
+        +convertCommissionRateToStoredData(in float commissionRate) : int
+    }
+    'Pour convertir la côte enregistré dans la BDD en float et vice versa
+    interface OddsStorageInterface {
+        +convertToOddsMultiplier(in int odds) : float
+        +convertOddsMultiplierToStoredData(in float odds) : int
+    }
+    'Pour convertir la date et heure au format de la BDD
+    interface DateTimeStorageInterface {
+        +convertedToStoreDateTime(in DateTimeInterface datetime) : DateTimeImmutable
+        +setStoredTimezone(inout DateTimeImmutable datetimeImmutable) : DateTimeImmutable
+    }
+    class DateTimeStorageDataConverter {
+        +{static} STORED_TIME_ZONE : string = 'UTC'
+    }
+    class StorageDataConverter {
+        +{static} getStoredTimeZone() : string
     }
     'Rôle du membre (pilote, co-pilote, joueur)
     class MemberRole {
@@ -86,13 +118,14 @@ skinparam linetype ortho
         -id : int
         -email : string
         -password : string
+        -plainPassword : string|null
         -roles : string[]
         -activatedStatus : bool
-        -activatedDate : DateTime
+        -activatedDate : DateTimeImmutable
         -suspendedStatus : bool
-        -suspendedDate : DateTime
+        -suspendedDate : DateTimeImmutable
         -deletedStatus : bool
-        -deletedDate : DateTime
+        -deletedDate : DateTimeImmutable
         -civility : string
         -firstName : string
         -lastName : string
@@ -100,11 +133,10 @@ skinparam linetype ortho
         -billingCity : string
         -billingPostcode : string
         -billingCountry : string
-        -birthDate : DateTime
+        -birthDate : DateTimeImmutable
         -timeZoneSelected : string
         +{static} MIN_AGE_FOR_BETTING : int = 18
         +{static} MAX_AGE_FOR_BETTING : int = 140
-        +{static} STORED_TIME_ZONE : string = 'UTC'
         +{static} SELECT_CURRENCY_CODE : string = "EUR"
         +{static} SELECT_CURRENCY_SYMBOL : string = "€"
         +getName() : string
@@ -148,16 +180,17 @@ skinparam linetype ortho
         -amount : int
         -commissionRate : int
         -operationType : string
-        -issueDate : DateTime
-        -deliveryDate : DateTime
+        -issueDate : DateTimeImmutable
+        -deliveryDate : DateTimeImmutable
         +{static} DEFAULT_COMMISSION_RATE : float =  7.5
         +{static} DEFAULT_CURRENCY_CODE : string = "EUR"
         +{static} DEFAULT_CURRENCY_SYMBOL : string = "€"
+        +{static} DEBIT : string = "debit"
+        +{static} CREDIT : string = "credit"
+        +{static} OPERATION_TYPES : string[] = [DEBIT, CREDIT]
         +getName() : string
         +getAddress() : string
         +deleteUser() : void
-        +convertToCommissionRate(in int commissionRate) : float
-        +convertCommissionRateToStoredData(in float commissionRate) : int
         +hasUser() : bool
     }
     'Un paris
@@ -166,24 +199,25 @@ skinparam linetype ortho
         -designation : string
         -amount : int
         -odds : int
-        -date : DateTime
+        -betDate : DateTimeImmutable
         -isWinning : bool|null
         +hasWon() : bool|null
         +won() : void
         +lost() : void
         +restoreWithoutResult() : void
-        +convertToOddsMultiplier(in int odds) : float
-        +convertOddsMultiplierToStoredData(in float odds) : int
-        +getTarget() : Member|Team|Run|Competition
+        +getTarget() : Member|Team
+        +getSelected() : Run|Competition
     }
     'Catégorie de paris (ex: Paris sur le résultat)
     class BetCategory {
         -identifier : int
         -name : string
-        -allowNull : bool
+        -allowDraw : bool
         -target : string
         -description : string
-        +{static} CATEGORY_TARGET : string[] = ["teams", "members"]
+        +{static} TEAM_TYPE : string = "teams"
+        +{static} MEMBER_TYPE : string = "members"
+        +{static} TARGET_TYPES : string[] = [TEAM_TYPE, MEMBER_TYPE]
     }
     'Lieu de la rencontre/course
     class Location {
@@ -204,6 +238,9 @@ skinparam linetype ortho
         -individualType : bool
         -country : string
         -runType : string
+        +{static} FIXTURE_TYPE : string = "fixture"
+        +{static} RACE_TYPE : string = "race"
+        +{static} RUN_TYPES : string[] = [FIXTURE_TYPE, RACE_TYPE]
         +isCollective() : bool
         +isIndividual() : bool
         +isBothIndividualAndCollective() : bool
@@ -212,13 +249,11 @@ skinparam linetype ortho
     class Competition {
         -identifier : int
         -name : string
-        -startDate : DateTime
-        -endDate : DateTime
+        -startDate : DateTimeImmutable
+        -endDate : DateTimeImmutable
         -country : string
         -maxRuns : int|null
         -minRuns : int
-        -result : Result
-        +hasResult() : bool
         +hasRuns() : bool
         +isFinish() : bool
         +isOngoing() : bool
@@ -231,23 +266,13 @@ skinparam linetype ortho
         -identifier : int
         -event : string
         -name : string
-        -startDate : DateTime
-        -endDate : DateTime
-        -noWinner : bool
-        -scores : Result[]
+        -startDate : DateTimeImmutable
+        -endDate : DateTimeImmutable
         +isFinish() : bool
         +isOngoing() : bool
         +hasTeams() : bool
-        +hasResult() : bool
         +getTeamsCount() : int
         +hasRequiredNumberOfTeams() : bool
-    }
-    'Résultat du match ou de la course
-    class Result {
-        -identifier : int
-        -type : string
-        -value : int
-        -winner : bool
     }
     'Joueur ou sportif ou pilote
     class Member {

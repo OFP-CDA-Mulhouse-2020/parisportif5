@@ -22,43 +22,53 @@ class TeamFixtures extends Fixture
         $testData = [
             [
                 'name' => "Racing Club de Strasbourg Alsace",
-                'country' => "FR"
+                'country' => "FR",
+                'odds' => 15000
             ],
             [
                 'name' => "Paris Saint-Germain",
-                'country' => "FR"
+                'country' => "FR",
+                'odds' => 15000
             ],
             [
                 'name' => "AS Saint-Étienne",
-                'country' => "FR"
+                'country' => "FR",
+                'odds' => 15000
             ],
             [
                 'name' => "Olympique de Marseille",
-                'country' => "FR"
+                'country' => "FR",
+                'odds' => 15000
             ],
             [
                 'name' => "Olympique Lyonnais",
-                'country' => "FR"
+                'country' => "FR",
+                'odds' => 15000
             ],
             [
                 'name' => "Stade Brestois 29",
-                'country' => "FR"
+                'country' => "FR",
+                'odds' => 15000
             ],
             [
                 'name' => "FC Metz",
-                'country' => "FR"
+                'country' => "FR",
+                'odds' => 15000
             ],
             [
                 'name' => "Girondins de Bordeaux",
-                'country' => "FR"
+                'country' => "FR",
+                'odds' => 15000
             ],
             [
                 'name' => "Lille OSC",
-                'country' => "FR"
+                'country' => "FR",
+                'odds' => 15000
             ],
             [
                 'name' => "Stade Rennais",
-                'country' => "FR"
+                'country' => "FR",
+                'odds' => 15000
             ],
         ];
         $count = count($testData);
@@ -68,7 +78,8 @@ class TeamFixtures extends Fixture
             $team
                 ->setSport($foot)
                 ->setName($testData[$i]['name'])
-                ->setCountry($testData[$i]['country']);
+                ->setCountry($testData[$i]['country'])
+                ->setOdds($testData[$i]['odds']);
             $manager->persist($team);
         }
         $manager->flush();

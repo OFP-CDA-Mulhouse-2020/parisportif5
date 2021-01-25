@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Entity;
 
+use App\DataConverter\DateTimeStorageDataConverter;
 use App\Entity\BetCategory;
 use App\Entity\Competition;
 use App\Entity\Location;
 use App\Entity\Member;
-use App\Entity\Result;
 use App\Entity\Run;
 use App\Entity\Sport;
 use App\Entity\Team;
@@ -30,9 +30,11 @@ final class RunTest extends KernelTestCase
 
     private function createValidRun(): Run
     {
-        $run = new Run();
+        $converter = new DateTimeStorageDataConverter();
+        $run = new Run($converter);
         $date = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
         $run
+            ->setDateTimeConverter($converter)
             ->setName('run name')
             ->setEvent('event name')
             ->setStartDate($date->setTime(23, 59, 59, 1000000))
@@ -52,7 +54,8 @@ final class RunTest extends KernelTestCase
             ->setName("RC Strasbourg Alsace")
             ->setCountry($country)
             ->setSport($this->createSportObject())
-            ->addMember($this->createMemberObject());
+            ->addMember($this->createMemberObject())
+            ->setOdds(20000);
         return $team;
     }
 
@@ -62,7 +65,8 @@ final class RunTest extends KernelTestCase
         $member
             ->setLastName($lastName)
             ->setFirstName("Jean-Pierre")
-            ->setCountry("FR");
+            ->setCountry("FR")
+            ->setOdds(20000);
         return $member;
     }
 
@@ -78,9 +82,11 @@ final class RunTest extends KernelTestCase
 
     private function createCompetitionObject(string $country = "FR"): Competition
     {
-        $competition = new Competition();
+        $converter = new DateTimeStorageDataConverter();
+        $competition = new Competition($converter);
         $date = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
         $competition
+            ->setDateTimeConverter($converter)
             ->setName('Championnat inter-club')
             ->setStartDate($date->setTime(23, 59, 59, 1000000))
             ->setCountry($country)
@@ -107,25 +113,13 @@ final class RunTest extends KernelTestCase
         return $sport;
     }
 
-    private function createResultObject(Run $run, int $value = 0): Result
-    {
-        $result = new Result();
-        $result
-            ->setType("time")
-            ->setValue($value)
-            ->setWinner(false)
-            ->setBetCategory($this->createBetCategoryObject())
-            ->setCompetition($this->createCompetitionObject())
-            ->setRun($run)
-            ->setTeam($this->createTeamObject())
-            ->setTeamMember(null);
-        return $result;
-    }
-
     public function createBetCategoryObject(string $name = "resultw"): BetCategory
     {
         $betCategory = new BetCategory();
-        $betCategory->setName($name);
+        $betCategory
+            ->setName($name)
+            ->setAllowDraw(false)
+            ->setTarget("teams");
         return $betCategory;
     }
 
@@ -395,46 +389,5 @@ final class RunTest extends KernelTestCase
         $this->assertCount(0, $violations);
         $run->removeTeam($team);
         $this->assertNotContains($team, $run->getTeams());
-    }
-
-    public function testAddScoreCompatible()
-    {
-        $run = $this->createValidRun();
-        $result = $this->createResultObject($run);
-        $run->addScore($result);
-        $this->assertContains($result, $run->getScores());
-        $violations = $this->validator->validate($run);
-        $this->assertCount(0, $violations);
-    }
-
-    public function testAddScoreUncompatible()
-    {
-        $run = $this->createValidRun();
-        $result = $this->createResultObject($run, -1);
-        $run->addScore($result);
-        $violations = $this->validator->validate($run);
-        $this->assertCount(1, $violations);
-    }
-
-    public function testRemoveResultUncompatible(): void
-    {
-        $run = $this->createValidRun();
-        $result = $this->createResultObject($run, -1);
-        $run->addScore($result);
-        $violations = $this->validator->validate($run);
-        $this->assertCount(1, $violations);
-        $run->removeScore($result);
-        $this->assertNotContains($result, $run->getScores());
-    }
-
-    public function testRemoveResultCompatible(): void
-    {
-        $run = $this->createValidRun();
-        $result = $this->createResultObject($run);
-        $run->addScore($result);
-        $violations = $this->validator->validate($run);
-        $this->assertCount(0, $violations);
-        $run->removeScore($result);
-        $this->assertNotContains($result, $run->getScores());
     }
 }

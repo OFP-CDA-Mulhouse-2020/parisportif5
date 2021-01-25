@@ -28,6 +28,7 @@ final class TeamTest extends KernelTestCase
         $team->setCountry("FR");
         $team->setSport($this->createSportObject());
         $team->addMember($this->createMemberObject());
+        $team->setOdds(20000);
         return $team;
     }
 
@@ -37,7 +38,8 @@ final class TeamTest extends KernelTestCase
         $member
             ->setLastName($lastName)
             ->setFirstName("Jean-Pierre")
-            ->setCountry("FR");
+            ->setCountry("FR")
+            ->setOdds(20000);
         return $member;
     }
 
@@ -62,6 +64,29 @@ final class TeamTest extends KernelTestCase
         $kernel = self::bootKernel();
         $kernel->boot();
         return $kernel;
+    }
+
+
+    public function testIfOddsIsInvalid(): void
+    {
+        $odds = -1;
+        $kernel = $this->initializeKernel();
+        $team = $this->initializeTeam();
+        $team->setOdds($odds);
+        $validator = $kernel->getContainer()->get('validator');
+        $violations = $validator->validate($team);
+        $this->assertCount(1, $violations);
+    }
+
+    public function testIfOddsIsValid(): void
+    {
+        $odds = 0;
+        $kernel = $this->initializeKernel();
+        $team = $this->initializeTeam();
+        $team->setOdds($odds);
+        $validator = $kernel->getContainer()->get('validator');
+        $violations = $validator->validate($team);
+        $this->assertCount(0, $violations);
     }
 
     /**
@@ -97,10 +122,10 @@ final class TeamTest extends KernelTestCase
     public function testIfTeamNameIsInvalid(string $t): void
     {
         $kernel = $this->initializeKernel();
-        $status = $this->initializeTeam();
-        $status->setName($t);
+        $team = $this->initializeTeam();
+        $team->setName($t);
         $validator = $kernel->getContainer()->get('validator');
-        $violations = $validator->validate($status);
+        $violations = $validator->validate($team);
         $this->assertGreaterThanOrEqual(1, count($violations));
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\DataConverter\DateTimeStorageDataConverter;
 use App\Entity\Run;
 use App\Repository\CompetitionRepository;
 use App\Repository\LocationRepository;
@@ -30,7 +31,6 @@ class RunFixtures extends Fixture implements DependentFixtureInterface
                 'event' => "pool 1",
                 'start' => "2021-02-01 08:00",
                 'end' => "2021-02-01 20:00",
-                'noWinner' => null,
                 'competition' => [
                     'name' => "Championnat",
                     'start' => "2021-02-01 08:00",
@@ -44,6 +44,7 @@ class RunFixtures extends Fixture implements DependentFixtureInterface
             ]
         ];
         $count = count($testData);
+        $converter = new DateTimeStorageDataConverter();
         for ($i = 0; $i < $count; $i++) {
             $runCompetition = $this->competitionRepository->findOneBy([
                 'name' => $testData[$i]['competition']['name'],
@@ -55,15 +56,16 @@ class RunFixtures extends Fixture implements DependentFixtureInterface
             ]);
             //$runTeams
             //$runScores
-            $run = new Run();
+            $run = new Run($converter);
             $run
+                ->setDateTimeConverter($converter)
                 ->setName($testData[$i]['name'])
                 ->setEvent($testData[$i]['event'])
                 ->setStartDate(new \DateTimeImmutable($testData[$i]['start'], new \DateTimeZone("UTC")))
                 ->setEndDate(new \DateTimeImmutable($testData[$i]['end'], new \DateTimeZone("UTC")))
-                ->setNoWinner($testData[$i]['noWinner'])
                 ->setCompetition($runCompetition)
-                ->setLocation($runLocation);
+                ->setLocation($runLocation)
+                ;
             $manager->persist($run);
         }
         $manager->flush();

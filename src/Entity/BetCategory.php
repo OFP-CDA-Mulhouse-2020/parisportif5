@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use App\Repository\BetCategoryRepository;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\BetCategoryRepository;
 
 /*// liste des catégories :
     Foot :
@@ -70,6 +70,35 @@ class BetCategory
      */
     private ?string $description;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private bool $allowDraw;
+
+    /**
+     * @ORM\Column(type="string", length=7)
+     * @Assert\NotBlank(
+     *     message="Le type de cible ne peut pas être vide.",
+     *     normalizer="trim"
+     * )
+     * @Assert\Choice(
+     *     choices=BetCategory::TARGET_TYPES,
+     *     message="Choisisez une cible valide."
+     * )
+     */
+    private string $target;
+
+    /** @const string TEAM_TYPE */
+    public const TEAM_TYPE = "teams";
+
+    /** @const string MEMBER_TYPE */
+    public const MEMBER_TYPE = "members";
+
+    /**
+     * @const string[] TARGET_TYPES
+    */
+    public const TARGET_TYPES = [self::TEAM_TYPE, self::MEMBER_TYPE];
+
     public function getId(): ?int
     {
         return $this->id;
@@ -94,6 +123,30 @@ class BetCategory
     public function setDescription(?string $description): self
     {
         $this->description = $description;
+        return $this;
+    }
+
+    public function getAllowDraw(): ?bool
+    {
+        return $this->allowDraw;
+    }
+
+    public function setAllowDraw(bool $allowDraw): self
+    {
+        $this->allowDraw = $allowDraw;
+
+        return $this;
+    }
+
+    public function getTarget(): ?string
+    {
+        return $this->target;
+    }
+
+    public function setTarget(string $target): self
+    {
+        $this->target = $target;
+
         return $this;
     }
 }

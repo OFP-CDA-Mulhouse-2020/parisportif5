@@ -4,20 +4,21 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use App\Repository\BetRepository;
+use App\DataConverter\DateTimeStorageInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\BetRepository;
 
 /**
  * @ORM\Entity(repositoryClass=BetRepository::class)
  * @UniqueEntity(
- *     fields={"user", "competition", "run", "team", "teamMember", "betCategory"},
+ *     fields={"user", "competition", "run", "betDate", "betCategory"},
  *     errorPath="betCategory",
  *     message="Ce paris est déjà enregistré."
  * )
  */
-class Bet implements FundStorageInterface
+class Bet
 {
     /**
      * @ORM\Id
@@ -46,7 +47,7 @@ class Bet implements FundStorageInterface
     /**
      * @ORM\Column(type="integer")
      * @Assert\PositiveOrZero(
-     *     message="La côte du paris (multiplier par 10000) doit être un entier positif ou zéro"
+     *     message="La côte du paris (multiplier par 10000) doit être un entier positif ou zéro."
      * )
      */
     private int $odds;
@@ -95,8 +96,17 @@ class Bet implements FundStorageInterface
      */
     private BetCategory $betCategory;
 
-    public function __construct()
+    /**
+     * @ORM\Column(type="datetime_immutable")
+     */
+    private \DateTimeImmutable $betDate;
+
+    /** Sécurise le stockage des dates et heures */
+    private DateTimeStorageInterface $dateTimeConverter;
+
+    public function __construct(DateTimeStorageInterface $dateTimeConverter)
     {
+        $this->dateTimeConverter = $dateTimeConverter;
         $this->isWinning = null;
         $this->run = null;
         $this->team = null;
@@ -216,26 +226,6 @@ class Bet implements FundStorageInterface
         $this->isWinning = null;
     }
 
-    public function convertToCurrencyUnit(int $amount): float
-    {
-        return floatVal($amount * 0.01);
-    }
-
-    public function convertToOddsMultiplier(int $odds): float
-    {
-        return floatVal($odds * 0.0001);
-    }
-
-    public function convertCurrencyUnitToStoredData(float $amount): int
-    {
-        return intVal($amount * 100);
-    }
-
-    public function convertOddsMultiplierToStoredData(float $odds): int
-    {
-        return intVal($odds * 10000);
-    }
-
     public function getTarget(): ?object
     {
         return $this->teamMember ?? $this->team ?? $this->run ?? $this->competition;
@@ -249,6 +239,26 @@ class Bet implements FundStorageInterface
     public function setBetCategory(BetCategory $betCategory): self
     {
         $this->betCategory = $betCategory;
+
+        return $this;
+    }
+
+    public function getBetDate(): ?\DateTimeImmutable
+    {
+        return $this->betDate;
+    }
+
+    public function setBetDate(\DateTimeInterface $betDate): self
+    {
+        $betDate = $this->dateTimeConverter->convertedToStoreDateTime($betDate);
+        $this->betDate = $betDate;
+
+        return $this;
+    }
+
+    public function setDateTimeConverter(DateTimeStorageInterface $dateTimeConverter): self
+    {
+        $this->dateTimeConverter = $dateTimeConverter;
 
         return $this;
     }

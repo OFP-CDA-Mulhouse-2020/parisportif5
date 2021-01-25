@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Entity;
 
+use App\DataConverter\DateTimeStorageDataConverter;
 use App\Entity\Bet;
 use App\Entity\Language;
 use App\Entity\User;
@@ -31,8 +32,10 @@ final class UserTest extends KernelTestCase
 
     private function createValidUser(): User
     {
-        $user = new User();
+        $converter = new DateTimeStorageDataConverter();
+        $user = new User($converter);
         $user
+            ->setDateTimeConverter($converter)
             ->setCivility("Monsieur")
             ->setFirstName("Tintin")
             ->setLastName("Dupont")
@@ -80,14 +83,21 @@ final class UserTest extends KernelTestCase
         User $user,
         string $designation = 'paris',
         int $amount = 100,
-        int $odds = 12000
+        int $odds = 12000,
+        \DateTimeImmutable $date = null
     ): Bet {
-        $bet = new Bet();
+        $converter = new DateTimeStorageDataConverter();
+        $bet = new Bet($converter);
+        if (is_null($date)) {
+            $date = new \DateTimeImmutable("now", new \DateTimeZone("UTC"));
+        }
         $bet
+            ->setDateTimeConverter($converter)
             ->setDesignation($designation)
             ->setAmount($amount)
             ->setOdds($odds)
-            ->setUser($user);
+            ->setUser($user)
+            ->setBetDate($date);
         return $bet;
     }
 
@@ -860,15 +870,6 @@ final class UserTest extends KernelTestCase
         $this->assertTrue($result);
         $this->assertIsInt(User::MAX_AGE_FOR_BETTING);
         $this->assertSame(140, User::MAX_AGE_FOR_BETTING);
-    }
-
-    public function testConstantTypeDatabaseTimeZone(): void
-    {
-        $user = $this->createValidUser();
-        $className = get_class($user);
-        $result = defined($className . '::STORED_TIME_ZONE');
-        $this->assertTrue($result);
-        $this->assertIsString($user::STORED_TIME_ZONE);
     }
 
     public function testConstantTypeSelectCurrencyCode(): void

@@ -45,77 +45,92 @@ class MemberFixtures extends Fixture implements DependentFixtureInterface
             [
                 'first_name' => "Joueur",
                 'last_name' => "Random",
-                'country' => "FR"
+                'country' => "FR",
+                'odds' => 15000
             ],
             [
                 'first_name' => "Machin",
                 'last_name' => "Truc",
-                'country' => "FR"
+                'country' => "FR",
+                'odds' => 15000
             ],
             [
                 'first_name' => "Jean",
                 'last_name' => "Dupont",
-                'country' => "FR"
+                'country' => "FR",
+                'odds' => 15000
             ],
             [
                 'first_name' => "Bidule",
                 'last_name' => "Mcdonald",
-                'country' => "FR"
+                'country' => "FR",
+                'odds' => 15000
             ],
             [
                 'first_name' => "Pierre",
                 'last_name' => "Caillou",
-                'country' => "FR"
+                'country' => "FR",
+                'odds' => 15000
             ],
             [
                 'first_name' => "Michel",
                 'last_name' => "Bouzin",
-                'country' => "FR"
+                'country' => "FR",
+                'odds' => 15000
             ],
             [
                 'first_name' => "Sam",
                 'last_name' => "Duplot",
-                'country' => "FR"
+                'country' => "FR",
+                'odds' => 15000
             ],
             [
                 'first_name' => "Luc",
                 'last_name' => "Durand",
-                'country' => "FR"
+                'country' => "FR",
+                'odds' => 15000
             ],
             [
                 'first_name' => "Elias",
                 'last_name' => "De Kelliwick",
-                'country' => "FR"
+                'country' => "FR",
+                'odds' => 15000
             ],
             [
                 'first_name' => "Arthur",
                 'last_name' => "Pendragon",
-                'country' => "FR"
+                'country' => "FR",
+                'odds' => 15000
             ],
             [
                 'first_name' => "Lancelot",
                 'last_name' => "Dulac",
-                'country' => "FR"
+                'country' => "FR",
+                'odds' => 15000
             ],
             [
                 'first_name' => "Perceval",
                 'last_name' => "Legallois",
-                'country' => "FR"
+                'country' => "FR",
+                'odds' => 15000
             ],
             [
                 'first_name' => "Martin",
                 'last_name' => "Luther",
-                'country' => "FR"
+                'country' => "FR",
+                'odds' => 15000
             ],
             [
                 'first_name' => "Zinédine",
                 'last_name' => "Zidane",
-                'country' => "FR"
+                'country' => "FR",
+                'odds' => 15000
             ],
             [
                 'first_name' => "Jean",
                 'last_name' => "Marsouin",
-                'country' => "FR"
+                'country' => "FR",
+                'odds' => 15000
             ],
         ];
         $count = count($testData);
@@ -130,8 +145,8 @@ class MemberFixtures extends Fixture implements DependentFixtureInterface
                 ->setTeam($team)
                 ->setFirstName($testData[$i]['first_name'])
                 ->setLastName($testData[$i]['last_name'])
-                ->setCountry($testData[$i]['country']);
-                ;
+                ->setCountry($testData[$i]['country'])
+                ->setOdds($testData[$i]['odds']);
             $manager->persist($member);
         }
         $manager->flush();

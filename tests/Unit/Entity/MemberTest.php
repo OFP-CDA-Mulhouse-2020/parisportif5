@@ -17,13 +17,13 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  */
 final class MemberTest extends WebTestCase
 {
-
     private function initializeMember(): Member
     {
         $member =  new Member();
         $member->setLastName("Papin");
         $member->setFirstName("Jean-Pierre");
         $member->setCountry("FR");
+        $member->setOdds(20000);
         return $member;
     }
 
@@ -48,10 +48,32 @@ final class MemberTest extends WebTestCase
         return $kernel;
     }
 
+    public function testIfOddsIsInvalid(): void
+    {
+        $odds = -1;
+        $kernel = $this->initializeKernel();
+        $member = $this->initializeMember();
+        $member->setOdds($odds);
+        $validator = $kernel->getContainer()->get('validator');
+        $violations = $validator->validate($member);
+        $this->assertCount(1, $violations);
+    }
+
+    public function testIfOddsIsValid(): void
+    {
+        $odds = 0;
+        $kernel = $this->initializeKernel();
+        $member = $this->initializeMember();
+        $member->setOdds($odds);
+        $validator = $kernel->getContainer()->get('validator');
+        $violations = $validator->validate($member);
+        $this->assertCount(0, $violations);
+    }
+
     /**
      * @dataProvider validLastNameProvider
      */
-    public function testIfLastNameIsCorrect(string $lN): void
+    public function testIfLastNameIsValid(string $lN): void
     {
         $kernel = $this->initializeKernel();
         $member = $this->initializeMember();
@@ -77,7 +99,7 @@ final class MemberTest extends WebTestCase
     /**
      * @dataProvider invalidLastNameProvider
      */
-    public function testIfLastNameIsINCorrect(string $lN): void
+    public function testIfLastNameIsInvalid(string $lN): void
     {
         $kernel = $this->initializeKernel();
         $member = $this->initializeMember();
@@ -99,7 +121,7 @@ final class MemberTest extends WebTestCase
     /**
      * @dataProvider validFirstNameProvider
      */
-    public function testIfFirstNameIsCorrect(string $fN): void
+    public function testIfFirstNameIsValid(string $fN): void
     {
         $kernel = $this->initializeKernel();
         $member = $this->initializeMember();
@@ -125,7 +147,7 @@ final class MemberTest extends WebTestCase
     /**
      * @dataProvider invalidFirstNameProvider
      */
-    public function testIfFirstNameIsINCorrect(string $fN): void
+    public function testIfFirstNameIsInvalid(string $fN): void
     {
         $kernel = $this->initializeKernel();
         $member = $this->initializeMember();
