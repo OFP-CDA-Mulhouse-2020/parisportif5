@@ -14,7 +14,7 @@
         <server name="SHELL_VERBOSITY" value="-1" />
         <server name="KERNEL_CLASS" value="App\Kernel" />
         <server name="APP_ENV" value="test" force="true" />
-        <env name="DATABASE_URL" value = "mysql://root:test@mysql/parisportif_test?serverVersion=8.0" />
+        <env name="DATABASE_URL" value = "mysql://root:test@mysql/parisportif5_test?serverVersion=8.0" />
     </php>
          
     <testsuites>

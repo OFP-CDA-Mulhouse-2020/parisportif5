@@ -109,7 +109,7 @@ class BetController extends AbstractController
             $amount = $bet->getAmount();
             $wallet = $user->getWallet();
             $walletAmmount = $wallet->getAmount() ?? 0;
-            $newWalletAmount = $walletAmmount - $amount;
+            $newWalletAmount = intval($walletAmmount - $amount);
             //dd($bet);
             //dd($user);
             if ($newWalletAmount >= 0) {

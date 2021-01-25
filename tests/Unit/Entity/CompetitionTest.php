@@ -8,7 +8,6 @@ use App\DataConverter\DateTimeStorageDataConverter;
 use App\Entity\BetCategory;
 use App\Entity\Competition;
 use App\Entity\Member;
-use App\Entity\Result;
 use App\Entity\Run;
 use App\Entity\Sport;
 use App\Entity\Team;
@@ -103,21 +102,6 @@ final class CompetitionTest extends KernelTestCase
             ->setIndividualType(false)
             ->setCollectiveType(true);
         return $sport;
-    }
-
-    private function createResultObject(Competition $competition, int $value = 0): Result
-    {
-        $result = new Result();
-        $result
-            ->setType("time")
-            ->setValue($value)
-            ->setWinner(false)
-            ->setBetCategory($this->createBetCategoryObject())
-            ->setCompetition($competition)
-            ->setRun(null)
-            ->setTeam($this->createTeamObject())
-            ->setTeamMember(null);
-        return $result;
     }
 
     public function createBetCategoryObject(string $name = "resultw"): BetCategory
@@ -439,25 +423,6 @@ final class CompetitionTest extends KernelTestCase
         $competition = $this->createValidCompetition();
         $sport = $this->createSportObject('XD');
         $competition->setSport($sport);
-        $violations = $this->validator->validate($competition);
-        $this->assertCount(1, $violations);
-    }
-
-    public function testResultCompatible()
-    {
-        $competition = $this->createValidCompetition();
-        $result = $this->createResultObject($competition);
-        $competition->setResult($result);
-        $this->assertSame($result, $competition->getResult());
-        $violations = $this->validator->validate($competition);
-        $this->assertCount(0, $violations);
-    }
-
-    public function testResultUncompatible()
-    {
-        $competition = $this->createValidCompetition();
-        $result = $this->createResultObject($competition, -1);
-        $competition->setResult($result);
         $violations = $this->validator->validate($competition);
         $this->assertCount(1, $violations);
     }

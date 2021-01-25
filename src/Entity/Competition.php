@@ -114,12 +114,6 @@ class Competition
      */
     private Collection $betCategories;
 
-    /**
-     * @ORM\OneToOne(targetEntity=Result::class, cascade={"persist", "remove"})
-     * @Assert\Valid
-     */
-    private ?Result $result = null;
-
     /** Sécurise le stockage des dates et heures */
     private DateTimeStorageInterface $dateTimeConverter;
 
@@ -275,23 +269,6 @@ class Competition
         $this->betCategories->removeElement($betCategory);
 
         return $this;
-    }
-
-    public function getResult(): ?Result
-    {
-        return $this->result;
-    }
-
-    public function setResult(?Result $result): self
-    {
-        $this->result = $result;
-
-        return $this;
-    }
-
-    public function hasResult(): bool
-    {
-        return isset($this->result) ? true : false;
     }
 
     public function getMinRuns(): ?int

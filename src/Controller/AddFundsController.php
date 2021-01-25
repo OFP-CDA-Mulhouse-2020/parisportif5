@@ -21,7 +21,8 @@ class AddFundsController extends AbstractController
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY'); //test de redirection
         $user = $this->getUser();           //test d'accès à la donnée
-        $wallet = $walletRepository->find($user->getWallet()->getId());           //test d'accès à la donnée
+        $wallet = $user->getWallet();
+        //$wallet = $walletRepository->find($user->getWallet()->getId());           //test d'accès à la donnée
         $amount = $wallet->getAmount();           //test d'accès à la donnée
 
 

@@ -70,6 +70,8 @@ class SportFixtures extends Fixture
         $count = count($testData);
         for ($i = 0; $i < $count; $i++) {
             $sport = new Sport();
+            $maxTeamsByRun = $testData[$i]['max_teams_by_run'] ?? null;
+            $maxMembersByTeam = $testData[$i]['max_members_by_team'] ?? null;
             $sport
                 ->setName($testData[$i]['name'])
                 ->setCountry($testData[$i]['country'])
@@ -77,9 +79,9 @@ class SportFixtures extends Fixture
                 ->setIndividualType($testData[$i]['individual_type'])
                 ->setCollectiveType($testData[$i]['collective_type'])
                 ->setMinTeamsByRun($testData[$i]['min_teams_by_run'])
-                ->setMaxTeamsByRun($testData[$i]['max_teams_by_run'])
+                ->setMaxTeamsByRun($maxTeamsByRun)
                 ->setMinMembersByTeam($testData[$i]['min_members_by_team'])
-                ->setMaxMembersByTeam($testData[$i]['max_members_by_team'])
+                ->setMaxMembersByTeam($maxMembersByTeam)
                 ;
             $manager->persist($sport);
         }

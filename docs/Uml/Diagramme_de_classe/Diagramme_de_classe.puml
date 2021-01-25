@@ -24,16 +24,6 @@ skinparam linetype ortho
     Team "1" *-- "1..*" Member
     'Une compétition a un sport
     Sport "1" <-- "0..*" Competition
-    'Une rencontre ou une course a un résultat
-    Result "0..*" -- "0..1" Run
-    'Un résultat concerne une équipe
-    Result "0..*" --> "0..1" Team
-    'Un résultat concerne un membre ou pas
-    Result "0..*" --> "0..1" Member
-    'Une compétition a un résultat
-    Result "0..1" -- "0..1" Competition
-    'Un résultat a une catégorie de paris
-    BetCategory "1" <-- "0..*" Result
     'Une compétition a une liste de catégorie de paris
     BetCategory "1..*" <-- "0..*" Competition
     'Une équipe a un sport
@@ -128,6 +118,7 @@ skinparam linetype ortho
         -id : int
         -email : string
         -password : string
+        -plainPassword : string|null
         -roles : string[]
         -activatedStatus : bool
         -activatedDate : DateTimeImmutable
@@ -214,7 +205,8 @@ skinparam linetype ortho
         +won() : void
         +lost() : void
         +restoreWithoutResult() : void
-        +getTarget() : Member|Team|Run|Competition
+        +getTarget() : Member|Team
+        +getSelected() : Run|Competition
     }
     'Catégorie de paris (ex: Paris sur le résultat)
     class BetCategory {
@@ -262,8 +254,6 @@ skinparam linetype ortho
         -country : string
         -maxRuns : int|null
         -minRuns : int
-        -result : Result
-        +hasResult() : bool
         +hasRuns() : bool
         +isFinish() : bool
         +isOngoing() : bool
@@ -278,24 +268,11 @@ skinparam linetype ortho
         -name : string
         -startDate : DateTimeImmutable
         -endDate : DateTimeImmutable
-        -noWinner : bool
-        -scores : Result[]
         +isFinish() : bool
         +isOngoing() : bool
         +hasTeams() : bool
-        +hasResult() : bool
         +getTeamsCount() : int
         +hasRequiredNumberOfTeams() : bool
-    }
-    'Résultat du match ou de la course
-    class Result {
-        -identifier : int
-        -type : string
-        -value : int
-        -winner : bool
-        +{static} TIME_TYPE : string = "time"
-        +{static} POINT_TYPE : string = "point"
-        +{static} RESULT_TYPES : string[] = [TIME_TYPE, POINT_TYPE]
     }
     'Joueur ou sportif ou pilote
     class Member {
