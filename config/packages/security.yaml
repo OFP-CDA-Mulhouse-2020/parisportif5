@@ -25,7 +25,7 @@ security:
                 entry_point: App\Security\UserLoginAuthenticator
             logout:
                 path: userlogout
-                target: /userlogout
+                target: /deconnexion
                 # where to redirect after logout
                 # target: app_any_route
 

@@ -14,7 +14,6 @@ class UserLoggedInterfaceController extends AbstractController
     /**
      * @Route("/account/logged", name="userloggedin")
      */
-
     public function redirectsToLoggedIn(): Response
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY'); //test de redirection
@@ -29,10 +28,20 @@ class UserLoggedInterfaceController extends AbstractController
         // }
         // die();
 
-        return $this->render('login_form/userloggedin.html.twig', [
+        return $this->render('main/userloggedin.html.twig', [
             'site_title' => 'Paris Sportif',
             'page_title' => 'User logged in',
             'sports' => $sports
+        ]);
+    }
+
+    /**
+     * @Route("/main", name="main")
+     */
+    public function main(): Response
+    {
+        return $this->render('base.html.twig', [
+            'page_title' => 'Accueil'
         ]);
     }
 }

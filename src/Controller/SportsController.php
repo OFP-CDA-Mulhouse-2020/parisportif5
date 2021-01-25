@@ -10,13 +10,9 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class SportsController extends AbstractController
 {
-
-
-
     /**
-     * @Route("/account/sports/{id}", name="sport{id}") //
+     * @Route("/{sportSlug}/{id}", name="sport")
      */
-
     public function redirectsToSportPage(int $id): Response
     {
         $sport = $this->getDoctrine()

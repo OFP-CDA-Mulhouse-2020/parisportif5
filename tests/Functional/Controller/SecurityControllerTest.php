@@ -18,7 +18,7 @@ class SecurityControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $client->request('GET', '/userlogin');
+        $client->request('GET', '/connexion');
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
@@ -27,7 +27,7 @@ class SecurityControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $client->request('GET', '/userlogin');
+        $client->request('GET', '/connexion');
 
         $this->assertSelectorTextContains('h1', 'Connexion');
         $this->assertSelectorTextContains('title', 'Connexion');
@@ -37,7 +37,7 @@ class SecurityControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $crawler = $client->request('GET', '/userlogin');
+        $crawler = $client->request('GET', '/connexion');
         $this->assertSelectorExists('form', "Le formulaire n'existe pas");
         $this->assertCount(1, $crawler->filter('form'));
         $this->assertSelectorExists('form input[name*="email"]', "Le champ du mail n'existe pas");
@@ -51,7 +51,7 @@ class SecurityControllerTest extends WebTestCase
     // public function testIfFormSubmits()
     // {
     //     $client = static::createClient();
-    //     $crawler = $client->request('GET', '/userlogin');
+    //     $crawler = $client->request('GET', '/connexion');
 
     //     $form = $crawler->filter('form')->form();
     //     $form['user_login[email]'] = 'aaa123@mail.com';
@@ -69,7 +69,7 @@ class SecurityControllerTest extends WebTestCase
     // public function testSuccessfulConnexion()
     // {
     //     $client = static::createClient();
-    //     $crawler = $client->request('GET', '/userlogin');
+    //     $crawler = $client->request('GET', '/connexion');
 
     //     $form = $crawler->filter('form')->form();
     //     $form['user_login[email]'] = 'tintin.dupont@test.com';
@@ -115,7 +115,7 @@ class SecurityControllerTest extends WebTestCase
     /*public function testLoginMessageIfUserDoesNotExistInDb()
     {
          $client = static::createClient();
-         $crawler = $client->request('GET', '/userlogin');
+         $crawler = $client->request('GET', '/connexion');
 
          $form = $crawler->filter('form')->form();
          $form['user_login[email]'] = 'tonton.dupont@mail.com';
