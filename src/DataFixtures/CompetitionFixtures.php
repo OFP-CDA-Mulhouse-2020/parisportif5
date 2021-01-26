@@ -28,13 +28,13 @@ class CompetitionFixtures extends Fixture implements DependentFixtureInterface
     {
         $testData = [
             [
-                'name' => "Championnat",
+                'name' => "Championnat1",
                 'start' => "2021-02-01 08:00",
                 'end' => "2021-02-10 20:00",
                 'country' => "FR",
                 'betCategoryName' => "result",
                 'sport' => [
-                    'name' => "foot",
+                    'name' => "Football",
                     'country' => "FR"
                 ]
             ]

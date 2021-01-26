@@ -83,7 +83,7 @@ class User implements UserInterface
      *     groups={"registration", "password_update"}
      * )
      */
-    private ?string $plainPassword;
+    private ?string $plainPassword = null;
 
     /**
      * @var string Le mot de passe haché
@@ -109,7 +109,7 @@ class User implements UserInterface
      *      groups={"profile"}
      * )
      */
-    private ?string $civility;
+    private ?string $civility = null;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)

@@ -12,7 +12,7 @@ class BetCategoryFixtures extends Fixture
     {
         $testData = [
             [
-                'name' => "result-foot",
+                'name' => "result",
                 'description' => null,
                 'allowDraw' => true,
                 'target' => "teams"
