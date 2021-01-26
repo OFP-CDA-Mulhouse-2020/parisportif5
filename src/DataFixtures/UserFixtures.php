@@ -28,16 +28,16 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
     public function load(ObjectManager $manager): void
     {
         $testData = [
-            [
+            /*[
                 'roles' => ['ROLE_USER', 'ROLE_ADMIN'],
                 'civility' => null,
-                'firstname' => "Admin",
-                'lastname' => "Admin",
-                'address' => "admin",
+                'firstname' => "Admin1",
+                'lastname' => "Admin1",
+                'address' => "admin1",
                 'city' => "COLMAR",
                 'postcode' => "68000",
                 'country' => "FR",
-                'email' => "admin@admin.fr",
+                'email' => "admin1@admin.fr",
                 'verified' => true,
                 'password' => "administrateur1",
                 'birthdate' => "2000-10-20",
@@ -46,13 +46,13 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
                 'identityDocument' => "identity_card.pdf",
                 'residenceProof' => "invoice.jpg",
                 'language' => 'fr_FR'
-            ],
+            ],*/
             [
                 'roles' => ['ROLE_USER'],
                 'civility' => "Monsieur",
                 'firstname' => "Tintin",
                 'lastname' => "Dupont",
-                'address' => "1 avenue Hergé",
+                'address' => "1 avenue Herger",
                 'city' => "COLMAR",
                 'postcode' => "68000",
                 'country' => "FR",
@@ -65,17 +65,17 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
                 'identityDocument' => "identity_card.pdf",
                 'residenceProof' => "invoice.jpg",
                 'language' => 'fr_FR'
-            ],
+            ]/*,
             [
                 'roles' => ['ROLE_USER'],
                 'civility' => "Monsieur",
                 'firstname' => "Toto",
-                'lastname' => "Dupontel",
-                'address' => "3 avenue Hergé",
+                'lastname' => "Dupond",
+                'address' => "3 avenue Herger",
                 'city' => "COLMAR",
                 'postcode' => "68000",
                 'country' => "FR",
-                'email' => "toto.dupontel@test.fr",
+                'email' => "toto.dupond@test.fr",
                 'verified' => true,
                 'password' => "@Hadock123",
                 'birthdate' => "2000-11-21",
@@ -84,7 +84,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
                 'identityDocument' => "identity_card.pdf",
                 'residenceProof' => "invoice.jpg",
                 'language' => 'fr_FR'
-            ]
+            ]*/
         ];
         $count = count($testData);
         $converter = new DateTimeStorageDataConverter();

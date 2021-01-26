@@ -29,10 +29,10 @@ class RunFixtures extends Fixture implements DependentFixtureInterface
             [
                 'name' => "Match 1 vs2",
                 'event' => "pool 1",
-                'start' => "2021-02-01 08:00",
+                'start' => "2021-02-01 09:00",
                 'end' => "2021-02-01 20:00",
                 'competition' => [
-                    'name' => "Championnat",
+                    'name' => "Championnat1",
                     'start' => "2021-02-01 08:00",
                     'end' => "2021-02-10 20:00",
                     'country' => "FR"

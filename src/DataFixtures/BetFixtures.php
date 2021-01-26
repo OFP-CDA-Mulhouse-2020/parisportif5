@@ -4,7 +4,6 @@ namespace App\DataFixtures;
 
 use App\DataConverter\DateTimeStorageDataConverter;
 use App\Entity\Bet;
-use App\Entity\Run;
 use App\Repository\BetCategoryRepository;
 use App\Repository\CompetitionRepository;
 use App\Repository\UserRepository;
@@ -38,7 +37,7 @@ class BetFixtures extends Fixture
                 'user' => "tintin.dupont@test.fr",
                 'categoryName' => "result",
                 'competition' => [
-                    'name' => "Championnat",
+                    'name' => "Championnat1",
                     'start' => "2021-02-01 08:00",
                     'end' => "2021-02-10 20:00",
                     'country' => "FR"
@@ -53,22 +52,24 @@ class BetFixtures extends Fixture
                 'country' => $testData[$i]['competition']['country']
             ]);
             //$betCompetition = $this->getReference(CompetitionFixtures::COMPETITION_OBJECT);
-            $betUser = $this->userRepository->findOneByEmail($testData[$i]['user']);
             $betCategory = $this->betCategoryRepository->findOneBy([
                 "name" => $testData[$i]['categoryName']
             ]);
-            $bet = new Bet($converter);
-            $bet
-                ->setDateTimeConverter($converter)
-                ->setDesignation($testData[$i]['designation'])
-                ->setAmount($testData[$i]['amount'])
-                ->setOdds($testData[$i]['odds'])
-                ->setCompetition($betCompetition)
-                ->setUser($betUser)
-                ->setBetCategory($betCategory)
-                ->setBetDate(new \DateTimeImmutable($testData[$i]['betdate'], new \DateTimeZone("UTC")))
-                ;
-            $manager->persist($bet);
+            $betUser = $this->userRepository->findOneByEmail($testData[$i]['user']);
+            if (!is_null($betCompetition) && !is_null($betUser) && !is_null($betCategory)) {
+                $bet = new Bet($converter);
+                $bet
+                    ->setDateTimeConverter($converter)
+                    ->setDesignation($testData[$i]['designation'])
+                    ->setAmount($testData[$i]['amount'])
+                    ->setOdds($testData[$i]['odds'])
+                    ->setCompetition($betCompetition)
+                    ->setUser($betUser)
+                    ->setBetCategory($betCategory)
+                    ->setBetDate(new \DateTimeImmutable($testData[$i]['betdate'], new \DateTimeZone("UTC")))
+                    ;
+                $manager->persist($bet);
+            }
         }
         $manager->flush();
     }
@@ -77,11 +78,16 @@ class BetFixtures extends Fixture
     public function getDependencies(): array
     {
         return array(
+            LanguageFixtures::class,
             UserFixtures::class,
             BetCategoryFixtures::class,
+            SportFixtures::class,
             CompetitionFixtures::class,
-            MemberFixtures::class,
             TeamFixtures::class,
+            MemberRoleFixtures::class,
+            MemberStatusFixtures::class,
+            MemberFixtures::class,
+            LocationFixtures::class,
             RunFixtures::class
         );
     }

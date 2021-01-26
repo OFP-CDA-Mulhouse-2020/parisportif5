@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Sport;
+use App\Repository\CompetitionRepository;
 use App\Repository\SportRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -38,8 +39,13 @@ class UserLoggedInterfaceController extends AbstractController
     /**
      * @Route("/main", name="main")
      */
-    public function main(): Response
+    public function main(CompetitionRepository $competitionRepository): Response
     {
+        /*$result = $competitionRepository->findOneBy([
+            'name' => 'Championnat de foot français',
+            'country' => 'FR'
+        ]);
+        dd($result);*/
         return $this->render('base.html.twig', [
             'page_title' => 'Accueil'
         ]);
