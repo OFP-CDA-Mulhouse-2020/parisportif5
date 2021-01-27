@@ -2,7 +2,7 @@
 
 namespace App\DataFixtures;
 
-use App\DataConverter\DateTimeStorageDataConverter;
+use App\Service\DateTimeStorageDataConverter;
 use App\Entity\Billing;
 use App\Repository\UserRepository;
 use Doctrine\Bundle\FixturesBundle\Fixture;

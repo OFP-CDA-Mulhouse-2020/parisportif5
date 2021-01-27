@@ -162,7 +162,6 @@ skinparam linetype ortho
         -dateFormat : string
         -timeFormat : string
         -timeZone : string
-        +isValidDateTimeFormat() : bool
         +getDateTimeFormat() : string|null
     }
     'Factures (type=débit ou crédit)
@@ -205,8 +204,8 @@ skinparam linetype ortho
         +won() : void
         +lost() : void
         +restoreWithoutResult() : void
-        +getTarget() : Member|Team
-        +getSelected() : Run|Competition
+        +getTarget() : Run|Competition
+        +getSelect() : Member|Team
     }
     'Catégorie de paris (ex: Paris sur le résultat)
     class BetCategory {

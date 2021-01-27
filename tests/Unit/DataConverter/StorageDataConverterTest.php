@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\DataConverter;
 
-use App\DataConverter\CommissionRateStorageDataConverter;
-use App\DataConverter\DateTimeStorageDataConverter;
-use App\DataConverter\FundsStorageDataConverter;
-use App\DataConverter\StorageDataConverter;
-use App\DataConverter\OddsStorageDataConverter;
+use App\Service\CommissionRateStorageDataConverter;
+use App\Service\DateTimeStorageDataConverter;
+use App\Service\FundsStorageDataConverter;
+use App\Service\StorageDataConverter;
+use App\Service\OddsStorageDataConverter;
 use PHPUnit\Framework\TestCase;
 
 /**

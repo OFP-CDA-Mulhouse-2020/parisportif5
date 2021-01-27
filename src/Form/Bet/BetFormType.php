@@ -2,7 +2,7 @@
 
 namespace App\Form\Bet;
 
-use App\DataConverter\OddsStorageDataConverter;
+use App\Service\OddsStorageDataConverter;
 use App\Entity\Bet;
 use App\Entity\Team;
 use App\Entity\Member;
@@ -13,14 +13,12 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Count;
 
 class BetFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        //ChoiceList::label();
-        //'choice_label' => 'name',
-        //dd($options);
         $oddsStorageDataConverter = $options['converter'];
         $builder
             ->add($options['property_mapped'], EntityType::class, [
@@ -67,7 +65,7 @@ class BetFormType extends AbstractType
             'converter' => new OddsStorageDataConverter(),
             'target_required' => true,
             'target_expanded' => true,
-            'target_placeholder' => "",
+            'target_placeholder' => false,
             'property_mapped' => "",
             'category_label' => "",
             'class_name' => ""

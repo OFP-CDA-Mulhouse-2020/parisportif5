@@ -169,7 +169,9 @@ class Sport
 
     public function setRunType(string $runType): self
     {
-        $this->runType = $runType;
+        if (in_array($runType, self::RUN_TYPES) !== false) {
+            $this->runType = $runType;
+        }
 
         return $this;
     }

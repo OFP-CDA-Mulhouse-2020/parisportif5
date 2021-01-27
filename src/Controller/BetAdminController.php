@@ -2,8 +2,8 @@
 
 namespace App\Controller;
 
-use App\DataConverter\DateTimeStorageDataConverter;
-use App\DataConverter\OddsStorageDataConverter;
+use App\Service\DateTimeStorageDataConverter;
+use App\Service\OddsStorageDataConverter;
 use App\Entity\BetCategory;
 use App\Entity\Billing;
 use App\Entity\Member;
@@ -22,22 +22,25 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class BetAdminController extends AbstractController
 {
-    /** @const int LIMITATION_TO_SWITCH_TO_SELECT */
-    public const LIMITATION_TO_SWITCH_TO_SELECT = 3;
-
     /**
      * @Route("/{sportSlug}/{competitonSlug}/{eventSlug}/{runSlug}-{runId}/{betCategorySlug}-{betCategoryId}/admin", name="bet_admin")
      */
-    public function index(Request $request, int $runId, int $betCategoryId, RunRepository $runRepository, BetCategoryRepository $betCategoryRepository, BetRepository $betRepository): Response
-    {
-        //======================================>>>>>>>>>>>>>>>>>>>>>> donner resultat à run et competition
+    public function index(
+        Request $request,
+        int $runId,
+        int $betCategoryId,
+        RunRepository $runRepository,
+        BetCategoryRepository $betCategoryRepository,
+        BetRepository $betRepository,
+        DateTimeStorageDataConverter $dateTimeConverter,
+        OddsStorageDataConverter $oddsStorageDataConverter
+    ): Response {
         //$this->denyAccessUnlessGranted('ROLE_ADMIN');
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        // ===============================>  date limite à voir
         /** @var User $user */
         $user = $this->getUser();
-        //dd($request);
         if ($user->isAdmin() === false) {
-            //return new RedirectResponse($request->server->get('HTTP_REFERER'));
             $allowUrl = "/" . $request->attributes->get('sportSlug') . "/" . $request->attributes->get('competitonSlug')
                 . "/" . $request->attributes->get('eventSlug') . "/" . $request->attributes->get('runSlug') . '-' . $runId
                 . "/" .  $request->attributes->get('betCategorySlug') . '-' . $betCategoryId;
@@ -57,8 +60,6 @@ class BetAdminController extends AbstractController
         }
         $targetType = $betCategory->getTarget();
         $betCategoryLabel = 'Paris ' . mb_strtolower($betCategory->getName() ?? '');
-        /*$firstLetter = mb_convert_case(mb_substr($betCategoryLabel, 0, 1), MB_CASE_UPPER);
-        $betCategoryLabel = substr_replace($betCategoryLabel, $firstLetter, 0, 1);*/
         $runTargets = new ArrayCollection();
         $targetClassName = Team::class;
         if ($targetType === BetCategory::TEAM_TYPE) {
@@ -76,11 +77,8 @@ class BetAdminController extends AbstractController
             $runTargets = new ArrayCollection($targetsArray);
         }
         $targetExpanded = true;
-        /*if ($targetsCount > self::LIMITATION_TO_SWITCH_TO_SELECT) {
-            $targetExpanded = false;
-        }*/
         $targetRequired = true;
-        $targetPlaceholder = "";
+        $targetPlaceholder = false;
         if (!empty($betCategory->getAllowDraw())) {
             $targetRequired = false;
             $targetPlaceholder = "Nul";
@@ -96,8 +94,6 @@ class BetAdminController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
-            $oddsStorageDataConverter = new OddsStorageDataConverter();
-            //$data = $form->getData();
             $data = $request->request->get("bet_admin_form");
             $winnerValue = !empty($data['winner']) ? (int)$data['winner'] : null;
             $bets = $betRepository->findBy(
@@ -113,13 +109,14 @@ class BetAdminController extends AbstractController
                     'amount' => 'DESC'
                 ]
             );
-            //dd($data, $request->request->all(), $winnerValue);
             foreach ($bets as $bet) {
-                $team = $bet->getTeam() ?? null;
+                $valid = false;
+                $team = $bet->getTeam();
                 $teamValue = ($team !== null) ? $team->getId() : null;
-                $dateTimeConverter = new DateTimeStorageDataConverter();
+                $valid = ($teamValue === $winnerValue);
+                //
                 $billing = new Billing($dateTimeConverter);
-                if ($teamValue === $winnerValue) {
+                if ($valid === true) {
                     $bet->won();
                     $betUser = $bet->getUser();
                     if (!is_null($betUser)) {
@@ -133,8 +130,6 @@ class BetAdminController extends AbstractController
                             $walletAmmount = $betUserWallet->getAmount() ?? 0;
                             $newWalletAmount = intval(($walletAmmount + $profits));
                             $betUserWallet->setAmount($newWalletAmount);
-                            //$billing = new Billing();
-                            //$dateTimeConverter = new DateTimeStorageDataConverter();
                             $commissionRateStore = $oddsStorageDataConverter->convertOddsMultiplierToStoredData(Billing::DEFAULT_COMMISSION_RATE);
                             $billing = $this->makeBill($billing, $user, $bet->getDesignation(), $profits, $commissionRateStore, $bet->getId(), Billing::CREDIT, $dateTimeConverter);
                             $entityManager->persist($billing);
@@ -145,8 +140,6 @@ class BetAdminController extends AbstractController
                     $betUser = $bet->getUser();
                     if (!is_null($betUser)) {
                         $amountStore = $bet->getAmount() ?? 0;
-                        //$billing = new Billing();
-                        //$dateTimeConverter = new DateTimeStorageDataConverter();
                         $billing = $this->makeBill($billing, $user, $bet->getDesignation(), $amountStore, 0, $bet->getId(), Billing::DEBIT, $dateTimeConverter);
                         $entityManager->persist($billing);
                     }

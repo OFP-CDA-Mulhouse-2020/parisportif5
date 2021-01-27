@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\DataConverter;
+namespace App\Service;
+
+use App\DataConverter\FundsStorageInterface;
 
 final class FundsStorageDataConverter implements FundsStorageInterface
 {
