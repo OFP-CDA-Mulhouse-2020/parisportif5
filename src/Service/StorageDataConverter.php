@@ -2,7 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\DataConverter;
+namespace App\Service;
+
+use App\DataConverter\CommissionRateStorageInterface;
+use App\DataConverter\DateTimeStorageInterface;
+use App\DataConverter\FundsStorageInterface;
+use App\DataConverter\OddsStorageInterface;
 
 final class StorageDataConverter implements FundsStorageInterface, OddsStorageInterface, DateTimeStorageInterface, CommissionRateStorageInterface
 {

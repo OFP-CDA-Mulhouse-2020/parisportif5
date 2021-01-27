@@ -145,7 +145,9 @@ class BetCategory
 
     public function setTarget(string $target): self
     {
-        $this->target = $target;
+        if (in_array($target, self::TARGET_TYPES) !== false) {
+            $this->target = $target;
+        }
 
         return $this;
     }

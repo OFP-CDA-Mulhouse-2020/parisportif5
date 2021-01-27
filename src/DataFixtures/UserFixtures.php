@@ -2,7 +2,7 @@
 
 namespace App\DataFixtures;
 
-use App\DataConverter\DateTimeStorageDataConverter;
+use App\Service\DateTimeStorageDataConverter;
 use App\Entity\Language;
 use App\Entity\User;
 use App\Entity\Wallet;
@@ -48,7 +48,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
                 'language' => 'fr_FR'
             ],*/
             [
-                'roles' => ['ROLE_USER'],
+                'roles' => ['ROLE_USER', 'ROLE_ADMIN'],
                 'civility' => "Monsieur",
                 'firstname' => "Tintin",
                 'lastname' => "Dupont",
@@ -100,7 +100,6 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
             }
             $user
                 ->setDateTimeConverter($converter)
-                ->setRoles(['ROLE_USER'])
                 ->setCivility($testData[$i]['civility'])
                 ->setFirstName($testData[$i]['firstname'])
                 ->setLastName($testData[$i]['lastname'])

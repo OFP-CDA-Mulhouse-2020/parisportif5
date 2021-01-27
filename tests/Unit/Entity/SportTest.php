@@ -100,14 +100,47 @@ final class SportTest extends WebTestCase
         $this->assertCount(0, $violations);
     }
 
-    public function testIfRunTypeIsValid(): void
+    public function testRunTypeCompatible(): void
     {
+        $runType1 = 'race';
+        $runType2 = 'fixture';
         $kernel = $this->initializeKernel();
         $sport = $this->createValidSport();
+        $sport->setRunType($runType1);
         /** @var ValidatorInterface $validator */
         $validator = $kernel->getContainer()->get('validator');
         $violations = $validator->validate($sport);
         $this->assertCount(0, $violations);
+        $sport->setRunType($runType2);
+        $violations = $validator->validate($sport);
+        $this->assertCount(0, $violations);
+    }
+
+    /**
+     * @dataProvider runTypeUncompatibleProvider
+     */
+    public function testRunTypeUncompatible(string $runType): void
+    {
+        $kernel = $this->initializeKernel();
+        $sport = $this->createValidSport();
+        $sport->setRunType('race');
+        $sport->setRunType($runType);
+        $this->assertSame('race', $sport->getRunType());
+        /** @var ValidatorInterface $validator */
+        $validator = $kernel->getContainer()->get('validator');
+        $violations = $validator->validate($sport);
+        $this->assertCount(0, $violations);
+    }
+
+    public function runTypeUncompatibleProvider(): array
+    {
+        return [
+            [' '],
+            [''],
+            ['chouette'],
+            ["Fixtures"],
+            ["Races"]
+        ];
     }
 
     /**

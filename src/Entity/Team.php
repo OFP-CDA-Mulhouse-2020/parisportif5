@@ -139,12 +139,7 @@ class Team
 
     public function removeMember(Member $member): self
     {
-        if ($this->members->removeElement($member)) {
-            // set the owning side to null (unless already changed)
-            // if ($member->getTeam() === $this) {
-            //     $member->setTeam(null);
-            // }
-        }
+        $this->members->removeElement($member);
 
         return $this;
     }
@@ -177,7 +172,7 @@ class Team
         if (!empty($this->sport)) {
             $maxMembers = $this->sport->getMaxMembersByTeam() ?? $minMembers;
         }
-        return ($minMembers == 0 && $maxMembers == 0) ?:
+        return ($minMembers === 0 && $maxMembers === 0) ?:
             ($minMembers <= $membersCount && $maxMembers >= $membersCount);
     }
 

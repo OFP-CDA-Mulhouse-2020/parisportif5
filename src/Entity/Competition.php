@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use App\DataConverter\DateTimeStorageDataConverter;
+use App\Service\DateTimeStorageDataConverter;
 use App\DataConverter\DateTimeStorageInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -226,12 +226,7 @@ class Competition
 
     public function removeRun(Run $run): self
     {
-        if ($this->runs->removeElement($run)) {
-            // set the owning side to null (unless already changed)
-            /*if ($run->getCompetition() === $this) {
-                $run->setCompetition(null);
-            }*/
-        }
+        $this->runs->removeElement($run);
 
         return $this;
     }
@@ -293,7 +288,7 @@ class Competition
         $runsCount = $this->getRuns()->count();
         $minRuns = $this->getMinRuns();
         $maxRuns = $this->getMaxRuns() ?? $minRuns;
-        return ($minRuns == 0 && $maxRuns == 0) ?:
+        return ($minRuns === 0 && $maxRuns === 0) ?:
             ($minRuns <= $runsCount && $maxRuns >= $runsCount);
     }
 
