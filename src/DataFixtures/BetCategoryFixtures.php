@@ -85,7 +85,8 @@ class BetCategoryFixtures extends Fixture
                 ->setName($testData[$i]['name'])
                 ->setDescription($testData[$i]['description'])
                 ->setAllowDraw($testData[$i]['allowDraw'])
-                ->setTarget($testData[$i]['target']);
+                ->setTarget($testData[$i]['target'])
+                ;
             $manager->persist($betCategory);
         }
         $manager->flush();

@@ -175,19 +175,6 @@ class Language
         return $this;
     }
 
-    /**
-     * @Assert\IsTrue(
-     *     message="Le format de la date et de l'heure doit être valide"
-     * )
-     */
-    public function isValidDateTimeFormat(): bool
-    {
-        $datetime = new \DateTime();
-        $timeFormat = $this->timeFormat ?? '';
-        $dateFormat = $this->dateFormat ?? '';
-        return $datetime->format($dateFormat . $timeFormat) == false ? false : true;
-    }
-
     public function getDateTimeFormat(): ?string
     {
         $timeFormat = $this->timeFormat ?? '';

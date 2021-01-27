@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use App\DataConverter\DateTimeStorageDataConverter;
+use App\Service\DateTimeStorageDataConverter;
 use App\DataConverter\DateTimeStorageInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -279,13 +279,6 @@ class User implements UserInterface
     private ?\DateTimeImmutable $activatedDate;
 
     /**
-     * @ORM\OneToOne(targetEntity=Wallet::class, inversedBy="user", cascade={"persist", "remove"})
-     * @ORM\JoinColumn(nullable=false)
-     * @Assert\Valid
-     */
-    private Wallet $wallet;
-
-    /**
      * @ORM\OneToOne(targetEntity=Language::class, cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=false)
      * @Assert\Valid
@@ -298,6 +291,13 @@ class User implements UserInterface
      * @Assert\Valid
      */
     private Collection $onGoingBets;
+
+    /**
+     * @ORM\OneToOne(targetEntity=Wallet::class, inversedBy="user", cascade={"persist", "remove"})
+     * @ORM\JoinColumn(nullable=false)
+     * @Assert\Valid
+     */
+    private Wallet $wallet;
 
     /**
      * @ORM\Column(type="boolean")
@@ -609,17 +609,6 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getWallet(): ?Wallet
-    {
-        return $this->wallet;
-    }
-
-    public function setWallet(Wallet $wallet): self
-    {
-        $this->wallet = $wallet;
-        return $this;
-    }
-
     public function getLanguage(): ?Language
     {
         return $this->language;
@@ -737,7 +726,7 @@ class User implements UserInterface
     {
         if (!$this->onGoingBets->contains($onGoingBet)) {
             $this->onGoingBets[] = $onGoingBet;
-            //$onGoingBet->setUser($this);
+            $onGoingBet->setUser($this);
         }
 
         return $this;
@@ -745,12 +734,19 @@ class User implements UserInterface
 
     public function removeOnGoingBet(Bet $onGoingBet): self
     {
-        if ($this->onGoingBets->removeElement($onGoingBet)) {
-            // set the owning side to null (unless already changed)
-            /*if ($onGoingBet->getUser() === $this) {
-                $onGoingBet->setUser(null);
-            }*/
-        }
+        $this->onGoingBets->removeElement($onGoingBet);
+
+        return $this;
+    }
+
+    public function getWallet(): ?Wallet
+    {
+        return $this->wallet;
+    }
+
+    public function setWallet(Wallet $wallet): self
+    {
+        $this->wallet = $wallet;
 
         return $this;
     }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\DataConverter;
 
-use App\DataConverter\CommissionRateStorageDataConverter;
+use App\Service\CommissionRateStorageDataConverter;
 use PHPUnit\Framework\TestCase;
 
 /**

@@ -162,7 +162,6 @@ skinparam linetype ortho
         -dateFormat : string
         -timeFormat : string
         -timeZone : string
-        +isValidDateTimeFormat() : bool
         +getDateTimeFormat() : string|null
     }
     'Factures (type=débit ou crédit)
@@ -201,12 +200,14 @@ skinparam linetype ortho
         -odds : int
         -betDate : DateTimeImmutable
         -isWinning : bool|null
+        -{static} MAX_MEMBERS_WINNER : int = 3
+        -{static} MAX_TEAMS_WINNER : int = 3
         +hasWon() : bool|null
         +won() : void
         +lost() : void
         +restoreWithoutResult() : void
-        +getTarget() : Member|Team
-        +getSelected() : Run|Competition
+        +getTarget() : Run|Competition
+        +getSelect() : Member|Team
     }
     'Catégorie de paris (ex: Paris sur le résultat)
     class BetCategory {

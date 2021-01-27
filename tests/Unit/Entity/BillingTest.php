@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Entity;
 
-use App\DataConverter\DateTimeStorageDataConverter;
+use App\Service\DateTimeStorageDataConverter;
 use App\Entity\Billing;
 use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -343,9 +343,11 @@ final class BillingTest extends KernelTestCase
     public function testOperationTypeUncompatible(string $operationType): void
     {
         $billing = $this->createValidBilling();
+        $billing->setOperationType('credit');
         $billing->setOperationType($operationType);
+        $this->assertSame('credit', $billing->getOperationType());
         $violations = $this->validator->validate($billing);
-        $this->assertGreaterThanOrEqual(1, count($violations));
+        $this->assertCount(0, $violations);
     }
 
     public function operationTypeUncompatibleProvider(): array

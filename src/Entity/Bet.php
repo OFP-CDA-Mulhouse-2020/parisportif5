@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\DataConverter\DateTimeStorageInterface;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
@@ -55,7 +57,7 @@ class Bet
     /**
      * @ORM\Column(type="boolean", nullable=true)
      */
-    private ?bool $isWinning;
+    private ?bool $isWinning = null;
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="onGoingBets")
@@ -63,31 +65,6 @@ class Bet
      * @Assert\Valid
      */
     private User $user;
-
-    /**
-     * @ORM\OneToOne(targetEntity=Competition::class, cascade={"persist", "remove"})
-     * @ORM\JoinColumn(nullable=false)
-     * @Assert\Valid
-     */
-    private Competition $competition;
-
-    /**
-     * @ORM\OneToOne(targetEntity=Run::class, cascade={"persist", "remove"})
-     * @Assert\Valid
-     */
-    private ?Run $run;
-
-    /**
-     * @ORM\OneToOne(targetEntity=Team::class, cascade={"persist", "remove"})
-     * @Assert\Valid
-     */
-    private ?Team $team;
-
-    /**
-     * @ORM\OneToOne(targetEntity=Member::class, cascade={"persist", "remove"})
-     * @Assert\Valid
-     */
-    private ?Member $teamMember;
 
     /**
      * @ORM\ManyToOne(targetEntity=BetCategory::class)
@@ -101,16 +78,43 @@ class Bet
      */
     private \DateTimeImmutable $betDate;
 
+    /**
+     * @ORM\OneToOne(targetEntity=Competition::class, cascade={"persist", "remove"})
+     * @ORM\JoinColumn(nullable=false)
+     * @Assert\Valid
+     */
+    private Competition $competition;
+
+    /**
+     * @ORM\OneToOne(targetEntity=Run::class, cascade={"persist", "remove"})
+     * @Assert\Valid
+     */
+    private ?Run $run = null;
+
+    /**
+     * @ORM\OneToOne(targetEntity=Team::class, cascade={"persist", "remove"})
+     * @Assert\Valid
+     */
+    private ?Team $team = null;
+
+    /**
+     * @ORM\OneToOne(targetEntity=Member::class, cascade={"persist", "remove"})
+     * @Assert\Valid
+     */
+    private ?Member $teamMember = null;
+
     /** Sécurise le stockage des dates et heures */
     private DateTimeStorageInterface $dateTimeConverter;
+
+    /** @const int MAX_TEAMS_WINNER */
+    public const MAX_TEAMS_WINNER = 3;
+
+    /** @const int MAX_MEMBERS_WINNER */
+    public const MAX_MEMBERS_WINNER = 3;
 
     public function __construct(DateTimeStorageInterface $dateTimeConverter)
     {
         $this->dateTimeConverter = $dateTimeConverter;
-        $this->isWinning = null;
-        $this->run = null;
-        $this->team = null;
-        $this->teamMember = null;
     }
 
     public function getId(): ?int
@@ -226,11 +230,6 @@ class Bet
         $this->isWinning = null;
     }
 
-    public function getTarget(): ?object
-    {
-        return $this->teamMember ?? $this->team ?? $this->run ?? $this->competition;
-    }
-
     public function getBetCategory(): ?BetCategory
     {
         return $this->betCategory;
@@ -254,6 +253,16 @@ class Bet
         $this->betDate = $betDate;
 
         return $this;
+    }
+
+    public function getTarget(): object
+    {
+        return $this->run ?? $this->competition;
+    }
+
+    public function getSelect(): ?object
+    {
+        return $this->team ?? $this->teamMember;
     }
 
     public function setDateTimeConverter(DateTimeStorageInterface $dateTimeConverter): self

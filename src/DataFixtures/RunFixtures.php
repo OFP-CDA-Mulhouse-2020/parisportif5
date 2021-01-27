@@ -2,7 +2,7 @@
 
 namespace App\DataFixtures;
 
-use App\DataConverter\DateTimeStorageDataConverter;
+use App\Service\DateTimeStorageDataConverter;
 use App\Entity\Run;
 use App\Repository\CompetitionRepository;
 use App\Repository\LocationRepository;

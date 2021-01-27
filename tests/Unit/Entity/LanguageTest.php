@@ -318,13 +318,4 @@ final class LanguageTest extends KernelTestCase
             ['Africa/Johannesburg']
         ];
     }
-
-    public function testMethodIsValidDateTimeFormatReturnTrue()
-    {
-        $language = $this->createValidLanguage();
-        $method = method_exists($language, 'isValidDateTimeFormat');
-        $this->assertTrue($method);
-        $result = $language->isValidDateTimeFormat();
-        $this->assertTrue($result);
-    }
 }

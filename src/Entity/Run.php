@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use App\DataConverter\DateTimeStorageDataConverter;
+use App\Service\DateTimeStorageDataConverter;
 use App\DataConverter\DateTimeStorageInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -243,7 +243,7 @@ class Run
                 $maxTeams = $this->competition->getSport()->getMaxTeamsByRun() ?? $minTeams;
             }
         }
-        return ($minTeams == 0 && $maxTeams == 0) ?:
+        return ($minTeams === 0 && $maxTeams === 0) ?:
             ($minTeams <= $teamsCount && $maxTeams >= $teamsCount);
     }
 
