@@ -416,7 +416,9 @@ class Billing
 
     public function setOperationType(string $operationType): self
     {
-        $this->operationType = $operationType;
+        if (in_array($operationType, self::OPERATION_TYPES) !== false) {
+            $this->operationType = $operationType;
+        }
 
         return $this;
     }

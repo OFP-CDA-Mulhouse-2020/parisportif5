@@ -10,6 +10,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Count;
 
 class BetAdminFormType extends AbstractType
 {
@@ -49,7 +50,7 @@ class BetAdminFormType extends AbstractType
             'run_targets' => new ArrayCollection(),
             'target_required' => true,
             'target_expanded' => true,
-            'target_placeholder' => "",
+            'target_placeholder' => false,
             'category_label' => "",
             'class_name' => ""
         ]);

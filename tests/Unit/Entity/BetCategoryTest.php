@@ -93,9 +93,11 @@ final class BetCategoryTest extends KernelTestCase
     public function testTargetUncompatible(string $target): void
     {
         $betCategory = $this->createValidBetCategory();
+        $betCategory->setTarget('teams');
         $betCategory->setTarget($target);
+        $this->assertSame('teams', $betCategory->getTarget());
         $violations = $this->validator->validate($betCategory);
-        $this->assertGreaterThanOrEqual(1, count($violations));
+        $this->assertCount(0, $violations);
     }
 
     public function targetUncompatibleProvider(): array

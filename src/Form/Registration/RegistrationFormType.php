@@ -2,7 +2,7 @@
 
 namespace App\Form\Registration;
 
-use App\DataConverter\DateTimeStorageDataConverter;
+use App\Service\DateTimeStorageDataConverter;
 use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\BirthdayType;

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Entity;
 
-use App\DataConverter\DateTimeStorageDataConverter;
+use App\Service\DateTimeStorageDataConverter;
 use App\Entity\Bet;
 use App\Entity\BetCategory;
 use App\Entity\Competition;
@@ -378,22 +378,5 @@ final class BetTest extends KernelTestCase
         $this->assertSame($betCategory, $bet->getBetCategory());
         $violations = $this->validator->validate($bet);
         $this->assertCount(0, $violations);
-    }
-
-    public function testMethodGetTargetExpectedReturnValue(): void
-    {
-        $bet = $this->createValidBet();
-        $method = method_exists($bet, 'getTarget');
-        $this->assertTrue($method);
-        $competition = $this->createCompetitionObject();
-        $bet->setCompetition($competition);
-        $result = $bet->getTarget();
-        $this->assertIsObject($result);
-        $this->assertInstanceOf(Competition::class, $result);
-        $member = $this->createMemberObject();
-        $bet->setTeamMember($member);
-        $result = $bet->getTarget();
-        $this->assertIsObject($result);
-        $this->assertInstanceOf(Member::class, $result);
     }
 }

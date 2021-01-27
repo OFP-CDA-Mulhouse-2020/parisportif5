@@ -2,8 +2,8 @@
 
 namespace App\Controller;
 
-use App\DataConverter\DateTimeStorageDataConverter;
-use App\DataConverter\OddsStorageDataConverter;
+use App\Service\DateTimeStorageDataConverter;
+use App\Service\OddsStorageDataConverter;
 use App\Entity\User;
 use App\Entity\Bet;
 use App\Entity\BetCategory;
@@ -20,15 +20,20 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class BetController extends AbstractController
 {
-    /** @const int LIMITATION_TO_SWITCH_TO_SELECT */
-    public const LIMITATION_TO_SWITCH_TO_SELECT = 3;
-
     /**
      * @Route("/{sportSlug}/{competitonSlug}/{eventSlug}/{runSlug}-{runId}/{betCategorySlug}-{betCategoryId}", name="bet_index")
      */
-    public function betIndex(Request $request, int $runId, int $betCategoryId, RunRepository $runRepository, BetCategoryRepository $betCategoryRepository): Response
-    {
+    public function betIndex(
+        Request $request,
+        int $runId,
+        int $betCategoryId,
+        RunRepository $runRepository,
+        BetCategoryRepository $betCategoryRepository,
+        DateTimeStorageDataConverter $dateTimeConverter,
+        OddsStorageDataConverter $oddsStorageDataConverter
+    ): Response {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        // ===============================>  date limite à voir
         /** @var User $user */
         $user = $this->getUser();
         $run = $runRepository->find($runId);
@@ -44,13 +49,11 @@ class BetController extends AbstractController
             return $this->redirectToRoute('userlogin');
         }
         $targetType = $betCategory->getTarget();
-        $dateTimeConverter = new DateTimeStorageDataConverter();
         $bet = new Bet($dateTimeConverter);
         $betCategoryLabel = $betCategory->getName() ?? '';
         $firstLetter = mb_convert_case(mb_substr($betCategoryLabel, 0, 1), MB_CASE_UPPER);
         $betCategoryLabel = substr_replace($betCategoryLabel, $firstLetter, 0, 1);
         $designation = $betCategoryLabel;
-        $oddsStorageDataConverter = new OddsStorageDataConverter();
         $bet
             ->setCompetition($competition)
             ->setDesignation($designation)
@@ -77,11 +80,8 @@ class BetController extends AbstractController
         }
         $targetsCount = count($runTargets);
         $targetExpanded = true;
-        /*if ($targetsCount > self::LIMITATION_TO_SWITCH_TO_SELECT) {
-            $targetExpanded = false;
-        }*/
         $targetRequired = true;
-        $targetPlaceholder = "";
+        $targetPlaceholder = false;
         if (!empty($betCategory->getAllowDraw())) {
             $targetRequired = false;
             $targetPlaceholder = "Nul";
@@ -110,22 +110,17 @@ class BetController extends AbstractController
             $wallet = $user->getWallet();
             $walletAmmount = $wallet->getAmount() ?? 0;
             $newWalletAmount = intval($walletAmmount - $amount);
-            //dd($bet);
-            //dd($user);
             if ($newWalletAmount >= 0) {
                 $wallet->setAmount($newWalletAmount);
                 $teamName = ($bet->getTeam() !== null) ? $bet->getTeam()->getName() : 'Nul';
                 $designation = $bet->getDesignation() . ' ' . $teamName;
                 $user->addOnGoingBet($bet);
-                //$dateTimeConverter = new DateTimeStorageDataConverter();
                 $date = new \DateTimeImmutable("now", new \DateTimeZone(DateTimeStorageDataConverter::STORED_TIME_ZONE));
-                //->setDateTimeConverter($dateTimeConverter)
                 $bet
                     ->setOdds($oddsStorageDataConverter->convertOddsMultiplierToStoredData(2))
                     ->setUser($user)
                     ->setDesignation($designation)
                     ->setBetDate($date);
-                //dd($bet);
                 // Add success message
                 $this->addFlash(
                     'success',
