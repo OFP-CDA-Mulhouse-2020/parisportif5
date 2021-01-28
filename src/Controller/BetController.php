@@ -59,7 +59,7 @@ class BetController extends AbstractController
             ->setDesignation($designation)
             ->setRun($run)
             ->setBetCategory($betCategory);
-        $runTargets = new ArrayCollection();
+        $runTargets = [];
         $targetClassName = Team::class;
         $propertyMapped = 'team';
         if ($targetType === BetCategory::TEAM_TYPE) {
@@ -71,12 +71,10 @@ class BetController extends AbstractController
             $targetClassName = Member::class;
             $propertyMapped = 'teamMember';
             $runTeams = $run->getTeams();
-            $targetsArray = [];
             foreach ($runTeams as $team) {
                 $memberCollection = $team->getMembers();
-                $targetsArray = array_merge($targetsArray, $memberCollection->toArray());
+                $runTargets = array_merge($runTargets, $memberCollection->toArray());
             }
-            $runTargets = new ArrayCollection($targetsArray);
         }
         $targetsCount = count($runTargets);
         $targetExpanded = true;

@@ -60,7 +60,7 @@ class BetAdminController extends AbstractController
         }
         $targetType = $betCategory->getTarget();
         $betCategoryLabel = 'Paris ' . mb_strtolower($betCategory->getName() ?? '');
-        $runTargets = new ArrayCollection();
+        $runTargets = [];
         $targetClassName = Team::class;
         if ($targetType === BetCategory::TEAM_TYPE) {
             $runTargets = $run->getTeams();
@@ -69,12 +69,10 @@ class BetAdminController extends AbstractController
         if ($targetType === BetCategory::MEMBER_TYPE) {
             $targetClassName = Member::class;
             $runTeams = $run->getTeams();
-            $targetsArray = [];
             foreach ($runTeams as $team) {
                 $memberCollection = $team->getMembers();
-                $targetsArray = array_merge($targetsArray, $memberCollection->toArray());
+                $runTargets = array_merge($runTargets, $memberCollection->toArray());
             }
-            $runTargets = new ArrayCollection($targetsArray);
         }
         $targetExpanded = true;
         $targetRequired = true;

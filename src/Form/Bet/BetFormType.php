@@ -61,7 +61,7 @@ class BetFormType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Bet::class,
-            'run_targets' => new ArrayCollection(),
+            'run_targets' => [],
             'converter' => new OddsStorageDataConverter(),
             'target_required' => true,
             'target_expanded' => true,
