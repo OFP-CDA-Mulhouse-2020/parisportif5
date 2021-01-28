@@ -47,7 +47,7 @@ class BetAdminFormType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'run_targets' => new ArrayCollection(),
+            'run_targets' => [],
             'target_required' => true,
             'target_expanded' => true,
             'target_placeholder' => false,
