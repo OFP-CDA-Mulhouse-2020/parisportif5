@@ -11,13 +11,13 @@ use App\Entity\Member;
 use App\Entity\Run;
 use App\Entity\Sport;
 use App\Entity\Team;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @covers \Competition
  */
-final class CompetitionTest extends KernelTestCase
+final class CompetitionTest extends WebTestCase
 {
     private ValidatorInterface $validator;
 
@@ -117,7 +117,7 @@ final class CompetitionTest extends KernelTestCase
     /**
      * @dataProvider namePropertyCompatibleProvider
      */
-    public function testNamePropertyCompatible(string $competitionName)
+    public function testNamePropertyCompatible(string $competitionName): void
     {
         $competition = $this->createValidCompetition();
         $competition->setName($competitionName);
@@ -133,7 +133,7 @@ final class CompetitionTest extends KernelTestCase
         ];
     }
 
-    public function testNamePropertyUncompatible()
+    public function testNamePropertyUncompatible(): void
     {
         $competitionName1 = '';
         $competitionName2 = '   ';
@@ -238,7 +238,7 @@ final class CompetitionTest extends KernelTestCase
      * @dataProvider countryCompatibleProvider
      * ISO 3166-1 alpha-2 => 2 lettres majuscules
      */
-    public function testCountryCompatible(string $country)
+    public function testCountryCompatible(string $country): void
     {
         $competition = $this->createValidCompetition();
         $competition->setCountry($country);
@@ -257,7 +257,7 @@ final class CompetitionTest extends KernelTestCase
     /**
      * @dataProvider countryUncompatibleProvider
      */
-    public function testCountryUncompatible(string $country)
+    public function testCountryUncompatible(string $country): void
     {
         $competition = $this->createValidCompetition();
         $competition->setCountry($country);
@@ -277,7 +277,7 @@ final class CompetitionTest extends KernelTestCase
         ];
     }
 
-    public function testMaxRunsCompatible()
+    public function testMaxRunsCompatible(): void
     {
         $maxRuns1 = 1;
         $maxRuns2 = null;
@@ -290,7 +290,7 @@ final class CompetitionTest extends KernelTestCase
         $this->assertCount(0, $violations);
     }
 
-    public function testMaxRunsUncompatible()
+    public function testMaxRunsUncompatible(): void
     {
         $maxRuns1 = -1;
         $maxRuns2 = 0;
@@ -303,7 +303,7 @@ final class CompetitionTest extends KernelTestCase
         $this->assertGreaterThanOrEqual(1, count($violations));
     }
 
-    public function testMinRunsCompatible()
+    public function testMinRunsCompatible(): void
     {
         $minRuns1 = 0;
         $minRuns2 = 1;
@@ -316,7 +316,7 @@ final class CompetitionTest extends KernelTestCase
         $this->assertCount(0, $violations);
     }
 
-    public function testMinRunsUncompatible()
+    public function testMinRunsUncompatible(): void
     {
         $minRuns = -1;
         $competition = $this->createValidCompetition();
@@ -325,7 +325,7 @@ final class CompetitionTest extends KernelTestCase
         $this->assertGreaterThanOrEqual(1, count($violations));
     }
 
-    public function testMethodIsFinishReturnFalse()
+    public function testMethodIsFinishReturnFalse(): void
     {
         $date = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
         $competition = $this->createValidCompetition();
@@ -336,7 +336,7 @@ final class CompetitionTest extends KernelTestCase
         $this->assertFalse($result);
     }
 
-    public function testMethodIsOngoingReturnFalse()
+    public function testMethodIsOngoingReturnFalse(): void
     {
         $date = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
         $competition = $this->createValidCompetition();
@@ -347,7 +347,7 @@ final class CompetitionTest extends KernelTestCase
         $this->assertFalse($result);
     }
 
-    public function testAddRunCompatible()
+    public function testAddRunCompatible(): void
     {
         $competition = $this->createValidCompetition();
         $run = $this->createRunObject($competition);
@@ -359,7 +359,7 @@ final class CompetitionTest extends KernelTestCase
         $this->assertCount(0, $violations);
     }
 
-    public function testAddRunUncompatible()
+    public function testAddRunUncompatible(): void
     {
         $competition = $this->createValidCompetition();
         $date = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
@@ -370,7 +370,7 @@ final class CompetitionTest extends KernelTestCase
         $this->assertGreaterThanOrEqual(1, count($violations));
     }
 
-    public function testAddRunCompatibleOverLimit()
+    public function testAddRunCompatibleOverLimit(): void
     {
         $competition = $this->createValidCompetition();
         $run = $this->createRunObject($competition);
@@ -408,7 +408,7 @@ final class CompetitionTest extends KernelTestCase
         $this->assertNotContains($run, $competition->getRuns());
     }
 
-    public function testSportCompatible()
+    public function testSportCompatible(): void
     {
         $competition = $this->createValidCompetition();
         $sport = $this->createSportObject();
@@ -418,7 +418,7 @@ final class CompetitionTest extends KernelTestCase
         $this->assertCount(0, $violations);
     }
 
-    public function testSportUncompatible()
+    public function testSportUncompatible(): void
     {
         $competition = $this->createValidCompetition();
         $sport = $this->createSportObject('XD');
@@ -427,7 +427,7 @@ final class CompetitionTest extends KernelTestCase
         $this->assertCount(1, $violations);
     }
 
-    public function testValidBetCategoryUncompatible()
+    public function testValidBetCategoryUncompatible(): void
     {
         $competition = $this->createValidCompetition();
         $betCategory = $this->createBetCategoryObject("result-");
@@ -436,7 +436,7 @@ final class CompetitionTest extends KernelTestCase
         $this->assertCount(1, $violations);
     }
 
-    public function testMinimumBetCategoryUncompatible()
+    public function testMinimumBetCategoryUncompatible(): void
     {
         $competition = $this->createValidCompetition();
         $betCategory = $competition->getBetCategories()->get(0);
@@ -445,7 +445,7 @@ final class CompetitionTest extends KernelTestCase
         $this->assertCount(1, $violations);
     }
 
-    public function testBetCategoryCompatible()
+    public function testBetCategoryCompatible(): void
     {
         $competition = $this->createValidCompetition();
         $betCategory = $this->createBetCategoryObject();

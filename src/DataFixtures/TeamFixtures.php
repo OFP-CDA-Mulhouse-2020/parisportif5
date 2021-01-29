@@ -8,7 +8,7 @@ use App\Repository\SportRepository;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
-class TeamFixtures extends Fixture
+final class TeamFixtures extends Fixture
 {
     private SportRepository $sportRepository;
 

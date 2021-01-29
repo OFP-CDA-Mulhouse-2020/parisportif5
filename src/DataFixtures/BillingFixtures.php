@@ -9,7 +9,7 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
-class BillingFixtures extends Fixture implements DependentFixtureInterface
+final class BillingFixtures extends Fixture implements DependentFixtureInterface
 {
     private UserRepository $userRepository;
 
@@ -73,8 +73,8 @@ class BillingFixtures extends Fixture implements DependentFixtureInterface
 
     public function getDependencies(): array
     {
-        return array(
+        return [
             UserFixtures::class
-        );
+        ];
     }
 }

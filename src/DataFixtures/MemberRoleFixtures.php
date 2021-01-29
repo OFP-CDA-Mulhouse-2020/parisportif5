@@ -6,7 +6,7 @@ use App\Entity\MemberRole;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
-class MemberRoleFixtures extends Fixture
+final class MemberRoleFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {

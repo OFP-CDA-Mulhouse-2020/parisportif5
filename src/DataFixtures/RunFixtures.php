@@ -10,7 +10,7 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
-class RunFixtures extends Fixture implements DependentFixtureInterface
+final class RunFixtures extends Fixture implements DependentFixtureInterface
 {
     private LocationRepository $locationRepository;
     private CompetitionRepository $competitionRepository;
@@ -73,9 +73,9 @@ class RunFixtures extends Fixture implements DependentFixtureInterface
 
     public function getDependencies(): array
     {
-        return array(
+        return [
             CompetitionFixtures::class,
             LocationFixtures::class
-        );
+        ];
     }
 }

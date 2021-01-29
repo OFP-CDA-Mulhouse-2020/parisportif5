@@ -8,7 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class WalletControllerTest extends WebTestCase
 {
-    // public function testIfPageIsDisplayed()
+    // public function testIfPageIsDisplayed(): void
     // {
     //     $client = static::createClient();
 
@@ -17,7 +17,7 @@ class WalletControllerTest extends WebTestCase
     //     $this->assertEquals(200, $client->getResponse()->getStatusCode());
     // }
 
-    // public function testPageTitle()
+    // public function testPageTitle(): void
     // {
     //     $client = static::createClient();
 
@@ -28,7 +28,7 @@ class WalletControllerTest extends WebTestCase
     //     $this->assertSelectorTextContains('title', 'Ajouter des Fonds');
     // }
 
-    // public function testShowForm()
+    // public function testShowForm(): void
     // {
     //     $client = static::createClient();
 
@@ -39,7 +39,7 @@ class WalletControllerTest extends WebTestCase
     //     $this->assertCount(1, $crawler->filter('input[name*="amount"]'), "Il doit y avoir un et un seul champ de montant");
     // }
 
-    // public function testIfFormSubmits()
+    // public function testIfFormSubmits(): void
     // {
     //     $client = static::createClient();
     //     $crawler = $client->request('GET', '/mon-compte/ajouter-des-fonds');
@@ -52,7 +52,7 @@ class WalletControllerTest extends WebTestCase
     //     $this->assertEquals(200 || 300, $client->getResponse()->getStatusCode());
     // }
 
-    // public function testFundsSuccesfullyAdded()
+    // public function testFundsSuccesfullyAdded(): void
     // {
     //     $client = static::createClient();
     //     $crawler = $client->request('GET', '/mon-compte/ajouter-des-fonds');
@@ -64,7 +64,7 @@ class WalletControllerTest extends WebTestCase
     //     $this->assertResponseRedirects('/mon-compte/porte-monnaie');
     // }
 
-    // public function testIfInputIsInvalid()
+    // public function testIfInputIsInvalid(): void
     // {
     //     $client = static::createClient();
     //     $crawler = $client->request('GET', '/mon-compte/ajouter-des-fonds');
@@ -78,7 +78,7 @@ class WalletControllerTest extends WebTestCase
     // }
 
 
-    // public function testIfWalletCanBeAccessedInDb()
+    // public function testIfWalletCanBeAccessedInDb(): void
     // {
     //     $client = static::createClient();
 
@@ -94,7 +94,7 @@ class WalletControllerTest extends WebTestCase
     //     $this->assertNotNull($user->getWallet());
     // }
 
-    // public function testIfWalletAmountIsUpdated()
+    // public function testIfWalletAmountIsUpdated(): void
     // {
     //     $client = static::createClient();
 

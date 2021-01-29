@@ -10,11 +10,11 @@ final class CommissionRateStorageDataConverter implements CommissionRateStorageI
 {
     public function convertToCommissionRate(int $commissionRate): float
     {
-        return floatVal($commissionRate * 0.0001);
+        return (float)($commissionRate * 0.0001);
     }
 
     public function convertCommissionRateToStoredData(float $commissionRate): int
     {
-        return intVal($commissionRate * 10000);
+        return (int)($commissionRate * 10000);
     }
 }

@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Entity;
 
 use App\Entity\Language;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @covers \Language
  */
-final class LanguageTest extends KernelTestCase
+final class LanguageTest extends WebTestCase
 {
     private ValidatorInterface $validator;
 
@@ -37,7 +37,7 @@ final class LanguageTest extends KernelTestCase
     /**
      * @dataProvider nameUncompatibleProvider
      */
-    public function testNameUncompatible(string $name)
+    public function testNameUncompatible(string $name): void
     {
         $language = $this->createValidLanguage();
         $language->setName($name);
@@ -59,7 +59,7 @@ final class LanguageTest extends KernelTestCase
     /**
      * @dataProvider nameCompatibleProvider
      */
-    public function testNameCompatible(string $name)
+    public function testNameCompatible(string $name): void
     {
         $language = $this->createValidLanguage();
         $language->setName($name);
@@ -79,7 +79,7 @@ final class LanguageTest extends KernelTestCase
         /**
      * @dataProvider countryUncompatibleProvider
      */
-    public function testCountryUncompatible(string $country)
+    public function testCountryUncompatible(string $country): void
     {
         $language = $this->createValidLanguage();
         $language->setCountry($country);
@@ -101,7 +101,7 @@ final class LanguageTest extends KernelTestCase
     /**
      * @dataProvider countryCompatibleProvider
      */
-    public function testCountryCompatible(string $country)
+    public function testCountryCompatible(string $country): void
     {
         $language = $this->createValidLanguage();
         $language->setCountry($country);
@@ -122,7 +122,7 @@ final class LanguageTest extends KernelTestCase
      * @dataProvider codeCompatibleProvider
      * Identifiants locaux au format ICU
      */
-    public function testCodeCompatible(string $code)
+    public function testCodeCompatible(string $code): void
     {
         $language = $this->createValidLanguage();
         $language->setCode($code);
@@ -144,7 +144,7 @@ final class LanguageTest extends KernelTestCase
     /**
      * @dataProvider codeUncompatibleProvider
      */
-    public function testCodeUncompatible(string $code)
+    public function testCodeUncompatible(string $code): void
     {
         $language = $this->createValidLanguage();
         $language->setCode($code);
@@ -166,7 +166,7 @@ final class LanguageTest extends KernelTestCase
     /**
      * @dataProvider dateFormatCompatibleProvider
      */
-    public function testDateFormatCompatible(string $dateFormat)
+    public function testDateFormatCompatible(string $dateFormat): void
     {
         $language = $this->createValidLanguage();
         $language->setDateFormat($dateFormat);
@@ -190,7 +190,7 @@ final class LanguageTest extends KernelTestCase
      * chiffre en exposant ou en indice, guillemet français
      * les caractères de contrôle invisibles et les points de code non utilisés
      */
-    public function testDateFormatUncompatible(string $dateFormat)
+    public function testDateFormatUncompatible(string $dateFormat): void
     {
         $language = $this->createValidLanguage();
         $language->setDateFormat($dateFormat);
@@ -217,7 +217,7 @@ final class LanguageTest extends KernelTestCase
     /**
      * @dataProvider timeFormatCompatibleProvider
      */
-    public function testTimeFormatCompatible(string $dateFormat)
+    public function testTimeFormatCompatible(string $dateFormat): void
     {
         $language = $this->createValidLanguage();
         $language->setTimeFormat($dateFormat);
@@ -247,7 +247,7 @@ final class LanguageTest extends KernelTestCase
      * chiffre en exposant ou en indice, guillemet français
      * les caractères de contrôle invisibles et les points de code non utilisés
      */
-    public function testTimeFormatUncompatible(string $dateFormat)
+    public function testTimeFormatUncompatible(string $dateFormat): void
     {
         $language = $this->createValidLanguage();
         $language->setTimeFormat($dateFormat);

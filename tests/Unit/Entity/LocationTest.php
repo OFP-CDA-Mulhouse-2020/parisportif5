@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Entity;
 
 use App\Entity\Location;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @covers \Location
  */
-final class LocationTest extends KernelTestCase
+final class LocationTest extends WebTestCase
 {
     private ValidatorInterface $validator;
 
@@ -31,7 +31,7 @@ final class LocationTest extends KernelTestCase
         return $location;
     }
 
-    public function testPlacePropertyUncompatible()
+    public function testPlacePropertyUncompatible(): void
     {
         $place1 = '';
         $place2 = '    ';
@@ -44,7 +44,7 @@ final class LocationTest extends KernelTestCase
         $this->assertCount(1, $violations);
     }
 
-    public function testPlacePropertyCompatible()
+    public function testPlacePropertyCompatible(): void
     {
         $place = 'Stade Los Santos de Las Vegas';
         $location = $this->createValidLocation();
@@ -98,7 +98,7 @@ final class LocationTest extends KernelTestCase
     /**
      * @dataProvider countryPropertyUnconformityProvider
      */
-    public function testCountryPropertyUnconformity(string $country)
+    public function testCountryPropertyUnconformity(string $country): void
     {
         $location = $this->createValidLocation();
         $location->setCountry($country);
@@ -122,7 +122,7 @@ final class LocationTest extends KernelTestCase
      * @dataProvider countryPropertyConformityProvider
      * ISO 3166-1 alpha-2 => 2 lettres majuscules
      */
-    public function testCountryPropertyConformity(string $country)
+    public function testCountryPropertyConformity(string $country): void
     {
         $location = $this->createValidLocation();
         $location->setCountry($country);

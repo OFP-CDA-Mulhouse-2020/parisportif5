@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Entity;
 
 use App\Entity\MemberStatus;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @covers \MemberStatus
  */
-final class MemberStatusTest extends KernelTestCase
+final class MemberStatusTest extends WebTestCase
 {
     private ValidatorInterface $validator;
 

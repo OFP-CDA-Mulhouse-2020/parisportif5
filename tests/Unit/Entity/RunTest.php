@@ -12,13 +12,13 @@ use App\Entity\Member;
 use App\Entity\Run;
 use App\Entity\Sport;
 use App\Entity\Team;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @covers \Run
  */
-final class RunTest extends KernelTestCase
+final class RunTest extends WebTestCase
 {
     private ValidatorInterface $validator;
 
@@ -126,7 +126,7 @@ final class RunTest extends KernelTestCase
     /**
      * @dataProvider namePropertyCompatibleProvider
      */
-    public function testNamePropertyCompatible(string $runName)
+    public function testNamePropertyCompatible(string $runName): void
     {
         $run = $this->createValidRun();
         $run->setName($runName);
@@ -142,7 +142,7 @@ final class RunTest extends KernelTestCase
         ];
     }
 
-    public function testNamePropertyUncompatible()
+    public function testNamePropertyUncompatible(): void
     {
         $runName1 = '';
         $runName2 = '   ';
@@ -158,7 +158,7 @@ final class RunTest extends KernelTestCase
     /**
      * @dataProvider eventPropertyCompatibleProvider
      */
-    public function testEventPropertyCompatible(string $event)
+    public function testEventPropertyCompatible(string $event): void
     {
         $run = $this->createValidRun();
         $run->setEvent($event);
@@ -174,7 +174,7 @@ final class RunTest extends KernelTestCase
         ];
     }
 
-    public function testEventPropertyUncompatible()
+    public function testEventPropertyUncompatible(): void
     {
         $event1 = '';
         $event2 = '   ';
@@ -275,7 +275,7 @@ final class RunTest extends KernelTestCase
         ];
     }
 
-    public function testMethodIsFinishReturnFalse()
+    public function testMethodIsFinishReturnFalse(): void
     {
         $date = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
         $run = $this->createValidRun();
@@ -286,7 +286,7 @@ final class RunTest extends KernelTestCase
         $this->assertFalse($result);
     }
 
-    public function testMethodIsOngoingReturnFalse()
+    public function testMethodIsOngoingReturnFalse(): void
     {
         $date = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
         $run = $this->createValidRun();
@@ -297,7 +297,7 @@ final class RunTest extends KernelTestCase
         $this->assertFalse($result);
     }
 
-    public function testLocationCompatible()
+    public function testLocationCompatible(): void
     {
         $run = $this->createValidRun();
         $location = $this->createLocationObject();
@@ -307,7 +307,7 @@ final class RunTest extends KernelTestCase
         $this->assertCount(0, $violations);
     }
 
-    public function testLocationUncompatible()
+    public function testLocationUncompatible(): void
     {
         $run = $this->createValidRun();
         $location = $this->createLocationObject('XD');
@@ -316,7 +316,7 @@ final class RunTest extends KernelTestCase
         $this->assertCount(1, $violations);
     }
 
-    public function testAddTeamCompatible()
+    public function testAddTeamCompatible(): void
     {
         $run = $this->createValidRun();
         $competition = $this->createCompetitionObject();
@@ -330,7 +330,7 @@ final class RunTest extends KernelTestCase
         $this->assertCount(0, $violations);
     }
 
-    public function testAddTeamUncompatible()
+    public function testAddTeamUncompatible(): void
     {
         $run = $this->createValidRun();
         $competition = $this->createCompetitionObject();
@@ -343,7 +343,7 @@ final class RunTest extends KernelTestCase
         $this->assertCount(1, $violations);
     }
 
-    public function testAddTeamCompatibleOverLimit()
+    public function testAddTeamCompatibleOverLimit(): void
     {
         $run = $this->createValidRun();
         $competition = $this->createCompetitionObject();

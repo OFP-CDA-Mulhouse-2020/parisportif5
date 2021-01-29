@@ -6,7 +6,7 @@ use App\Entity\BetCategory;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
-class BetCategoryFixtures extends Fixture
+final class BetCategoryFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {

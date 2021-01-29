@@ -10,7 +10,7 @@ use App\Repository\UserRepository;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
-class BetFixtures extends Fixture
+final class BetFixtures extends Fixture
 {
     private UserRepository $userRepository;
     private CompetitionRepository $competitionRepository;
@@ -77,7 +77,7 @@ class BetFixtures extends Fixture
     /** @return String[] */
     public function getDependencies(): array
     {
-        return array(
+        return [
             LanguageFixtures::class,
             UserFixtures::class,
             BetCategoryFixtures::class,
@@ -89,6 +89,6 @@ class BetFixtures extends Fixture
             MemberFixtures::class,
             LocationFixtures::class,
             RunFixtures::class
-        );
+        ];
     }
 }
