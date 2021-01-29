@@ -12,7 +12,7 @@ use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
-class UserFixtures extends Fixture implements DependentFixtureInterface
+final class UserFixtures extends Fixture implements DependentFixtureInterface
 {
     private UserPasswordEncoderInterface $passwordEncoder;
     private LanguageRepository $languageRepository;
@@ -91,9 +91,6 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
         for ($i = 0; $i < $count; $i++) {
             $user = new User($converter);
             $userWallet = new Wallet();
-            $userWallet
-                ->setUser($user)
-                ->setAmount(0);
             $userLanguage = $this->languageRepository->findOneByLanguageCode($testData[$i]['language']);
             if (is_null($userLanguage)) {
                 $userLanguage = $this->languageRepository->languageByDefault();
@@ -120,8 +117,10 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
                     $testData[$i]['password']
                 ))
                 ->setWallet($userWallet)
-                ->setLanguage($userLanguage)
-                ;
+                ->setLanguage($userLanguage);
+            $userWallet
+                ->setUser($user)
+                ->setAmount(0);
             $manager->persist($user);
         }
         $manager->flush();
@@ -129,8 +128,8 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
 
     public function getDependencies(): array
     {
-        return array(
+        return [
             LanguageFixtures::class
-        );
+        ];
     }
 }

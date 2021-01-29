@@ -6,7 +6,7 @@ use App\Entity\MemberStatus;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
-class MemberStatusFixtures extends Fixture
+final class MemberStatusFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {

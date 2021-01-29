@@ -14,7 +14,7 @@ class SecurityControllerTest extends WebTestCase
      */
     private $entityManager;
 
-    public function testFormPage()
+    public function testFormPage(): void
     {
         $client = static::createClient();
 
@@ -23,7 +23,7 @@ class SecurityControllerTest extends WebTestCase
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 
-    public function testPageTitle()
+    public function testPageTitle(): void
     {
         $client = static::createClient();
 
@@ -33,7 +33,7 @@ class SecurityControllerTest extends WebTestCase
         $this->assertSelectorTextContains('title', 'Connexion');
     }
 
-    public function testShowForm()
+    public function testShowForm(): void
     {
         $client = static::createClient();
 
@@ -48,7 +48,7 @@ class SecurityControllerTest extends WebTestCase
         $this->assertCount(1, $crawler->filter('button[type="submit"]'), "Il doit y avoir un et un seul bouton submit");
     }
 
-    // public function testIfFormSubmits()
+    // public function testIfFormSubmits(): void
     // {
     //     $client = static::createClient();
     //     $crawler = $client->request('GET', '/connexion');
@@ -62,11 +62,11 @@ class SecurityControllerTest extends WebTestCase
     //     $this->assertEquals(200 || 300, $client->getResponse()->getStatusCode());
     // }
 
-    // public function testFormValidity()
+    // public function testFormValidity(): void
     // {
     // }
 
-    // public function testSuccessfulConnexion()
+    // public function testSuccessfulConnexion(): void
     // {
     //     $client = static::createClient();
     //     $crawler = $client->request('GET', '/connexion');
@@ -80,7 +80,7 @@ class SecurityControllerTest extends WebTestCase
     // }
 
 
-    public function testIfUserExistsInDb()
+    public function testIfUserExistsInDb(): void
     {
         $client = static::createClient();
 
@@ -97,7 +97,7 @@ class SecurityControllerTest extends WebTestCase
         $this->assertNotNull($user);
     }
 
-    public function testIfUserDoesNotExistInDb()
+    public function testIfUserDoesNotExistInDb(): void
     {
         $client = static::createClient();
 
@@ -112,7 +112,7 @@ class SecurityControllerTest extends WebTestCase
         $this->assertNull($user);
     }
 
-    /*public function testLoginMessageIfUserDoesNotExistInDb()
+    /*public function testLoginMessageIfUserDoesNotExistInDb(): void
     {
          $client = static::createClient();
          $crawler = $client->request('GET', '/connexion');

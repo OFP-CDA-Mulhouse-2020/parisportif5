@@ -13,13 +13,13 @@ use App\Entity\Run;
 use App\Entity\Sport;
 use App\Entity\Team;
 use App\Entity\User;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @covers \Bet
  */
-final class BetTest extends KernelTestCase
+final class BetTest extends WebTestCase
 {
     private ValidatorInterface $validator;
 
@@ -150,7 +150,7 @@ final class BetTest extends KernelTestCase
     /**
      * @dataProvider designationCompatibleProvider
      */
-    public function testDesignationCompatible(string $designation)
+    public function testDesignationCompatible(string $designation): void
     {
         $bet = $this->createValidBet();
         $bet->setDesignation($designation);
@@ -166,7 +166,7 @@ final class BetTest extends KernelTestCase
         ];
     }
 
-    public function testDesignationUncompatible()
+    public function testDesignationUncompatible(): void
     {
         $designation1 = '';
         $designation2 = '   ';
@@ -179,7 +179,7 @@ final class BetTest extends KernelTestCase
         $this->assertCount(1, $violations);
     }
 
-    public function testAmountCompatible()
+    public function testAmountCompatible(): void
     {
         $amount1 = 0;
         $amount2 = 1000000000;
@@ -192,7 +192,7 @@ final class BetTest extends KernelTestCase
         $this->assertCount(0, $violations);
     }
 
-    public function testAmountUncompatible()
+    public function testAmountUncompatible(): void
     {
         $amount = -1;
         $bet = $this->createValidBet();
@@ -201,7 +201,7 @@ final class BetTest extends KernelTestCase
         $this->assertCount(1, $violations);
     }
 
-    public function testOddsCompatible()
+    public function testOddsCompatible(): void
     {
         $odds1 = 0;
         $odds2 = 1000000000;
@@ -214,7 +214,7 @@ final class BetTest extends KernelTestCase
         $this->assertCount(0, $violations);
     }
 
-    public function testOddsUncompatible()
+    public function testOddsUncompatible(): void
     {
         $odds = -1;
         $bet = $this->createValidBet();

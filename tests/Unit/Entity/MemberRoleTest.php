@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Entity;
 
 use App\Entity\MemberRole;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @covers \MemberRole
  */
-final class MemberRoleTest extends KernelTestCase
+final class MemberRoleTest extends WebTestCase
 {
     private ValidatorInterface $validator;
 

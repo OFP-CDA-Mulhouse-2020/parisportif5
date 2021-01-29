@@ -12,7 +12,6 @@ use App\Entity\Team;
 use App\Form\Bet\BetFormType;
 use App\Repository\BetCategoryRepository;
 use App\Repository\RunRepository;
-use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
@@ -88,7 +87,7 @@ class BetController extends AbstractController
                 $odds = $target->getOdds() ?? 0;
                 $totalOdds += $odds;
             }
-            $averageOdds = intval(round(($totalOdds / $targetsCount), 0, PHP_ROUND_HALF_UP));
+            $averageOdds = (int)(round(($totalOdds / $targetsCount), 0, PHP_ROUND_HALF_UP));
             $targetPlaceholder = $oddsStorageDataConverter->convertToOddsMultiplier($averageOdds) . ' - ' . $targetPlaceholder;
         }
         $form = $this->createForm(BetFormType::class, $bet, [
@@ -107,7 +106,7 @@ class BetController extends AbstractController
             $amount = $bet->getAmount();
             $wallet = $user->getWallet();
             $walletAmmount = $wallet->getAmount() ?? 0;
-            $newWalletAmount = intval($walletAmmount - $amount);
+            $newWalletAmount = (int)($walletAmmount - $amount);
             if ($newWalletAmount >= 0) {
                 $wallet->setAmount($newWalletAmount);
                 $teamName = ($bet->getTeam() !== null) ? $bet->getTeam()->getName() : 'Nul';

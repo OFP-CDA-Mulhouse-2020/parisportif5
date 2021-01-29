@@ -7,13 +7,13 @@ namespace App\Tests\Unit\Entity;
 use App\Service\DateTimeStorageDataConverter;
 use App\Entity\Billing;
 use App\Entity\User;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @covers \Billing
  */
-final class BillingTest extends KernelTestCase
+final class BillingTest extends WebTestCase
 {
     private ValidatorInterface $validator;
 
@@ -69,7 +69,7 @@ final class BillingTest extends KernelTestCase
     /**
      * @dataProvider firstNameCompatibleProvider
      */
-    public function testFirstNameCompatible(string $name)
+    public function testFirstNameCompatible(string $name): void
     {
         $billing = $this->createValidBilling();
         $billing->setFirstName($name);
@@ -91,7 +91,7 @@ final class BillingTest extends KernelTestCase
     /**
      * @dataProvider lastNameCompatibleProvider
      */
-    public function testLastNameCompatible(string $name)
+    public function testLastNameCompatible(string $name): void
     {
         $billing = $this->createValidBilling();
         $billing->setLastName($name);
@@ -113,7 +113,7 @@ final class BillingTest extends KernelTestCase
     /**
      * @dataProvider lastNameUncompatibleProvider
      */
-    public function testLastNameUncompatible(string $name)
+    public function testLastNameUncompatible(string $name): void
     {
         $billing = $this->createValidBilling();
         $billing->setLastName($name);
@@ -136,7 +136,7 @@ final class BillingTest extends KernelTestCase
     /**
      * @dataProvider firstNameUncompatibleProvider
      */
-    public function testFirstNameUncompatible(string $name)
+    public function testFirstNameUncompatible(string $name): void
     {
         $billing = $this->createValidBilling();
         $billing->setFirstName($name);
@@ -159,7 +159,7 @@ final class BillingTest extends KernelTestCase
     /**
      * @dataProvider addressCompatibleProvider
      */
-    public function testAddressCompatible(string $address)
+    public function testAddressCompatible(string $address): void
     {
         $billing = $this->createValidBilling();
         $billing->setAddress($address);
@@ -180,7 +180,7 @@ final class BillingTest extends KernelTestCase
     /**
      * @dataProvider addressUncompatibleProvider
      */
-    public function testAddressUncompatible(string $address)
+    public function testAddressUncompatible(string $address): void
     {
         $billing = $this->createValidBilling();
         $billing->setAddress($address);
@@ -202,7 +202,7 @@ final class BillingTest extends KernelTestCase
     /**
      * @dataProvider cityCompatibleProvider
      */
-    public function testCityCompatible(string $city)
+    public function testCityCompatible(string $city): void
     {
         $billing = $this->createValidBilling();
         $billing->setCity($city);
@@ -222,7 +222,7 @@ final class BillingTest extends KernelTestCase
     /**
      * @dataProvider cityUncompatibleProvider
      */
-    public function testCityUncompatible(string $city)
+    public function testCityUncompatible(string $city): void
     {
         $billing = $this->createValidBilling();
         $billing->setCity($city);
@@ -244,7 +244,7 @@ final class BillingTest extends KernelTestCase
     /**
      * @dataProvider postcodeCompatibleProvider
      */
-    public function testPostcodeCompatible(string $postcode)
+    public function testPostcodeCompatible(string $postcode): void
     {
         $billing = $this->createValidBilling();
         $billing->setPostcode($postcode);
@@ -263,7 +263,7 @@ final class BillingTest extends KernelTestCase
     /**
      * @dataProvider postcodeUncompatibleProvider
      */
-    public function testPostcodeUncompatible(string $postcode)
+    public function testPostcodeUncompatible(string $postcode): void
     {
         $billing = $this->createValidBilling();
         $billing->setPostcode($postcode);
@@ -285,7 +285,7 @@ final class BillingTest extends KernelTestCase
      * @dataProvider countryCompatibleProvider
      * ISO 3166-1 alpha-2 => 2 lettres majuscules
      */
-    public function testCountryCompatible(string $country)
+    public function testCountryCompatible(string $country): void
     {
         $billing = $this->createValidBilling();
         $billing->setCountry($country);
@@ -304,7 +304,7 @@ final class BillingTest extends KernelTestCase
     /**
      * @dataProvider countryUncompatibleProvider
      */
-    public function testCountryUncompatible(string $country)
+    public function testCountryUncompatible(string $country): void
     {
         $billing = $this->createValidBilling();
         $billing->setCountry($country);
@@ -380,7 +380,7 @@ final class BillingTest extends KernelTestCase
         ];
     }
 
-    public function testDesignationUncompatible()
+    public function testDesignationUncompatible(): void
     {
         $designation1 = '';
         $designation2 = '   ';
@@ -393,7 +393,7 @@ final class BillingTest extends KernelTestCase
         $this->assertCount(1, $violations);
     }
 
-    public function testOrderNumberCompatible()
+    public function testOrderNumberCompatible(): void
     {
         $orderNumber1 = 1;
         $orderNumber2 = 1000000000;
@@ -406,7 +406,7 @@ final class BillingTest extends KernelTestCase
         $this->assertCount(0, $violations);
     }
 
-    public function testOrderNumberUncompatible()
+    public function testOrderNumberUncompatible(): void
     {
         $orderNumber1 = 0;
         $orderNumber2 = -1;
@@ -419,7 +419,7 @@ final class BillingTest extends KernelTestCase
         $this->assertCount(1, $violations);
     }
 
-    public function testInvoiceNumberCompatible()
+    public function testInvoiceNumberCompatible(): void
     {
         $invoiceNumber1 = 1;
         $invoiceNumber2 = 1000000000;
@@ -432,7 +432,7 @@ final class BillingTest extends KernelTestCase
         $this->assertCount(0, $violations);
     }
 
-    public function testInvoiceNumberUncompatible()
+    public function testInvoiceNumberUncompatible(): void
     {
         $invoiceNumber1 = 0;
         $invoiceNumber2 = -1;
@@ -445,7 +445,7 @@ final class BillingTest extends KernelTestCase
         $this->assertCount(1, $violations);
     }
 
-    public function testAmountCompatible()
+    public function testAmountCompatible(): void
     {
         $amount1 = 0;
         $amount2 = 1000000000;
@@ -458,7 +458,7 @@ final class BillingTest extends KernelTestCase
         $this->assertCount(0, $violations);
     }
 
-    public function testAmountUncompatible()
+    public function testAmountUncompatible(): void
     {
         $amount = -1;
         $billing = $this->createValidBilling();

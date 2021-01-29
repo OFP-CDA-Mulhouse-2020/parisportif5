@@ -7,9 +7,7 @@ namespace App\Tests\Unit\Entity;
 use App\Entity\Member;
 use App\Entity\MemberRole;
 use App\Entity\MemberStatus;
-use App\Entity\ResultType;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
@@ -17,6 +15,14 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  */
 final class MemberTest extends WebTestCase
 {
+    private ValidatorInterface $validator;
+
+    public function setUp(): void
+    {
+        $kernel = self::bootKernel();
+        $this->validator = $kernel->getContainer()->get('validator');
+    }
+
     private function initializeMember(): Member
     {
         $member =  new Member();
@@ -41,45 +47,32 @@ final class MemberTest extends WebTestCase
         return $memberStatus;
     }
 
-    private function initializeKernel(): KernelInterface
-    {
-        $kernel = self::bootKernel();
-        $kernel->boot();
-        return $kernel;
-    }
-
     public function testIfOddsIsInvalid(): void
     {
         $odds = -1;
-        $kernel = $this->initializeKernel();
         $member = $this->initializeMember();
         $member->setOdds($odds);
-        $validator = $kernel->getContainer()->get('validator');
-        $violations = $validator->validate($member);
+        $violations = $this->validator->validate($member);
         $this->assertCount(1, $violations);
     }
 
     public function testIfOddsIsValid(): void
     {
         $odds = 0;
-        $kernel = $this->initializeKernel();
         $member = $this->initializeMember();
         $member->setOdds($odds);
-        $validator = $kernel->getContainer()->get('validator');
-        $violations = $validator->validate($member);
+        $violations = $this->validator->validate($member);
         $this->assertCount(0, $violations);
     }
 
     /**
      * @dataProvider validLastNameProvider
      */
-    public function testIfLastNameIsValid(string $lN): void
+    public function testIfLastNameIsValid(string $lastName): void
     {
-        $kernel = $this->initializeKernel();
         $member = $this->initializeMember();
-        $member->setLastName($lN);
-        $validator = $kernel->getContainer()->get('validator');
-        $violations = $validator->validate($member);
+        $member->setLastName($lastName);
+        $violations = $this->validator->validate($member);
         $this->assertCount(0, $violations);
     }
 
@@ -99,13 +92,11 @@ final class MemberTest extends WebTestCase
     /**
      * @dataProvider invalidLastNameProvider
      */
-    public function testIfLastNameIsInvalid(string $lN): void
+    public function testIfLastNameIsInvalid(string $lastName): void
     {
-        $kernel = $this->initializeKernel();
         $member = $this->initializeMember();
-        $member->setLastName($lN);
-        $validator = $kernel->getContainer()->get('validator');
-        $violations = $validator->validate($member);
+        $member->setLastName($lastName);
+        $violations = $this->validator->validate($member);
         $this->assertGreaterThanOrEqual(1, count($violations));
     }
 
@@ -121,13 +112,11 @@ final class MemberTest extends WebTestCase
     /**
      * @dataProvider validFirstNameProvider
      */
-    public function testIfFirstNameIsValid(string $fN): void
+    public function testIfFirstNameIsValid(string $firstName): void
     {
-        $kernel = $this->initializeKernel();
         $member = $this->initializeMember();
-        $member->setFirstName($fN);
-        $validator = $kernel->getContainer()->get('validator');
-        $violations = $validator->validate($member);
+        $member->setFirstName($firstName);
+        $violations = $this->validator->validate($member);
         $this->assertCount(0, $violations);
     }
 
@@ -147,13 +136,11 @@ final class MemberTest extends WebTestCase
     /**
      * @dataProvider invalidFirstNameProvider
      */
-    public function testIfFirstNameIsInvalid(string $fN): void
+    public function testIfFirstNameIsInvalid(string $firstName): void
     {
-        $kernel = $this->initializeKernel();
         $member = $this->initializeMember();
-        $member->setLastName($fN);
-        $validator = $kernel->getContainer()->get('validator');
-        $violations = $validator->validate($member);
+        $member->setLastName($firstName);
+        $violations = $this->validator->validate($member);
         $this->assertGreaterThanOrEqual(1, count($violations));
     }
 
@@ -170,23 +157,19 @@ final class MemberTest extends WebTestCase
 
     public function testIfCountryIsValid(): void
     {
-        $kernel = $this->initializeKernel();
         $member = $this->initializeMember();
-        $validator = $kernel->getContainer()->get('validator');
-        $violations = $validator->validate($member);
+        $violations = $this->validator->validate($member);
         $this->assertCount(0, $violations);
     }
 
     /**
      * @dataProvider invalidCountryProvider
      */
-    public function testIfCountryIsInvalid(string $c): void
+    public function testIfCountryIsInvalid(string $country): void
     {
-        $kernel = $this->initializeKernel();
         $member = $this->initializeMember();
-        $member->setCountry($c);
-        $validator = $kernel->getContainer()->get('validator');
-        $violations = $validator->validate($member);
+        $member->setCountry($country);
+        $violations = $this->validator->validate($member);
         $this->assertGreaterThanOrEqual(1, count($violations));
     }
 
@@ -202,51 +185,39 @@ final class MemberTest extends WebTestCase
 
     public function testIfMemberRoleIsValid(): void
     {
-        $kernel = $this->initializeKernel();
         $member = $this->initializeMember();
-
         $memberRole = $this->initializeMemberRole("footballer-avant");
-
         $member->setMemberRole($memberRole);
         $this->assertSame($memberRole, $member->getMemberRole());
-        $validator = $kernel->getContainer()->get('validator');
-        $violations = $validator->validate($member);
+        $violations = $this->validator->validate($member);
         $this->assertCount(0, $violations);
     }
 
     public function testIfMemberRoleIsInvalid(): void
     {
-        $kernel = $this->initializeKernel();
         $member = $this->initializeMember();
         $memberRole = $this->initializeMemberRole("player_");
         $member->setMemberRole($memberRole);
-        $validator = $kernel->getContainer()->get('validator');
-        $violations = $validator->validate($member);
+        $violations = $this->validator->validate($member);
         $this->assertCount(1, $violations);
     }
 
     public function testIfMemberStatusIsValid(): void
     {
-        $kernel = $this->initializeKernel();
         $member = $this->initializeMember();
-
         $memberStatus = $this->initializeMemberStatus("titularization");
-
         $member->setMemberStatus($memberStatus);
         $this->assertSame($memberStatus, $member->getMemberStatus());
-        $validator = $kernel->getContainer()->get('validator');
-        $violations = $validator->validate($member);
+        $violations = $this->validator->validate($member);
         $this->assertCount(0, $violations);
     }
 
     public function testIfMemberStatusIsInvalid(): void
     {
-        $kernel = $this->initializeKernel();
         $member = $this->initializeMember();
         $memberStatus = $this->initializeMemberStatus("on the bench");
         $member->setMemberStatus($memberStatus);
-        $validator = $kernel->getContainer()->get('validator');
-        $violations = $validator->validate($member);
+        $violations = $this->validator->validate($member);
         $this->assertCount(1, $violations);
     }
 }

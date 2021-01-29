@@ -6,7 +6,7 @@ use App\Entity\Sport;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
-class SportFixtures extends Fixture
+final class SportFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {

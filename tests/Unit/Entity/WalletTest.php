@@ -6,8 +6,6 @@ namespace App\Tests\Unit\Entity;
 
 use App\Entity\Wallet;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\HttpKernel\KernelInterface;
-use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
@@ -15,6 +13,13 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  */
 final class WalletTest extends WebTestCase
 {
+    private ValidatorInterface $validator;
+
+    public function setUp(): void
+    {
+        $kernel = self::bootKernel();
+        $this->validator = $kernel->getContainer()->get('validator');
+    }
 
     private function initializeWallet(): Wallet
     {
@@ -23,76 +28,44 @@ final class WalletTest extends WebTestCase
         return $wallet;
     }
 
-    private ?ValidatorInterface $validator = null;
-
-    public function setUp(): void
-    {
-        if (!$this->validator instanceof ValidatorInterface) {
-            $kernel = self::bootKernel();
-            $this->validator = $kernel->getContainer()->get('validator');
-        }
-    }
-
-    private function initializeKernel(): KernelInterface
-    {
-        $kernel = self::bootKernel();
-        $kernel->boot();
-        return $kernel;
-    }
-
     public function testIfWalletIsNotNull(): void
     {
-        $kernel = $this->initializeKernel();
         $wallet = $this->initializeWallet();
-        /** @var ValidatorInterface $validator */
-        $validator = $kernel->getContainer()->get('validator'); //le kernel va chercher le composant validator
-        $violations = $validator->validate($wallet);
+        $violations = $this->validator->validate($wallet);
         $this->assertCount(0, $violations);
         $this->assertInstanceOf(Wallet::class, $wallet);
     }
 
     public function testIfWalletIsNotNegative(): void
     {
-        $kernel = $this->initializeKernel();
         $wallet = $this->initializeWallet();
-        /** @var ValidatorInterface $validator */
-        $validator = $kernel->getContainer()->get('validator');
-        $violations = $validator->validate($wallet);
+        $violations = $this->validator->validate($wallet);
         $this->assertCount(0, $violations);
     }
 
     public function testIfWalletIsNegative(): void
     {
-        $kernel = $this->initializeKernel();
         $wallet = $this->initializeWallet();
         $wallet->setAmount(-4);
-        /** @var ValidatorInterface $validator */
-        $validator = $kernel->getContainer()->get('validator');
-        $violations = $validator->validate($wallet);
+        $violations = $this->validator->validate($wallet);
         $this->assertGreaterThanOrEqual(1, count($violations));
     }
 
     public function testIfWalletAmountIsCorrect(): void
     {
         $wallet = $this->initializeWallet();
-        $kernel = $this->initializeKernel();
-        /** @var ValidatorInterface $validator */
-        $validator = $kernel->getContainer()->get('validator');
-        $violations = $validator->validate($wallet);
+        $violations = $this->validator->validate($wallet);
         $this->assertCount(0, $violations);
     }
 
     /**
      * @dataProvider incorrectWalletAmountProvider
      */
-    public function testIfWalletAmountIsInCorrect(int $wA): void
+    public function testIfWalletAmountIsInCorrect(int $amount): void
     {
         $wallet = $this->initializeWallet();
-        $kernel = $this->initializeKernel();
-        $wallet->setAmount($wA);
-        /** @var ValidatorInterface $validator */
-        $validator = $kernel->getContainer()->get('validator');
-        $violations = $validator->validate($wallet);
+        $wallet->setAmount($amount);
+        $violations = $this->validator->validate($wallet);
         $this->assertGreaterThanOrEqual(1, count($violations));
     }
 
@@ -101,7 +74,6 @@ final class WalletTest extends WebTestCase
         return [
             [-14],
             [-1000000000]
-            //["2"]
         ];
     }
 }

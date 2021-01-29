@@ -10,7 +10,7 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
-class CompetitionFixtures extends Fixture implements DependentFixtureInterface
+final class CompetitionFixtures extends Fixture implements DependentFixtureInterface
 {
     private SportRepository $sportRepository;
     private BetCategoryRepository $betCategoryRepository;
@@ -67,9 +67,9 @@ class CompetitionFixtures extends Fixture implements DependentFixtureInterface
 
     public function getDependencies(): array
     {
-        return array(
+        return [
             SportFixtures::class,
             BetCategoryFixtures::class
-        );
+        ];
     }
 }
