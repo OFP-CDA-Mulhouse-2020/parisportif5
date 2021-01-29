@@ -13,7 +13,6 @@ use App\Form\Bet\BetAdminFormType;
 use App\Repository\BetCategoryRepository;
 use App\Repository\BetRepository;
 use App\Repository\RunRepository;
-use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -60,7 +59,7 @@ class BetAdminController extends AbstractController
         }
         $targetType = $betCategory->getTarget();
         $betCategoryLabel = 'Paris ' . mb_strtolower($betCategory->getName() ?? '');
-        $runTargets = new ArrayCollection();
+        $runTargets = [];
         $targetClassName = Team::class;
         if ($targetType === BetCategory::TEAM_TYPE) {
             $runTargets = $run->getTeams();
@@ -69,12 +68,10 @@ class BetAdminController extends AbstractController
         if ($targetType === BetCategory::MEMBER_TYPE) {
             $targetClassName = Member::class;
             $runTeams = $run->getTeams();
-            $targetsArray = [];
             foreach ($runTeams as $team) {
                 $memberCollection = $team->getMembers();
-                $targetsArray = array_merge($targetsArray, $memberCollection->toArray());
+                $runTargets = array_merge($runTargets, $memberCollection->toArray());
             }
-            $runTargets = new ArrayCollection($targetsArray);
         }
         $targetExpanded = true;
         $targetRequired = true;
@@ -126,9 +123,9 @@ class BetAdminController extends AbstractController
                             $oddsStore = $bet->getOdds() ?? 0;
                             $odds = $oddsStorageDataConverter->convertToOddsMultiplier($oddsStore);
                             $gains = $amountStore * $odds;
-                            $profits = intval(round($gains * ((100 - Billing::DEFAULT_COMMISSION_RATE) * 0.01), 0, PHP_ROUND_HALF_UP));
+                            $profits = (int)(round($gains * ((100 - Billing::DEFAULT_COMMISSION_RATE) * 0.01), 0, PHP_ROUND_HALF_UP));
                             $walletAmmount = $betUserWallet->getAmount() ?? 0;
-                            $newWalletAmount = intval(($walletAmmount + $profits));
+                            $newWalletAmount = (int)(($walletAmmount + $profits));
                             $betUserWallet->setAmount($newWalletAmount);
                             $commissionRateStore = $oddsStorageDataConverter->convertOddsMultiplierToStoredData(Billing::DEFAULT_COMMISSION_RATE);
                             $billing = $this->makeBill($billing, $user, $bet->getDesignation(), $profits, $commissionRateStore, $bet->getId(), Billing::CREDIT, $dateTimeConverter);

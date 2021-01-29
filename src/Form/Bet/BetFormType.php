@@ -6,14 +6,12 @@ use App\Service\OddsStorageDataConverter;
 use App\Entity\Bet;
 use App\Entity\Team;
 use App\Entity\Member;
-use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\Count;
 
 class BetFormType extends AbstractType
 {
@@ -61,7 +59,7 @@ class BetFormType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Bet::class,
-            'run_targets' => new ArrayCollection(),
+            'run_targets' => [],
             'converter' => new OddsStorageDataConverter(),
             'target_required' => true,
             'target_expanded' => true,

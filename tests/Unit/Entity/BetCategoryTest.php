@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Entity;
 
 use App\Entity\BetCategory;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @covers \BetCategory
  */
-final class BetCategoryTest extends KernelTestCase
+final class BetCategoryTest extends WebTestCase
 {
     private ValidatorInterface $validator;
 

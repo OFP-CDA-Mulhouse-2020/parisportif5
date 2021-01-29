@@ -9,13 +9,13 @@ use App\Entity\Bet;
 use App\Entity\Language;
 use App\Entity\User;
 use App\Entity\Wallet;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @covers \User
  */
-final class UserTest extends KernelTestCase
+final class UserTest extends WebTestCase
 {
     private ValidatorInterface $validator;
 
@@ -495,7 +495,7 @@ final class UserTest extends KernelTestCase
     /**
      * @dataProvider billingAddressCompatibleProvider
      */
-    public function testBillingAddressCompatible(string $address)
+    public function testBillingAddressCompatible(string $address): void
     {
         $user = $this->createValidUser();
         $user->setBillingAddress($address);
@@ -516,7 +516,7 @@ final class UserTest extends KernelTestCase
     /**
      * @dataProvider billingAddressUncompatibleProvider
      */
-    public function testBillingAddressUncompatible(string $address)
+    public function testBillingAddressUncompatible(string $address): void
     {
         $user = $this->createValidUser();
         $user->setBillingAddress($address);
@@ -538,7 +538,7 @@ final class UserTest extends KernelTestCase
       /**
      * @dataProvider billingCityCompatibleProvider
      */
-    public function testBillingCityCompatible(string $city)
+    public function testBillingCityCompatible(string $city): void
     {
         $user = $this->createValidUser();
         $user->setBillingCity($city);
@@ -558,7 +558,7 @@ final class UserTest extends KernelTestCase
     /**
      * @dataProvider billingCityUncompatibleProvider
      */
-    public function testBillingCityUncompatible(string $city)
+    public function testBillingCityUncompatible(string $city): void
     {
         $user = $this->createValidUser();
         $user->setBillingCity($city);
@@ -580,7 +580,7 @@ final class UserTest extends KernelTestCase
     /**
      * @dataProvider billingPostcodeCompatibleProvider
      */
-    public function testBillingPostcodeCompatible(string $postcode)
+    public function testBillingPostcodeCompatible(string $postcode): void
     {
         $user = $this->createValidUser();
         $user->setBillingPostcode($postcode);
@@ -599,7 +599,7 @@ final class UserTest extends KernelTestCase
     /**
      * @dataProvider billingPostcodeUncompatibleProvider
      */
-    public function testBillingPostcodeUncompatible(string $postcode)
+    public function testBillingPostcodeUncompatible(string $postcode): void
     {
         $user = $this->createValidUser();
         $user->setBillingPostcode($postcode);
@@ -621,7 +621,7 @@ final class UserTest extends KernelTestCase
      * @dataProvider billingCountryCompatibleProvider
      * ISO 3166-1 alpha-2 => 2 lettres majuscules
      */
-    public function testBillingCountryCompatible(string $country)
+    public function testBillingCountryCompatible(string $country): void
     {
         $user = $this->createValidUser();
         $user->setBillingCountry($country);
@@ -640,7 +640,7 @@ final class UserTest extends KernelTestCase
     /**
      * @dataProvider billingCountryUncompatibleProvider
      */
-    public function testBillingCountryUncompatible(string $country)
+    public function testBillingCountryUncompatible(string $country): void
     {
         $user = $this->createValidUser();
         $user->setBillingCountry($country);

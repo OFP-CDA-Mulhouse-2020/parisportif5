@@ -9,8 +9,7 @@ use App\Entity\MemberRole;
 use App\Entity\MemberStatus;
 use App\Entity\Sport;
 use App\Entity\Team;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 //tester si l'equipe est liee au sport
@@ -19,8 +18,16 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 /**
  * @covers \Team
  */
-final class TeamTest extends KernelTestCase
+final class TeamTest extends WebTestCase
 {
+    private ValidatorInterface $validator;
+
+    public function setUp(): void
+    {
+        $kernel = self::bootKernel();
+        $this->validator = $kernel->getContainer()->get('validator');
+    }
+
     private function initializeTeam(): Team
     {
         $team =  new Team();
@@ -59,46 +66,32 @@ final class TeamTest extends KernelTestCase
         return $sport;
     }
 
-    private function initializeKernel(): KernelInterface
-    {
-        $kernel = self::bootKernel();
-        $kernel->boot();
-        return $kernel;
-    }
-
-
     public function testIfOddsIsInvalid(): void
     {
         $odds = -1;
-        $kernel = $this->initializeKernel();
         $team = $this->initializeTeam();
         $team->setOdds($odds);
-        $validator = $kernel->getContainer()->get('validator');
-        $violations = $validator->validate($team);
+        $violations = $this->validator->validate($team);
         $this->assertCount(1, $violations);
     }
 
     public function testIfOddsIsValid(): void
     {
         $odds = 0;
-        $kernel = $this->initializeKernel();
         $team = $this->initializeTeam();
         $team->setOdds($odds);
-        $validator = $kernel->getContainer()->get('validator');
-        $violations = $validator->validate($team);
+        $violations = $this->validator->validate($team);
         $this->assertCount(0, $violations);
     }
 
     /**
      * @dataProvider validTeamNameProvider
      */
-    public function testIfTeamNameIsValid(string $t): void
+    public function testIfTeamNameIsValid(string $name): void
     {
-        $kernel = $this->initializeKernel();
         $team = $this->initializeTeam();
-        $team->setName($t);
-        $validator = $kernel->getContainer()->get('validator');
-        $violations = $validator->validate($team);
+        $team->setName($name);
+        $violations = $this->validator->validate($team);
         $this->assertCount(0, $violations);
     }
 
@@ -119,13 +112,11 @@ final class TeamTest extends KernelTestCase
     /**
      * @dataProvider invalidTeamNameProvider
      */
-    public function testIfTeamNameIsInvalid(string $t): void
+    public function testIfTeamNameIsInvalid(string $name): void
     {
-        $kernel = $this->initializeKernel();
         $team = $this->initializeTeam();
-        $team->setName($t);
-        $validator = $kernel->getContainer()->get('validator');
-        $violations = $validator->validate($team);
+        $team->setName($name);
+        $violations = $this->validator->validate($team);
         $this->assertGreaterThanOrEqual(1, count($violations));
     }
 
@@ -147,23 +138,19 @@ final class TeamTest extends KernelTestCase
 
     public function testIfTeamCountryIsValid(): void
     {
-        $kernel = $this->initializeKernel();
         $team = $this->initializeTeam();
-        $validator = $kernel->getContainer()->get('validator');
-        $violations = $validator->validate($team);
+        $violations = $this->validator->validate($team);
         $this->assertCount(0, $violations);
     }
 
     /**
      * @dataProvider invalidTeamCountryProvider
      */
-    public function testIfTeamCountryIsInvalid(string $c): void
+    public function testIfTeamCountryIsInvalid(string $country): void
     {
-        $kernel = $this->initializeKernel();
         $team = $this->initializeTeam();
-        $team->setCountry($c);
-        $validator = $kernel->getContainer()->get('validator');
-        $violations = $validator->validate($team);
+        $team->setCountry($country);
+        $violations = $this->validator->validate($team);
         $this->assertGreaterThanOrEqual(1, count($violations));
     }
 
@@ -207,41 +194,35 @@ final class TeamTest extends KernelTestCase
 
     public function testIfMembersAreValid(): void
     {
-        $kernel = $this->initializeKernel();
         $team = $this->initializeTeam();
         $member = $this->createValidMember();
         $team->addMember($member);
         $team->getMembers();
-        $validator = $kernel->getContainer()->get('validator');
-        $violations = $validator->validate($team);
+        $violations = $this->validator->validate($team);
         $this->assertCount(0, $violations);
     }
 
-    public function testIfNumberOfMembersIsValid()
+    public function testIfNumberOfMembersIsValid(): void
     {
-        $kernel = $this->initializeKernel();
         $team = $this->initializeTeam();
         $sport = $this->createSportObject();
         $footMember = $this->createValidFootballMember();
         $team->addMember($footMember);
         $currentMembers = count($team->getMembers());
         $maxMembers = $sport->getMaxMembersByTeam();
-        $validator = $kernel->getContainer()->get('validator');
-        $violations = $validator->validate($team);
+        $violations = $this->validator->validate($team);
         $this->assertCount(0, $violations);
         $this->assertLessThanOrEqual($maxMembers, $currentMembers);
     }
 
-    public function testIfNumberOfMembersIsInvalid()
+    public function testIfNumberOfMembersIsInvalid(): void
     {
-        $kernel = $this->initializeKernel();
         $team = $this->initializeTeam();
         $sport = $this->createSportObject();
         $currentMember = $team->getMembers()->get(0);
         $team->removeMember($currentMember);
         $minMembers = $sport->getMinMembersByTeam();
-        $validator = $kernel->getContainer()->get('validator');
-        $violations = $validator->validate($team);
+        $violations = $this->validator->validate($team);
         $this->assertCount(1, $violations);
         $this->assertLessThan($minMembers, count($team->getMembers()));
     }

@@ -13,7 +13,7 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
-class MemberFixtures extends Fixture implements DependentFixtureInterface
+final class MemberFixtures extends Fixture implements DependentFixtureInterface
 {
     private TeamRepository $teamRepository;
     private MemberRoleRepository $memberRoleRepository;
@@ -29,14 +29,14 @@ class MemberFixtures extends Fixture implements DependentFixtureInterface
         $this->memberRoleRepository = $memberRoleRepository;
     }
 
-    public function getDependencies()
+    public function getDependencies(): array
     {
-        return array(
+        return [
             MemberRoleFixtures::class,
             MemberStatusFixtures::class,
             SportFixtures::class,
             TeamFixtures::class
-        );
+        ];
     }
 
     public function load(ObjectManager $manager): void

@@ -4,13 +4,11 @@ namespace App\Form\Bet;
 
 use App\Entity\Member;
 use App\Entity\Team;
-use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\Count;
 
 class BetAdminFormType extends AbstractType
 {
@@ -47,7 +45,7 @@ class BetAdminFormType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'run_targets' => new ArrayCollection(),
+            'run_targets' => [],
             'target_required' => true,
             'target_expanded' => true,
             'target_placeholder' => false,
