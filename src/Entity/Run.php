@@ -253,4 +253,14 @@ class Run
 
         return $this;
     }
+
+    public function hasTeams(): bool
+    {
+        return !$this->teams->isEmpty();
+    }
+
+    public function getTeamsCount(): int
+    {
+        return $this->teams->count();
+    }
 }

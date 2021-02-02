@@ -298,4 +298,26 @@ class Competition
 
         return $this;
     }
+
+    public function hasRuns(): bool
+    {
+        return !$this->runs->isEmpty();
+    }
+
+    public function getEventsCount(): int
+    {
+        $events = [];
+        foreach ($this->runs as $run) {
+            $event = $run->getEvent() ?? '';
+            if (in_array($event, $events) !== true) {
+                $events[] = $event;
+            }
+        }
+        return count($events);
+    }
+
+    public function getRunsCount(): int
+    {
+        return $this->runs->count();
+    }
 }

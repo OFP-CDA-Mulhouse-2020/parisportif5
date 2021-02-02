@@ -235,4 +235,19 @@ class Sport
 
         return $this;
     }
+
+    public function isCollective(): bool
+    {
+        return ($this->collectiveType === true && $this->individualType !== true);
+    }
+
+    public function isIndividual(): bool
+    {
+        return ($this->individualType === true && $this->collectiveType !== true);
+    }
+
+    public function isBothIndividualAndCollective(): bool
+    {
+        return ($this->individualType === true && $this->collectiveType === true);
+    }
 }
