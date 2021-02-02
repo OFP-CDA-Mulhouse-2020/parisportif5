@@ -39,7 +39,7 @@ class Bet
     /**
      * @ORM\Column(type="integer")
      * @Assert\PositiveOrZero(
-     *     message="La montant du paris en centimes doit être un entier positif ou zéro"
+     *     message="Le montant du paris en centimes doit être un entier positif ou zéro"
      * )
      */
     private int $amount;

@@ -763,7 +763,7 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getNewsletters(): ?bool
+    public function getNewsletters(): bool
     {
         return $this->newsletters;
     }

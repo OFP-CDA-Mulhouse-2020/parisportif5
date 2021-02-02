@@ -111,7 +111,7 @@ skinparam linetype ortho
         +add(in float value) : void
         +subtract(in float value) : void
         +isEmpty() : bool
-        +isAuthorizedSubtraction(in float value) : bool
+        +isValidSubtraction(in float value) : bool
     }
     'Utilisateur avec un compte
     class User {
