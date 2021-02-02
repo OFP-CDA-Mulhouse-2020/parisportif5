@@ -434,4 +434,9 @@ class Billing
 
         return $this;
     }
+
+    public function deleteUser(): void
+    {
+        $this->user = null;
+    }
 }

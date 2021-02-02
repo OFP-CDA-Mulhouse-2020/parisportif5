@@ -2,7 +2,6 @@
 
 namespace App\Form\Model;
 
-use Closure;
 use App\Entity\Run;
 use App\Entity\Team;
 use App\Entity\Member;
@@ -14,21 +13,20 @@ final class BettingRegistrationFormModel
 {
     /**
      * @Assert\NotNull(
-     *     message="Le montant du paris ne peut pas vide"
+     *     message="Le montant du paris ne peut pas être vide."
      * )
      * @Assert\PositiveOrZero(
-     *     message="Le montant du paris ne peut pas être négatif"
+     *     message="Le montant du paris ne peut pas être négatif."
      * )
      */
     private ?int $amount = null;
 
     /**
-     * @var Team|Member|null $result
-     * @Assert\Valid
+     * @Assert\NotNull(
+     *     message="Le résultat du paris ne peut pas être vide."
+     * )
      */
-    private ?object $result = null;
-
-    /* Result choice parameters */
+    private object $result;
 
     private string $categoryLabel = '';
 
@@ -52,7 +50,7 @@ final class BettingRegistrationFormModel
         $this->choices = $this->createChoices($runEntity, $choicesType, $allowDraw);
     }
 
-    private function createChoiceLabel(object $choice): string
+    private function createChoiceLabel(object $choice, string $odds): string
     {
         $label = '';
         if ($choice instanceof Team) {
@@ -63,8 +61,6 @@ final class BettingRegistrationFormModel
             $teamName = ($team->getName() ?? '');
             $label = ($choice->getLastName() ?? '') . ' ' . ($choice->getFirstName() ?? '') . ' - ' . $teamName;
         }
-        $odds = $choice->getOdds() ?? 0;
-        $odds = $this->oddsStorageDataConverter->convertToOddsMultiplier($odds);
         $label = $odds . ' - ' . $label;
         return $label;
     }
@@ -77,14 +73,14 @@ final class BettingRegistrationFormModel
         return $betCategoryLabel;
     }
 
-    private function createDrawLabel(int $drawOdds, bool $teamType): string
+    private function createDrawLabel(string $drawOdds, bool $teamType): string
     {
         if ($teamType === true) {
             $placeholder = "Nul";
         } else {
             $placeholder = "Aucun";
         }
-        $placeholder = $this->oddsStorageDataConverter->convertToOddsMultiplier($drawOdds) . ' - ' . $placeholder;
+        $placeholder = $drawOdds . ' - ' . $placeholder;
         return $placeholder;
     }
 
@@ -93,14 +89,23 @@ final class BettingRegistrationFormModel
     {
         $choicesCount = count($choices);
         $drawOdds = (int)(round(($totalOdds / $choicesCount), 0, PHP_ROUND_HALF_UP));
+        $drawOdds = $this->oddsStorageDataConverter->convertToOddsMultiplier($drawOdds);
         if ($teamType === true && $choicesCount === 2) {
             $last = $choices[1];
-            $choices[1] = (object)["id" => null, "label" => $this->createDrawLabel($drawOdds, $teamType)];
+            $choices[1] = (object)["id" => 0,
+                "label" => $this->createDrawLabel((string)$drawOdds, $teamType),
+                "className" => '',
+                "odds" => $drawOdds
+            ];
             $choices[] = $last;
         } else {
             array_unshift(
                 $choices,
-                (object)["id" => null, "label" => $this->createDrawLabel($drawOdds, $teamType)]
+                (object)["id" => 0,
+                    "label" => $this->createDrawLabel((string)$drawOdds, $teamType),
+                    "className" => '',
+                    "odds" => $drawOdds
+                ]
             );
         }
     }
@@ -114,7 +119,13 @@ final class BettingRegistrationFormModel
         $totalOdds = 0;
         $runTeams = $runEntity->getTeams();
         foreach ($runTeams as $team) {
-            $choices[] = (object)["id" => $team->getId(), "label" => $this->createChoiceLabel($team)];
+            $odds = $team->getOdds() ?? 0;
+            $odds = $this->oddsStorageDataConverter->convertToOddsMultiplier($odds);
+            $choices[] = (object)["id" => $team->getId(),
+                "label" => $this->createChoiceLabel($team, (string)$odds),
+                "className" => Team::class,
+                "odds" => $odds
+            ];
             $odds = $team->getOdds() ?? 0;
             $totalOdds += $odds;
         }
@@ -135,7 +146,13 @@ final class BettingRegistrationFormModel
             $runMembers = array_merge($runMembers, $memberCollection->toArray());
         }
         foreach ($runMembers as $member) {
-            $choices[] = (object)["id" => $member->getId(), "label" => $this->createChoiceLabel($member)];
+            $odds = $member->getOdds() ?? 0;
+            $odds = $this->oddsStorageDataConverter->convertToOddsMultiplier($odds);
+            $choices[] = (object)["id" => $member->getId(),
+                "label" => $this->createChoiceLabel($member, (string)$odds),
+                "className" => Member::class,
+                "odds" => $odds
+            ];
             $odds = $member->getOdds() ?? 0;
             $totalOdds += $odds;
         }
@@ -172,42 +189,25 @@ final class BettingRegistrationFormModel
         return $this;
     }
 
-    /** @return Team|Member|null */
-    public function getResult(): ?object
+    public function getResult(): object
     {
         return $this->result;
     }
 
-    /** @param Team|Member|null $result */
-    public function setResult(?object $result): self
+    public function setResult(object $result): self
     {
         $this->result = $result;
         return $this;
     }
-
-    /* Result choice parameters */
 
     public function getCategoryLabel(): string
     {
         return $this->categoryLabel;
     }
 
-    public function setCategoryLabel(string $categoryLabel): self
-    {
-        $this->categoryLabel = $categoryLabel;
-        return $this;
-    }
-
     /** @return Object[] */
     public function getChoices(): array
     {
         return $this->choices;
-    }
-
-    /** @param Object[] $choices */
-    public function setChoices(array $choices): self
-    {
-        $this->choices = $choices;
-        return $this;
     }
 }

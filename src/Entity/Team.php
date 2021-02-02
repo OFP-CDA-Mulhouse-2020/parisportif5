@@ -187,4 +187,14 @@ class Team
 
         return $this;
     }
+
+    public function hasMembers(): bool
+    {
+        return !$this->members->isEmpty();
+    }
+
+    public function getMembersCount(): int
+    {
+        return $this->members->count();
+    }
 }

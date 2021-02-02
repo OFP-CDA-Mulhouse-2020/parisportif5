@@ -14,7 +14,6 @@ class BettingRegistrationFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        //dd($options['data']);
         $builder
             ->add('result', ChoiceType::class, [
                 'required' => true,

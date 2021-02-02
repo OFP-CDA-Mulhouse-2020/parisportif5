@@ -15,7 +15,10 @@ use Doctrine\Persistence\ObjectManager;
 use App\DataConverter\OddsStorageInterface;
 use App\Service\DateTimeStorageDataConverter;
 use App\DataConverter\DateTimeStorageInterface;
+use App\Entity\Wallet;
 use App\Form\Model\BettingRegistrationFormModel;
+use App\Repository\MemberRepository;
+use App\Repository\TeamRepository;
 
 final class BettingRegistrationFormHandler
 {
@@ -26,43 +29,74 @@ final class BettingRegistrationFormHandler
         $this->bettingRegistrationFormModel = $bettingRegistrationFormModel;
     }
 
-    public function handleForm(
-        ObjectManager $entityManager,
-        DateTimeStorageInterface $dateTimeConverter,
-        OddsStorageInterface $oddsStorageDataConverter,
-        BetCategory $betCategory,
-        Run $run,
-        Competition $competition,
-        User $user
-    ): void {
-        $designation = $this->bettingRegistrationFormModel->getCategoryLabel();
-        $amount = $this->bettingRegistrationFormModel->getAmount() ?? 0;
-        $wallet = $user->getWallet();
-        $walletAmmount = $wallet->getAmount() ?? 0;
+    private function changeWalletAmount(Wallet $wallet, int $amount): Wallet
+    {
+        $walletAmmount = $wallet->getAmount();
         $newWalletAmount = (int)($walletAmmount - $amount);
-        $choice = $this->bettingRegistrationFormModel->getResult();
-        $bet = new Bet($dateTimeConverter);
-        if ($choice instanceof Team) {
+        $wallet->setAmount($newWalletAmount);
+        return $wallet;
+    }
+
+    private function setBetResult(
+        Bet $bet,
+        TeamRepository $teamRepository,
+        MemberRepository $memberRepository
+    ): Bet {
+        $result = $this->bettingRegistrationFormModel->getResult();
+        $className = $result->className;
+        $choiceId =  $result->id;
+        if ($choiceId === 0) {
+            $className = '';
+        }
+        if ($className === Team::class) {
+            $choice = $teamRepository->find($choiceId);
             $bet->setTeam($choice);
         }
-        if ($choice instanceof Member) {
+        if ($className === Member::class) {
+            $choice = $memberRepository->find($choiceId);
             $bet->setTeamMember($choice);
             $bet->setTeam($choice->getTeam());
         }
-        $bet
-            ->setCompetition($competition)
-            ->setRun($run)
-            ->setBetCategory($betCategory);
-        $wallet->setAmount($newWalletAmount);
+        return $bet;
+    }
+
+    private function setBetDate(Bet $bet): Bet
+    {
+        $date = new \DateTimeImmutable("now", new \DateTimeZone(DateTimeStorageDataConverter::STORED_TIME_ZONE));
+        $timeInArray = explode(':', $date->format('H:i:s'));
+        $modulo = (int)$timeInArray[2] % 10;
+        if ($modulo !== 0) {
+            $timeInArray[2] = (int)$timeInArray[2] - $modulo;
+        }
+        $date = $date->setTime((int)$timeInArray[0], (int)$timeInArray[1], (int)$timeInArray[2]);
+        $bet->setBetDate($date);
+        return $bet;
+    }
+
+    public function handleForm(
+        ObjectManager $entityManager,
+        OddsStorageInterface $oddsStorageDataConverter,
+        Bet $bet,
+        User $user,
+        TeamRepository $teamRepository,
+        MemberRepository $memberRepository
+    ): void {
+        $wallet = $user->getWallet();
+        $amount = $this->bettingRegistrationFormModel->getAmount() ?? 0;
+        $wallet = $this->changeWalletAmount($wallet, $amount);
+        $bet = $this->setBetResult($bet, $teamRepository, $memberRepository);
+        $designation = $this->bettingRegistrationFormModel->getCategoryLabel();
         $teamName = ($bet->getTeam() !== null) ? $bet->getTeam()->getName() : 'Nul';
         $designation .= ' ' . $teamName;
         $user->addOnGoingBet($bet);
-        $date = new \DateTimeImmutable("now", new \DateTimeZone(DateTimeStorageDataConverter::STORED_TIME_ZONE));
+        $bet = $this->setBetDate($bet);
+        $result = $this->bettingRegistrationFormModel->getResult();
+        $betOdds = $result->odds;
         $bet
-            ->setOdds($oddsStorageDataConverter->convertOddsMultiplierToStoredData(2))
+            ->setAmount($amount)
+            ->setOdds($oddsStorageDataConverter->convertOddsMultiplierToStoredData($betOdds))
             ->setUser($user)
-            ->setDesignation($designation)
-            ->setBetDate($date);
+            ->setDesignation($designation);
         $entityManager->persist($bet);
         $entityManager->flush();
     }

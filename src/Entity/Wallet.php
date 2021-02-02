@@ -78,8 +78,32 @@ class Wallet
         return empty($this->amount);
     }
 
-    public function isValidSubtraction(int $value): bool
+    public function isValidOperation(int $amount): bool
     {
-        return (($this->amount - $value) >= 0);
+        return ($this->isValidAddition($amount) === true && $this->isValidSubtraction($amount) === true);
+    }
+
+    public function isValidSubtraction(int $amount): bool
+    {
+        return (($this->amount - $amount) >= 0);
+    }
+
+    public function isValidAddition(int $amount): bool
+    {
+        return ($amount > 0);
+    }
+
+    public function addAmount(int $amount): void
+    {
+        if ($this->isValidAddition($amount) === true) {
+            $this->amount += $amount;
+        }
+    }
+
+    public function subtractAmount(int $amount): void
+    {
+        if ($this->isValidSubtraction($amount) === true) {
+            $this->amount -= $amount;
+        }
     }
 }

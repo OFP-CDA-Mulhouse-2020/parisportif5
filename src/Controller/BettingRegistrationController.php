@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Bet;
 use App\Entity\User;
 use App\Repository\RunRepository;
 use App\Repository\BetCategoryRepository;
@@ -13,6 +14,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Form\Model\BettingRegistrationFormModel;
 use App\Form\Handler\BettingRegistrationFormHandler;
+use App\Repository\MemberRepository;
+use App\Repository\TeamRepository;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
@@ -28,7 +31,9 @@ class BettingRegistrationController extends AbstractController
         RunRepository $runRepository,
         BetCategoryRepository $betCategoryRepository,
         DateTimeStorageDataConverter $dateTimeConverter,
-        OddsStorageDataConverter $oddsStorageDataConverter
+        OddsStorageDataConverter $oddsStorageDataConverter,
+        TeamRepository $teamRepository,
+        MemberRepository $memberRepository
     ): Response {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         /** @var User $user */
@@ -58,17 +63,21 @@ class BettingRegistrationController extends AbstractController
             $bettingRegistrationFormModel = $form->getData();
             $betAmount = $bettingRegistrationFormModel->getAmount() ?? 0;
             $wallet = $user->getWallet();
-            if ($wallet->isValidSubtraction($betAmount) === true) {
-                $entityManager = $this->getDoctrine()->getManager();
+            if ($wallet->isValidOperation($betAmount) === true) {
                 $bettingRegistrationFormHandler = new BettingRegistrationFormHandler($bettingRegistrationFormModel);
+                $entityManager = $this->getDoctrine()->getManager();
+                $bet = new Bet($dateTimeConverter);
+                $bet
+                    ->setCompetition($competition)
+                    ->setRun($run)
+                    ->setBetCategory($betCategory);
                 $bettingRegistrationFormHandler->handleForm(
                     $entityManager,
-                    $dateTimeConverter,
                     $oddsStorageDataConverter,
-                    $betCategory,
-                    $run,
-                    $competition,
-                    $user
+                    $bet,
+                    $user,
+                    $teamRepository,
+                    $memberRepository
                 );
                 // Add success message
                 $this->addFlash(
