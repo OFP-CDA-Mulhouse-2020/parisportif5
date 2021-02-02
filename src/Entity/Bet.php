@@ -13,9 +13,9 @@ use App\Repository\BetRepository;
 /**
  * @ORM\Entity(repositoryClass=BetRepository::class)
  * @UniqueEntity(
- *     fields={"user", "competition", "run", "betDate", "betCategory"},
- *     errorPath="betCategory",
- *     message="Ce paris est déjà enregistré."
+ *     fields={"user", "betDate"},
+ *     errorPath="betDate",
+ *     message="Le nombre de paris par minute est limité à 6 pour des raisons de sécurité."
  * )
  */
 class Bet
@@ -39,7 +39,7 @@ class Bet
     /**
      * @ORM\Column(type="integer")
      * @Assert\PositiveOrZero(
-     *     message="La montant du paris en centimes doit être un entier positif ou zéro"
+     *     message="Le montant du paris en centimes doit être un entier positif ou zéro"
      * )
      */
     private int $amount;

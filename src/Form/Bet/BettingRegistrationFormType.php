@@ -2,24 +2,42 @@
 
 namespace App\Form\Bet;
 
-use App\Service\OddsStorageDataConverter;
-use App\Entity\Bet;
-use App\Entity\Team;
-use App\Entity\Member;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\MoneyType;
+use App\Form\Model\BettingRegistrationFormModel;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\MoneyType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
-class BetFormType extends AbstractType
+class BettingRegistrationFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $oddsStorageDataConverter = $options['converter'];
         $builder
-            ->add($options['property_mapped'], EntityType::class, [
+            ->add('result', ChoiceType::class, [
+                'required' => true,
+                'label' => $options['data']->getCategoryLabel(),
+                'choices' => $options['data']->getChoices(),
+                'choice_label' => 'label',
+                'choice_value' => 'id',
+                'expanded' => true,
+                'placeholder' => false
+            ])
+            ->add('amount', MoneyType::class, [
+                'required' => true,
+                'label' => "Montant",
+                'divisor' => 100,
+                'currency' => false,
+                'invalid_message' => "Veuillez saisir un montant avec des chiffres."
+            ])
+            ->add('betting', SubmitType::class, [
+                'label' => "Parier"
+            ])
+        ;
+
+        /*
+        ->add('result', EntityType::class, [
                 'required' => $options['target_required'],
                 'label' => $options['category_label'],
                 'class' => $options['class_name'],
@@ -42,31 +60,16 @@ class BetFormType extends AbstractType
                 'expanded' => $options['target_expanded'],
                 'placeholder' => $options['target_placeholder']
             ])
-            ->add('amount', MoneyType::class, [
-                'required' => true,
-                'label' => "Montant",
-                'divisor' => 100,
-                'currency' => false,
-                'invalid_message' => "Veuillez saisir un montant avec des chiffres."
-            ])
-            ->add('betting', SubmitType::class, [
-                'label' => "Parier"
-            ])
-        ;
+        */
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Bet::class,
-            'run_targets' => [],
-            'converter' => new OddsStorageDataConverter(),
-            'target_required' => true,
-            'target_expanded' => true,
-            'target_placeholder' => false,
-            'property_mapped' => "",
+            'data_class' => BettingRegistrationFormModel::class,
+            'result_choices' => [],
             'category_label' => "",
-            'class_name' => ""
+            'bool_null_select' => false
         ]);
     }
 }

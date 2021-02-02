@@ -107,26 +107,28 @@ skinparam linetype ortho
     'Porte-feuille de l'utilisateur avec des fonds (de l'argent gagnés)
     class Wallet {
         -identifier : int
-        -amount : int
-        +add(in float value) : void
-        +subtract(in float value) : void
+        -amount : int = 0
+        +addAmount(in int amount) : void
+        +subtractAmount(in int amount) : void
         +isEmpty() : bool
-        +isAuthorizedSubtraction(in float value) : bool
+        +isValidSubtraction(in int amount) : bool
+        +isValidAddition(in int amount) : bool
+        +isValidOperation(in int amount) : bool
     }
     'Utilisateur avec un compte
     class User {
         -id : int
         -email : string
         -password : string
-        -plainPassword : string|null
-        -roles : string[]
-        -activatedStatus : bool
-        -activatedDate : DateTimeImmutable
-        -suspendedStatus : bool
-        -suspendedDate : DateTimeImmutable
-        -deletedStatus : bool
-        -deletedDate : DateTimeImmutable
-        -civility : string
+        -plainPassword : string|null = null
+        -roles : string[] = []
+        -activatedStatus : bool = true
+        -activatedDate : DateTimeImmutable|null = \DateTimeImmutable()
+        -suspendedStatus : bool = true
+        -suspendedDate : DateTimeImmutable|null = \DateTimeImmutable()
+        -deletedStatus : bool = false
+        -deletedDate : DateTimeImmutable|null = null
+        -civility : string|null = null
         -firstName : string
         -lastName : string
         -billingAddress : string
@@ -135,22 +137,25 @@ skinparam linetype ortho
         -billingCountry : string
         -birthDate : DateTimeImmutable
         -timeZoneSelected : string
+        -isVerified : bool = false
+        -newsletters : bool = false
+        -identityDocument : string
+        -residenceProof : string
         +{static} MIN_AGE_FOR_BETTING : int = 18
         +{static} MAX_AGE_FOR_BETTING : int = 140
         +{static} SELECT_CURRENCY_CODE : string = "EUR"
         +{static} SELECT_CURRENCY_SYMBOL : string = "€"
-        +getName() : string
-        +getAddress() : string
+        +getFullName() : string
+        +getFullAddress() : string
         +isPasswordSafe() : bool
+        +getUsername() : string
         +getSalt() : string|null
         +eraseCredentials() : void
         +delete() : bool
         +restore() : bool
         +suspend() : bool
         +valid() : bool
-        +activate() : bool
-        +desactivate() : bool
-        +cancelBet(in Bet bet) : void
+        +isVerified() : bool
         +isAdmin() : bool
     }
     'Langue d'affichage de l'utilisateur
@@ -161,7 +166,7 @@ skinparam linetype ortho
         -code : string
         -dateFormat : string
         -timeFormat : string
-        -timeZone : string
+        -capitalTimeZone : string
         +getDateTimeFormat() : string|null
     }
     'Factures (type=débit ou crédit)
@@ -187,8 +192,8 @@ skinparam linetype ortho
         +{static} DEBIT : string = "debit"
         +{static} CREDIT : string = "credit"
         +{static} OPERATION_TYPES : string[] = [DEBIT, CREDIT]
-        +getName() : string
-        +getAddress() : string
+        +getFullName() : string
+        +getFullAddress() : string
         +deleteUser() : void
         +hasUser() : bool
     }
@@ -199,7 +204,7 @@ skinparam linetype ortho
         -amount : int
         -odds : int
         -betDate : DateTimeImmutable
-        -isWinning : bool|null
+        -isWinning : bool|null = null
         +hasWon() : bool|null
         +won() : void
         +lost() : void
@@ -213,7 +218,7 @@ skinparam linetype ortho
         -name : string
         -allowDraw : bool
         -target : string
-        -description : string
+        -description : string|null = null
         +{static} TEAM_TYPE : string = "teams"
         +{static} MEMBER_TYPE : string = "members"
         +{static} TARGET_TYPES : string[] = [TEAM_TYPE, MEMBER_TYPE]
@@ -229,10 +234,10 @@ skinparam linetype ortho
     class Sport {
         -identifier : int
         -name : string
-        -maxTeamsByRun : int|null
-        -maxMembersByTeam : int|null
-        -minTeamsByRun : int
-        -minMembersByTeam : int
+        -maxTeamsByRun : int|null = null
+        -maxMembersByTeam : int|null = null
+        -minTeamsByRun : int = 0
+        -minMembersByTeam : int = 0
         -collectiveType : bool
         -individualType : bool
         -country : string
@@ -251,8 +256,8 @@ skinparam linetype ortho
         -startDate : DateTimeImmutable
         -endDate : DateTimeImmutable
         -country : string
-        -maxRuns : int|null
-        -minRuns : int
+        -maxRuns : int|null = null
+        -minRuns : int = 0
         +hasRuns() : bool
         +isFinish() : bool
         +isOngoing() : bool
@@ -289,7 +294,6 @@ skinparam linetype ortho
         -odds : int
         +hasMembers() : bool
         +getMembersCount() : int
-        +getScoresCount() : int
         +hasRequiredNumberOfMembers() : bool
     }
 @enduml

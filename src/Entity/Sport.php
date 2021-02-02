@@ -88,7 +88,7 @@ class Sport
      *     message="Le nombre d'équipes doit être supérieur ou égal au nombre minimum"
      * )
      */
-    private ?int $maxTeamsByRun;
+    private ?int $maxTeamsByRun = null;
 
     /**
      * @ORM\Column(type="integer")
@@ -108,7 +108,7 @@ class Sport
      *     message="Le nombre de compétiteurs doit être supérieur ou égal au nombre minimum"
      * )
      */
-    private ?int $maxMembersByTeam;
+    private ?int $maxMembersByTeam = null;
 
     /** @const string FIXTURE_TYPE */
     public const FIXTURE_TYPE = "fixture";
@@ -212,7 +212,7 @@ class Sport
         return $this;
     }
 
-    public function getMinMembersByTeam(): ?int
+    public function getMinMembersByTeam(): int
     {
         return $this->minMembersByTeam;
     }
@@ -224,7 +224,7 @@ class Sport
         return $this;
     }
 
-    public function getMinTeamsByRun(): ?int
+    public function getMinTeamsByRun(): int
     {
         return $this->minTeamsByRun;
     }
@@ -234,5 +234,20 @@ class Sport
         $this->minTeamsByRun = $minTeamsByRun;
 
         return $this;
+    }
+
+    public function isCollective(): bool
+    {
+        return ($this->collectiveType === true && $this->individualType !== true);
+    }
+
+    public function isIndividual(): bool
+    {
+        return ($this->individualType === true && $this->collectiveType !== true);
+    }
+
+    public function isBothIndividualAndCollective(): bool
+    {
+        return ($this->individualType === true && $this->collectiveType === true);
     }
 }
