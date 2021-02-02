@@ -87,7 +87,7 @@ class Competition
      *     message="Le nombre de course ou de rencontre (Run) doit être supérieur ou égal au nombre minimum"
      * )
      */
-    private ?int $maxRuns;
+    private ?int $maxRuns = null;
 
     /**
      * @var Collection<int,Run> $runs
@@ -266,7 +266,7 @@ class Competition
         return $this;
     }
 
-    public function getMinRuns(): ?int
+    public function getMinRuns(): int
     {
         return $this->minRuns;
     }

@@ -170,7 +170,7 @@ class Billing
      * @ORM\OneToOne(targetEntity=User::class, cascade={"persist", "remove"})
      * @Assert\Valid
      */
-    private ?User $user;
+    private ?User $user = null;
 
     /**
      * @ORM\Column(type="string", length=6)

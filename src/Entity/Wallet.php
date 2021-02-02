@@ -31,7 +31,7 @@ class Wallet
      *     message="Le montant du porte monnaie ne peut pas être négatif"
      * )
      */
-    private int $amount;
+    private int $amount = 0;
 
     /**
      * @ORM\OneToOne(targetEntity=User::class, mappedBy="wallet", cascade={"persist", "remove"})
@@ -44,7 +44,7 @@ class Wallet
         return $this->id;
     }
 
-    public function getAmount(): ?int
+    public function getAmount(): int
     {
         return $this->amount;
     }
@@ -71,5 +71,15 @@ class Wallet
         }
 
         return $this;
+    }
+
+    public function isEmpty(): bool
+    {
+        return empty($this->amount);
+    }
+
+    public function isValidSubtraction(int $value): bool
+    {
+        return (($this->amount - $value) >= 0);
     }
 }
