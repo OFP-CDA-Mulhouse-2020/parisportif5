@@ -9,6 +9,8 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 
 class BettingRegistrationFormType extends AbstractType
 {
@@ -31,6 +33,10 @@ class BettingRegistrationFormType extends AbstractType
                 'currency' => false,
                 'invalid_message' => "Veuillez saisir un montant avec des chiffres."
             ])
+            ->addEventListener(
+                FormEvents::SUBMIT,
+                [$this, 'onSubmit']
+            )
             ->add('betting', SubmitType::class, [
                 'label' => "Parier"
             ])
@@ -42,5 +48,11 @@ class BettingRegistrationFormType extends AbstractType
         $resolver->setDefaults([
             'data_class' => BettingRegistrationFormModel::class
         ]);
+    }
+
+    public function onSubmit(FormEvent $event): void
+    {
+        $bettingRegistrationFormModel = $event->getData();
+        $bettingRegistrationFormModel->setSubmitDate();
     }
 }

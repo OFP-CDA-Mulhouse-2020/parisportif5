@@ -88,20 +88,25 @@ final class BettingRegistrationFormHandler
         return $selectName;
     }
 
+    //Match 1 vs2 (2021-03-01 09:00 UTC) : Paris sur Vainqueur avec AS Saint-Étienne
+    //Compétition championnat de fr - Pool n°1 - Match 1 vs2 (2021-03-01 09:00 UTC) : Paris sur Vainqueur avec AS Saint-Étienne
+    // pour facturation Designation
     private function getDesignation(Bet $bet): string
     {
         $designation = '';
+        $competition = $bet->getCompetition();
+        $startDate = $competition->getStartDate();
+        $competitionName = $competition->getName();
+        $designation .= (!empty($competitionName)) ? $competitionName : '' ;
         $run = $bet->getRun();
         if ($run !== null) {
             $startDate = $run->getStartDate();
-            $name = $run->getName();
-        } else {
-            $competition = $bet->getCompetition();
-            $startDate = $competition->getStartDate();
-            $name = $competition->getName();
+            $eventName = $run->getEvent();
+            $runName = $run->getName();
+            $designation .= (!empty($eventName)) ? ' - ' . $eventName : '' ;
+            $designation .= (!empty($runName)) ? ' - ' . $runName : '' ;
         }
-        $designation .= (!empty($startDate)) ? $startDate->format('Y-m-d H:i') : '';
-        $designation .= (!empty($name)) ? ' : ' . $name : '' ;
+        $designation .= (!empty($startDate)) ? ' (' .  $startDate->format('Y-m-d H:i T') . ')' : '';
         return $designation;
     }
 
@@ -117,10 +122,11 @@ final class BettingRegistrationFormHandler
         $amount = $this->bettingRegistrationFormModel->getAmount() ?? 0;
         $wallet = $this->changeWalletAmount($wallet, $amount);
         $bet = $this->setBetResult($bet, $teamRepository, $memberRepository);
-        $designation = $this->getDesignation($bet);
-        $designation .= ' : ' . $this->bettingRegistrationFormModel->getCategoryLabel();
+        //$designation = $this->getDesignation($bet);
+        //$designation .= ' : Paris sur ' . $this->bettingRegistrationFormModel->getCategoryLabel();
+        $designation = 'Paris sur ' . $this->bettingRegistrationFormModel->getCategoryLabel();
         $selectName = $this->getSelectName($bet);
-        $designation .= ' : ' . $selectName;
+        $designation .= ' avec ' . $selectName;
         $user->addOnGoingBet($bet);
         $bet = $this->setBetDate($bet);
         $result = $this->bettingRegistrationFormModel->getResult();

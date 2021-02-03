@@ -34,8 +34,8 @@ final class BillingFixtures extends Fixture implements DependentFixtureInterface
                 'city' => "COLMAR",
                 'postcode' => "68000",
                 'country' => "FR",
-                'issue' => "2021-02-05",
-                'delivery' => "2021-02-06",
+                'issue' => "2021-04-05",
+                'delivery' => "2021-04-06",
                 'operationType' => "debit",
                 'user' => ''
             ]
