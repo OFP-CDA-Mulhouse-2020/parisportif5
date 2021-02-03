@@ -249,19 +249,14 @@ final class BettingRegistrationFormModel
         return $this->choices;
     }
 
-    /**
-     * @Assert\IsTrue(
-     *     message="La date de soumission n'a pas été initialisée."
-     * )
-     */
-    public function initializeSubmitDate(): bool
+    public function setSubmitDate(): self
     {
         $date = new \DateTimeImmutable(
             "now",
             new \DateTimeZone(DateTimeStorageDataConverter::STORED_TIME_ZONE)
         );
         $this->submitDate = $this->getDateByTenthOfSecond($date);
-        return true;
+        return $this;
     }
 
     public function getSubmitDate(): ?\DateTimeImmutable
