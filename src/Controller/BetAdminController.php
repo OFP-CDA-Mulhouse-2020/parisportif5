@@ -22,7 +22,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class BetAdminController extends AbstractController
 {
     /**
-     * @Route("/{sportSlug}/{competitonSlug}/{eventSlug}/{runSlug}-{runId}/{betCategorySlug}-{betCategoryId}/admin", name="bet_admin")
+     * @Route("/{sportSlug}/{competitionSlug}/{eventSlug}/{runSlug}-{runId}/{betCategorySlug}-{betCategoryId}/admin", name="bet_admin")
      */
     public function index(
         Request $request,
@@ -40,7 +40,7 @@ class BetAdminController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
         if ($user->isAdmin() === false) {
-            $allowUrl = "/" . $request->attributes->get('sportSlug') . "/" . $request->attributes->get('competitonSlug')
+            $allowUrl = "/" . $request->attributes->get('sportSlug') . "/" . $request->attributes->get('competitionSlug')
                 . "/" . $request->attributes->get('eventSlug') . "/" . $request->attributes->get('runSlug') . '-' . $runId
                 . "/" .  $request->attributes->get('betCategorySlug') . '-' . $betCategoryId;
             return new RedirectResponse($allowUrl);
