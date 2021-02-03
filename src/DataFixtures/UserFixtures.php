@@ -120,7 +120,7 @@ final class UserFixtures extends Fixture implements DependentFixtureInterface
                 ->setLanguage($userLanguage);
             $userWallet
                 ->setUser($user)
-                ->setAmount(0);
+                ->setAmount(20000);
             $manager->persist($user);
         }
         $manager->flush();

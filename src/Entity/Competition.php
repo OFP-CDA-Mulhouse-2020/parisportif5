@@ -320,4 +320,18 @@ class Competition
     {
         return $this->runs->count();
     }
+
+    /** @return Team[] */
+    public function getTeams(): array
+    {
+        if ($this->runs->isEmpty() === true) {
+            return [];
+        }
+        $competitionTeams = [];
+        foreach ($this->runs as $run) {
+            $newTeam = array_diff($competitionTeams, $run->getTeams()->toArray());
+            $competitionTeams = array_merge($competitionTeams, $newTeam);
+        }
+        return $competitionTeams;
+    }
 }

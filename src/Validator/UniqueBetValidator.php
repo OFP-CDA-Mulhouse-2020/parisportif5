@@ -3,9 +3,8 @@
 namespace App\Validator;
 
 use App\Repository\BetRepository;
-use DateTimeInterface;
-use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Validator\Constraint;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Exception\UnexpectedValueException;
@@ -34,15 +33,14 @@ class UniqueBetValidator extends ConstraintValidator
             return;
         }
 
-        $user = $this->security->getUser();
-        if ($value instanceof DateTimeInterface) {
+        if (!$value instanceof \DateTimeImmutable) {
             // throw this exception if your validator cannot handle the passed type so that it can be marked as invalid
-            throw new UnexpectedValueException($value, 'DateTimeInterface');
+            throw new UnexpectedValueException($value, 'DateTimeImmutable');
         }
 
         $user = $this->security->getUser();
         $existingBet = $this->betRepository->findOneBy([
-            'betBate' => $value,
+            'betDate' => $value,
             'user' => $user
         ]);
 

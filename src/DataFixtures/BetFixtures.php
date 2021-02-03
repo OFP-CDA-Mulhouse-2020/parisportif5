@@ -38,8 +38,8 @@ final class BetFixtures extends Fixture
                 'categoryName' => "result",
                 'competition' => [
                     'name' => "Championnat1",
-                    'start' => "2021-02-01 08:00",
-                    'end' => "2021-02-10 20:00",
+                    'start' => "2021-04-01 08:00",
+                    'end' => "2021-04-10 20:00",
                     'country' => "FR"
                 ]
             ]

@@ -5,20 +5,17 @@ declare(strict_types=1);
 namespace App\Form\Handler;
 
 use App\Entity\Bet;
-use App\Entity\Run;
 use App\Entity\Team;
 use App\Entity\User;
 use App\Entity\Member;
+use App\Entity\Wallet;
 use App\Entity\BetCategory;
-use App\Entity\Competition;
+use App\Repository\TeamRepository;
+use App\Repository\MemberRepository;
 use Doctrine\Persistence\ObjectManager;
 use App\DataConverter\OddsStorageInterface;
 use App\Service\DateTimeStorageDataConverter;
-use App\DataConverter\DateTimeStorageInterface;
-use App\Entity\Wallet;
 use App\Form\Model\BettingRegistrationFormModel;
-use App\Repository\MemberRepository;
-use App\Repository\TeamRepository;
 
 final class BettingRegistrationFormHandler
 {
@@ -62,15 +59,55 @@ final class BettingRegistrationFormHandler
 
     private function setBetDate(Bet $bet): Bet
     {
-        $date = new \DateTimeImmutable("now", new \DateTimeZone(DateTimeStorageDataConverter::STORED_TIME_ZONE));
-        $timeInArray = explode(':', $date->format('H:i:s'));
-        $modulo = (int)$timeInArray[2] % 10;
-        if ($modulo !== 0) {
-            $timeInArray[2] = (int)$timeInArray[2] - $modulo;
-        }
-        $date = $date->setTime((int)$timeInArray[0], (int)$timeInArray[1], (int)$timeInArray[2]);
+        $date = $this->bettingRegistrationFormModel->getSubmitDate() ??
+            new \DateTimeImmutable("now", new \DateTimeZone(DateTimeStorageDataConverter::STORED_TIME_ZONE));
+        $date = $this->bettingRegistrationFormModel->getDateByTenthOfSecond($date);
         $bet->setBetDate($date);
         return $bet;
+    }
+
+    private function getSelectName(Bet $bet): string
+    {
+        $selectName = '';
+        $selectObject = $bet->getSelect();
+        if ($selectObject instanceof Team) {
+            $selectName = $selectObject->getName() ?? '';
+        }
+        if ($selectObject instanceof Member) {
+            $selectName = $selectObject->getFullName() ?? '';
+        }
+        if ($selectName === '') {
+            $betTarget = $bet->getBetCategory()->getTarget();
+            if ($betTarget === BetCategory::TEAM_TYPE) {
+                $selectName = 'Nul';
+            }
+            if ($betTarget === BetCategory::MEMBER_TYPE) {
+                $selectName = 'Auncun';
+            }
+        }
+        return $selectName;
+    }
+
+    //Match 1 vs2 (2021-03-01 09:00 UTC) : Paris sur Vainqueur avec AS Saint-Étienne
+    //Compétition championnat de fr - Pool n°1 - Match 1 vs2 (2021-03-01 09:00 UTC) : Paris sur Vainqueur avec AS Saint-Étienne
+    // pour facturation Designation
+    private function getDesignation(Bet $bet): string
+    {
+        $designation = '';
+        $competition = $bet->getCompetition();
+        $startDate = $competition->getStartDate();
+        $competitionName = $competition->getName();
+        $designation .= (!empty($competitionName)) ? $competitionName : '' ;
+        $run = $bet->getRun();
+        if ($run !== null) {
+            $startDate = $run->getStartDate();
+            $eventName = $run->getEvent();
+            $runName = $run->getName();
+            $designation .= (!empty($eventName)) ? ' - ' . $eventName : '' ;
+            $designation .= (!empty($runName)) ? ' - ' . $runName : '' ;
+        }
+        $designation .= (!empty($startDate)) ? ' (' .  $startDate->format('Y-m-d H:i T') . ')' : '';
+        return $designation;
     }
 
     public function handleForm(
@@ -85,9 +122,11 @@ final class BettingRegistrationFormHandler
         $amount = $this->bettingRegistrationFormModel->getAmount() ?? 0;
         $wallet = $this->changeWalletAmount($wallet, $amount);
         $bet = $this->setBetResult($bet, $teamRepository, $memberRepository);
-        $designation = $this->bettingRegistrationFormModel->getCategoryLabel();
-        $teamName = ($bet->getTeam() !== null) ? $bet->getTeam()->getName() : 'Nul';
-        $designation .= ' ' . $teamName;
+        //$designation = $this->getDesignation($bet);
+        //$designation .= ' : Paris sur ' . $this->bettingRegistrationFormModel->getCategoryLabel();
+        $designation = 'Paris sur ' . $this->bettingRegistrationFormModel->getCategoryLabel();
+        $selectName = $this->getSelectName($bet);
+        $designation .= ' avec ' . $selectName;
         $user->addOnGoingBet($bet);
         $bet = $this->setBetDate($bet);
         $result = $this->bettingRegistrationFormModel->getResult();

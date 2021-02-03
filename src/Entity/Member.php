@@ -181,4 +181,10 @@ class Member
 
         return $this;
     }
+
+    public function getFullName(): string
+    {
+        $fullName = trim(($this->firstName ?? '') . ' ' . ($this->lastName ?? ''));
+        return !empty($fullName) ? $fullName : '';
+    }
 }

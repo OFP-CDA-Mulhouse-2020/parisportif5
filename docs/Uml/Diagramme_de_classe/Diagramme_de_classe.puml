@@ -264,6 +264,7 @@ skinparam linetype ortho
         +getEventsCount() : int
         +getRunsCount() : int
         +hasRequiredNumberOfRuns() : bool
+        +getTeams() : Team[]
     }
     'Un match, une rencontre, une course
     class Run {
@@ -285,6 +286,7 @@ skinparam linetype ortho
         -firstName : string
         -country : string
         -odds : int
+        +getFullName() : string
     }
     'Équipes qui participe à une rencontre, à une course
     class Team {

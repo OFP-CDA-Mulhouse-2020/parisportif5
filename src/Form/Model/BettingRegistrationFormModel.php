@@ -6,7 +6,10 @@ use App\Entity\Run;
 use App\Entity\Team;
 use App\Entity\Member;
 use App\Entity\BetCategory;
+use App\Entity\Competition;
+use App\Validator\UniqueBet;
 use App\DataConverter\OddsStorageInterface;
+use App\Service\DateTimeStorageDataConverter;
 use Symfony\Component\Validator\Constraints as Assert;
 
 final class BettingRegistrationFormModel
@@ -35,6 +38,14 @@ final class BettingRegistrationFormModel
      */
     private array $choices = [];
 
+    /**
+     * @Assert\NotNull(
+     *     message="La date de soumission ne peut pas être vide."
+     * )
+     * @UniqueBet()
+     */
+    private ?\DateTimeImmutable $submitDate = null;
+
     private OddsStorageInterface $oddsStorageDataConverter;
 
     public function __construct(OddsStorageInterface $oddsStorageDataConverter)
@@ -42,12 +53,23 @@ final class BettingRegistrationFormModel
         $this->oddsStorageDataConverter = $oddsStorageDataConverter;
     }
 
-    public function initializeObject(BetCategory $betCategoryEntity, Run $runEntity): void
+    public function initializeWithRun(BetCategory $betCategoryEntity, Run $runEntity): void
     {
-        $choicesType = $betCategoryEntity->getTarget() ?? '';
-        $allowDraw = $betCategoryEntity->getAllowDraw() ?? false;
+        $this->initializeCategoryLabel($betCategoryEntity);
+        $runTeams = $runEntity->getTeams()->toArray();
+        $this->choices = $this->createChoices($runTeams, $betCategoryEntity);
+    }
+
+    public function initializeWithCompetition(BetCategory $betCategoryEntity, Competition $competitionEntity): void
+    {
+        $this->initializeCategoryLabel($betCategoryEntity);
+        $competitionTeams = $competitionEntity->getTeams();
+        $this->choices = $this->createChoices($competitionTeams, $betCategoryEntity);
+    }
+
+    private function initializeCategoryLabel(BetCategory $betCategoryEntity): void
+    {
         $this->categoryLabel = $this->createCategoryLabel($betCategoryEntity);
-        $this->choices = $this->createChoices($runEntity, $choicesType, $allowDraw);
     }
 
     private function createChoiceLabel(object $choice, string $odds): string
@@ -112,13 +134,13 @@ final class BettingRegistrationFormModel
 
     /**
      * @param Object[] $choices by reference
+     * @param array<int,Team> $betTeams
      * @return int Sum of odds
      */
-    public function createTeamChoices(array &$choices, Run $runEntity): int
+    public function createTeamChoices(array &$choices, array $betTeams): int
     {
         $totalOdds = 0;
-        $runTeams = $runEntity->getTeams();
-        foreach ($runTeams as $team) {
+        foreach ($betTeams as $team) {
             $odds = $team->getOdds() ?? 0;
             $odds = $this->oddsStorageDataConverter->convertToOddsMultiplier($odds);
             $choices[] = (object)["id" => $team->getId(),
@@ -134,18 +156,18 @@ final class BettingRegistrationFormModel
 
     /**
      * @param Object[] $choices by reference
+     * @param array<int,Team> $betTeams
      * @return int Sum of odds
      */
-    private function createMemberChoices(array &$choices, Run $runEntity): int
+    private function createMemberChoices(array &$choices, array $betTeams): int
     {
         $totalOdds = 0;
-        $runTeams = $runEntity->getTeams();
-        $runMembers = [];
-        foreach ($runTeams as $team) {
+        $betMembers = [];
+        foreach ($betTeams as $team) {
             $memberCollection = $team->getMembers();
-            $runMembers = array_merge($runMembers, $memberCollection->toArray());
+            $betMembers = array_merge($betMembers, $memberCollection->toArray());
         }
-        foreach ($runMembers as $member) {
+        foreach ($betMembers as $member) {
             $odds = $member->getOdds() ?? 0;
             $odds = $this->oddsStorageDataConverter->convertToOddsMultiplier($odds);
             $choices[] = (object)["id" => $member->getId(),
@@ -159,23 +181,39 @@ final class BettingRegistrationFormModel
         return $totalOdds;
     }
 
-    /** @return Object[] */
-    private function createChoices(Run $runEntity, string $choicesType, bool $allowDraw): array
+    /**
+     * @param array<int,Team> $betTeams
+     * @return Object[]
+     */
+    private function createChoices(array $betTeams, BetCategory $betCategoryEntity): array
     {
         $choices = [];
         $totalOdds = 0;
         $teamType = false;
+        $choicesType = $betCategoryEntity->getTarget() ?? '';
+        $allowDraw = $betCategoryEntity->getAllowDraw() ?? false;
         if ($choicesType === BetCategory::TEAM_TYPE) {
             $teamType = true;
-            $totalOdds = $this->createTeamChoices($choices, $runEntity);
+            $totalOdds = $this->createTeamChoices($choices, $betTeams);
         }
         if ($choicesType === BetCategory::MEMBER_TYPE) {
-            $totalOdds = $this->createMemberChoices($choices, $runEntity);
+            $totalOdds = $this->createMemberChoices($choices, $betTeams);
         }
         if ($allowDraw === true) {
             $this->createDrawChoice($choices, $teamType, $totalOdds);
         }
         return $choices;
+    }
+
+    public function getDateByTenthOfSecond(\DateTimeImmutable $date): \DateTimeImmutable
+    {
+        $timeInArray = explode(':', $date->format('H:i:s'));
+        $modulo = (int)$timeInArray[2] % 10;
+        if ($modulo !== 0) {
+            $timeInArray[2] = (int)$timeInArray[2] - $modulo;
+        }
+        $date = $date->setTime((int)$timeInArray[0], (int)$timeInArray[1], (int)$timeInArray[2]);
+        return $date;
     }
 
     public function getAmount(): ?int
@@ -209,5 +247,20 @@ final class BettingRegistrationFormModel
     public function getChoices(): array
     {
         return $this->choices;
+    }
+
+    public function setSubmitDate(): self
+    {
+        $date = new \DateTimeImmutable(
+            "now",
+            new \DateTimeZone(DateTimeStorageDataConverter::STORED_TIME_ZONE)
+        );
+        $this->submitDate = $this->getDateByTenthOfSecond($date);
+        return $this;
+    }
+
+    public function getSubmitDate(): ?\DateTimeImmutable
+    {
+        return $this->submitDate;
     }
 }
