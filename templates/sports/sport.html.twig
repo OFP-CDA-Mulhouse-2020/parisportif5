@@ -10,30 +10,30 @@
 
 <div class="example-wrapper">
 
-    <h1>{{ page_title }}{{ sport.name }}</h1>
+    <h1>{{ page_title }}</h1>
 
     
     {% if app.user %}
         <div class="mb-3">
             You are logged in as {{ app.user.username }}
-            </br>
+            <br>
             Montant du porte monnaie : {{ app.user.wallet.amount }}
-            </br>
+            <br>
             <a href="{{ path('account_addfunds') }}">Ajouter des fonds au porte monnaie</a>
         </div>
-            </br>
+            <br>
             <a>Liste des équipes de football</a>
-            </br>
-            {% for team in teams %}
-                <a>{{ team.name }}</a>
-                </br>
+            <br>
+            {% for sport in sports %}
+                <a>{{ sport.name }}</a>
+                <br>
             {% endfor %}
-            </br>
-            </br>
+            <br>
+            <br>
         <div class="mb-3">
             <a href="{{ path('userlogout') }}">Se déconnecter</a>
         </div>
-            </br>
+            <br>
         <div class="mb-3">
             <a href="{{ path('userloggedin') }}">Retour</a>
         </div>
