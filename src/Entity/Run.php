@@ -16,7 +16,7 @@ use App\Repository\RunRepository;
 /**
  * @ORM\Entity(repositoryClass=RunRepository::class)
  * @UniqueEntity(
- *     fields={"name", "event", "startDate", "endDate", "competition", "location"},
+ *     fields={"name", "event", "startDate", "competition", "location"},
  *     errorPath="name",
  *     message="Cette rencontre ou course est déjà enregistrée."
  * )
@@ -56,15 +56,6 @@ class Run
      * )
      */
     private \DateTimeImmutable $startDate;
-
-    /**
-     * @ORM\Column(type="datetime_immutable")
-     * @Assert\GreaterThan(
-     *     propertyPath="startDate",
-     *     message="La date de fin de la course ou du match doit être supérieur à la date du début de celle-ci"
-     * )
-     */
-    private \DateTimeImmutable $endDate;
 
     /**
      * @ORM\ManyToOne(targetEntity=Competition::class, inversedBy="runs")
@@ -135,31 +126,11 @@ class Run
         return $this;
     }
 
-    public function getEndDate(): ?\DateTimeImmutable
-    {
-        return $this->endDate;
-    }
-
-    public function setEndDate(\DateTimeInterface $endDate): self
-    {
-        $endDate = $this->dateTimeConverter->convertedToStoreDateTime($endDate);
-        $this->endDate = $endDate;
-        return $this;
-    }
-
-    public function isFinish(): bool
+    public function canBet(): bool
     {
         $timezoneUTC = new \DateTimeZone(DateTimeStorageDataConverter::STORED_TIME_ZONE);
         $currentDate = new \DateTime('now', $timezoneUTC);
-        return ($currentDate > $this->endDate->setTimezone($timezoneUTC));
-    }
-
-    public function isOngoing(): bool
-    {
-        $timezoneUTC = new \DateTimeZone(DateTimeStorageDataConverter::STORED_TIME_ZONE);
-        $currentDate = new \DateTime('now', $timezoneUTC);
-        return ($currentDate >= $this->startDate->setTimezone($timezoneUTC)
-            && $currentDate <= $this->endDate->setTimezone($timezoneUTC));
+        return ($currentDate < $this->startDate->setTimezone($timezoneUTC));
     }
 
     public function getCompetition(): ?Competition
@@ -212,14 +183,12 @@ class Run
             }
             $this->teams[] = $team;
         }
-
         return $this;
     }
 
     public function removeTeam(Team $team): self
     {
         $this->teams->removeElement($team);
-
         return $this;
     }
 
@@ -250,7 +219,6 @@ class Run
     public function setDateTimeConverter(DateTimeStorageInterface $dateTimeConverter): self
     {
         $this->dateTimeConverter = $dateTimeConverter;
-
         return $this;
     }
 

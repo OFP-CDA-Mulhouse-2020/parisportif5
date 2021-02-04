@@ -34,11 +34,9 @@ final class RunFixtures extends Fixture implements DependentFixtureInterface
                 'name' => "Match 1 vs2",
                 'event' => "pool 1",
                 'start' => "2021-04-01 09:00",
-                'end' => "2021-04-01 20:00",
                 'competition' => [
                     'name' => "Championnat1",
                     'start' => "2021-04-01 08:00",
-                    'end' => "2021-04-10 20:00",
                     'country' => "FR"
                 ],
                 'location' => [
@@ -70,7 +68,6 @@ final class RunFixtures extends Fixture implements DependentFixtureInterface
                 ->setName($testData[$i]['name'])
                 ->setEvent($testData[$i]['event'])
                 ->setStartDate(new \DateTimeImmutable($testData[$i]['start'], new \DateTimeZone("UTC")))
-                ->setEndDate(new \DateTimeImmutable($testData[$i]['end'], new \DateTimeZone("UTC")))
                 ->setCompetition($runCompetition)
                 ->setLocation($runLocation)
                 ;

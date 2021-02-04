@@ -110,7 +110,8 @@ final class CompetitionTest extends WebTestCase
         $betCategory
             ->setName($name)
             ->setAllowDraw(false)
-            ->setTarget("teams");
+            ->setTarget("teams")
+            ->setOnCompetition(false);
         return $betCategory;
     }
 
@@ -187,50 +188,6 @@ final class CompetitionTest extends WebTestCase
         return [
             [$startDate->modify("+1 day")],
             [$startDate->modify("+1 month")]
-        ];
-    }
-
-    /**
-     * @dataProvider endDateUnconformityProvider
-     */
-    public function testEndDateUnconformity(\DateTimeInterface $endDate): void
-    {
-        $competition = $this->createValidCompetition();
-        $competition->setEndDate($endDate);
-        $violations = $this->validator->validate($competition);
-        $this->assertGreaterThanOrEqual(1, count($violations));
-    }
-
-    public function endDateUnconformityProvider(): array
-    {
-        $timezone = $this->createDefaultTimeZone();
-        $endDate = new \DateTimeImmutable('now', $timezone);
-        return [
-            [$endDate->setTime(23, 59, 59, 1000000)],
-            [$endDate->modify('-1 hour')],
-            [$endDate->modify('-1 day')->setTime(23, 59, 59, 999999)],
-            [$endDate->modify('-1 year')]
-        ];
-    }
-
-    /**
-     * @dataProvider endDateConformityProvider
-     */
-    public function testEndDateConformity(\DateTimeInterface $endDate): void
-    {
-        $competition = $this->createValidCompetition();
-        $competition->setEndDate($endDate);
-        $violations = $this->validator->validate($competition);
-        $this->assertCount(0, $violations);
-    }
-
-    public function endDateConformityProvider(): array
-    {
-        $timezone = $this->createDefaultTimeZone();
-        $endDate = new \DateTimeImmutable('now', $timezone);
-        return [
-            [$endDate->modify("+1 day")->setTime(23, 59, 59, 999999)],
-            [$endDate->modify("+1 month")]
         ];
     }
 
@@ -323,28 +280,6 @@ final class CompetitionTest extends WebTestCase
         $competition->setMinRuns($minRuns);
         $violations = $this->validator->validate($competition);
         $this->assertGreaterThanOrEqual(1, count($violations));
-    }
-
-    public function testMethodIsFinishReturnFalse(): void
-    {
-        $date = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
-        $competition = $this->createValidCompetition();
-        $exist = method_exists($competition, 'isFinish');
-        $this->assertTrue($exist);
-        $competition->setEndDate($date->modify('+2 day'));
-        $result = $competition->isFinish();
-        $this->assertFalse($result);
-    }
-
-    public function testMethodIsOngoingReturnFalse(): void
-    {
-        $date = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
-        $competition = $this->createValidCompetition();
-        $exist = method_exists($competition, 'isOngoing');
-        $this->assertTrue($exist);
-        $competition->setEndDate($date->modify('+2 day'));
-        $result = $competition->isOngoing();
-        $this->assertFalse($result);
     }
 
     public function testAddRunCompatible(): void

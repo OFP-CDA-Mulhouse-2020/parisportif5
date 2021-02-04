@@ -408,7 +408,6 @@ class Billing
         if (in_array($operationType, self::OPERATION_TYPES) !== false) {
             $this->operationType = $operationType;
         }
-
         return $this;
     }
 
@@ -425,14 +424,12 @@ class Billing
     public function setUser(?User $user): self
     {
         $this->user = $user;
-
         return $this;
     }
 
     public function setDateTimeConverter(DateTimeStorageInterface $dateTimeConverter): self
     {
         $this->dateTimeConverter = $dateTimeConverter;
-
         return $this;
     }
 

@@ -106,7 +106,6 @@ class Member
     public function setLastName(string $lastName): self
     {
         $this->lastName = $lastName;
-
         return $this;
     }
 
@@ -118,7 +117,6 @@ class Member
     public function setFirstName(string $firstName): self
     {
         $this->firstName = $firstName;
-
         return $this;
     }
 
@@ -130,7 +128,6 @@ class Member
     public function setCountry(string $country): self
     {
         $this->country = $country;
-
         return $this;
     }
 
@@ -142,7 +139,6 @@ class Member
     public function setMemberRole(MemberRole $memberRole): self
     {
         $this->memberRole = $memberRole;
-
         return $this;
     }
 
@@ -154,7 +150,6 @@ class Member
     public function setMemberStatus(MemberStatus $memberStatus): self
     {
         $this->memberStatus = $memberStatus;
-
         return $this;
     }
 
@@ -166,7 +161,6 @@ class Member
     public function setTeam(Team $team): self
     {
         $this->team = $team;
-
         return $this;
     }
 
@@ -178,7 +172,6 @@ class Member
     public function setOdds(int $odds): self
     {
         $this->odds = $odds;
-
         return $this;
     }
 

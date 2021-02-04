@@ -3,9 +3,6 @@
 namespace App\DataFixtures;
 
 use App\Entity\Member;
-use App\Entity\MemberRole;
-use App\Entity\MemberStatus;
-use App\Entity\Team;
 use App\Repository\MemberRoleRepository;
 use App\Repository\MemberStatusRepository;
 use App\Repository\TeamRepository;

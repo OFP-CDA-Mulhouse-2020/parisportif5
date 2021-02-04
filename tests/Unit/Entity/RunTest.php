@@ -119,7 +119,8 @@ final class RunTest extends WebTestCase
         $betCategory
             ->setName($name)
             ->setAllowDraw(false)
-            ->setTarget("teams");
+            ->setTarget("teams")
+            ->setOnCompetition(false);
         return $betCategory;
     }
 
@@ -229,72 +230,6 @@ final class RunTest extends WebTestCase
             [$startDate->modify("+1 day")],
             [$startDate->modify("+1 month")]
         ];
-    }
-
-       /**
-     * @dataProvider endDateUnconformityProvider
-     */
-    public function testEndDateUnconformity(\DateTimeInterface $endDate): void
-    {
-        $run = $this->createValidRun();
-        $run->setEndDate($endDate);
-        $violations = $this->validator->validate($run);
-        $this->assertGreaterThanOrEqual(1, count($violations));
-    }
-
-    public function endDateUnconformityProvider(): array
-    {
-        $timezone = $this->createDefaultTimeZone();
-        $endDate = new \DateTimeImmutable('now', $timezone);
-        return [
-            [$endDate->setTime(23, 59, 59, 1000000)],
-            [$endDate->modify('-1 hour')],
-            [$endDate->modify('-1 day')->setTime(23, 59, 59, 999999)],
-            [$endDate->modify('-1 year')]
-        ];
-    }
-
-    /**
-     * @dataProvider endDateConformityProvider
-     */
-    public function testEndDateConformity(\DateTimeInterface $endDate): void
-    {
-        $run = $this->createValidRun();
-        $run->setEndDate($endDate);
-        $violations = $this->validator->validate($run);
-        $this->assertCount(0, $violations);
-    }
-
-    public function endDateConformityProvider(): array
-    {
-        $timezone = $this->createDefaultTimeZone();
-        $endDate = new \DateTimeImmutable('now', $timezone);
-        return [
-            [$endDate->modify("+1 day")->setTime(23, 59, 59, 999999)],
-            [$endDate->modify("+1 month")]
-        ];
-    }
-
-    public function testMethodIsFinishReturnFalse(): void
-    {
-        $date = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
-        $run = $this->createValidRun();
-        $exist = method_exists($run, 'isFinish');
-        $this->assertTrue($exist);
-        $run->setEndDate($date->modify('+2 day'));
-        $result = $run->isFinish();
-        $this->assertFalse($result);
-    }
-
-    public function testMethodIsOngoingReturnFalse(): void
-    {
-        $date = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
-        $run = $this->createValidRun();
-        $exist = method_exists($run, 'isOngoing');
-        $this->assertTrue($exist);
-        $run->setEndDate($date->modify('+2 day'));
-        $result = $run->isOngoing();
-        $this->assertFalse($result);
     }
 
     public function testLocationCompatible(): void

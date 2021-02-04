@@ -15,67 +15,78 @@ final class BetCategoryFixtures extends Fixture
                 'name' => "result",
                 'description' => null,
                 'allowDraw' => true,
-                'target' => "teams"
+                'target' => "teams",
+                'onCompetition' => false
             ],
             [
                 'name' => "score",
                 'description' => null,
                 'allowDraw' => true,
-                'target' => "teams"
+                'target' => "teams",
+                'onCompetition' => false
             ],
             [
                 'name' => "points",
                 'description' => null,
                 'allowDraw' => true,
-                'target' => "teams"
+                'target' => "teams",
+                'onCompetition' => false
             ],
             [
                 'name' => "goalsLine",
                 'description' => null,
                 'allowDraw' => false,
-                'target' => "members"
+                'target' => "members",
+                'onCompetition' => false
             ],
             [
                 'name' => "toScore",
                 'description' => null,
                 'allowDraw' => true,
-                'target' => "teams"
+                'target' => "teams",
+                'onCompetition' => false
             ],
             [
                 'name' => "mostProlificHalfTime",
                 'description' => null,
                 'allowDraw' => true,
-                'target' => "teams"
+                'target' => "teams",
+                'onCompetition' => false
             ],
             [
                 'name' => "finishRace",
                 'description' => null,
                 'allowDraw' => false,
-                'target' => "members"
+                'target' => "members",
+                'onCompetition' => false
             ],
             [
                 'name' => "finalStage",
                 'description' => null,
                 'allowDraw' => false,
-                'target' => "members"
+                'target' => "members",
+                'onCompetition' => false
             ],
             [
                 'name' => "setsNumber",
                 'description' => null,
                 'allowDraw' => false,
-                'target' => "members"
+                'target' => "members",
+                'onCompetition' => false
             ],
             [
                 'name' => "top3",
                 'description' => null,
                 'allowDraw' => false,
-                'target' => "teams"
+                'target' => "teams",
+                'onCompetition' => false
             ],
             [
                 'name' => "top10",
                 'description' => null,
                 'allowDraw' => false,
-                'target' => "teams"
+                'target' => "teams",
+                'onCompetition' => false
             ]
         ];
         $count = count($testData);
@@ -86,6 +97,7 @@ final class BetCategoryFixtures extends Fixture
                 ->setDescription($testData[$i]['description'])
                 ->setAllowDraw($testData[$i]['allowDraw'])
                 ->setTarget($testData[$i]['target'])
+                ->setOnCompetition($testData[$i]['onCompetition'])
                 ;
             $manager->persist($betCategory);
         }

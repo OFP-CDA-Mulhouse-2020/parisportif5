@@ -134,7 +134,6 @@ class Sport
     public function setName(string $name): self
     {
         $this->name = $name;
-
         return $this;
     }
 
@@ -146,7 +145,6 @@ class Sport
     public function setMaxMembersByTeam(?int $maxMembersByTeam): self
     {
         $this->maxMembersByTeam = $maxMembersByTeam;
-
         return $this;
     }
 
@@ -158,7 +156,6 @@ class Sport
     public function setCountry(string $country): self
     {
         $this->country = $country;
-
         return $this;
     }
 
@@ -172,7 +169,6 @@ class Sport
         if (in_array($runType, self::RUN_TYPES) !== false) {
             $this->runType = $runType;
         }
-
         return $this;
     }
 
@@ -184,7 +180,6 @@ class Sport
     public function setIndividualType(bool $individualType): self
     {
         $this->individualType = $individualType;
-
         return $this;
     }
 
@@ -196,7 +191,6 @@ class Sport
     public function setCollectiveType(bool $collectiveType): self
     {
         $this->collectiveType = $collectiveType;
-
         return $this;
     }
 
@@ -208,7 +202,6 @@ class Sport
     public function setMaxTeamsByRun(?int $maxTeamsByRun): self
     {
         $this->maxTeamsByRun = $maxTeamsByRun;
-
         return $this;
     }
 
@@ -220,7 +213,6 @@ class Sport
     public function setMinMembersByTeam(int $minMembersByTeam): self
     {
         $this->minMembersByTeam = $minMembersByTeam;
-
         return $this;
     }
 
@@ -232,7 +224,6 @@ class Sport
     public function setMinTeamsByRun(int $minTeamsByRun): self
     {
         $this->minTeamsByRun = $minTeamsByRun;
-
         return $this;
     }
 

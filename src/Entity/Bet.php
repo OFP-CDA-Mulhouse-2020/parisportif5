@@ -186,7 +186,6 @@ class Bet
     public function setBetCategory(BetCategory $betCategory): self
     {
         $this->betCategory = $betCategory;
-
         return $this;
     }
 
@@ -198,7 +197,6 @@ class Bet
     public function setCompetition(Competition $competition): self
     {
         $this->competition = $competition;
-
         return $this;
     }
 
@@ -210,7 +208,6 @@ class Bet
     public function setRun(?Run $run): self
     {
         $this->run = $run;
-
         return $this;
     }
 
@@ -222,7 +219,6 @@ class Bet
     public function setTeam(?Team $team): self
     {
         $this->team = $team;
-
         return $this;
     }
 
@@ -234,7 +230,6 @@ class Bet
     public function setTeamMember(?Member $teamMember): self
     {
         $this->teamMember = $teamMember;
-
         return $this;
     }
 
@@ -247,7 +242,6 @@ class Bet
     {
         $betDate = $this->dateTimeConverter->convertedToStoreDateTime($betDate);
         $this->betDate = $betDate;
-
         return $this;
     }
 
@@ -258,13 +252,12 @@ class Bet
 
     public function getSelect(): ?object
     {
-        return $this->team ?? $this->teamMember;
+        return $this->teamMember ?? $this->team;
     }
 
     public function setDateTimeConverter(DateTimeStorageInterface $dateTimeConverter): self
     {
         $this->dateTimeConverter = $dateTimeConverter;
-
         return $this;
     }
 }

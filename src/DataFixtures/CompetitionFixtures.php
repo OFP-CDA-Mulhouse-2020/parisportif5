@@ -30,7 +30,6 @@ final class CompetitionFixtures extends Fixture implements DependentFixtureInter
             [
                 'name' => "Championnat1",
                 'start' => "2021-04-01 08:00",
-                'end' => "2021-04-10 20:00",
                 'country' => "FR",
                 'betCategoryName' => "result",
                 'sport' => [
@@ -55,7 +54,6 @@ final class CompetitionFixtures extends Fixture implements DependentFixtureInter
                 ->setName($testData[$i]['name'])
                 ->setCountry($testData[$i]['country'])
                 ->setStartDate(new \DateTimeImmutable($testData[$i]['start'], new \DateTimeZone("UTC")))
-                ->setEndDate(new \DateTimeImmutable($testData[$i]['end'], new \DateTimeZone("UTC")))
                 ->setSport($competitionSport)
                 ->addBetCategory($betCategory)
                 ;

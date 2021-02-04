@@ -2,6 +2,8 @@
 skinparam linetype ortho
 'plantuml
 'Relations :
+    'Un utilisateur a une liste des paris qu'il a fait
+    User "1" <-- "0..*" BetSaved
     'Un utilisateur a une langue sélectionnée
     User "0..*" --> "1" Language
     'Une facture n'est pas pas forcément lié à un utilisateur existant
@@ -94,19 +96,46 @@ skinparam linetype ortho
     class StorageDataConverter {
         +{static} getStoredTimeZone() : string
     }
+    'Liste des paris que les utilisateurs ont fait
+    class BetSaved {
+        -id : int
+        -designation : string
+        -amount : int
+        -odds : int
+        -gains : int
+        -betDate : DateTimeImmutable
+        -isWinning : bool|null
+        -betCategoryName : string
+        -competitionName : string
+        -competitionStartDate : DateTimeImmutable
+        -competitionCountry : string
+        -competitionSportName : string
+        -competitionSportCountry : string
+        -runName : string|null = null
+        -runEvent : string|null = null
+        -runStartDate : DateTimeImmutable|null = null
+        -teamName : string|null = null
+        -teamCountry : string|null = null
+        -memberLastName : string|null = null
+        -memberFirstName : string|null = null
+        -memberCountry : string|null = null
+        +hasWon() : bool|null
+        +getTargetName() : string
+        +getSelectName() : string|null
+    }
     'Rôle du membre (pilote, co-pilote, joueur)
     class MemberRole {
-        -identifier : int
+        -id : int
         -name : string
     }
     'Statut du membre (blessé, remplaçant, titulaire)
     class MemberStatus {
-        -identifier : int
+        -id : int
         -name : string
     }
     'Porte-feuille de l'utilisateur avec des fonds (de l'argent gagnés)
     class Wallet {
-        -identifier : int
+        -id : int
         -amount : int = 0
         +addAmount(in int amount) : void
         +subtractAmount(in int amount) : void
@@ -160,7 +189,7 @@ skinparam linetype ortho
     }
     'Langue d'affichage de l'utilisateur
     class Language {
-        -identifier : int
+        -id : int
         -name : string
         -country : string
         -code : string
@@ -171,7 +200,7 @@ skinparam linetype ortho
     }
     'Factures (type=débit ou crédit)
     class Billing {
-        -identifier : int
+        -id : int
         -firstName : string
         -lastName : string
         -address : string
@@ -199,7 +228,7 @@ skinparam linetype ortho
     }
     'Un paris
     class Bet {
-        -identifier : int
+        -id : int
         -designation : string
         -amount : int
         -odds : int
@@ -214,10 +243,11 @@ skinparam linetype ortho
     }
     'Catégorie de paris (ex: Paris sur le résultat)
     class BetCategory {
-        -identifier : int
+        -id : int
         -name : string
         -allowDraw : bool
         -target : string
+        -onCompetition : bool
         -description : string|null = null
         +{static} TEAM_TYPE : string = "teams"
         +{static} MEMBER_TYPE : string = "members"
@@ -225,14 +255,14 @@ skinparam linetype ortho
     }
     'Lieu de la rencontre/course
     class Location {
-        -identifier : int
+        -id : int
         -place : string
         -timezone : string
         -country : string
     }
     'Sport pratiqué (runtype = fixture(match), race(course)) (type = collectif ou individuel ou les deux)
     class Sport {
-        -identifier : int
+        -id : int
         -name : string
         -maxTeamsByRun : int|null = null
         -maxMembersByTeam : int|null = null
@@ -251,37 +281,35 @@ skinparam linetype ortho
     }
     'Compétition (JO, Ligue des Champions, F1 Championnat du monde)
     class Competition {
-        -identifier : int
+        -id : int
         -name : string
         -startDate : DateTimeImmutable
-        -endDate : DateTimeImmutable
         -country : string
         -maxRuns : int|null = null
         -minRuns : int = 0
         +hasRuns() : bool
-        +isFinish() : bool
-        +isOngoing() : bool
+        +canBet() : bool
         +getEventsCount() : int
         +getRunsCount() : int
         +hasRequiredNumberOfRuns() : bool
         +getTeams() : Team[]
+        +getBetCategoriesForCompetition : BetCategory[]
+        +getBetCategoriesForRun() : BetCategory[]
     }
     'Un match, une rencontre, une course
     class Run {
-        -identifier : int
+        -id : int
         -event : string
         -name : string
         -startDate : DateTimeImmutable
-        -endDate : DateTimeImmutable
-        +isFinish() : bool
-        +isOngoing() : bool
+        +canBet() : bool
         +hasTeams() : bool
         +getTeamsCount() : int
         +hasRequiredNumberOfTeams() : bool
     }
     'Joueur ou sportif ou pilote
     class Member {
-        -identifier : int
+        -id : int
         -lastName : string
         -firstName : string
         -country : string
@@ -290,7 +318,7 @@ skinparam linetype ortho
     }
     'Équipes qui participe à une rencontre, à une course
     class Team {
-        -identifier : int
+        -id : int
         -name : string
         -country : string
         -odds : int
