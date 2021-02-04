@@ -112,7 +112,7 @@ class User implements UserInterface
     private ?string $civility = null;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(
      *     message="Le prénom ne peut pas être vide.",
      *     normalizer="trim",
@@ -134,7 +134,7 @@ class User implements UserInterface
     private string $firstName;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(
      *     message="Le nom de famille ne peut pas être vide.",
      *     normalizer="trim",
@@ -156,7 +156,7 @@ class User implements UserInterface
     private string $lastName;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(
      *     message="L'adresse ne peut pas être vide.",
      *     normalizer="trim",
@@ -171,7 +171,7 @@ class User implements UserInterface
     private string $billingAddress;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(
      *     message="La ville ne peut pas être vide.",
      *     normalizer="trim",
@@ -186,7 +186,7 @@ class User implements UserInterface
     private string $billingCity;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(
      *     message="Le code postal ne peut pas être vide.",
      *     normalizer="trim",
@@ -201,7 +201,7 @@ class User implements UserInterface
     private string $billingPostcode;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(
      *     message="Le pays ne peut pas être vide.",
      *     normalizer="trim",
@@ -279,13 +279,6 @@ class User implements UserInterface
     private ?\DateTimeImmutable $activatedDate;
 
     /**
-     * @ORM\OneToOne(targetEntity=Language::class, cascade={"persist", "remove"})
-     * @ORM\JoinColumn(nullable=false)
-     * @Assert\Valid
-     */
-    private Language $language;
-
-    /**
      * @var Collection<int,Bet> $onGoingBets
      * @ORM\OneToMany(targetEntity=Bet::class, mappedBy="user", orphanRemoval=true)
      * @Assert\Valid
@@ -337,6 +330,13 @@ class User implements UserInterface
 
     /** Sécurise le stockage des dates et heures */
     private DateTimeStorageInterface $dateTimeConverter;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Language::class)
+     * @ORM\JoinColumn(nullable=false)
+     * @Assert\Valid
+     */
+    private Language $language;
 
     /**
      * @const int MIN_AGE_FOR_BETTING
@@ -609,17 +609,6 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getLanguage(): ?Language
-    {
-        return $this->language;
-    }
-
-    public function setLanguage(Language $language): self
-    {
-        $this->language = $language;
-        return $this;
-    }
-
     public function getDeletedStatus(): ?bool
     {
         return $this->deletedStatus;
@@ -712,6 +701,18 @@ class User implements UserInterface
             return true;
         }
         return false;
+    }
+
+    public function getLanguage(): ?Language
+    {
+        return $this->language;
+    }
+
+    public function setLanguage(Language $language): self
+    {
+        $this->language = $language;
+
+        return $this;
     }
 
     /**

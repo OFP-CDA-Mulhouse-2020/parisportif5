@@ -72,34 +72,34 @@ class Bet
     private BetCategory $betCategory;
 
     /**
-     * @ORM\Column(type="datetime_immutable")
-     */
-    private \DateTimeImmutable $betDate;
-
-    /**
-     * @ORM\OneToOne(targetEntity=Competition::class, cascade={"persist", "remove"})
+     * @ORM\ManyToOne(targetEntity=Competition::class)
      * @ORM\JoinColumn(nullable=false)
      * @Assert\Valid
      */
     private Competition $competition;
 
     /**
-     * @ORM\OneToOne(targetEntity=Run::class, cascade={"persist", "remove"})
+     * @ORM\ManyToOne(targetEntity=Run::class)
      * @Assert\Valid
      */
     private ?Run $run = null;
 
     /**
-     * @ORM\OneToOne(targetEntity=Team::class, cascade={"persist", "remove"})
+     * @ORM\ManyToOne(targetEntity=Team::class)
      * @Assert\Valid
      */
     private ?Team $team = null;
 
     /**
-     * @ORM\OneToOne(targetEntity=Member::class, cascade={"persist", "remove"})
+     * @ORM\ManyToOne(targetEntity=Member::class)
      * @Assert\Valid
      */
     private ?Member $teamMember = null;
+
+    /**
+     * @ORM\Column(type="datetime_immutable")
+     */
+    private \DateTimeImmutable $betDate;
 
     /** Sécurise le stockage des dates et heures */
     private DateTimeStorageInterface $dateTimeConverter;
@@ -158,50 +158,6 @@ class Bet
         return $this;
     }
 
-    public function getCompetition(): ?Competition
-    {
-        return $this->competition;
-    }
-
-    public function setCompetition(Competition $competition): self
-    {
-        $this->competition = $competition;
-        return $this;
-    }
-
-    public function getRun(): ?Run
-    {
-        return $this->run;
-    }
-
-    public function setRun(?Run $run): self
-    {
-        $this->run = $run;
-        return $this;
-    }
-
-    public function getTeam(): ?Team
-    {
-        return $this->team;
-    }
-
-    public function setTeam(?Team $team): self
-    {
-        $this->team = $team;
-        return $this;
-    }
-
-    public function getTeamMember(): ?Member
-    {
-        return $this->teamMember;
-    }
-
-    public function setTeamMember(?Member $teamMember): self
-    {
-        $this->teamMember = $teamMember;
-        return $this;
-    }
-
     public function hasWon(): ?bool
     {
         return $this->isWinning;
@@ -230,6 +186,54 @@ class Bet
     public function setBetCategory(BetCategory $betCategory): self
     {
         $this->betCategory = $betCategory;
+
+        return $this;
+    }
+
+    public function getCompetition(): ?Competition
+    {
+        return $this->competition;
+    }
+
+    public function setCompetition(Competition $competition): self
+    {
+        $this->competition = $competition;
+
+        return $this;
+    }
+
+    public function getRun(): ?Run
+    {
+        return $this->run;
+    }
+
+    public function setRun(?Run $run): self
+    {
+        $this->run = $run;
+
+        return $this;
+    }
+
+    public function getTeam(): ?Team
+    {
+        return $this->team;
+    }
+
+    public function setTeam(?Team $team): self
+    {
+        $this->team = $team;
+
+        return $this;
+    }
+
+    public function getTeamMember(): ?Member
+    {
+        return $this->teamMember;
+    }
+
+    public function setTeamMember(?Member $teamMember): self
+    {
+        $this->teamMember = $teamMember;
 
         return $this;
     }

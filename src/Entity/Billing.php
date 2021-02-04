@@ -167,12 +167,6 @@ class Billing
     private \DateTimeImmutable $deliveryDate;
 
     /**
-     * @ORM\OneToOne(targetEntity=User::class, cascade={"persist", "remove"})
-     * @Assert\Valid
-     */
-    private ?User $user = null;
-
-    /**
      * @ORM\Column(type="string", length=6)
      * @Assert\NotBlank(
      *     message="Le type d'opération ne peut pas être vide.",
@@ -184,6 +178,12 @@ class Billing
      * )
      */
     private string $operationType;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=User::class)
+     * @Assert\Valid
+     */
+    private ?User $user = null;
 
     /** Sécurise le stockage des dates et heures */
     private DateTimeStorageInterface $dateTimeConverter;
@@ -398,17 +398,6 @@ class Billing
         return $this;
     }
 
-    public function getUser(): ?User
-    {
-        return $this->user;
-    }
-
-    public function setUser(?User $user): self
-    {
-        $this->user = $user;
-        return $this;
-    }
-
     public function getOperationType(): ?string
     {
         return $this->operationType;
@@ -426,6 +415,18 @@ class Billing
     public function hasUser(): bool
     {
         return empty($this->user) ? false : true;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
+
+        return $this;
     }
 
     public function setDateTimeConverter(DateTimeStorageInterface $dateTimeConverter): self
