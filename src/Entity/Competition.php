@@ -97,13 +97,6 @@ class Competition
     private Collection $runs;
 
     /**
-     * @ORM\OneToOne(targetEntity=Sport::class, cascade={"persist", "remove"})
-     * @ORM\JoinColumn(nullable=false)
-     * @Assert\Valid
-     */
-    private Sport $sport;
-
-    /**
      * @var Collection<int,BetCategory> $betCategories
      * @ORM\ManyToMany(targetEntity=BetCategory::class)
      * @Assert\Count(
@@ -113,6 +106,13 @@ class Competition
      * @Assert\Valid
      */
     private Collection $betCategories;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Sport::class)
+     * @ORM\JoinColumn(nullable=false)
+     * @Assert\Valid
+     */
+    private Sport $sport;
 
     /** Sécurise le stockage des dates et heures */
     private DateTimeStorageInterface $dateTimeConverter;
@@ -231,17 +231,6 @@ class Competition
         return $this;
     }
 
-    public function getSport(): ?Sport
-    {
-        return $this->sport;
-    }
-
-    public function setSport(Sport $sport): self
-    {
-        $this->sport = $sport;
-        return $this;
-    }
-
     /**
      * @return Collection<int,BetCategory>
      */
@@ -262,6 +251,18 @@ class Competition
     public function removeBetCategory(BetCategory $betCategory): self
     {
         $this->betCategories->removeElement($betCategory);
+
+        return $this;
+    }
+
+    public function getSport(): ?Sport
+    {
+        return $this->sport;
+    }
+
+    public function setSport(Sport $sport): self
+    {
+        $this->sport = $sport;
 
         return $this;
     }

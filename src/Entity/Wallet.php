@@ -65,11 +65,6 @@ class Wallet
     {
         $this->user = $user;
 
-        // set the owning side of the relation if necessary
-        if ($user->getWallet() !== $this) {
-            $user->setWallet($this);
-        }
-
         return $this;
     }
 
