@@ -2,8 +2,7 @@
 
 namespace App\DataFixtures;
 
-use App\DataConverter\DateTimeStorageDataConverter;
-use App\Entity\Language;
+use App\Service\DateTimeStorageDataConverter;
 use App\Entity\User;
 use App\Entity\Wallet;
 use App\Repository\LanguageRepository;
