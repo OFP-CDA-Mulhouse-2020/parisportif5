@@ -37,14 +37,14 @@ final class SportTest extends WebTestCase
         return $sport;
     }
 
-    public function testIfNameIsNotNull(): void
+    public function testIfNameIsNotEmpty(): void
     {
         $sport = $this->createValidSport();
         $violations = $this->validator->validate($sport);
         $this->assertCount(0, $violations);
     }
 
-    public function testIfNameIsNull(): void
+    public function testIfNameIsEmpty(): void
     {
         $sport = $this->createValidSport();
         $sport->setName("");

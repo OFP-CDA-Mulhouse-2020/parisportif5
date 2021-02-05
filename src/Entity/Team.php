@@ -31,7 +31,8 @@ class Team
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(
-     *     normalizer="trim"
+     *     normalizer="trim",
+     *     message="Le nom de l'équipe ne peut pas être vide",
      * )
      * @Assert\Regex(
      *     pattern="/^\p{L}((?<!\')\'|\p{L}?\s?(?!\s)(\.(?!\.))?|\-(?!\-)|\s(?!\s)|\d)+\S$/u",
@@ -96,7 +97,6 @@ class Team
     public function setName(string $name): self
     {
         $this->name = $name;
-
         return $this;
     }
 
@@ -108,7 +108,6 @@ class Team
     public function setCountry(string $country): self
     {
         $this->country = $country;
-
         return $this;
     }
 
@@ -133,14 +132,12 @@ class Team
             $this->members[] = $member;
             $member->setTeam($this);
         }
-
         return $this;
     }
 
     public function removeMember(Member $member): self
     {
         $this->members->removeElement($member);
-
         return $this;
     }
 
@@ -152,7 +149,6 @@ class Team
     public function setSport(Sport $sport): self
     {
         $this->sport = $sport;
-
         return $this;
     }
 
@@ -184,7 +180,6 @@ class Team
     public function setOdds(int $odds): self
     {
         $this->odds = $odds;
-
         return $this;
     }
 

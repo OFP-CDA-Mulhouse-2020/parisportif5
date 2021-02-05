@@ -16,7 +16,7 @@ use App\Repository\CompetitionRepository;
 /**
  * @ORM\Entity(repositoryClass=CompetitionRepository::class)
  * @UniqueEntity(
- *     fields={"name", "startDate", "endDate", "country"},
+ *     fields={"name", "startDate", "country"},
  *     errorPath="name",
  *     message="Cette compétition est déjà enregistrée."
  * )
@@ -47,15 +47,6 @@ class Competition
      * )
      */
     private \DateTimeImmutable $startDate;
-
-    /**
-     * @ORM\Column(type="datetime_immutable")
-     * @Assert\GreaterThan(
-     *     propertyPath="startDate",
-     *     message="La date de fin de la compétition doit être supérieur à la date du début de celle-ci"
-     * )
-     */
-    private \DateTimeImmutable $endDate;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -137,7 +128,6 @@ class Competition
     public function setName(string $name): self
     {
         $this->name = $name;
-
         return $this;
     }
 
@@ -150,18 +140,6 @@ class Competition
     {
         $startDate = $this->dateTimeConverter->convertedToStoreDateTime($startDate);
         $this->startDate = $startDate;
-        return $this;
-    }
-
-    public function getEndDate(): ?\DateTimeImmutable
-    {
-        return $this->endDate;
-    }
-
-    public function setEndDate(\DateTimeInterface $endDate): self
-    {
-        $endDate = $this->dateTimeConverter->convertedToStoreDateTime($endDate);
-        $this->endDate = $endDate;
         return $this;
     }
 
@@ -187,19 +165,11 @@ class Competition
         return $this;
     }
 
-    public function isFinish(): bool
+    public function canBet(): bool
     {
         $timezoneUTC = new \DateTimeZone(DateTimeStorageDataConverter::STORED_TIME_ZONE);
         $currentDate = new \DateTime('now', $timezoneUTC);
-        return ($currentDate > $this->endDate->setTimezone($timezoneUTC));
-    }
-
-    public function isOngoing(): bool
-    {
-        $timezoneUTC = new \DateTimeZone(DateTimeStorageDataConverter::STORED_TIME_ZONE);
-        $currentDate = new \DateTime('now', $timezoneUTC);
-        return ($currentDate >= $this->startDate->setTimezone($timezoneUTC)
-            && $currentDate <= $this->endDate->setTimezone($timezoneUTC));
+        return ($currentDate < $this->startDate->setTimezone($timezoneUTC));
     }
 
     /**
@@ -220,14 +190,12 @@ class Competition
             $this->runs[] = $run;
             $run->setCompetition($this);
         }
-
         return $this;
     }
 
     public function removeRun(Run $run): self
     {
         $this->runs->removeElement($run);
-
         return $this;
     }
 
@@ -244,15 +212,36 @@ class Competition
         if (!$this->betCategories->contains($betCategory)) {
             $this->betCategories[] = $betCategory;
         }
-
         return $this;
     }
 
     public function removeBetCategory(BetCategory $betCategory): self
     {
         $this->betCategories->removeElement($betCategory);
-
         return $this;
+    }
+
+    /** @return BetCategory[] */
+    public function getBetCategoriesForCompetition(): array
+    {
+        $betCategoriesForCompetition = [];
+        foreach ($this->betCategories as $betCategory) {
+            if ($betCategory->getOnCompetition() === true) {
+                $betCategoriesForCompetition[] = $betCategory;
+            }
+        }
+        return $betCategoriesForCompetition;
+    }
+
+    /** @return BetCategory[] */
+    public function getBetCategoriesForRun(): array
+    {
+        $betCategoriesForRun = [];
+        if ($this->betCategories->isEmpty() === false) {
+            $betCategoriesForCompetition = $this->getBetCategoriesForCompetition();
+            $betCategoriesForRun = array_diff($this->betCategories->toArray(), $betCategoriesForCompetition);
+        }
+        return $betCategoriesForRun;
     }
 
     public function getSport(): ?Sport
@@ -263,7 +252,6 @@ class Competition
     public function setSport(Sport $sport): self
     {
         $this->sport = $sport;
-
         return $this;
     }
 
@@ -275,7 +263,6 @@ class Competition
     public function setMinRuns(int $minRuns): self
     {
         $this->minRuns = $minRuns;
-
         return $this;
     }
 
@@ -296,7 +283,6 @@ class Competition
     public function setDateTimeConverter(DateTimeStorageInterface $dateTimeConverter): self
     {
         $this->dateTimeConverter = $dateTimeConverter;
-
         return $this;
     }
 

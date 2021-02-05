@@ -328,15 +328,15 @@ class User implements UserInterface
      */
     private string $residenceProof;
 
-    /** Sécurise le stockage des dates et heures */
-    private DateTimeStorageInterface $dateTimeConverter;
-
     /**
      * @ORM\ManyToOne(targetEntity=Language::class)
      * @ORM\JoinColumn(nullable=false)
      * @Assert\Valid
      */
     private Language $language;
+
+    /** Sécurise le stockage des dates et heures */
+    private DateTimeStorageInterface $dateTimeConverter;
 
     /**
      * @const int MIN_AGE_FOR_BETTING
@@ -424,7 +424,6 @@ class User implements UserInterface
         $roles = $this->roles;
         // guarantee every user at least has ROLE_USER
         $roles[] = 'ROLE_USER';
-
         return array_unique($roles);
     }
 
@@ -711,7 +710,6 @@ class User implements UserInterface
     public function setLanguage(Language $language): self
     {
         $this->language = $language;
-
         return $this;
     }
 
@@ -729,14 +727,12 @@ class User implements UserInterface
             $this->onGoingBets[] = $onGoingBet;
             $onGoingBet->setUser($this);
         }
-
         return $this;
     }
 
     public function removeOnGoingBet(Bet $onGoingBet): self
     {
         $this->onGoingBets->removeElement($onGoingBet);
-
         return $this;
     }
 
@@ -748,7 +744,6 @@ class User implements UserInterface
     public function setWallet(Wallet $wallet): self
     {
         $this->wallet = $wallet;
-
         return $this;
     }
 
@@ -760,7 +755,6 @@ class User implements UserInterface
     public function setIsVerified(bool $isVerified): self
     {
         $this->isVerified = $isVerified;
-
         return $this;
     }
 
@@ -772,7 +766,6 @@ class User implements UserInterface
     public function setNewsletters(bool $newsletters): self
     {
         $this->newsletters = $newsletters;
-
         return $this;
     }
 
@@ -784,7 +777,6 @@ class User implements UserInterface
     public function setIdentityDocument(string $identityDocument): self
     {
         $this->identityDocument = $identityDocument;
-
         return $this;
     }
 
@@ -796,14 +788,12 @@ class User implements UserInterface
     public function setResidenceProof(string $residenceProof): self
     {
         $this->residenceProof = $residenceProof;
-
         return $this;
     }
 
     public function setDateTimeConverter(DateTimeStorageInterface $dateTimeConverter): self
     {
         $this->dateTimeConverter = $dateTimeConverter;
-
         return $this;
     }
 }

@@ -52,7 +52,6 @@ class Wallet
     public function setAmount(int $amount): self
     {
         $this->amount = $amount;
-
         return $this;
     }
 
@@ -64,7 +63,6 @@ class Wallet
     public function setUser(User $user): self
     {
         $this->user = $user;
-
         return $this;
     }
 

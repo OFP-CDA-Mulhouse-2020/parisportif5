@@ -46,7 +46,7 @@ class BettingCompetitionRegistrationController extends AbstractController
         if ($betCategory === null) {
             return $this->redirectToRoute('userlogin');
         }
-        if ($competition->isOngoing() || $competition->isFinish()) {
+        if ($competition->canBet() === false) {
             $sportUrl = "/" . $request->attributes->get('sportSlug') . "-"
                 . ($competition->getSport()->getId() ?? '');
             return new RedirectResponse($sportUrl);

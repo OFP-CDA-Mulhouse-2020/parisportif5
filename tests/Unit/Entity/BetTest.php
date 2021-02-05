@@ -143,7 +143,8 @@ final class BetTest extends WebTestCase
         $betCategory
             ->setName($name)
             ->setAllowDraw(false)
-            ->setTarget("teams");
+            ->setTarget("teams")
+            ->setOnCompetition(false);
         return $betCategory;
     }
 

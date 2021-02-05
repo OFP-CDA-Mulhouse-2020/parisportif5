@@ -51,7 +51,6 @@ class MemberRole
     public function setName(string $name): self
     {
         $this->name = $name;
-
         return $this;
     }
 }

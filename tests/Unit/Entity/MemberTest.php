@@ -139,7 +139,7 @@ final class MemberTest extends WebTestCase
     public function testIfFirstNameIsInvalid(string $firstName): void
     {
         $member = $this->initializeMember();
-        $member->setLastName($firstName);
+        $member->setFirstName($firstName);
         $violations = $this->validator->validate($member);
         $this->assertGreaterThanOrEqual(1, count($violations));
     }

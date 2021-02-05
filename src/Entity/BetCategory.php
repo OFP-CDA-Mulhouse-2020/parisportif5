@@ -39,7 +39,8 @@ use App\Repository\BetCategoryRepository;
 /**
  * @ORM\Entity(repositoryClass=BetCategoryRepository::class)
  * @UniqueEntity(
- *     fields="name",
+ *     fields={"name", "target", "onCompetition"},
+ *     errorPath="name",
  *     message="Cette catégorie de paris est déjà enregistré."
  * )
  */
@@ -88,6 +89,11 @@ class BetCategory
      */
     private string $target;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private bool $onCompetition;
+
     /** @const string TEAM_TYPE */
     public const TEAM_TYPE = "teams";
 
@@ -134,7 +140,6 @@ class BetCategory
     public function setAllowDraw(bool $allowDraw): self
     {
         $this->allowDraw = $allowDraw;
-
         return $this;
     }
 
@@ -148,7 +153,17 @@ class BetCategory
         if (in_array($target, self::TARGET_TYPES) !== false) {
             $this->target = $target;
         }
+        return $this;
+    }
 
+    public function getOnCompetition(): ?bool
+    {
+        return $this->onCompetition;
+    }
+
+    public function setOnCompetition(bool $onCompetition): self
+    {
+        $this->onCompetition = $onCompetition;
         return $this;
     }
 }
