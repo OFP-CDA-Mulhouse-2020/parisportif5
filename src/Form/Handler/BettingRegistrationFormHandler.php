@@ -124,9 +124,9 @@ final class BettingRegistrationFormHandler
         $bet = $this->setBetResult($bet, $teamRepository, $memberRepository);
         //$designation = $this->getDesignation($bet);
         //$designation .= ' : Paris sur ' . $this->bettingRegistrationFormModel->getCategoryLabel();
-        $designation = 'Paris sur ' . $this->bettingRegistrationFormModel->getCategoryLabel();
+        $designation = 'Paris sur la catégorie ' . $this->bettingRegistrationFormModel->getCategoryLabel();
         $selectName = $this->getSelectName($bet);
-        $designation .= ' avec ' . $selectName;
+        $designation .= ' avec le résultat ' . $selectName;
         $user->addOnGoingBet($bet);
         $bet = $this->setBetDate($bet);
         $result = $this->bettingRegistrationFormModel->getResult();

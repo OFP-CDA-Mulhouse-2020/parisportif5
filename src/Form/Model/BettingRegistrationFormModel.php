@@ -110,8 +110,7 @@ final class BettingRegistrationFormModel
     private function createDrawChoice(array &$choices, bool $teamType, int $totalOdds): void
     {
         $choicesCount = count($choices);
-        $drawOdds = (int)(round(($totalOdds / $choicesCount), 0, PHP_ROUND_HALF_UP));
-        $drawOdds = $this->oddsStorageDataConverter->convertToOddsMultiplier($drawOdds);
+        $drawOdds = (float)(round(($totalOdds / $choicesCount), 0, PHP_ROUND_HALF_UP));
         if ($teamType === true && $choicesCount === 2) {
             $last = $choices[1];
             $choices[1] = (object)["id" => 0,

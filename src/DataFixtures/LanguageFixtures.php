@@ -13,7 +13,7 @@ final class LanguageFixtures extends Fixture
         $testData = [
             [
                 'name' => 'anglais',
-                'country' => 'Uinted Kingdom',
+                'country' => 'GB',
                 'code' => 'en_GB',
                 'dateFormat' => 'd-m-Y',
                 'timeFormat' => 'H:i:s',
@@ -21,7 +21,7 @@ final class LanguageFixtures extends Fixture
             ],
             [
                 'name' => 'allemand',
-                'country' => 'Deutschland',
+                'country' => 'DE',
                 'code' => 'de_DE',
                 'dateFormat' => 'd/m/Y',
                 'timeFormat' => 'H:i:s',
@@ -29,7 +29,7 @@ final class LanguageFixtures extends Fixture
             ],
             [
                 'name' => 'français',
-                'country' => 'France',
+                'country' => 'FR',
                 'code' => 'fr_FR',
                 'dateFormat' => 'd/m/Y',
                 'timeFormat' => 'H:i:s',

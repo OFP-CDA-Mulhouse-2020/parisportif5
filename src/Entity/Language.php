@@ -44,9 +44,8 @@ class Language
      *     message="Le pays du langage ne peut pas être vide",
      *     normalizer="trim"
      * )
-     * @Assert\Regex(
-     *     pattern="/^[\p{L}\s]+$/u",
-     *     message="Les chiffres et les caractères spéciaux ne sont pas autorisés pour le pays du langage"
+     * @Assert\Country(
+     *     message="Le pays du langage {{ value }} n'est pas valide",
      * )
      */
     private string $country;

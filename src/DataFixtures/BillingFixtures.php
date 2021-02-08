@@ -26,7 +26,7 @@ final class BillingFixtures extends Fixture implements DependentFixtureInterface
                 'order' => 12365563,
                 'invoice' => 12365563,
                 'amount' => 1000,
-                'commission' => 75000,
+                'commission' => '0.075',
                 'designation' => "Bet",
                 'firstname' => "Tintin",
                 'lastname' => "Dupont",

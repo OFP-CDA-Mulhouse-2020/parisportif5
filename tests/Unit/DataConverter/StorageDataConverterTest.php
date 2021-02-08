@@ -85,7 +85,7 @@ final class StorageDataConverterTest extends TestCase
         $storageDataConverter = $this->createStorageDataConverter();
         $result = method_exists($storageDataConverter, 'convertToOddsMultiplier');
         $this->assertTrue($result);
-        $result = $storageDataConverter->convertToOddsMultiplier(15000);
+        $result = $storageDataConverter->convertToOddsMultiplier('1.5');
         $this->assertIsFloat($result);
         $this->assertSame(1.5, $result);
     }
@@ -96,8 +96,8 @@ final class StorageDataConverterTest extends TestCase
         $result = method_exists($storageDataConverter, 'convertOddsMultiplierToStoredData');
         $this->assertTrue($result);
         $result = $storageDataConverter->convertOddsMultiplierToStoredData(1.5);
-        $this->assertIsInt($result);
-        $this->assertSame(15000, $result);
+        $this->assertIsString($result);
+        $this->assertSame('1.5', $result);
     }
 
     public function testMethodConvertToCurrencyUnitReturnValue(): void
@@ -125,7 +125,7 @@ final class StorageDataConverterTest extends TestCase
         $storageDataConverter = $this->createStorageDataConverter();
         $result = method_exists($storageDataConverter, 'convertToCommissionRate');
         $this->assertTrue($result);
-        $result = $storageDataConverter->convertToCommissionRate(75000);
+        $result = $storageDataConverter->convertToCommissionRate('0.075');
         $this->assertIsFloat($result);
         $this->assertSame(7.5, $result);
     }
@@ -136,7 +136,7 @@ final class StorageDataConverterTest extends TestCase
         $result = method_exists($storageDataConverter, 'convertCommissionRateToStoredData');
         $this->assertTrue($result);
         $result = $storageDataConverter->convertCommissionRateToStoredData(7.5);
-        $this->assertIsInt($result);
-        $this->assertSame(75000, $result);
+        $this->assertIsString($result);
+        $this->assertSame('0.075', $result);
     }
 }

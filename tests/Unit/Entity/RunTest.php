@@ -55,7 +55,7 @@ final class RunTest extends WebTestCase
             ->setCountry($country)
             ->setSport($this->createSportObject())
             ->addMember($this->createMemberObject())
-            ->setOdds(20000);
+            ->setOdds('2');
         return $team;
     }
 
@@ -66,7 +66,7 @@ final class RunTest extends WebTestCase
             ->setLastName($lastName)
             ->setFirstName("Jean-Pierre")
             ->setCountry("FR")
-            ->setOdds(20000);
+            ->setOdds('2');
         return $member;
     }
 

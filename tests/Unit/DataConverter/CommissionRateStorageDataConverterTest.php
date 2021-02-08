@@ -22,7 +22,7 @@ final class CommissionRateStorageDataConverterTest extends TestCase
         $commissionRateStorageDataConverter = $this->createCommissionRateStorageDataConverter();
         $result = method_exists($commissionRateStorageDataConverter, 'convertToCommissionRate');
         $this->assertTrue($result);
-        $result = $commissionRateStorageDataConverter->convertToCommissionRate(75000);
+        $result = $commissionRateStorageDataConverter->convertToCommissionRate('0.075');
         $this->assertIsFloat($result);
         $this->assertSame(7.5, $result);
     }
@@ -33,7 +33,7 @@ final class CommissionRateStorageDataConverterTest extends TestCase
         $result = method_exists($commissionRateStorageDataConverter, 'convertCommissionRateToStoredData');
         $this->assertTrue($result);
         $result = $commissionRateStorageDataConverter->convertCommissionRateToStoredData(7.5);
-        $this->assertIsInt($result);
-        $this->assertSame(75000, $result);
+        $this->assertIsString($result);
+        $this->assertSame('0.075', $result);
     }
 }

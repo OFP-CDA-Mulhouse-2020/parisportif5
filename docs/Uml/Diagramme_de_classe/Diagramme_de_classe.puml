@@ -119,7 +119,7 @@ skinparam linetype ortho
         -memberLastName : string|null = null
         -memberFirstName : string|null = null
         -memberCountry : string|null = null
-        +hasWon() : bool|null
+        +isWinning() : bool|null
         +getTargetName() : string
         +getSelectName() : string|null
     }
@@ -234,7 +234,7 @@ skinparam linetype ortho
         -odds : int
         -betDate : DateTimeImmutable
         -isWinning : bool|null = null
-        +hasWon() : bool|null
+        +isWinning() : bool|null
         +won() : void
         +lost() : void
         +restoreWithoutResult() : void

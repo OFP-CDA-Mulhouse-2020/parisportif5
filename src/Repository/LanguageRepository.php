@@ -51,7 +51,7 @@ class LanguageRepository extends ServiceEntityRepository
             $defaultLanguage = new Language();
             $defaultLanguage
                 ->setName('français')
-                ->setCountry('france')
+                ->setCountry('FR')
                 ->setCode('fr_FR')
                 ->setDateFormat('d/m/Y')
                 ->setTimeFormat('H:i:s')

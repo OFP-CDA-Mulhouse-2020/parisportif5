@@ -23,46 +23,54 @@ final class MemberTest extends WebTestCase
         $this->validator = $kernel->getContainer()->get('validator');
     }
 
-    private function initializeMember(): Member
+    private function createValidMember(): Member
     {
         $member =  new Member();
         $member->setLastName("Papin");
         $member->setFirstName("Jean-Pierre");
         $member->setCountry("FR");
-        $member->setOdds(20000);
+        $member->setOdds('2');
         return $member;
     }
 
-    private function initializeMemberRole(string $memberRoleName): MemberRole
+    private function createMemberRoleObject(string $memberRoleName): MemberRole
     {
         $memberRole =  new MemberRole();
         $memberRole->setName($memberRoleName);
         return $memberRole;
     }
 
-    private function initializeMemberStatus(string $memberStatusName): MemberStatus
+    private function createMemberStatusObject(string $memberStatusName): MemberStatus
     {
         $memberStatus =  new MemberStatus();
         $memberStatus->setName($memberStatusName);
         return $memberStatus;
     }
 
-    public function testIfOddsIsInvalid(): void
+    public function testOddsCompatible(): void
     {
-        $odds = -1;
-        $member = $this->initializeMember();
-        $member->setOdds($odds);
-        $violations = $this->validator->validate($member);
-        $this->assertCount(1, $violations);
-    }
-
-    public function testIfOddsIsValid(): void
-    {
-        $odds = 0;
-        $member = $this->initializeMember();
-        $member->setOdds($odds);
+        $odds1 = '0';
+        $odds2 = '10000000';
+        $member = $this->createValidMember();
+        $member->setOdds($odds1);
         $violations = $this->validator->validate($member);
         $this->assertCount(0, $violations);
+        $member->setOdds($odds2);
+        $violations = $this->validator->validate($member);
+        $this->assertCount(0, $violations);
+    }
+
+    public function testOddsUncompatible(): void
+    {
+        $odds1 = '-1';
+        $odds2 = '100000000';
+        $member = $this->createValidMember();
+        $member->setOdds($odds1);
+        $violations = $this->validator->validate($member);
+        $this->assertCount(1, $violations);
+        $member->setOdds($odds2);
+        $violations = $this->validator->validate($member);
+        $this->assertCount(1, $violations);
     }
 
     /**
@@ -70,7 +78,7 @@ final class MemberTest extends WebTestCase
      */
     public function testIfLastNameIsValid(string $lastName): void
     {
-        $member = $this->initializeMember();
+        $member = $this->createValidMember();
         $member->setLastName($lastName);
         $violations = $this->validator->validate($member);
         $this->assertCount(0, $violations);
@@ -94,7 +102,7 @@ final class MemberTest extends WebTestCase
      */
     public function testIfLastNameIsInvalid(string $lastName): void
     {
-        $member = $this->initializeMember();
+        $member = $this->createValidMember();
         $member->setLastName($lastName);
         $violations = $this->validator->validate($member);
         $this->assertGreaterThanOrEqual(1, count($violations));
@@ -114,7 +122,7 @@ final class MemberTest extends WebTestCase
      */
     public function testIfFirstNameIsValid(string $firstName): void
     {
-        $member = $this->initializeMember();
+        $member = $this->createValidMember();
         $member->setFirstName($firstName);
         $violations = $this->validator->validate($member);
         $this->assertCount(0, $violations);
@@ -138,7 +146,7 @@ final class MemberTest extends WebTestCase
      */
     public function testIfFirstNameIsInvalid(string $firstName): void
     {
-        $member = $this->initializeMember();
+        $member = $this->createValidMember();
         $member->setFirstName($firstName);
         $violations = $this->validator->validate($member);
         $this->assertGreaterThanOrEqual(1, count($violations));
@@ -157,7 +165,7 @@ final class MemberTest extends WebTestCase
 
     public function testIfCountryIsValid(): void
     {
-        $member = $this->initializeMember();
+        $member = $this->createValidMember();
         $violations = $this->validator->validate($member);
         $this->assertCount(0, $violations);
     }
@@ -167,7 +175,7 @@ final class MemberTest extends WebTestCase
      */
     public function testIfCountryIsInvalid(string $country): void
     {
-        $member = $this->initializeMember();
+        $member = $this->createValidMember();
         $member->setCountry($country);
         $violations = $this->validator->validate($member);
         $this->assertGreaterThanOrEqual(1, count($violations));
@@ -185,8 +193,8 @@ final class MemberTest extends WebTestCase
 
     public function testIfMemberRoleIsValid(): void
     {
-        $member = $this->initializeMember();
-        $memberRole = $this->initializeMemberRole("footballer-avant");
+        $member = $this->createValidMember();
+        $memberRole = $this->createMemberRoleObject("footballer-avant");
         $member->setMemberRole($memberRole);
         $this->assertSame($memberRole, $member->getMemberRole());
         $violations = $this->validator->validate($member);
@@ -195,8 +203,8 @@ final class MemberTest extends WebTestCase
 
     public function testIfMemberRoleIsInvalid(): void
     {
-        $member = $this->initializeMember();
-        $memberRole = $this->initializeMemberRole("player_");
+        $member = $this->createValidMember();
+        $memberRole = $this->createMemberRoleObject("player_");
         $member->setMemberRole($memberRole);
         $violations = $this->validator->validate($member);
         $this->assertCount(1, $violations);
@@ -204,8 +212,8 @@ final class MemberTest extends WebTestCase
 
     public function testIfMemberStatusIsValid(): void
     {
-        $member = $this->initializeMember();
-        $memberStatus = $this->initializeMemberStatus("titularization");
+        $member = $this->createValidMember();
+        $memberStatus = $this->createMemberStatusObject("titularization");
         $member->setMemberStatus($memberStatus);
         $this->assertSame($memberStatus, $member->getMemberStatus());
         $violations = $this->validator->validate($member);
@@ -214,8 +222,8 @@ final class MemberTest extends WebTestCase
 
     public function testIfMemberStatusIsInvalid(): void
     {
-        $member = $this->initializeMember();
-        $memberStatus = $this->initializeMemberStatus("on the bench");
+        $member = $this->createValidMember();
+        $memberStatus = $this->createMemberStatusObject("on the bench");
         $member->setMemberStatus($memberStatus);
         $violations = $this->validator->validate($member);
         $this->assertCount(1, $violations);

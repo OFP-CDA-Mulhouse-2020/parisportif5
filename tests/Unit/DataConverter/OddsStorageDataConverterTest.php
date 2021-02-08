@@ -22,7 +22,7 @@ final class OddsStorageDataConverterTest extends TestCase
         $oddsStorageDataConverter = $this->createOddsStorageDataConverter();
         $result = method_exists($oddsStorageDataConverter, 'convertToOddsMultiplier');
         $this->assertTrue($result);
-        $result = $oddsStorageDataConverter->convertToOddsMultiplier(15000);
+        $result = $oddsStorageDataConverter->convertToOddsMultiplier('1.5');
         $this->assertIsFloat($result);
         $this->assertSame(1.5, $result);
     }
@@ -33,7 +33,7 @@ final class OddsStorageDataConverterTest extends TestCase
         $result = method_exists($oddsStorageDataConverter, 'convertOddsMultiplierToStoredData');
         $this->assertTrue($result);
         $result = $oddsStorageDataConverter->convertOddsMultiplierToStoredData(1.5);
-        $this->assertIsInt($result);
-        $this->assertSame(15000, $result);
+        $this->assertIsString($result);
+        $this->assertSame('1.5', $result);
     }
 }

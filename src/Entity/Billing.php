@@ -149,12 +149,12 @@ class Billing
     private int $amount;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="decimal", precision=10, scale=4)
      * @Assert\PositiveOrZero(
-     *     message="Le taux de commission (multiplier par 10000) doit être un entier positif ou zéro"
+     *     message="Le taux de commission (multiplier par 100) doit être positif ou zéro"
      * )
      */
-    private int $commissionRate;
+    private string $commissionRate;
 
     /**
      * @ORM\Column(type="datetime_immutable")
@@ -387,12 +387,12 @@ class Billing
         return $this;
     }
 
-    public function getCommissionRate(): ?int
+    public function getCommissionRate(): ?string
     {
         return $this->commissionRate;
     }
 
-    public function setCommissionRate(int $commissionRate): self
+    public function setCommissionRate(string $commissionRate): self
     {
         $this->commissionRate = $commissionRate;
         return $this;

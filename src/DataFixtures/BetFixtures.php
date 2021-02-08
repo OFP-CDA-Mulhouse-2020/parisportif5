@@ -32,7 +32,7 @@ final class BetFixtures extends Fixture
             [
                 'designation' => "Mise 1",
                 'amount' => 1000,
-                'odds' => 20000,
+                'odds' => '2',
                 'betdate' => "now",
                 'user' => "tintin.dupont@test.fr",
                 'categoryName' => "result",

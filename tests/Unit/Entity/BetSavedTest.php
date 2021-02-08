@@ -32,7 +32,7 @@ final class BetSavedTest extends WebTestCase
             ->setDateTimeConverter($converter)
             ->setDesignation('paris')
             ->setAmount(100)
-            ->setOdds(12000)
+            ->setOdds('1.2')
             ->setBetDate($date)
             ->setGains(0)
             ->setBetCategoryName('result')
@@ -113,8 +113,8 @@ final class BetSavedTest extends WebTestCase
 
     public function testOddsCompatible(): void
     {
-        $odds1 = 0;
-        $odds2 = 1000000000;
+        $odds1 = '0';
+        $odds2 = '10000000';
         $betSaved = $this->createValidBetSaved();
         $betSaved->setOdds($odds1);
         $violations = $this->validator->validate($betSaved);
@@ -126,9 +126,13 @@ final class BetSavedTest extends WebTestCase
 
     public function testOddsUncompatible(): void
     {
-        $odds = -1;
+        $odds1 = '-1';
+        $odds2 = '100000000';
         $betSaved = $this->createValidBetSaved();
-        $betSaved->setOdds($odds);
+        $betSaved->setOdds($odds1);
+        $violations = $this->validator->validate($betSaved);
+        $this->assertCount(1, $violations);
+        $betSaved->setOdds($odds2);
         $violations = $this->validator->validate($betSaved);
         $this->assertCount(1, $violations);
     }

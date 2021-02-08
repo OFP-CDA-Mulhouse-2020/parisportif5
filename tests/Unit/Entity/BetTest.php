@@ -38,7 +38,7 @@ final class BetTest extends WebTestCase
             ->setDateTimeConverter($converter)
             ->setDesignation('paris')
             ->setAmount(100)
-            ->setOdds(12000)
+            ->setOdds('1.2')
             ->setBetDate($date);
         return $bet;
     }
@@ -122,7 +122,7 @@ final class BetTest extends WebTestCase
             ->setCountry($country)
             ->setSport($this->createSportObject())
             ->addMember($this->createMemberObject())
-            ->setOdds(20000);
+            ->setOdds('2');
         return $team;
     }
 
@@ -133,7 +133,7 @@ final class BetTest extends WebTestCase
             ->setLastName($lastName)
             ->setFirstName("Jean-Pierre")
             ->setCountry("FR")
-            ->setOdds(20000);
+            ->setOdds('2');
         return $member;
     }
 
@@ -204,8 +204,8 @@ final class BetTest extends WebTestCase
 
     public function testOddsCompatible(): void
     {
-        $odds1 = 0;
-        $odds2 = 1000000000;
+        $odds1 = '0';
+        $odds2 = '10000000';
         $bet = $this->createValidBet();
         $bet->setOdds($odds1);
         $violations = $this->validator->validate($bet);
@@ -217,9 +217,13 @@ final class BetTest extends WebTestCase
 
     public function testOddsUncompatible(): void
     {
-        $odds = -1;
+        $odds1 = '-1';
+        $odds2 = '100000000';
         $bet = $this->createValidBet();
-        $bet->setOdds($odds);
+        $bet->setOdds($odds1);
+        $violations = $this->validator->validate($bet);
+        $this->assertCount(1, $violations);
+        $bet->setOdds($odds2);
         $violations = $this->validator->validate($bet);
         $this->assertCount(1, $violations);
     }
@@ -229,11 +233,11 @@ final class BetTest extends WebTestCase
         $bet = $this->createValidBet();
         $method = method_exists($bet, 'won');
         $this->assertTrue($method);
-        $method = method_exists($bet, 'hasWon');
+        $method = method_exists($bet, 'isWinning');
         $this->assertTrue($method);
-        $this->assertNull($bet->hasWon());
+        $this->assertNull($bet->isWinning());
         $bet->won();
-        $this->assertTrue($bet->hasWon());
+        $this->assertTrue($bet->isWinning());
     }
 
     public function testLostBet(): void
@@ -241,11 +245,11 @@ final class BetTest extends WebTestCase
         $bet = $this->createValidBet();
         $method = method_exists($bet, 'lost');
         $this->assertTrue($method);
-        $method = method_exists($bet, 'hasWon');
+        $method = method_exists($bet, 'isWinning');
         $this->assertTrue($method);
-        $this->assertNull($bet->hasWon());
+        $this->assertNull($bet->isWinning());
         $bet->lost();
-        $this->assertFalse($bet->hasWon());
+        $this->assertFalse($bet->isWinning());
     }
 
     public function testRestoreWithoutResultBet(): void
@@ -255,13 +259,13 @@ final class BetTest extends WebTestCase
         $this->assertTrue($method);
         $method = method_exists($bet, 'lost');
         $this->assertTrue($method);
-        $method = method_exists($bet, 'hasWon');
+        $method = method_exists($bet, 'isWinning');
         $this->assertTrue($method);
-        $this->assertNull($bet->hasWon());
+        $this->assertNull($bet->isWinning());
         $bet->lost();
-        $this->assertFalse($bet->hasWon());
+        $this->assertFalse($bet->isWinning());
         $bet->restoreWithoutResult();
-        $this->assertNull($bet->hasWon());
+        $this->assertNull($bet->isWinning());
     }
 
     public function testUserUncompatible(): void

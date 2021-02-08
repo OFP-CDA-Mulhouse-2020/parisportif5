@@ -43,91 +43,91 @@ final class MemberFixtures extends Fixture implements DependentFixtureInterface
                 'first_name' => "Joueur",
                 'last_name' => "Random",
                 'country' => "FR",
-                'odds' => 15000
+                'odds' => '1.5'
             ],
             [
                 'first_name' => "Machin",
                 'last_name' => "Truc",
                 'country' => "FR",
-                'odds' => 15000
+                'odds' => '1.5'
             ],
             [
                 'first_name' => "Jean",
                 'last_name' => "Dupont",
                 'country' => "FR",
-                'odds' => 15000
+                'odds' => '1.5'
             ],
             [
                 'first_name' => "Bidule",
                 'last_name' => "Mcdonald",
                 'country' => "FR",
-                'odds' => 15000
+                'odds' => '1.5'
             ],
             [
                 'first_name' => "Pierre",
                 'last_name' => "Caillou",
                 'country' => "FR",
-                'odds' => 15000
+                'odds' => '1.5'
             ],
             [
                 'first_name' => "Michel",
                 'last_name' => "Bouzin",
                 'country' => "FR",
-                'odds' => 15000
+                'odds' => '1.5'
             ],
             [
                 'first_name' => "Sam",
                 'last_name' => "Duplot",
                 'country' => "FR",
-                'odds' => 15000
+                'odds' => '1.5'
             ],
             [
                 'first_name' => "Luc",
                 'last_name' => "Durand",
                 'country' => "FR",
-                'odds' => 15000
+                'odds' => '1.5'
             ],
             [
                 'first_name' => "Elias",
                 'last_name' => "De Kelliwick",
                 'country' => "FR",
-                'odds' => 15000
+                'odds' => '1.5'
             ],
             [
                 'first_name' => "Arthur",
                 'last_name' => "Pendragon",
                 'country' => "FR",
-                'odds' => 15000
+                'odds' => '1.5'
             ],
             [
                 'first_name' => "Lancelot",
                 'last_name' => "Dulac",
                 'country' => "FR",
-                'odds' => 15000
+                'odds' => '1.5'
             ],
             [
                 'first_name' => "Perceval",
                 'last_name' => "Legallois",
                 'country' => "FR",
-                'odds' => 15000
+                'odds' => '1.5'
             ],
             [
                 'first_name' => "Martin",
                 'last_name' => "Luther",
                 'country' => "FR",
-                'odds' => 15000
+                'odds' => '1.5'
             ],
             [
                 'first_name' => "Zinédine",
                 'last_name' => "Zidane",
                 'country' => "FR",
-                'odds' => 15000
+                'odds' => '1.5'
             ],
             [
                 'first_name' => "Jean",
                 'last_name' => "Marsouin",
                 'country' => "FR",
-                'odds' => 15000
+                'odds' => '1.5'
             ],
         ];
         $count = count($testData);
