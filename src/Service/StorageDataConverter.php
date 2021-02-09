@@ -53,22 +53,22 @@ final class StorageDataConverter implements FundsStorageInterface, OddsStorageIn
         return $this->fundsConverter->convertCurrencyUnitToStoredData($amount);
     }
 
-    public function convertToOddsMultiplier(int $odds): float
+    public function convertToOddsMultiplier(string $odds): float
     {
         return $this->oddsConverter->convertToOddsMultiplier($odds);
     }
 
-    public function convertOddsMultiplierToStoredData(float $odds): int
+    public function convertOddsMultiplierToStoredData(float $odds): string
     {
         return $this->oddsConverter->convertOddsMultiplierToStoredData($odds);
     }
 
-    public function convertToCommissionRate(int $commissionRate): float
+    public function convertToCommissionRate(string $commissionRate): float
     {
         return $this->commissionRateConverter->convertToCommissionRate($commissionRate);
     }
 
-    public function convertCommissionRateToStoredData(float $commissionRate): int
+    public function convertCommissionRateToStoredData(float $commissionRate): string
     {
         return $this->commissionRateConverter->convertCommissionRateToStoredData($commissionRate);
     }

@@ -22,52 +22,52 @@ final class TeamFixtures extends Fixture
             [
                 'name' => "Racing Club de Strasbourg Alsace",
                 'country' => "FR",
-                'odds' => 15000
+                'odds' => '1.5'
             ],
             [
                 'name' => "Paris Saint-Germain",
                 'country' => "FR",
-                'odds' => 15000
+                'odds' => '1.5'
             ],
             [
                 'name' => "AS Saint-Étienne",
                 'country' => "FR",
-                'odds' => 15000
+                'odds' => '1.5'
             ],
             [
                 'name' => "Olympique de Marseille",
                 'country' => "FR",
-                'odds' => 15000
+                'odds' => '1.5'
             ],
             [
                 'name' => "Olympique Lyonnais",
                 'country' => "FR",
-                'odds' => 15000
+                'odds' => '1.5'
             ],
             [
                 'name' => "Stade Brestois 29",
                 'country' => "FR",
-                'odds' => 15000
+                'odds' => '1.5'
             ],
             [
                 'name' => "FC Metz",
                 'country' => "FR",
-                'odds' => 15000
+                'odds' => '1.5'
             ],
             [
                 'name' => "Girondins de Bordeaux",
                 'country' => "FR",
-                'odds' => 15000
+                'odds' => '1.5'
             ],
             [
                 'name' => "Lille OSC",
                 'country' => "FR",
-                'odds' => 15000
+                'odds' => '1.5'
             ],
             [
                 'name' => "Stade Rennais",
                 'country' => "FR",
-                'odds' => 15000
+                'odds' => '1.5'
             ],
         ];
         $count = count($testData);

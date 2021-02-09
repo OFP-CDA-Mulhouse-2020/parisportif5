@@ -62,7 +62,7 @@ final class UserTest extends WebTestCase
 
     private function createLanguageObject(
         string $name = 'espagnol',
-        string $country = 'Espagne',
+        string $country = 'ES',
         string $code = 'es_ES',
         string $dateFormat = 'd/m/Y',
         string $timeFormat = 'H:i:s',
@@ -83,7 +83,7 @@ final class UserTest extends WebTestCase
         User $user,
         string $designation = 'paris',
         int $amount = 100,
-        int $odds = 12000,
+        string $odds = '1.2',
         \DateTimeImmutable $date = null
     ): Bet {
         $converter = new DateTimeStorageDataConverter();
@@ -915,7 +915,7 @@ final class UserTest extends WebTestCase
         $language = $this->createLanguageObject('langue', 'pays', 'XD');
         $user->setLanguage($language);
         $violations = $this->validator->validate($user);
-        $this->assertCount(1, $violations);
+        $this->assertCount(2, $violations);
     }
 
     public function testLanguageCompatible(): void

@@ -39,12 +39,16 @@ class BetSaved
     private int $amount;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="decimal", precision=10, scale=2)
      * @Assert\PositiveOrZero(
-     *     message="La côte du paris (multiplier par 10000) doit être un entier positif ou zéro."
+     *     message="La côte du paris doit être un positif ou zéro."
+     * )
+     * @Assert\LessThan(
+     *     value=100000000,
+     *     message="La côte du paris doit être inférieur à {{ compared_value }}."
      * )
      */
-    private int $odds;
+    private string $odds;
 
     /**
      * @ORM\Column(type="integer")
@@ -269,12 +273,12 @@ class BetSaved
         return $this;
     }
 
-    public function getOdds(): ?int
+    public function getOdds(): ?string
     {
         return $this->odds;
     }
 
-    public function setOdds(int $odds): self
+    public function setOdds(string $odds): self
     {
         $this->odds = $odds;
         return $this;
@@ -303,7 +307,7 @@ class BetSaved
         return $this;
     }
 
-    public function hasWon(): ?bool
+    public function isWinning(): ?bool
     {
         return $this->isWinning;
     }

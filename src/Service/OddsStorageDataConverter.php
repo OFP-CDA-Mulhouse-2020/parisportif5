@@ -8,13 +8,13 @@ use App\DataConverter\OddsStorageInterface;
 
 final class OddsStorageDataConverter implements OddsStorageInterface
 {
-    public function convertToOddsMultiplier(int $odds): float
+    public function convertToOddsMultiplier(string $odds): float
     {
-        return (float)($odds * 0.0001);
+        return (float)$odds;
     }
 
-    public function convertOddsMultiplierToStoredData(float $odds): int
+    public function convertOddsMultiplierToStoredData(float $odds): string
     {
-        return (int)($odds * 10000);
+        return (string)$odds;
     }
 }

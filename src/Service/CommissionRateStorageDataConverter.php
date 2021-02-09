@@ -8,13 +8,13 @@ use App\DataConverter\CommissionRateStorageInterface;
 
 final class CommissionRateStorageDataConverter implements CommissionRateStorageInterface
 {
-    public function convertToCommissionRate(int $commissionRate): float
+    public function convertToCommissionRate(string $commissionRate): float
     {
-        return (float)($commissionRate * 0.0001);
+        return ((float)$commissionRate) * 100;
     }
 
-    public function convertCommissionRateToStoredData(float $commissionRate): int
+    public function convertCommissionRateToStoredData(float $commissionRate): string
     {
-        return (int)($commissionRate * 10000);
+        return (string)($commissionRate * 0.01);
     }
 }

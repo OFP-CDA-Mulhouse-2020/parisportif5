@@ -6,6 +6,6 @@ namespace App\DataConverter;
 
 interface OddsStorageInterface
 {
-    public function convertToOddsMultiplier(int $odds): float;
-    public function convertOddsMultiplierToStoredData(float $odds): int;
+    public function convertToOddsMultiplier(string $odds): float;
+    public function convertOddsMultiplierToStoredData(float $odds): string;
 }

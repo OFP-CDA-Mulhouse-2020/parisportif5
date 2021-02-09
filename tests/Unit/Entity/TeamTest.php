@@ -28,14 +28,14 @@ final class TeamTest extends WebTestCase
         $this->validator = $kernel->getContainer()->get('validator');
     }
 
-    private function initializeTeam(): Team
+    private function createValidTeam(): Team
     {
         $team =  new Team();
         $team->setName("RC Strasbourg Alsace");
         $team->setCountry("FR");
         $team->setSport($this->createSportObject());
         $team->addMember($this->createMemberObject());
-        $team->setOdds(20000);
+        $team->setOdds('2');
         return $team;
     }
 
@@ -46,7 +46,7 @@ final class TeamTest extends WebTestCase
             ->setLastName($lastName)
             ->setFirstName("Jean-Pierre")
             ->setCountry("FR")
-            ->setOdds(20000);
+            ->setOdds('2');
         return $member;
     }
 
@@ -66,22 +66,30 @@ final class TeamTest extends WebTestCase
         return $sport;
     }
 
-    public function testIfOddsIsInvalid(): void
+    public function testOddsCompatible(): void
     {
-        $odds = -1;
-        $team = $this->initializeTeam();
-        $team->setOdds($odds);
-        $violations = $this->validator->validate($team);
-        $this->assertCount(1, $violations);
-    }
-
-    public function testIfOddsIsValid(): void
-    {
-        $odds = 0;
-        $team = $this->initializeTeam();
-        $team->setOdds($odds);
+        $odds1 = '0';
+        $odds2 = '10000000';
+        $team = $this->createValidTeam();
+        $team->setOdds($odds1);
         $violations = $this->validator->validate($team);
         $this->assertCount(0, $violations);
+        $team->setOdds($odds2);
+        $violations = $this->validator->validate($team);
+        $this->assertCount(0, $violations);
+    }
+
+    public function testOddsUncompatible(): void
+    {
+        $odds1 = '-1';
+        $odds2 = '100000000';
+        $team = $this->createValidTeam();
+        $team->setOdds($odds1);
+        $violations = $this->validator->validate($team);
+        $this->assertCount(1, $violations);
+        $team->setOdds($odds2);
+        $violations = $this->validator->validate($team);
+        $this->assertCount(1, $violations);
     }
 
     /**
@@ -89,7 +97,7 @@ final class TeamTest extends WebTestCase
      */
     public function testIfTeamNameIsValid(string $name): void
     {
-        $team = $this->initializeTeam();
+        $team = $this->createValidTeam();
         $team->setName($name);
         $violations = $this->validator->validate($team);
         $this->assertCount(0, $violations);
@@ -114,7 +122,7 @@ final class TeamTest extends WebTestCase
      */
     public function testIfTeamNameIsInvalid(string $name): void
     {
-        $team = $this->initializeTeam();
+        $team = $this->createValidTeam();
         $team->setName($name);
         $violations = $this->validator->validate($team);
         $this->assertGreaterThanOrEqual(1, count($violations));
@@ -138,7 +146,7 @@ final class TeamTest extends WebTestCase
 
     public function testIfTeamCountryIsValid(): void
     {
-        $team = $this->initializeTeam();
+        $team = $this->createValidTeam();
         $violations = $this->validator->validate($team);
         $this->assertCount(0, $violations);
     }
@@ -148,7 +156,7 @@ final class TeamTest extends WebTestCase
      */
     public function testIfTeamCountryIsInvalid(string $country): void
     {
-        $team = $this->initializeTeam();
+        $team = $this->createValidTeam();
         $team->setCountry($country);
         $violations = $this->validator->validate($team);
         $this->assertGreaterThanOrEqual(1, count($violations));
@@ -194,7 +202,7 @@ final class TeamTest extends WebTestCase
 
     public function testIfMembersAreValid(): void
     {
-        $team = $this->initializeTeam();
+        $team = $this->createValidTeam();
         $member = $this->createValidMember();
         $team->addMember($member);
         $team->getMembers();
@@ -204,7 +212,7 @@ final class TeamTest extends WebTestCase
 
     public function testIfNumberOfMembersIsValid(): void
     {
-        $team = $this->initializeTeam();
+        $team = $this->createValidTeam();
         $sport = $this->createSportObject();
         $footMember = $this->createValidFootballMember();
         $team->addMember($footMember);
@@ -217,7 +225,7 @@ final class TeamTest extends WebTestCase
 
     public function testIfNumberOfMembersIsInvalid(): void
     {
-        $team = $this->initializeTeam();
+        $team = $this->createValidTeam();
         $sport = $this->createSportObject();
         $currentMember = $team->getMembers()->get(0);
         $team->removeMember($currentMember);

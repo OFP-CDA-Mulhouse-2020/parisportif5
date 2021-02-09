@@ -6,6 +6,6 @@ namespace App\DataConverter;
 
 interface CommissionRateStorageInterface
 {
-    public function convertToCommissionRate(int $commissionRate): float;
-    public function convertCommissionRateToStoredData(float $commissionRate): int;
+    public function convertToCommissionRate(string $commissionRate): float;
+    public function convertCommissionRateToStoredData(float $commissionRate): string;
 }

@@ -72,12 +72,16 @@ class Team
     private Sport $sport;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="decimal", precision=10, scale=2)
      * @Assert\PositiveOrZero(
-     *     message="La côte de l'équipe (multiplier par 10000) doit être un entier positif ou zéro."
+     *     message="La côte de l'équipe doit être un positif ou zéro."
+     * )
+     * @Assert\LessThan(
+     *     value=100000000,
+     *     message="La côte de l'équipe doit être inférieur à {{ compared_value }}."
      * )
      */
-    private int $odds;
+    private string $odds;
 
     public function __construct()
     {
@@ -172,12 +176,12 @@ class Team
             ($minMembers <= $membersCount && $maxMembers >= $membersCount);
     }
 
-    public function getOdds(): ?int
+    public function getOdds(): ?string
     {
         return $this->odds;
     }
 
-    public function setOdds(int $odds): self
+    public function setOdds(string $odds): self
     {
         $this->odds = $odds;
         return $this;

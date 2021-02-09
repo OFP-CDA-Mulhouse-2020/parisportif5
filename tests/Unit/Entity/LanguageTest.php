@@ -26,7 +26,7 @@ final class LanguageTest extends WebTestCase
         $language = new Language();
         $language
             ->setName('anglais US')
-            ->setCountry('USA')
+            ->setCountry('US')
             ->setCode('en_US')
             ->setDateFormat('Y-m-d')
             ->setTimeFormat('H:i:s')
@@ -84,14 +84,14 @@ final class LanguageTest extends WebTestCase
         $language = $this->createValidLanguage();
         $language->setCountry($country);
         $violations = $this->validator->validate($language);
-        $this->assertCount(1, $violations);
+        $this->assertGreaterThanOrEqual(1, count($violations));
     }
 
     public function countryUncompatibleProvider(): array
     {
         return [
             ["Grande-Bretagne"],
-            ["France1"],
+            ["France"],
             [""],
             ["    "],
             ["l'apostrophe"]
@@ -112,9 +112,9 @@ final class LanguageTest extends WebTestCase
     public function countryCompatibleProvider(): array
     {
         return [
-            ["Françe"],
-            ["italie"],
-            ["Grande Bretagne"]
+            ["FR"],
+            ["IT"],
+            ["GB"]
         ];
     }
 

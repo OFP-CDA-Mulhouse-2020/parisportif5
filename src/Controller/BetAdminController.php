@@ -137,7 +137,7 @@ class BetAdminController extends AbstractController
                     $betUser = $bet->getUser();
                     if (!is_null($betUser)) {
                         $amountStore = $bet->getAmount() ?? 0;
-                        $billing = $this->makeBill($billing, $user, $bet->getDesignation(), $amountStore, 0, $bet->getId(), Billing::DEBIT, $dateTimeConverter);
+                        $billing = $this->makeBill($billing, $user, $bet->getDesignation(), $amountStore, '0', $bet->getId(), Billing::DEBIT, $dateTimeConverter);
                         $entityManager->persist($billing);
                     }
                 }
@@ -156,7 +156,7 @@ class BetAdminController extends AbstractController
         ]);
     }
 
-    protected function makeBill(Billing $billing, User $betUser, string $designation, int $amount, int $commissionRate, int $betId, string $operationType, DateTimeStorageDataConverter $dateTimeConverter): Billing
+    protected function makeBill(Billing $billing, User $betUser, string $designation, int $amount, string $commissionRate, int $betId, string $operationType, DateTimeStorageDataConverter $dateTimeConverter): Billing
     {
         $date = new \DateTimeImmutable("now", new \DateTimeZone(DateTimeStorageDataConverter::STORED_TIME_ZONE));
         //\uniqid("$betId", true)

@@ -2,14 +2,13 @@
 
 namespace App\DataFixtures;
 
-use App\Service\DateTimeStorageDataConverter;
-use App\Entity\Language;
 use App\Entity\User;
 use App\Entity\Wallet;
 use App\Repository\LanguageRepository;
-use Doctrine\Bundle\FixturesBundle\Fixture;
-use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
+use Doctrine\Bundle\FixturesBundle\Fixture;
+use App\Service\DateTimeStorageDataConverter;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 final class UserFixtures extends Fixture implements DependentFixtureInterface
