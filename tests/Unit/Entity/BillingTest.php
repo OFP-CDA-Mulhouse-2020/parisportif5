@@ -467,6 +467,39 @@ final class BillingTest extends WebTestCase
         $this->assertCount(1, $violations);
     }
 
+    public function testCommissionRateCompatible(): void
+    {
+        $commissionRate1 = '0.0000';
+        $commissionRate2 = '999999.9999';
+        $billing = $this->createValidBilling();
+        $billing->setCommissionRate($commissionRate1);
+        $violations = $this->validator->validate($billing);
+        $this->assertCount(0, $violations);
+        $billing->setCommissionRate($commissionRate2);
+        $violations = $this->validator->validate($billing);
+        $this->assertCount(0, $violations);
+    }
+
+    /**
+     * @dataProvider commissionRateUncompatibleProvider
+     */
+    public function tesCommissionRateUncompatible(string $commissionRate): void
+    {
+        $billing = $this->createValidBilling();
+        $billing->setCommissionRate($commissionRate);
+        $violations = $this->validator->validate($billing);
+        $this->assertCount(1, $violations);
+    }
+
+    public function commissionRateUncompatibleProvider(): array
+    {
+        return [
+            ['-1'],
+            ['1000000'],
+            ['string']
+        ];
+    }
+
     public function testMethodGetFullNameReturnValue(): void
     {
         $billing = $this->createValidBilling();

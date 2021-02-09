@@ -49,8 +49,8 @@ final class MemberTest extends WebTestCase
 
     public function testOddsCompatible(): void
     {
-        $odds1 = '0';
-        $odds2 = '10000000';
+        $odds1 = '0.00';
+        $odds2 = '99999999.99';
         $member = $this->createValidMember();
         $member->setOdds($odds1);
         $violations = $this->validator->validate($member);
@@ -60,17 +60,24 @@ final class MemberTest extends WebTestCase
         $this->assertCount(0, $violations);
     }
 
-    public function testOddsUncompatible(): void
+    /**
+     * @dataProvider oddsUncompatibleProvider
+     */
+    public function testOddsUncompatible(string $odds): void
     {
-        $odds1 = '-1';
-        $odds2 = '100000000';
         $member = $this->createValidMember();
-        $member->setOdds($odds1);
+        $member->setOdds($odds);
         $violations = $this->validator->validate($member);
         $this->assertCount(1, $violations);
-        $member->setOdds($odds2);
-        $violations = $this->validator->validate($member);
-        $this->assertCount(1, $violations);
+    }
+
+    public function oddsUncompatibleProvider(): array
+    {
+        return [
+            ['-1'],
+            ['100000000'],
+            ['string']
+        ];
     }
 
     /**

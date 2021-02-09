@@ -87,6 +87,10 @@ class Member
 
     /**
      * @ORM\Column(type="decimal", precision=10, scale=2)
+     * @Assert\Type(
+     *     type="numeric",
+     *     message="La côte du membre doit être un nombre entier ou réel."
+     * )
      * @Assert\PositiveOrZero(
      *     message="La côte du membre doit être un positif ou zéro."
      * )
