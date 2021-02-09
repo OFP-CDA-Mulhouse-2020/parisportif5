@@ -25,6 +25,7 @@
             <a>Liste des équipes de football</a>
             <br>
             {% for sport in sports %}
+{#                <a href="{{ path('runsCompetitions', {'sportSlug': sport.name, 'sport_id': sport.id, 'competitionSlug': competition.name, 'competition_id': competition.id } ) }}">{{ sport.name }}</a>#}
                 <a>{{ sport.name }}</a>
                 <br>
             {% endfor %}
