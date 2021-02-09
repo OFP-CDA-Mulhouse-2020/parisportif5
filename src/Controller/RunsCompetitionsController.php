@@ -8,10 +8,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class ListingMatchsController extends AbstractController
+class RunsCompetitionsController extends AbstractController
 {
 
-    /** @Route ("/{sportSlug}/{sport_id}/{competitionSlug}/{competition_id}", name="listingMatch")*/
+    /** @Route ("/{sportSlug}/{sport_id}/{competitionSlug}/{competition_id}", name="runsCompetitions")*/
     public function index(
         SportRepository $sportRepository,
         int $sport_id,
@@ -23,10 +23,10 @@ class ListingMatchsController extends AbstractController
         $sport = $sportRepository
             ->find($sport_id);
         return $this->render(
-            'run/listingMatchs.html.twig',
+            'runs_competitions/runsCompetitions.html.twig',
             [
                 'site_title' => 'Paris Sportif',
-                'page_title' => "Liste des Matchs",
+                'page_title' => "Liste des Runs",
                 'RunsCompetition' => $competition->getRuns(),
                 'sport' => $sport
             ]
