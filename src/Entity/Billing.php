@@ -150,8 +150,16 @@ class Billing
 
     /**
      * @ORM\Column(type="decimal", precision=10, scale=4)
+     * @Assert\Type(
+     *     type="numeric",
+     *     message="Le taux de commission doit être un nombre entier ou réel."
+     * )
      * @Assert\PositiveOrZero(
      *     message="Le taux de commission (multiplier par 100) doit être positif ou zéro"
+     * )
+     * @Assert\LessThan(
+     *     value=1000000,
+     *     message="La côte du paris doit être inférieur à {{ compared_value }}."
      * )
      */
     private string $commissionRate;

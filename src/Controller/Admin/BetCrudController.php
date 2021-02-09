@@ -29,7 +29,7 @@ class BetCrudController extends AbstractCrudController
     public function configureFields(string $pageName): iterable
     {
         return [
-            Field\IdField::new('id', 'ID'),
+            Field\IdField::new('id', 'ID')->hideOnForm(),
             Field\TextField::new('designation', 'Designation'),
             Field\MoneyField::new('amount', 'Amount')->setCurrency('EUR')->setNumDecimals(2)->setStoredAsCents(true),
             Field\NumberField::new('odds', 'Odds')->setNumDecimals(2)->setStoredAsString(true),
