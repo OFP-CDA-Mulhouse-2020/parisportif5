@@ -5,14 +5,13 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Repository\BetSavedRepository;
-use App\DataConverter\DateTimeStorageInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=BetSavedRepository::class)
  */
-class BetSaved
+class BetSaved extends AbstractEntity
 {
     /**
      * @ORM\Id
@@ -242,14 +241,6 @@ class BetSaved
      */
     private User $user;
 
-    /** Sécurise le stockage des dates et heures */
-    private DateTimeStorageInterface $dateTimeConverter;
-
-    public function __construct(DateTimeStorageInterface $dateTimeConverter)
-    {
-        $this->dateTimeConverter = $dateTimeConverter;
-    }
-
     public function getId(): ?int
     {
         return $this->id;
@@ -306,7 +297,7 @@ class BetSaved
 
     public function setBetDate(\DateTimeInterface $betDate): self
     {
-        $betDate = $this->dateTimeConverter->convertedToStoreDateTime($betDate);
+        $betDate = $this->convertedToStoreDateTime($betDate);
         $this->betDate = $betDate;
         return $this;
     }
@@ -345,7 +336,7 @@ class BetSaved
 
     public function setCompetitionStartDate(\DateTimeInterface $competitionStartDate): self
     {
-        $competitionStartDate = $this->dateTimeConverter->convertedToStoreDateTime($competitionStartDate);
+        $competitionStartDate = $this->convertedToStoreDateTime($competitionStartDate);
         $this->competitionStartDate = $competitionStartDate;
         return $this;
     }
@@ -412,7 +403,7 @@ class BetSaved
 
     public function setRunStartDate(\DateTimeInterface $runStartDate): self
     {
-        $runStartDate = $this->dateTimeConverter->convertedToStoreDateTime($runStartDate);
+        $runStartDate = $this->convertedToStoreDateTime($runStartDate);
         $this->runStartDate = $runStartDate;
         return $this;
     }
@@ -486,12 +477,6 @@ class BetSaved
     public function getSelectName(): ?string
     {
         return $this->getMemberFullName() ?? $this->teamName;
-    }
-
-    public function setDateTimeConverter(DateTimeStorageInterface $dateTimeConverter): self
-    {
-        $this->dateTimeConverter = $dateTimeConverter;
-        return $this;
     }
 
     public function getUser(): ?User

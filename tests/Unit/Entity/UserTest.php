@@ -32,10 +32,8 @@ final class UserTest extends WebTestCase
 
     private function createValidUser(): User
     {
-        $converter = new DateTimeStorageDataConverter();
-        $user = new User($converter);
+        $user = new User();
         $user
-            ->setDateTimeConverter($converter)
             ->setCivility("Monsieur")
             ->setFirstName("Tintin")
             ->setLastName("Dupont")
@@ -86,13 +84,11 @@ final class UserTest extends WebTestCase
         string $odds = '1.2',
         \DateTimeImmutable $date = null
     ): Bet {
-        $converter = new DateTimeStorageDataConverter();
-        $bet = new Bet($converter);
+        $bet = new Bet();
         if (is_null($date)) {
             $date = new \DateTimeImmutable("now", new \DateTimeZone("UTC"));
         }
         $bet
-            ->setDateTimeConverter($converter)
             ->setDesignation($designation)
             ->setAmount($amount)
             ->setOdds($odds)

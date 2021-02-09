@@ -16,7 +16,7 @@ use App\Repository\MemberRoleRepository;
  *     message="Ce rôle de membre est déjà enregistré."
  * )
  */
-class MemberRole
+class MemberRole extends AbstractEntity
 {
     /**
      * @ORM\Id

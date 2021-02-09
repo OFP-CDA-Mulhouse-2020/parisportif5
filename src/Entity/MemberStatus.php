@@ -16,7 +16,7 @@ use App\Repository\MemberStatusRepository;
  *     message="Ce statut de membre est déjà enregistré."
  * )
  */
-class MemberStatus
+class MemberStatus extends AbstractEntity
 {
     /**
      * @ORM\Id

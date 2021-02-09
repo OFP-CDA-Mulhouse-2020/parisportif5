@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use App\Service\DateTimeStorageDataConverter;
-use App\DataConverter\DateTimeStorageInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -21,7 +19,7 @@ use App\Repository\CompetitionRepository;
  *     message="Cette compétition est déjà enregistrée."
  * )
  */
-class Competition
+class Competition extends AbstractEntity
 {
     /**
      * @ORM\Id
@@ -105,12 +103,8 @@ class Competition
      */
     private Sport $sport;
 
-    /** Sécurise le stockage des dates et heures */
-    private DateTimeStorageInterface $dateTimeConverter;
-
-    public function __construct(DateTimeStorageInterface $dateTimeConverter)
+    public function __construct()
     {
-        $this->dateTimeConverter = $dateTimeConverter;
         $this->runs = new ArrayCollection();
         $this->betCategories = new ArrayCollection();
     }
@@ -138,7 +132,7 @@ class Competition
 
     public function setStartDate(\DateTimeInterface $startDate): self
     {
-        $startDate = $this->dateTimeConverter->convertedToStoreDateTime($startDate);
+        $startDate = $this->convertedToStoreDateTime($startDate);
         $this->startDate = $startDate;
         return $this;
     }
@@ -167,7 +161,7 @@ class Competition
 
     public function canBet(): bool
     {
-        $timezoneUTC = new \DateTimeZone(DateTimeStorageDataConverter::STORED_TIME_ZONE);
+        $timezoneUTC = new \DateTimeZone(self::STORED_TIME_ZONE);
         $currentDate = new \DateTime('now', $timezoneUTC);
         return ($currentDate < $this->startDate->setTimezone($timezoneUTC));
     }
@@ -278,12 +272,6 @@ class Competition
         $maxRuns = $this->getMaxRuns() ?? $minRuns;
         return ($minRuns === 0 && $maxRuns === 0) ?:
             ($minRuns <= $runsCount && $maxRuns >= $runsCount);
-    }
-
-    public function setDateTimeConverter(DateTimeStorageInterface $dateTimeConverter): self
-    {
-        $this->dateTimeConverter = $dateTimeConverter;
-        return $this;
     }
 
     public function hasRuns(): bool

@@ -44,7 +44,6 @@ final class BetFixtures extends Fixture
             ]
         ];
         $count = count($testData);
-        $converter = new DateTimeStorageDataConverter();
         for ($i = 0; $i < $count; $i++) {
             $betCompetition = $this->competitionRepository->findOneBy([
                 'name' => $testData[$i]['competition']['name'],
@@ -56,9 +55,8 @@ final class BetFixtures extends Fixture
             ]);
             $betUser = $this->userRepository->findOneByEmail($testData[$i]['user']);
             if (!is_null($betCompetition) && !is_null($betUser) && !is_null($betCategory)) {
-                $bet = new Bet($converter);
+                $bet = new Bet();
                 $bet
-                    ->setDateTimeConverter($converter)
                     ->setDesignation($testData[$i]['designation'])
                     ->setAmount($testData[$i]['amount'])
                     ->setOdds($testData[$i]['odds'])

@@ -16,7 +16,7 @@ use App\Repository\WalletRepository;
  *     message="Ce porte-monnaie est déjà enregistré."
  * )
  */
-class Wallet
+class Wallet extends AbstractEntity
 {
     /**
      * @ORM\Id

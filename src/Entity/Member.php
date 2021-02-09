@@ -18,7 +18,7 @@ use App\Repository\MemberRepository;
  *     message="Ce membre est déjà enregistrée."
  * )
  */
-class Member
+class Member extends AbstractEntity
 {
     /**
      * @ORM\Id

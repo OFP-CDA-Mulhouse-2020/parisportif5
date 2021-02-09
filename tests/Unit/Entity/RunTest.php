@@ -30,11 +30,9 @@ final class RunTest extends WebTestCase
 
     private function createValidRun(): Run
     {
-        $converter = new DateTimeStorageDataConverter();
-        $run = new Run($converter);
+        $run = new Run();
         $date = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
         $run
-            ->setDateTimeConverter($converter)
             ->setName('run name')
             ->setEvent('event name')
             ->setStartDate($date->setTime(23, 59, 59, 1000000))
@@ -82,11 +80,9 @@ final class RunTest extends WebTestCase
 
     private function createCompetitionObject(string $country = "FR"): Competition
     {
-        $converter = new DateTimeStorageDataConverter();
-        $competition = new Competition($converter);
+        $competition = new Competition();
         $date = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
         $competition
-            ->setDateTimeConverter($converter)
             ->setName('Championnat inter-club')
             ->setStartDate($date->setTime(23, 59, 59, 1000000))
             ->setCountry($country)

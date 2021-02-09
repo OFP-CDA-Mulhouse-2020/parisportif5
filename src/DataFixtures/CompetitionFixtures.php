@@ -39,7 +39,6 @@ final class CompetitionFixtures extends Fixture implements DependentFixtureInter
             ]
         ];
         $count = count($testData);
-        $converter = new DateTimeStorageDataConverter();
         for ($i = 0; $i < $count; $i++) {
             $competitionSport = $this->sportRepository->findOneBy([
                 'name' => $testData[$i]['sport']['name'],
@@ -48,9 +47,8 @@ final class CompetitionFixtures extends Fixture implements DependentFixtureInter
             $betCategory = $this->betCategoryRepository->findOneBy([
                 "name" => $testData[$i]['betCategoryName']
             ]);
-            $competition = new Competition($converter);
+            $competition = new Competition();
             $competition
-                ->setDateTimeConverter($converter)
                 ->setName($testData[$i]['name'])
                 ->setCountry($testData[$i]['country'])
                 ->setStartDate(new \DateTimeImmutable($testData[$i]['start'], new \DateTimeZone("UTC")))

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use App\Service\DateTimeStorageDataConverter;
-use App\DataConverter\DateTimeStorageInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -22,7 +20,7 @@ use App\Repository\UserRepository;
  *    groups={"registration", "identifier_update"}
  * )
  */
-class User implements UserInterface
+class User extends AbstractEntity implements UserInterface
 {
     /**
      * @ORM\Id
@@ -335,9 +333,6 @@ class User implements UserInterface
      */
     private Language $language;
 
-    /** Sécurise le stockage des dates et heures */
-    private DateTimeStorageInterface $dateTimeConverter;
-
     /**
      * @const int MIN_AGE_FOR_BETTING
      * @Assert\Type(
@@ -377,10 +372,9 @@ class User implements UserInterface
     */
     public const SELECT_CURRENCY_SYMBOL = "€";
 
-    public function __construct(DateTimeStorageInterface $dateTimeConverter)
+    public function __construct()
     {
-        $this->dateTimeConverter = $dateTimeConverter;
-        $creationDate = new \DateTimeImmutable('now', new \DateTimeZone(DateTimeStorageDataConverter::STORED_TIME_ZONE));
+        $creationDate = new \DateTimeImmutable('now', new \DateTimeZone(self::STORED_TIME_ZONE));
         $this->activatedStatus = true;
         $this->activatedDate = $creationDate;
         $this->suspendedStatus = true;
@@ -592,7 +586,7 @@ class User implements UserInterface
 
     public function setBirthDate(\DateTimeInterface $birthDate): self
     {
-        $birthDate = $this->dateTimeConverter->convertedToStoreDateTime($birthDate);
+        $birthDate = $this->convertedToStoreDateTime($birthDate);
         $this->birthDate = $birthDate;
         return $this;
     }
@@ -621,7 +615,7 @@ class User implements UserInterface
     public function delete(): bool
     {
         if (empty($this->deletedDate) && $this->deletedStatus === false) {
-            $this->deletedDate = new \DateTimeImmutable('now', new \DateTimeZone(DateTimeStorageDataConverter::STORED_TIME_ZONE));
+            $this->deletedDate = new \DateTimeImmutable('now', new \DateTimeZone(self::STORED_TIME_ZONE));
             $this->deletedStatus = true;
             $this->activatedStatus = false;
             $this->suspendedStatus = true;
@@ -655,7 +649,7 @@ class User implements UserInterface
     public function suspend(): bool
     {
         if ($this->activatedStatus === true && empty($this->suspendedDate) && $this->suspendedStatus === false) {
-            $this->suspendedDate = new \DateTimeImmutable('now', new \DateTimeZone(DateTimeStorageDataConverter::STORED_TIME_ZONE));
+            $this->suspendedDate = new \DateTimeImmutable('now', new \DateTimeZone(self::STORED_TIME_ZONE));
             $this->suspendedStatus = true;
             return true;
         }
@@ -685,7 +679,7 @@ class User implements UserInterface
     public function activate(): bool
     {
         if (empty($this->activatedDate) && $this->activatedStatus === false) {
-            $this->activatedDate = new \DateTimeImmutable('now', new \DateTimeZone(DateTimeStorageDataConverter::STORED_TIME_ZONE));
+            $this->activatedDate = new \DateTimeImmutable('now', new \DateTimeZone(self::STORED_TIME_ZONE));
             $this->activatedStatus = true;
             return true;
         }
@@ -788,12 +782,6 @@ class User implements UserInterface
     public function setResidenceProof(string $residenceProof): self
     {
         $this->residenceProof = $residenceProof;
-        return $this;
-    }
-
-    public function setDateTimeConverter(DateTimeStorageInterface $dateTimeConverter): self
-    {
-        $this->dateTimeConverter = $dateTimeConverter;
         return $this;
     }
 }

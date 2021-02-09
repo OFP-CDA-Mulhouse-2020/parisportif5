@@ -59,15 +59,21 @@ skinparam linetype ortho
     'Implémentation de l'interface DateTimeStorageInterface par l'objet StorageDataConverter
     DateTimeStorageInterface <|.. StorageDataConverter
     '
-    DateTimeStorageDataConverter "1" <-- "0..*" Bet
-    '
-    DateTimeStorageDataConverter "1" <-- "0..*" Competition
-    '
-    DateTimeStorageDataConverter "1" <-- "0..*" Run
-    '
-    DateTimeStorageDataConverter "1" <-- "0..*" Billing
-    '
-    DateTimeStorageDataConverter "1" <-- "0..*" User
+    AbstactEntity <|-- Bet
+    AbstactEntity <|-- Competition
+    AbstactEntity <|-- Run
+    AbstactEntity <|-- Billing
+    AbstactEntity <|-- User
+    AbstactEntity <|-- BetSaved
+    AbstactEntity <|-- MemberRole
+    AbstactEntity <|-- MemberStatus
+    AbstactEntity <|-- Member
+    AbstactEntity <|-- Wallet
+    AbstactEntity <|-- Team
+    AbstactEntity <|-- Language
+    AbstactEntity <|-- Location
+    AbstactEntity <|-- Sport
+    AbstactEntity <|-- BetCategory
 'Définitions des classes :
     'DateTimeStorageDataConverter
     'Pour convertir le montant enregistré dans la BDD en unité monétaire et vice versa
@@ -95,6 +101,11 @@ skinparam linetype ortho
     }
     class StorageDataConverter {
         +{static} getStoredTimeZone() : string
+    }
+    abstract AbstactEntity {
+        +{static} STORED_TIME_ZONE : string = 'UTC'
+        +convertedToStoreDateTime(in DateTimeInterface datetime) : DateTimeImmutable
+        +setStoredTimezone(inout DateTimeImmutable datetimeImmutable) : DateTimeImmutable
     }
     'Liste des paris que les utilisateurs ont fait
     class BetSaved {

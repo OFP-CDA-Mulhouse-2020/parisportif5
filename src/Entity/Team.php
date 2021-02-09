@@ -19,7 +19,7 @@ use App\Repository\TeamRepository;
  *     message="Cette équipe est déjà enregistrée."
  * )
  */
-class Team
+class Team extends AbstractEntity
 {
     /**
      * @ORM\Id

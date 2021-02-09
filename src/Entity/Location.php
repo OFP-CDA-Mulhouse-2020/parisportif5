@@ -17,7 +17,7 @@ use App\Repository\LocationRepository;
  *     message="Ce lieu est déjà enregistré."
  * )
  */
-class Location
+class Location extends AbstractEntity
 {
     /**
      * @ORM\Id

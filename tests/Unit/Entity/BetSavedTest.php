@@ -24,12 +24,10 @@ final class BetSavedTest extends WebTestCase
 
     private function createValidBetSaved(): BetSaved
     {
-        $converter = new DateTimeStorageDataConverter();
-        $betSaved = new BetSaved($converter);
+        $betSaved = new BetSaved();
         $date = new \DateTimeImmutable("now", new \DateTimeZone("UTC"));
         $date = $date->modify("-1 day");
         $betSaved
-            ->setDateTimeConverter($converter)
             ->setDesignation('paris')
             ->setAmount(100)
             ->setOdds('1.2')

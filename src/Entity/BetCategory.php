@@ -44,7 +44,7 @@ use App\Repository\BetCategoryRepository;
  *     message="Cette catégorie de paris est déjà enregistré."
  * )
  */
-class BetCategory
+class BetCategory extends AbstractEntity
 {
     /**
      * @ORM\Id

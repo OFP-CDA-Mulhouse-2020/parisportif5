@@ -86,16 +86,14 @@ final class UserFixtures extends Fixture implements DependentFixtureInterface
             ]*/
         ];
         $count = count($testData);
-        $converter = new DateTimeStorageDataConverter();
         for ($i = 0; $i < $count; $i++) {
-            $user = new User($converter);
+            $user = new User();
             $userWallet = new Wallet();
             $userLanguage = $this->languageRepository->findOneByLanguageCode($testData[$i]['language']);
             if (is_null($userLanguage)) {
                 $userLanguage = $this->languageRepository->languageByDefault();
             }
             $user
-                ->setDateTimeConverter($converter)
                 ->setCivility($testData[$i]['civility'])
                 ->setFirstName($testData[$i]['firstname'])
                 ->setLastName($testData[$i]['lastname'])

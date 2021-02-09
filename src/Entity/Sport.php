@@ -21,7 +21,7 @@ use App\Repository\SportRepository;
  *      message="Le sport ne peut être ni individuel ni collectif et doit être au moins l'un des deux"
  * )
  */
-class Sport
+class Sport extends AbstractEntity
 {
     /**
      * @ORM\Id

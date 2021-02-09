@@ -2,19 +2,18 @@
 
 namespace App\Controller;
 
-use App\Service\DateTimeStorageDataConverter;
 use App\Entity\User;
-use App\Form\Account\AccountDocumentFormType;
-use App\Form\Account\AccountParameterFormType;
-use App\Form\Account\AccountPersonalDataFormType;
-use App\Form\Account\AccountUpdateIdentifierFormType;
-use App\Form\Account\AccountUpdatePasswordFormType;
-use App\Form\Handler\AccountFormHandler;
 use App\Security\EmailVerifier;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Form\Handler\AccountFormHandler;
+use App\Form\Account\AccountDocumentFormType;
 use Symfony\Component\HttpFoundation\Request;
+use App\Form\Account\AccountParameterFormType;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Form\Account\AccountPersonalDataFormType;
+use App\Form\Account\AccountUpdatePasswordFormType;
+use App\Form\Account\AccountUpdateIdentifierFormType;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class AccountController extends AbstractController
@@ -38,8 +37,6 @@ class AccountController extends AbstractController
         // use inline documentation to tell your editor your exact User class
         /** @var User $user */
         $user = $this->getUser();
-        $converter = new DateTimeStorageDataConverter();
-        $user->setDateTimeConverter($converter);
 
         $form = $this->createForm(AccountPersonalDataFormType::class, $user);
 

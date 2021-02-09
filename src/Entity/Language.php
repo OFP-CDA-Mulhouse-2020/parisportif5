@@ -16,7 +16,7 @@ use App\Repository\LanguageRepository;
  *     message="Cette langue est déjà enregistré."
  * )
  */
-class Language
+class Language extends AbstractEntity
 {
     /**
      * @ORM\Id

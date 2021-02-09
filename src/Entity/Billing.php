@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use App\DataConverter\DateTimeStorageInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
@@ -17,7 +16,7 @@ use App\Repository\BillingRepository;
  *     message="Cette facture est déjà enregistrée."
  * )
  */
-class Billing
+class Billing extends AbstractEntity
 {
     /**
      * @ORM\Id
@@ -193,9 +192,6 @@ class Billing
      */
     private ?User $user = null;
 
-    /** Sécurise le stockage des dates et heures */
-    private DateTimeStorageInterface $dateTimeConverter;
-
     /**
      * @const float DEFAULT_COMMISSION_RATE
      * @Assert\Type(
@@ -236,11 +232,6 @@ class Billing
      * @const string[] OPERATION_TYPES
     */
     public const OPERATION_TYPES = [self::DEBIT, self::CREDIT];
-
-    public function __construct(DateTimeStorageInterface $dateTimeConverter)
-    {
-        $this->dateTimeConverter = $dateTimeConverter;
-    }
 
     public function getId(): ?int
     {
@@ -378,7 +369,7 @@ class Billing
 
     public function setIssueDate(\DateTimeInterface $issueDate): self
     {
-        $issueDate = $this->dateTimeConverter->convertedToStoreDateTime($issueDate);
+        $issueDate = $this->convertedToStoreDateTime($issueDate);
         $this->issueDate = $issueDate;
         return $this;
     }
@@ -390,7 +381,7 @@ class Billing
 
     public function setDeliveryDate(\DateTimeInterface $deliveryDate): self
     {
-        $deliveryDate = $this->dateTimeConverter->convertedToStoreDateTime($deliveryDate);
+        $deliveryDate = $this->convertedToStoreDateTime($deliveryDate);
         $this->deliveryDate = $deliveryDate;
         return $this;
     }
@@ -432,12 +423,6 @@ class Billing
     public function setUser(?User $user): self
     {
         $this->user = $user;
-        return $this;
-    }
-
-    public function setDateTimeConverter(DateTimeStorageInterface $dateTimeConverter): self
-    {
-        $this->dateTimeConverter = $dateTimeConverter;
         return $this;
     }
 
