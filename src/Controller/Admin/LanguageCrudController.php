@@ -30,7 +30,7 @@ class LanguageCrudController extends AbstractCrudController
     {
         yield Field\FormField::addPanel('Language Details');
         yield Field\IdField::new('id', 'ID')->hideOnForm();
-        yield Field\TextField::new('name', 'Name');
+        yield Field\LanguageField::new('name', 'Name')->showName(true)->showCode(false);
         yield Field\CountryField::new('country', 'Country');
         yield Field\LocaleField::new('code', 'Code')->showCode(true)->showName(false);
         yield Field\TextField::new('dateFormat', 'Date Format');

@@ -103,7 +103,7 @@ class Billing extends AbstractEntity
     private string $postcode;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=2)
      * @Assert\NotBlank(
      *     message="Le pays ne peut pas être vide",
      *     normalizer="trim"

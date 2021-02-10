@@ -199,7 +199,7 @@ class User extends AbstractEntity implements UserInterface
     private string $billingPostcode;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=2)
      * @Assert\NotBlank(
      *     message="Le pays ne peut pas être vide.",
      *     normalizer="trim",
@@ -233,7 +233,7 @@ class User extends AbstractEntity implements UserInterface
     private \DateTimeImmutable $birthDate;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=32)
      * @Assert\NotBlank(
      *     message="Le fuseau horaire sélectionné ne peut pas être vide.",
      *     normalizer="trim",

@@ -13,7 +13,6 @@ final class CompetitionFixtures extends Fixture implements DependentFixtureInter
 {
     private SportRepository $sportRepository;
     private BetCategoryRepository $betCategoryRepository;
-    //public const COMPETITION_OBJECT = 'valid-competition';
 
     public function __construct(
         SportRepository $sportRepository,
@@ -57,7 +56,6 @@ final class CompetitionFixtures extends Fixture implements DependentFixtureInter
             $manager->persist($competition);
         }
         $manager->flush();
-        //$this->addReference(self::COMPETITION_OBJECT, $competition);
     }
 
     public function getDependencies(): array

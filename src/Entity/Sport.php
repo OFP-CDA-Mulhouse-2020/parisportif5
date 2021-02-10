@@ -40,7 +40,7 @@ class Sport extends AbstractEntity
     private string $name;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=2)
      * @Assert\NotBlank(
      *     message="Le pays doit être renseigné",
      *     normalizer="trim"
@@ -52,7 +52,7 @@ class Sport extends AbstractEntity
     private string $country;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=7)
      * @Assert\Choice(
      *     choices=Sport::RUN_TYPES,
      *     message="Choisisez un type de résultat valide"

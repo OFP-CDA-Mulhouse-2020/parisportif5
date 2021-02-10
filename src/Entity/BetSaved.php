@@ -101,7 +101,7 @@ class BetSaved extends AbstractEntity
     private \DateTimeImmutable $competitionStartDate;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=2)
      * @Assert\NotBlank(
      *     message="Le pays de la compétition ne peut pas être vide",
      *     normalizer="trim"
@@ -122,7 +122,7 @@ class BetSaved extends AbstractEntity
     private string $competitionSportName;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=2)
      * @Assert\NotBlank(
      *     message="Le pays du sport de la compétition doit être renseigné",
      *     normalizer="trim"
@@ -181,7 +181,7 @@ class BetSaved extends AbstractEntity
     private ?string $teamName = null;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=2, nullable=true)
      * @Assert\NotBlank(
      *     message="Le pays de l'équipe doit être renseigné",
      *     normalizer="trim",
@@ -222,7 +222,7 @@ class BetSaved extends AbstractEntity
     private ?string $memberFirstName = null;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=2, nullable=true)
      * @Assert\NotBlank(
      *     message="Le pays du membre doit être renseigné",
      *     normalizer="trim",

@@ -54,7 +54,7 @@ class Member extends AbstractEntity
     private string $firstName;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=2)
      * @Assert\NotBlank(
      *     message="Le pays doit être renseigné",
      *     normalizer="trim"

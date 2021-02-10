@@ -36,7 +36,7 @@ class Location extends AbstractEntity
     private string $place;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=32)
      * @Assert\NotBlank(
      *     message="Le fuseau horaire du lieu ne peut pas être vide",
      *     normalizer="trim"
@@ -48,7 +48,7 @@ class Location extends AbstractEntity
     private string $timeZone;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=2)
      * @Assert\NotBlank(
      *     message="Le pays ne peut pas être vide",
      *     normalizer="trim"

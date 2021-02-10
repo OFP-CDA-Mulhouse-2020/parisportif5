@@ -47,7 +47,7 @@ class Competition extends AbstractEntity
     private \DateTimeImmutable $startDate;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=2)
      * @Assert\NotBlank(
      *     message="Le pays ne peut pas être vide",
      *     normalizer="trim"
