@@ -24,7 +24,7 @@ class Location extends AbstractEntity
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private int $id;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -95,5 +95,10 @@ class Location extends AbstractEntity
     {
         $this->country = $country;
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->id . ' - ' . $this->place . ' (' . $this->country . ')';
     }
 }

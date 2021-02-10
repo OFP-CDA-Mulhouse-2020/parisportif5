@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Entity;
 
-use App\Service\DateTimeStorageDataConverter;
 use App\Entity\BetCategory;
 use App\Entity\Competition;
 use App\Entity\Member;
@@ -156,8 +155,8 @@ final class CompetitionTest extends WebTestCase
 
     public function startDateUnconformityProvider(): array
     {
-        $timezone = $this->createDefaultTimeZone();
-        $startDate = new \DateTimeImmutable('now', $timezone);
+        $timeZone = $this->createDefaultTimeZone();
+        $startDate = new \DateTimeImmutable('now', $timeZone);
         return [
             [$startDate],
             [$startDate->modify('-1 hour')],
@@ -179,8 +178,8 @@ final class CompetitionTest extends WebTestCase
 
     public function startDateConformityProvider(): array
     {
-        $timezone = $this->createDefaultTimeZone();
-        $startDate = new \DateTimeImmutable('now', $timezone);
+        $timeZone = $this->createDefaultTimeZone();
+        $startDate = new \DateTimeImmutable('now', $timeZone);
         return [
             [$startDate->modify("+1 day")],
             [$startDate->modify("+1 month")]

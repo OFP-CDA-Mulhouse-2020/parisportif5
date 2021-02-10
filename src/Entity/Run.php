@@ -26,7 +26,7 @@ class Run extends AbstractEntity
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private int $id;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -122,9 +122,9 @@ class Run extends AbstractEntity
 
     public function canBet(): bool
     {
-        $timezoneUTC = new \DateTimeZone(self::STORED_TIME_ZONE);
-        $currentDate = new \DateTime('now', $timezoneUTC);
-        return ($currentDate < $this->startDate->setTimezone($timezoneUTC));
+        $timeZoneUTC = new \DateTimeZone(self::STORED_TIME_ZONE);
+        $currentDate = new \DateTime('now', $timeZoneUTC);
+        return ($currentDate < $this->startDate->setTimezone($timeZoneUTC));
     }
 
     public function getCompetition(): ?Competition
@@ -218,5 +218,10 @@ class Run extends AbstractEntity
     public function getTeamsCount(): int
     {
         return $this->teams->count();
+    }
+
+    public function __toString(): string
+    {
+        return $this->id . ' - ' . $this->name . ' (' . $this->event . ')';
     }
 }

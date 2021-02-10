@@ -51,7 +51,7 @@ class BetCategory extends AbstractEntity
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private int $id;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -165,5 +165,10 @@ class BetCategory extends AbstractEntity
     {
         $this->onCompetition = $onCompetition;
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->id . ' - ' . $this->name;
     }
 }

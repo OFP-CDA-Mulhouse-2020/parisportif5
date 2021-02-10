@@ -23,7 +23,7 @@ class Billing extends AbstractEntity
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private int $id;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -429,5 +429,10 @@ class Billing extends AbstractEntity
     public function deleteUser(): void
     {
         $this->user = null;
+    }
+
+    public function __toString(): string
+    {
+        return $this->id . ' - ' . $this->invoiceNumber;
     }
 }

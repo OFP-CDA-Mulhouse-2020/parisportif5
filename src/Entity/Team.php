@@ -26,7 +26,7 @@ class Team extends AbstractEntity
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private int $id;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -199,5 +199,10 @@ class Team extends AbstractEntity
     public function getMembersCount(): int
     {
         return $this->members->count();
+    }
+
+    public function __toString(): string
+    {
+        return $this->id . ' - ' . $this->name . ' (' . $this->country . ')';
     }
 }

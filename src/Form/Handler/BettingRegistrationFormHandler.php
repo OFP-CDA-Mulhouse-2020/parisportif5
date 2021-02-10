@@ -14,7 +14,6 @@ use App\Repository\TeamRepository;
 use App\Repository\MemberRepository;
 use Doctrine\Persistence\ObjectManager;
 use App\DataConverter\OddsStorageInterface;
-use App\Service\DateTimeStorageDataConverter;
 use App\Form\Model\BettingRegistrationFormModel;
 
 final class BettingRegistrationFormHandler
@@ -60,7 +59,7 @@ final class BettingRegistrationFormHandler
     private function setBetDate(Bet $bet): Bet
     {
         $date = $this->bettingRegistrationFormModel->getSubmitDate() ??
-            new \DateTimeImmutable("now", new \DateTimeZone(DateTimeStorageDataConverter::STORED_TIME_ZONE));
+            new \DateTimeImmutable("now", new \DateTimeZone(Bet::STORED_TIME_ZONE));
         $date = $this->bettingRegistrationFormModel->getDateByTenthOfSecond($date);
         $bet->setBetDate($date);
         return $bet;

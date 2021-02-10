@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Entity;
 
-use App\Service\DateTimeStorageDataConverter;
 use App\Entity\Bet;
 use App\Entity\Language;
 use App\Entity\User;
@@ -391,9 +390,9 @@ final class UserTest extends WebTestCase
 
     public function birthDateLegalAgeUnconformityProvider(): array
     {
-        $timezone = $this->createDefaultTimeZone();
+        $timeZone = $this->createDefaultTimeZone();
         $age = 18;
-        $legalAgeBirthDate = (new \DateTimeImmutable('now', $timezone))->sub(new \DateInterval('P' . $age . 'Y'));
+        $legalAgeBirthDate = (new \DateTimeImmutable('now', $timeZone))->sub(new \DateInterval('P' . $age . 'Y'));
         return [
             [$legalAgeBirthDate->setTime(23, 59, 59, 999999)],
             [$legalAgeBirthDate->modify('+1 day')->setTime(23, 59, 59, 999999)],
@@ -415,9 +414,9 @@ final class UserTest extends WebTestCase
 
     public function birthDateOverMaxUnconformityProvider(): array
     {
-        $timezone = $this->createDefaultTimeZone();
+        $timeZone = $this->createDefaultTimeZone();
         $age = 140;
-        $maxAgeBirthDate = (new \DateTimeImmutable('now', $timezone))->sub(new \DateInterval('P' . $age . 'Y'));
+        $maxAgeBirthDate = (new \DateTimeImmutable('now', $timeZone))->sub(new \DateInterval('P' . $age . 'Y'));
         return [
             [$maxAgeBirthDate->modify('-1 day')->setTime(23, 59, 59, 999999)],
             [$maxAgeBirthDate->modify('-2 day')->setTime(0, 0)],
@@ -438,8 +437,8 @@ final class UserTest extends WebTestCase
 
     public function birthDateConformityProvider(): array
     {
-        $timezone = $this->createDefaultTimeZone();
-        $legalAgeBirthDate = (new \DateTimeImmutable('now', $timezone))->sub(new \DateInterval('P18Y'));
+        $timeZone = $this->createDefaultTimeZone();
+        $legalAgeBirthDate = (new \DateTimeImmutable('now', $timeZone))->sub(new \DateInterval('P18Y'));
         return [
             [$legalAgeBirthDate->modify("-1 day")],
             [$legalAgeBirthDate->modify("-1 year")]

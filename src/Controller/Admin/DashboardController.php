@@ -3,6 +3,20 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Bet;
+use App\Entity\BetCategory;
+use App\Entity\BetSaved;
+use App\Entity\Billing;
+use App\Entity\Competition;
+use App\Entity\Language;
+use App\Entity\Location;
+use App\Entity\Member;
+use App\Entity\MemberRole;
+use App\Entity\MemberStatus;
+use App\Entity\Run;
+use App\Entity\Sport;
+use App\Entity\Team;
+use App\Entity\User;
+use App\Entity\Wallet;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
@@ -52,8 +66,21 @@ class DashboardController extends AbstractDashboardController
     public function configureMenuItems(): iterable
     {
         yield MenuItem::linktoDashboard('Dashboard', 'fa fa-home');
-        yield MenuItem::section('Bet');
+        yield MenuItem::section('Paris Sportif 5');
         yield MenuItem::linkToCrud('Bets', 'fas fa-list', Bet::class);
-        // yield MenuItem::linkToCrud('The Label', 'fas fa-list', EntityClass::class);
+        yield MenuItem::linkToCrud('Bets Saved', 'fas fa-list', BetSaved::class);
+        yield MenuItem::linkToCrud('Bet Categories', 'fas fa-list', BetCategory::class);
+        yield MenuItem::linkToCrud('Users', 'fas fa-list', User::class);
+        yield MenuItem::linkToCrud('Billings', 'fas fa-list', Billing::class);
+        yield MenuItem::linkToCrud('Competitions', 'fas fa-list', Competition::class);
+        yield MenuItem::linkToCrud('Languages', 'fas fa-list', Language::class);
+        yield MenuItem::linkToCrud('Locations', 'fas fa-list', Location::class);
+        yield MenuItem::linkToCrud('Members', 'fas fa-list', Member::class);
+        yield MenuItem::linkToCrud('Member Roles', 'fas fa-list', MemberRole::class);
+        yield MenuItem::linkToCrud('Member Status', 'fas fa-list', MemberStatus::class);
+        yield MenuItem::linkToCrud('Runs', 'fas fa-list', Run::class);
+        yield MenuItem::linkToCrud('Teams', 'fas fa-list', Team::class);
+        yield MenuItem::linkToCrud('Wallets', 'fas fa-list', Wallet::class);
+        yield MenuItem::linkToCrud('Sports', 'fas fa-list', Sport::class);
     }
 }

@@ -2,7 +2,6 @@
 
 namespace App\DataFixtures;
 
-use App\Service\DateTimeStorageDataConverter;
 use App\Entity\Bet;
 use App\Repository\BetCategoryRepository;
 use App\Repository\CompetitionRepository;

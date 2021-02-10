@@ -7,5 +7,5 @@ namespace App\DataConverter;
 interface DateTimeStorageInterface
 {
     public function convertedToStoreDateTime(\DateTimeInterface $datetime): \DateTimeImmutable;
-    public function setStoredTimezone(\DateTimeImmutable $datetimeImmutable): \DateTimeImmutable;
+    public function setStoredTimeZone(\DateTimeImmutable $datetimeImmutable): \DateTimeImmutable;
 }

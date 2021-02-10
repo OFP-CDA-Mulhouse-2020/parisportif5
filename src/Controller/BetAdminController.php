@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Bet;
 use App\Entity\Team;
 use App\Entity\User;
 use App\Entity\Member;
@@ -12,7 +13,6 @@ use App\Repository\RunRepository;
 use App\Form\Bet\BetAdminFormType;
 use App\Repository\BetCategoryRepository;
 use App\Service\OddsStorageDataConverter;
-use App\Service\DateTimeStorageDataConverter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -157,7 +157,7 @@ class BetAdminController extends AbstractController
 
     protected function makeBill(Billing $billing, User $betUser, string $designation, int $amount, string $commissionRate, int $betId, string $operationType): Billing
     {
-        $date = new \DateTimeImmutable("now", new \DateTimeZone(DateTimeStorageDataConverter::STORED_TIME_ZONE));
+        $date = new \DateTimeImmutable("now", new \DateTimeZone(Bet::STORED_TIME_ZONE));
         //\uniqid("$betId", true)
         $billing
             ->setFirstName($betUser->getFirstName())

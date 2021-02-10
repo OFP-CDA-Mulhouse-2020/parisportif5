@@ -23,7 +23,7 @@ class Wallet extends AbstractEntity
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private int $id;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="integer")
@@ -98,5 +98,10 @@ class Wallet extends AbstractEntity
         if ($this->isValidSubtraction($amount) === true) {
             $this->amount -= $amount;
         }
+    }
+
+    public function __toString(): string
+    {
+        return (string)$this->id;
     }
 }

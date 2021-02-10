@@ -18,7 +18,7 @@ class BetSaved extends AbstractEntity
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private int $id;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -488,5 +488,10 @@ class BetSaved extends AbstractEntity
     {
         $this->user = $user;
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->id . ' - ' . $this->designation;
     }
 }

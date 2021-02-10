@@ -26,7 +26,7 @@ class Competition extends AbstractEntity
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private int $id;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -161,9 +161,9 @@ class Competition extends AbstractEntity
 
     public function canBet(): bool
     {
-        $timezoneUTC = new \DateTimeZone(self::STORED_TIME_ZONE);
-        $currentDate = new \DateTime('now', $timezoneUTC);
-        return ($currentDate < $this->startDate->setTimezone($timezoneUTC));
+        $timeZoneUTC = new \DateTimeZone(self::STORED_TIME_ZONE);
+        $currentDate = new \DateTime('now', $timeZoneUTC);
+        return ($currentDate < $this->startDate->setTimezone($timeZoneUTC));
     }
 
     /**
@@ -308,5 +308,11 @@ class Competition extends AbstractEntity
             $competitionTeams = array_merge($competitionTeams, $newTeam);
         }
         return $competitionTeams;
+    }
+
+    public function __toString(): string
+    {
+        $year = $this->startDate->format('Y');
+        return $this->id . ' - ' . $this->name . ' (' . $this->country . ' ' . $year . ')';
     }
 }

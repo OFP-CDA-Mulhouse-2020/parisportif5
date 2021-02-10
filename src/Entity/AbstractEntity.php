@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-abstract class AbstractEntity
+use App\DataConverter\DateTimeStorageInterface;
+
+abstract class AbstractEntity implements DateTimeStorageInterface
 {
     public const STORED_TIME_ZONE = "UTC";
 
@@ -17,20 +19,20 @@ abstract class AbstractEntity
         if ($datetime instanceof \DateTime) {
             $datetimeToStored = \DateTimeImmutable::createFromMutable($datetime);
         }
-        $this->setStoredTimezone($datetimeToStored);
+        $this->setStoredTimeZone($datetimeToStored);
         return $datetimeToStored;
     }
 
-    public function setStoredTimezone(\DateTimeImmutable $datetimeImmutable): \DateTimeImmutable
+    public function setStoredTimeZone(\DateTimeImmutable $datetimeImmutable): \DateTimeImmutable
     {
-        $timezone = $datetimeImmutable->getTimezone();
-        if (empty($timezone)) {
-            $timezone = new \DateTimeZone(self::STORED_TIME_ZONE);
-            $datetimeImmutable = $datetimeImmutable->setTimezone($timezone);
+        $timeZone = $datetimeImmutable->getTimezone();
+        if (empty($timeZone)) {
+            $timeZone = new \DateTimeZone(self::STORED_TIME_ZONE);
+            $datetimeImmutable = $datetimeImmutable->setTimezone($timeZone);
         }
-        if ($timezone->getName() !== self::STORED_TIME_ZONE) {
-            $timezone = new \DateTimeZone(self::STORED_TIME_ZONE);
-            $datetimeImmutable = $datetimeImmutable->setTimezone($timezone);
+        if ($timeZone->getName() !== self::STORED_TIME_ZONE) {
+            $timeZone = new \DateTimeZone(self::STORED_TIME_ZONE);
+            $datetimeImmutable = $datetimeImmutable->setTimezone($timeZone);
         }
         return $datetimeImmutable;
     }

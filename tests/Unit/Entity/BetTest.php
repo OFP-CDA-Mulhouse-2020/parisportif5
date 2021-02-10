@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Entity;
 
-use App\Service\DateTimeStorageDataConverter;
 use App\Entity\Bet;
 use App\Entity\BetCategory;
 use App\Entity\Competition;

@@ -8,7 +8,6 @@ use App\Repository\LocationRepository;
 use Doctrine\Persistence\ObjectManager;
 use App\Repository\CompetitionRepository;
 use Doctrine\Bundle\FixturesBundle\Fixture;
-use App\Service\DateTimeStorageDataConverter;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 
 final class RunFixtures extends Fixture implements DependentFixtureInterface

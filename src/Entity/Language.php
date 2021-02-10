@@ -23,7 +23,7 @@ class Language extends AbstractEntity
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private int $id;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -179,5 +179,10 @@ class Language extends AbstractEntity
         $timeFormat = $this->timeFormat ?? '';
         $dateFormat = $this->dateFormat ?? '';
         return empty($timeFormat) || empty($dateFormat) ? null : $dateFormat . $timeFormat;
+    }
+
+    public function __toString(): string
+    {
+        return $this->id . ' - ' . $this->name;
     }
 }

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Entity;
 
 use App\Entity\BetSaved;
-use App\Service\DateTimeStorageDataConverter;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -455,8 +454,8 @@ final class BetSavedTest extends WebTestCase
 
     public function startDateUnconformityProvider(): array
     {
-        $timezone = $this->createDefaultTimeZone();
-        $startDate = new \DateTimeImmutable('now', $timezone);
+        $timeZone = $this->createDefaultTimeZone();
+        $startDate = new \DateTimeImmutable('now', $timeZone);
         return [
             [$startDate->modify("+1 day")],
             [$startDate->modify("+1 month")]
@@ -477,8 +476,8 @@ final class BetSavedTest extends WebTestCase
 
     public function startDateConformityProvider(): array
     {
-        $timezone = $this->createDefaultTimeZone();
-        $startDate = new \DateTimeImmutable('now', $timezone);
+        $timeZone = $this->createDefaultTimeZone();
+        $startDate = new \DateTimeImmutable('now', $timeZone);
         return [
             [$startDate],
             [$startDate->modify('-1 hour')],

@@ -24,7 +24,7 @@ class Bet extends AbstractEntity
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private int $id;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -162,6 +162,12 @@ class Bet extends AbstractEntity
         return $this->isWinning;
     }
 
+    public function setIsWinning(?bool $isWinning): self
+    {
+        $this->isWinning = $isWinning;
+        return $this;
+    }
+
     public function won(): void
     {
         $this->isWinning = true;
@@ -252,5 +258,10 @@ class Bet extends AbstractEntity
     public function getSelect(): ?object
     {
         return $this->teamMember ?? $this->team;
+    }
+
+    public function __toString(): string
+    {
+        return $this->id . ' - ' . $this->designation;
     }
 }

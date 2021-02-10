@@ -28,7 +28,7 @@ class Sport extends AbstractEntity
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private int $id;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -240,5 +240,11 @@ class Sport extends AbstractEntity
     public function isBothIndividualAndCollective(): bool
     {
         return ($this->individualType === true && $this->collectiveType === true);
+    }
+
+    public function __toString(): string
+    {
+
+        return $this->id . ' - ' . $this->name . ' (' . $this->country . ')';
     }
 }
