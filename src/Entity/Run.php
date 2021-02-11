@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use App\Service\DateTimeStorageDataConverter;
-use App\DataConverter\DateTimeStorageInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -21,14 +19,14 @@ use App\Repository\RunRepository;
  *     message="Cette rencontre ou course est déjà enregistrée."
  * )
  */
-class Run
+class Run extends AbstractEntity
 {
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private int $id;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -78,12 +76,8 @@ class Run
      */
     private Collection $teams;
 
-    /** Sécurise le stockage des dates et heures */
-    private DateTimeStorageInterface $dateTimeConverter;
-
-    public function __construct(DateTimeStorageInterface $dateTimeConverter)
+    public function __construct()
     {
-        $this->dateTimeConverter = $dateTimeConverter;
         $this->teams = new ArrayCollection();
     }
 
@@ -121,16 +115,16 @@ class Run
 
     public function setStartDate(\DateTimeInterface $startDate): self
     {
-        $startDate = $this->dateTimeConverter->convertedToStoreDateTime($startDate);
+        $startDate = $this->convertedToStoreDateTime($startDate);
         $this->startDate = $startDate;
         return $this;
     }
 
     public function canBet(): bool
     {
-        $timezoneUTC = new \DateTimeZone(DateTimeStorageDataConverter::STORED_TIME_ZONE);
-        $currentDate = new \DateTime('now', $timezoneUTC);
-        return ($currentDate < $this->startDate->setTimezone($timezoneUTC));
+        $timeZoneUTC = new \DateTimeZone(self::STORED_TIME_ZONE);
+        $currentDate = new \DateTime('now', $timeZoneUTC);
+        return ($currentDate < $this->startDate->setTimezone($timeZoneUTC));
     }
 
     public function getCompetition(): ?Competition
@@ -216,12 +210,6 @@ class Run
             ($minTeams <= $teamsCount && $maxTeams >= $teamsCount);
     }
 
-    public function setDateTimeConverter(DateTimeStorageInterface $dateTimeConverter): self
-    {
-        $this->dateTimeConverter = $dateTimeConverter;
-        return $this;
-    }
-
     public function hasTeams(): bool
     {
         return !$this->teams->isEmpty();
@@ -230,5 +218,10 @@ class Run
     public function getTeamsCount(): int
     {
         return $this->teams->count();
+    }
+
+    public function __toString(): string
+    {
+        return $this->id . ' - ' . $this->name . ' (' . $this->event . ')';
     }
 }

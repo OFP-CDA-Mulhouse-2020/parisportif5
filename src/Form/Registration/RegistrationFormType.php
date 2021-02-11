@@ -2,7 +2,6 @@
 
 namespace App\Form\Registration;
 
-use App\Service\DateTimeStorageDataConverter;
 use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\BirthdayType;
@@ -47,7 +46,7 @@ class RegistrationFormType extends AbstractType
                 'label' => "Date de naissance",
                 'invalid_message' => "Veuillez sélectionner une date de naissance.",
                 'input' => 'datetime_immutable',
-                'model_timezone' => DateTimeStorageDataConverter::STORED_TIME_ZONE,
+                'model_timezone' => User::STORED_TIME_ZONE,
                 'widget' => 'single_text'
             ])
             ->add('firstName', TextType::class, [

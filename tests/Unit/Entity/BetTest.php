@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Entity;
 
-use App\Service\DateTimeStorageDataConverter;
 use App\Entity\Bet;
 use App\Entity\BetCategory;
 use App\Entity\Competition;
@@ -31,11 +30,9 @@ final class BetTest extends WebTestCase
 
     private function createValidBet(): Bet
     {
-        $converter = new DateTimeStorageDataConverter();
-        $bet = new Bet($converter);
+        $bet = new Bet();
         $date = new \DateTimeImmutable("now", new \DateTimeZone("UTC"));
         $bet
-            ->setDateTimeConverter($converter)
             ->setDesignation('paris')
             ->setAmount(100)
             ->setOdds('1.2')
@@ -45,10 +42,8 @@ final class BetTest extends WebTestCase
 
     private function createUserObject(string $country = "FR"): User
     {
-        $converter = new DateTimeStorageDataConverter();
-        $user = new User($converter);
+        $user = new User();
         $user
-            ->setDateTimeConverter($converter)
             ->setCivility("Monsieur")
             ->setFirstName("Tintin")
             ->setLastName("Dupont")
@@ -68,11 +63,9 @@ final class BetTest extends WebTestCase
 
     private function createCompetitionObject(string $country = "FR"): Competition
     {
-        $converter = new DateTimeStorageDataConverter();
-        $competition = new Competition($converter);
+        $competition = new Competition();
         $date = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
         $competition
-            ->setDateTimeConverter($converter)
             ->setName('Championnat inter-club')
             ->setStartDate($date->setTime(23, 59, 59, 1000000))
             ->setCountry($country)
@@ -101,11 +94,9 @@ final class BetTest extends WebTestCase
 
     private function createRunObject(Competition $competition, \DateTimeImmutable $date = null): Run
     {
-        $converter = new DateTimeStorageDataConverter();
-        $run = new Run($converter);
+        $run = new Run();
         $startDate = $date ?? new \DateTimeImmutable('+1 day', new \DateTimeZone('UTC'));
         $run
-            ->setDateTimeConverter($converter)
             ->setName('run name')
             ->setEvent('event name')
             ->setStartDate($startDate)

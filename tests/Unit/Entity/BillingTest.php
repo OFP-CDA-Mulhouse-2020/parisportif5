@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Entity;
 
-use App\Service\DateTimeStorageDataConverter;
 use App\Entity\Billing;
 use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -25,10 +24,8 @@ final class BillingTest extends WebTestCase
 
     private function createValidBilling(): Billing
     {
-        $converter = new DateTimeStorageDataConverter();
-        $billing = new Billing($converter);
+        $billing = new Billing();
         $billing
-            ->setDateTimeConverter($converter)
             ->setFirstName("Dupont")
             ->setLastName("Tintin")
             ->setAddress("1 avenue st martin")
@@ -45,10 +42,8 @@ final class BillingTest extends WebTestCase
 
     private function createUserObject(string $country = "FR"): User
     {
-        $converter = new DateTimeStorageDataConverter();
-        $user = new User($converter);
+        $user = new User();
         $user
-            ->setDateTimeConverter($converter)
             ->setCivility("Monsieur")
             ->setFirstName("Tintin")
             ->setLastName("Dupont")

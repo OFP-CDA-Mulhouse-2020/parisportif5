@@ -7,7 +7,6 @@ use App\Entity\Wallet;
 use App\Repository\LanguageRepository;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
-use App\Service\DateTimeStorageDataConverter;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
@@ -86,16 +85,14 @@ final class UserFixtures extends Fixture implements DependentFixtureInterface
             ]*/
         ];
         $count = count($testData);
-        $converter = new DateTimeStorageDataConverter();
         for ($i = 0; $i < $count; $i++) {
-            $user = new User($converter);
+            $user = new User();
             $userWallet = new Wallet();
             $userLanguage = $this->languageRepository->findOneByLanguageCode($testData[$i]['language']);
             if (is_null($userLanguage)) {
                 $userLanguage = $this->languageRepository->languageByDefault();
             }
             $user
-                ->setDateTimeConverter($converter)
                 ->setCivility($testData[$i]['civility'])
                 ->setFirstName($testData[$i]['firstname'])
                 ->setLastName($testData[$i]['lastname'])

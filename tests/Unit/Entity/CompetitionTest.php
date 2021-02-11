@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Entity;
 
-use App\Service\DateTimeStorageDataConverter;
 use App\Entity\BetCategory;
 use App\Entity\Competition;
 use App\Entity\Member;
@@ -29,11 +28,9 @@ final class CompetitionTest extends WebTestCase
 
     private function createValidCompetition(): Competition
     {
-        $converter = new DateTimeStorageDataConverter();
-        $competition = new Competition($converter);
+        $competition = new Competition();
         $date = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
         $competition
-            ->setDateTimeConverter($converter)
             ->setName('Championnat inter-club')
             ->setStartDate($date->setTime(23, 59, 59, 1000000))
             ->setCountry('FR')
@@ -64,11 +61,9 @@ final class CompetitionTest extends WebTestCase
 
     private function createRunObject(Competition $competition, \DateTimeImmutable $date = null): Run
     {
-        $converter = new DateTimeStorageDataConverter();
-        $run = new Run($converter);
+        $run = new Run();
         $startDate = $date ?? new \DateTimeImmutable('+1 day', new \DateTimeZone('UTC'));
         $run
-            ->setDateTimeConverter($converter)
             ->setName('run name')
             ->setEvent('event name')
             ->setStartDate($startDate)
@@ -160,8 +155,8 @@ final class CompetitionTest extends WebTestCase
 
     public function startDateUnconformityProvider(): array
     {
-        $timezone = $this->createDefaultTimeZone();
-        $startDate = new \DateTimeImmutable('now', $timezone);
+        $timeZone = $this->createDefaultTimeZone();
+        $startDate = new \DateTimeImmutable('now', $timeZone);
         return [
             [$startDate],
             [$startDate->modify('-1 hour')],
@@ -183,8 +178,8 @@ final class CompetitionTest extends WebTestCase
 
     public function startDateConformityProvider(): array
     {
-        $timezone = $this->createDefaultTimeZone();
-        $startDate = new \DateTimeImmutable('now', $timezone);
+        $timeZone = $this->createDefaultTimeZone();
+        $startDate = new \DateTimeImmutable('now', $timeZone);
         return [
             [$startDate->modify("+1 day")],
             [$startDate->modify("+1 month")]

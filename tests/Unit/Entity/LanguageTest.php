@@ -25,7 +25,7 @@ final class LanguageTest extends WebTestCase
     {
         $language = new Language();
         $language
-            ->setName('anglais US')
+            ->setName('en')
             ->setCountry('US')
             ->setCode('en_US')
             ->setDateFormat('Y-m-d')
@@ -42,7 +42,7 @@ final class LanguageTest extends WebTestCase
         $language = $this->createValidLanguage();
         $language->setName($name);
         $violations = $this->validator->validate($language);
-        $this->assertCount(1, $violations);
+        $this->assertGreaterThanOrEqual(1, count($violations));
     }
 
     public function nameUncompatibleProvider(): array
@@ -52,7 +52,10 @@ final class LanguageTest extends WebTestCase
             ["Anglais1"],
             [""],
             ["    "],
-            ["italien-sicile"]
+            ["italien-sicile"],
+            ["Français"],
+            ["anglais"],
+            ["Créole Réunionnais"]
         ];
     }
 
@@ -70,9 +73,9 @@ final class LanguageTest extends WebTestCase
     public function nameCompatibleProvider(): array
     {
         return [
-            ["Français"],
-            ["anglais"],
-            ["Créole Réunionnais"]
+            ["fr"],
+            ["en"],
+            ["es"]
         ];
     }
 

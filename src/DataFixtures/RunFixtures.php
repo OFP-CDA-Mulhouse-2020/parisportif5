@@ -8,7 +8,6 @@ use App\Repository\LocationRepository;
 use Doctrine\Persistence\ObjectManager;
 use App\Repository\CompetitionRepository;
 use Doctrine\Bundle\FixturesBundle\Fixture;
-use App\Service\DateTimeStorageDataConverter;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 
 final class RunFixtures extends Fixture implements DependentFixtureInterface
@@ -50,7 +49,6 @@ final class RunFixtures extends Fixture implements DependentFixtureInterface
             ]
         ];
         $count = count($testData);
-        $converter = new DateTimeStorageDataConverter();
         for ($i = 0; $i < $count; $i++) {
             $runCompetition = $this->competitionRepository->findOneBy([
                 'name' => $testData[$i]['competition']['name'],
@@ -62,9 +60,8 @@ final class RunFixtures extends Fixture implements DependentFixtureInterface
             ]);
             //$runTeams
             //$runScores
-            $run = new Run($converter);
+            $run = new Run();
             $run
-                ->setDateTimeConverter($converter)
                 ->setName($testData[$i]['name'])
                 ->setEvent($testData[$i]['event'])
                 ->setStartDate(new \DateTimeImmutable($testData[$i]['start'], new \DateTimeZone("UTC")))

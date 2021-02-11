@@ -2,7 +2,6 @@
 
 namespace App\DataFixtures;
 
-use App\Service\DateTimeStorageDataConverter;
 use App\Entity\Billing;
 use App\Repository\UserRepository;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -41,15 +40,13 @@ final class BillingFixtures extends Fixture implements DependentFixtureInterface
             ]
         ];
         $count = count($testData);
-        $converter = new DateTimeStorageDataConverter();
         for ($i = 0; $i < $count; $i++) {
-            $billing = new Billing($converter);
+            $billing = new Billing();
             $billingUser = null;
             if (!empty($testData[$i]['user'])) {
                 $billingUser = $this->userRepository->findOneByEmail($testData[$i]['user']);
             }
             $billing
-                ->setDateTimeConverter($converter)
                 ->setOrderNumber($testData[$i]['order'])
                 ->setInvoiceNumber($testData[$i]['invoice'])
                 ->setAmount($testData[$i]['amount'])

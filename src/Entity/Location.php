@@ -17,14 +17,14 @@ use App\Repository\LocationRepository;
  *     message="Ce lieu est déjà enregistré."
  * )
  */
-class Location
+class Location extends AbstractEntity
 {
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private int $id;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -36,7 +36,7 @@ class Location
     private string $place;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=32)
      * @Assert\NotBlank(
      *     message="Le fuseau horaire du lieu ne peut pas être vide",
      *     normalizer="trim"
@@ -48,7 +48,7 @@ class Location
     private string $timeZone;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=2)
      * @Assert\NotBlank(
      *     message="Le pays ne peut pas être vide",
      *     normalizer="trim"
@@ -95,5 +95,10 @@ class Location
     {
         $this->country = $country;
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->id . ' - ' . $this->place . ' (' . $this->country . ')';
     }
 }

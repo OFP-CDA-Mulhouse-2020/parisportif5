@@ -42,34 +42,37 @@ skinparam linetype ortho
     Bet "0..*" --> "0..1" Team
     'Liaison potentiel entre un paris et un membre
     Bet "0..*" --> "0..1" Member
-    'Implémentation de l'interface FundsStorageInterface par l'objet FundsStorageDataConverter
+    'Implémentation de l'interface FundsStorageInterface par la classe FundsStorageDataConverter
     FundsStorageInterface <|.. FundsStorageDataConverter
-    'Implémentation de l'interface CommissionRateStorageInterface par l'objet CommissionRateStorageDataConverter
+    'Implémentation de l'interface CommissionRateStorageInterface par la classe CommissionRateStorageDataConverter
     CommissionRateStorageInterface <|.. CommissionRateStorageDataConverter
-    'Implémentation de l'interface OddsStorageInterface par l'objet OddsStorageDataConverter
+    'Implémentation de l'interface OddsStorageInterface par la classe OddsStorageDataConverter
     OddsStorageInterface <|.. OddsStorageDataConverter
-    'Implémentation de l'interface DateTimeStorageInterface par l'objet DateTimeStorageDataConverter
-    DateTimeStorageInterface <|.. DateTimeStorageDataConverter
-    'Implémentation de l'interface FundsStorageInterface par l'objet StorageDataConverter
+    'Implémentation de l'interface FundsStorageInterface par la classe StorageDataConverter
     FundsStorageInterface <|.. StorageDataConverter
-    'Implémentation de l'interface CommissionRateStorageInterface par l'objet StorageDataConverter
+    'Implémentation de l'interface CommissionRateStorageInterface par la classe StorageDataConverter
     CommissionRateStorageInterface <|.. StorageDataConverter
-    'Implémentation de l'interface OddsStorageInterface par l'objet StorageDataConverter
+    'Implémentation de l'interface OddsStorageInterface par la classe StorageDataConverter
     OddsStorageInterface <|.. StorageDataConverter
-    'Implémentation de l'interface DateTimeStorageInterface par l'objet StorageDataConverter
-    DateTimeStorageInterface <|.. StorageDataConverter
+    'Implémentation de l'interface DateTimeStorageInterface par la classe abstraite AbstactEntity
+    DateTimeStorageInterface <|.. AbstactEntity
     '
-    DateTimeStorageDataConverter "1" <-- "0..*" Bet
-    '
-    DateTimeStorageDataConverter "1" <-- "0..*" Competition
-    '
-    DateTimeStorageDataConverter "1" <-- "0..*" Run
-    '
-    DateTimeStorageDataConverter "1" <-- "0..*" Billing
-    '
-    DateTimeStorageDataConverter "1" <-- "0..*" User
+    AbstactEntity <|-- Bet
+    AbstactEntity <|-- Competition
+    AbstactEntity <|-- Run
+    AbstactEntity <|-- Billing
+    AbstactEntity <|-- User
+    AbstactEntity <|-- BetSaved
+    AbstactEntity <|-- MemberRole
+    AbstactEntity <|-- MemberStatus
+    AbstactEntity <|-- Member
+    AbstactEntity <|-- Wallet
+    AbstactEntity <|-- Team
+    AbstactEntity <|-- Language
+    AbstactEntity <|-- Location
+    AbstactEntity <|-- Sport
+    AbstactEntity <|-- BetCategory
 'Définitions des classes :
-    'DateTimeStorageDataConverter
     'Pour convertir le montant enregistré dans la BDD en unité monétaire et vice versa
     interface FundsStorageInterface {
         +convertToCurrencyUnit(in int amount) : float
@@ -88,13 +91,12 @@ skinparam linetype ortho
     'Pour convertir la date et heure au format de la BDD
     interface DateTimeStorageInterface {
         +convertedToStoreDateTime(in DateTimeInterface datetime) : DateTimeImmutable
-        +setStoredTimezone(inout DateTimeImmutable datetimeImmutable) : DateTimeImmutable
+        +setStoredTimeZone(inout DateTimeImmutable datetimeImmutable) : DateTimeImmutable
     }
-    class DateTimeStorageDataConverter {
+    abstract AbstactEntity {
         +{static} STORED_TIME_ZONE : string = 'UTC'
-    }
-    class StorageDataConverter {
-        +{static} getStoredTimeZone() : string
+        +convertedToStoreDateTime(in DateTimeInterface datetime) : DateTimeImmutable
+        +setStoredTimeZone(inout DateTimeImmutable datetimeImmutable) : DateTimeImmutable
     }
     'Liste des paris que les utilisateurs ont fait
     class BetSaved {
@@ -257,7 +259,7 @@ skinparam linetype ortho
     class Location {
         -id : int
         -place : string
-        -timezone : string
+        -timeZone : string
         -country : string
     }
     'Sport pratiqué (runtype = fixture(match), race(course)) (type = collectif ou individuel ou les deux)

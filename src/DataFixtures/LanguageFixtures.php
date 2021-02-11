@@ -12,7 +12,7 @@ final class LanguageFixtures extends Fixture
     {
         $testData = [
             [
-                'name' => 'anglais',
+                'name' => 'en',
                 'country' => 'GB',
                 'code' => 'en_GB',
                 'dateFormat' => 'd-m-Y',
@@ -20,7 +20,7 @@ final class LanguageFixtures extends Fixture
                 'timezone' => 'Europe/London'
             ],
             [
-                'name' => 'allemand',
+                'name' => 'de',
                 'country' => 'DE',
                 'code' => 'de_DE',
                 'dateFormat' => 'd/m/Y',
@@ -28,7 +28,7 @@ final class LanguageFixtures extends Fixture
                 'timezone' => 'Europe/Berlin'
             ],
             [
-                'name' => 'français',
+                'name' => 'fr',
                 'country' => 'FR',
                 'code' => 'fr_FR',
                 'dateFormat' => 'd/m/Y',

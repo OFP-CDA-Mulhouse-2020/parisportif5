@@ -19,14 +19,14 @@ use App\Repository\TeamRepository;
  *     message="Cette équipe est déjà enregistrée."
  * )
  */
-class Team
+class Team extends AbstractEntity
 {
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private int $id;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -46,7 +46,7 @@ class Team
     private string $name;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=2)
      * @Assert\NotBlank(
      *     message="Le pays doit être renseigné",
      *     normalizer="trim"
@@ -199,5 +199,10 @@ class Team
     public function getMembersCount(): int
     {
         return $this->members->count();
+    }
+
+    public function __toString(): string
+    {
+        return $this->id . ' - ' . $this->name . ' (' . $this->country . ')';
     }
 }

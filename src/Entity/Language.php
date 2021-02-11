@@ -16,30 +16,29 @@ use App\Repository\LanguageRepository;
  *     message="Cette langue est déjà enregistré."
  * )
  */
-class Language
+class Language extends AbstractEntity
 {
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private int $id;
+    private ?int $id = null;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=2)
      * @Assert\NotBlank(
      *     message="Le nom du langage ne peut pas être vide",
      *     normalizer="trim"
      * )
-     * @Assert\Regex(
-     *     pattern="/^[\p{L}\s]+$/u",
-     *     message="Les chiffres et les caractères spéciaux ne sont pas autorisés pour le nom du langage"
+     * @Assert\Language(
+     *     message="Le langage {{ value }} n'est pas valide",
      * )
      */
     private string $name;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=2)
      * @Assert\NotBlank(
      *     message="Le pays du langage ne peut pas être vide",
      *     normalizer="trim"
@@ -51,7 +50,7 @@ class Language
     private string $country;
 
     /**
-     * @ORM\Column(type="string", length=20)
+     * @ORM\Column(type="string", length=5)
      * @Assert\NotBlank(
      *     message="Le code du langage ne peut pas être vide",
      *     normalizer="trim"
@@ -92,7 +91,7 @@ class Language
     private string $timeFormat;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=32)
      * @Assert\NotBlank(
      *     message="Le fuseau horaire ne peut pas être vide.",
      *     normalizer="trim"
@@ -179,5 +178,10 @@ class Language
         $timeFormat = $this->timeFormat ?? '';
         $dateFormat = $this->dateFormat ?? '';
         return empty($timeFormat) || empty($dateFormat) ? null : $dateFormat . $timeFormat;
+    }
+
+    public function __toString(): string
+    {
+        return $this->id . ' - ' . $this->name;
     }
 }

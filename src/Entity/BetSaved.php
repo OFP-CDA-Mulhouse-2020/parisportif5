@@ -5,21 +5,20 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Repository\BetSavedRepository;
-use App\DataConverter\DateTimeStorageInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=BetSavedRepository::class)
  */
-class BetSaved
+class BetSaved extends AbstractEntity
 {
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private int $id;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -102,7 +101,7 @@ class BetSaved
     private \DateTimeImmutable $competitionStartDate;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=2)
      * @Assert\NotBlank(
      *     message="Le pays de la compétition ne peut pas être vide",
      *     normalizer="trim"
@@ -123,7 +122,7 @@ class BetSaved
     private string $competitionSportName;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=2)
      * @Assert\NotBlank(
      *     message="Le pays du sport de la compétition doit être renseigné",
      *     normalizer="trim"
@@ -182,7 +181,7 @@ class BetSaved
     private ?string $teamName = null;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=2, nullable=true)
      * @Assert\NotBlank(
      *     message="Le pays de l'équipe doit être renseigné",
      *     normalizer="trim",
@@ -223,7 +222,7 @@ class BetSaved
     private ?string $memberFirstName = null;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=2, nullable=true)
      * @Assert\NotBlank(
      *     message="Le pays du membre doit être renseigné",
      *     normalizer="trim",
@@ -241,14 +240,6 @@ class BetSaved
      * @Assert\Valid
      */
     private User $user;
-
-    /** Sécurise le stockage des dates et heures */
-    private DateTimeStorageInterface $dateTimeConverter;
-
-    public function __construct(DateTimeStorageInterface $dateTimeConverter)
-    {
-        $this->dateTimeConverter = $dateTimeConverter;
-    }
 
     public function getId(): ?int
     {
@@ -306,7 +297,7 @@ class BetSaved
 
     public function setBetDate(\DateTimeInterface $betDate): self
     {
-        $betDate = $this->dateTimeConverter->convertedToStoreDateTime($betDate);
+        $betDate = $this->convertedToStoreDateTime($betDate);
         $this->betDate = $betDate;
         return $this;
     }
@@ -345,7 +336,7 @@ class BetSaved
 
     public function setCompetitionStartDate(\DateTimeInterface $competitionStartDate): self
     {
-        $competitionStartDate = $this->dateTimeConverter->convertedToStoreDateTime($competitionStartDate);
+        $competitionStartDate = $this->convertedToStoreDateTime($competitionStartDate);
         $this->competitionStartDate = $competitionStartDate;
         return $this;
     }
@@ -412,7 +403,7 @@ class BetSaved
 
     public function setRunStartDate(\DateTimeInterface $runStartDate): self
     {
-        $runStartDate = $this->dateTimeConverter->convertedToStoreDateTime($runStartDate);
+        $runStartDate = $this->convertedToStoreDateTime($runStartDate);
         $this->runStartDate = $runStartDate;
         return $this;
     }
@@ -488,12 +479,6 @@ class BetSaved
         return $this->getMemberFullName() ?? $this->teamName;
     }
 
-    public function setDateTimeConverter(DateTimeStorageInterface $dateTimeConverter): self
-    {
-        $this->dateTimeConverter = $dateTimeConverter;
-        return $this;
-    }
-
     public function getUser(): ?User
     {
         return $this->user;
@@ -503,5 +488,10 @@ class BetSaved
     {
         $this->user = $user;
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->id . ' - ' . $this->designation;
     }
 }

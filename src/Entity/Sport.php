@@ -21,14 +21,14 @@ use App\Repository\SportRepository;
  *      message="Le sport ne peut être ni individuel ni collectif et doit être au moins l'un des deux"
  * )
  */
-class Sport
+class Sport extends AbstractEntity
 {
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private int $id;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -40,7 +40,7 @@ class Sport
     private string $name;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=2)
      * @Assert\NotBlank(
      *     message="Le pays doit être renseigné",
      *     normalizer="trim"
@@ -52,7 +52,7 @@ class Sport
     private string $country;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=7)
      * @Assert\Choice(
      *     choices=Sport::RUN_TYPES,
      *     message="Choisisez un type de résultat valide"
@@ -240,5 +240,11 @@ class Sport
     public function isBothIndividualAndCollective(): bool
     {
         return ($this->individualType === true && $this->collectiveType === true);
+    }
+
+    public function __toString(): string
+    {
+
+        return $this->id . ' - ' . $this->name . ' (' . $this->country . ')';
     }
 }

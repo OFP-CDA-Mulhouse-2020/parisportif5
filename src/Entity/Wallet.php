@@ -16,14 +16,14 @@ use App\Repository\WalletRepository;
  *     message="Ce porte-monnaie est déjà enregistré."
  * )
  */
-class Wallet
+class Wallet extends AbstractEntity
 {
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private int $id;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="integer")
@@ -98,5 +98,10 @@ class Wallet
         if ($this->isValidSubtraction($amount) === true) {
             $this->amount -= $amount;
         }
+    }
+
+    public function __toString(): string
+    {
+        return (string)$this->id;
     }
 }

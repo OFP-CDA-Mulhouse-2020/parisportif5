@@ -16,14 +16,14 @@ use App\Repository\MemberRoleRepository;
  *     message="Ce rôle de membre est déjà enregistré."
  * )
  */
-class MemberRole
+class MemberRole extends AbstractEntity
 {
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private int $id;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -52,5 +52,10 @@ class MemberRole
     {
         $this->name = $name;
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->id . ' - ' . $this->name;
     }
 }

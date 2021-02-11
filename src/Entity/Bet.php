@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use App\DataConverter\DateTimeStorageInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
@@ -18,14 +17,14 @@ use App\Repository\BetRepository;
  *     message="Le nombre de paris par minute est limité à 6 pour des raisons de sécurité."
  * )
  */
-class Bet
+class Bet extends AbstractEntity
 {
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private int $id;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -109,14 +108,6 @@ class Bet
      */
     private \DateTimeImmutable $betDate;
 
-    /** Sécurise le stockage des dates et heures */
-    private DateTimeStorageInterface $dateTimeConverter;
-
-    public function __construct(DateTimeStorageInterface $dateTimeConverter)
-    {
-        $this->dateTimeConverter = $dateTimeConverter;
-    }
-
     public function getId(): ?int
     {
         return $this->id;
@@ -169,6 +160,12 @@ class Bet
     public function isWinning(): ?bool
     {
         return $this->isWinning;
+    }
+
+    public function setIsWinning(?bool $isWinning): self
+    {
+        $this->isWinning = $isWinning;
+        return $this;
     }
 
     public function won(): void
@@ -248,7 +245,7 @@ class Bet
 
     public function setBetDate(\DateTimeInterface $betDate): self
     {
-        $betDate = $this->dateTimeConverter->convertedToStoreDateTime($betDate);
+        $betDate = $this->convertedToStoreDateTime($betDate);
         $this->betDate = $betDate;
         return $this;
     }
@@ -263,9 +260,8 @@ class Bet
         return $this->teamMember ?? $this->team;
     }
 
-    public function setDateTimeConverter(DateTimeStorageInterface $dateTimeConverter): self
+    public function __toString(): string
     {
-        $this->dateTimeConverter = $dateTimeConverter;
-        return $this;
+        return $this->id . ' - ' . $this->designation;
     }
 }

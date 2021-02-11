@@ -44,14 +44,14 @@ use App\Repository\BetCategoryRepository;
  *     message="Cette catégorie de paris est déjà enregistré."
  * )
  */
-class BetCategory
+class BetCategory extends AbstractEntity
 {
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private int $id;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -165,5 +165,10 @@ class BetCategory
     {
         $this->onCompetition = $onCompetition;
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->id . ' - ' . $this->name;
     }
 }

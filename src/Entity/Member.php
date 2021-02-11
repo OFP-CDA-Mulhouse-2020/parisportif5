@@ -18,14 +18,14 @@ use App\Repository\MemberRepository;
  *     message="Ce membre est déjà enregistrée."
  * )
  */
-class Member
+class Member extends AbstractEntity
 {
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private int $id;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -54,7 +54,7 @@ class Member
     private string $firstName;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=2)
      * @Assert\NotBlank(
      *     message="Le pays doit être renseigné",
      *     normalizer="trim"
@@ -64,6 +64,22 @@ class Member
      * )
      */
     private string $country;
+
+    /**
+     * @ORM\Column(type="decimal", precision=10, scale=2)
+     * @Assert\Type(
+     *     type="numeric",
+     *     message="La côte du membre doit être un nombre entier ou réel."
+     * )
+     * @Assert\PositiveOrZero(
+     *     message="La côte du membre doit être un positif ou zéro."
+     * )
+     * @Assert\LessThan(
+     *     value=100000000,
+     *     message="La côte du membre doit être inférieur à {{ compared_value }}."
+     * )
+     */
+    private string $odds;
 
     /**
      * @ORM\ManyToOne(targetEntity=MemberRole::class)
@@ -84,22 +100,6 @@ class Member
      * @ORM\JoinColumn(nullable=false)
      */
     private Team $team;
-
-    /**
-     * @ORM\Column(type="decimal", precision=10, scale=2)
-     * @Assert\Type(
-     *     type="numeric",
-     *     message="La côte du membre doit être un nombre entier ou réel."
-     * )
-     * @Assert\PositiveOrZero(
-     *     message="La côte du membre doit être un positif ou zéro."
-     * )
-     * @Assert\LessThan(
-     *     value=100000000,
-     *     message="La côte du membre doit être inférieur à {{ compared_value }}."
-     * )
-     */
-    private string $odds;
 
     public function getId(): ?int
     {
@@ -187,5 +187,14 @@ class Member
     {
         $fullName = trim(($this->firstName ?? '') . ' ' . ($this->lastName ?? ''));
         return !empty($fullName) ? $fullName : '';
+    }
+
+    public function __toString(): string
+    {
+        $teamName = $this->team->getName() ?? '';
+        if (trim($teamName) === '') {
+            $teamName = ' (' . $teamName . ')';
+        }
+        return $this->id . ' - ' . $this->getFullName() . $teamName;
     }
 }

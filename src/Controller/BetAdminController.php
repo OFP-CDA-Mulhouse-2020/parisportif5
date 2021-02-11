@@ -2,22 +2,22 @@
 
 namespace App\Controller;
 
-use App\Service\DateTimeStorageDataConverter;
-use App\Service\OddsStorageDataConverter;
-use App\Entity\BetCategory;
-use App\Entity\Billing;
-use App\Entity\Member;
+use App\Entity\Bet;
 use App\Entity\Team;
 use App\Entity\User;
-use App\Form\Bet\BetAdminFormType;
-use App\Repository\BetCategoryRepository;
+use App\Entity\Member;
+use App\Entity\Billing;
+use App\Entity\BetCategory;
 use App\Repository\BetRepository;
 use App\Repository\RunRepository;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Response;
+use App\Form\Bet\BetAdminFormType;
+use App\Repository\BetCategoryRepository;
+use App\Service\OddsStorageDataConverter;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class BetAdminController extends AbstractController
 {
@@ -31,7 +31,6 @@ class BetAdminController extends AbstractController
         RunRepository $runRepository,
         BetCategoryRepository $betCategoryRepository,
         BetRepository $betRepository,
-        DateTimeStorageDataConverter $dateTimeConverter,
         OddsStorageDataConverter $oddsStorageDataConverter
     ): Response {
         //$this->denyAccessUnlessGranted('ROLE_ADMIN');
@@ -112,7 +111,7 @@ class BetAdminController extends AbstractController
                 $teamValue = ($team !== null) ? $team->getId() : null;
                 $valid = ($teamValue === $winnerValue);
                 //
-                $billing = new Billing($dateTimeConverter);
+                $billing = new Billing();
                 if ($valid === true) {
                     $bet->won();
                     $betUser = $bet->getUser();
@@ -128,7 +127,7 @@ class BetAdminController extends AbstractController
                             $newWalletAmount = (int)(($walletAmmount + $profits));
                             $betUserWallet->setAmount($newWalletAmount);
                             $commissionRateStore = $oddsStorageDataConverter->convertOddsMultiplierToStoredData(Billing::DEFAULT_COMMISSION_RATE);
-                            $billing = $this->makeBill($billing, $user, $bet->getDesignation(), $profits, $commissionRateStore, $bet->getId(), Billing::CREDIT, $dateTimeConverter);
+                            $billing = $this->makeBill($billing, $user, $bet->getDesignation(), $profits, $commissionRateStore, $bet->getId(), Billing::CREDIT);
                             $entityManager->persist($billing);
                         }
                     }
@@ -137,7 +136,7 @@ class BetAdminController extends AbstractController
                     $betUser = $bet->getUser();
                     if (!is_null($betUser)) {
                         $amountStore = $bet->getAmount() ?? 0;
-                        $billing = $this->makeBill($billing, $user, $bet->getDesignation(), $amountStore, '0', $bet->getId(), Billing::DEBIT, $dateTimeConverter);
+                        $billing = $this->makeBill($billing, $user, $bet->getDesignation(), $amountStore, '0', $bet->getId(), Billing::DEBIT);
                         $entityManager->persist($billing);
                     }
                 }
@@ -156,12 +155,11 @@ class BetAdminController extends AbstractController
         ]);
     }
 
-    protected function makeBill(Billing $billing, User $betUser, string $designation, int $amount, string $commissionRate, int $betId, string $operationType, DateTimeStorageDataConverter $dateTimeConverter): Billing
+    protected function makeBill(Billing $billing, User $betUser, string $designation, int $amount, string $commissionRate, int $betId, string $operationType): Billing
     {
-        $date = new \DateTimeImmutable("now", new \DateTimeZone(DateTimeStorageDataConverter::STORED_TIME_ZONE));
+        $date = new \DateTimeImmutable("now", new \DateTimeZone(Bet::STORED_TIME_ZONE));
         //\uniqid("$betId", true)
         $billing
-            ->setDateTimeConverter($dateTimeConverter)
             ->setFirstName($betUser->getFirstName())
             ->setLastName($betUser->getLastName())
             ->setAddress($betUser->getBillingAddress())

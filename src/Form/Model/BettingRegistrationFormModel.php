@@ -9,7 +9,7 @@ use App\Entity\BetCategory;
 use App\Entity\Competition;
 use App\Validator\UniqueBet;
 use App\DataConverter\OddsStorageInterface;
-use App\Service\DateTimeStorageDataConverter;
+use App\Entity\Bet;
 use Symfony\Component\Validator\Constraints as Assert;
 
 final class BettingRegistrationFormModel
@@ -252,7 +252,7 @@ final class BettingRegistrationFormModel
     {
         $date = new \DateTimeImmutable(
             "now",
-            new \DateTimeZone(DateTimeStorageDataConverter::STORED_TIME_ZONE)
+            new \DateTimeZone(Bet::STORED_TIME_ZONE)
         );
         $this->submitDate = $this->getDateByTenthOfSecond($date);
         return $this;

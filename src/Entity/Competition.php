@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use App\Service\DateTimeStorageDataConverter;
-use App\DataConverter\DateTimeStorageInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -21,14 +19,14 @@ use App\Repository\CompetitionRepository;
  *     message="Cette compétition est déjà enregistrée."
  * )
  */
-class Competition
+class Competition extends AbstractEntity
 {
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private int $id;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -49,7 +47,7 @@ class Competition
     private \DateTimeImmutable $startDate;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=2)
      * @Assert\NotBlank(
      *     message="Le pays ne peut pas être vide",
      *     normalizer="trim"
@@ -105,12 +103,8 @@ class Competition
      */
     private Sport $sport;
 
-    /** Sécurise le stockage des dates et heures */
-    private DateTimeStorageInterface $dateTimeConverter;
-
-    public function __construct(DateTimeStorageInterface $dateTimeConverter)
+    public function __construct()
     {
-        $this->dateTimeConverter = $dateTimeConverter;
         $this->runs = new ArrayCollection();
         $this->betCategories = new ArrayCollection();
     }
@@ -138,7 +132,7 @@ class Competition
 
     public function setStartDate(\DateTimeInterface $startDate): self
     {
-        $startDate = $this->dateTimeConverter->convertedToStoreDateTime($startDate);
+        $startDate = $this->convertedToStoreDateTime($startDate);
         $this->startDate = $startDate;
         return $this;
     }
@@ -167,9 +161,9 @@ class Competition
 
     public function canBet(): bool
     {
-        $timezoneUTC = new \DateTimeZone(DateTimeStorageDataConverter::STORED_TIME_ZONE);
-        $currentDate = new \DateTime('now', $timezoneUTC);
-        return ($currentDate < $this->startDate->setTimezone($timezoneUTC));
+        $timeZoneUTC = new \DateTimeZone(self::STORED_TIME_ZONE);
+        $currentDate = new \DateTime('now', $timeZoneUTC);
+        return ($currentDate < $this->startDate->setTimezone($timeZoneUTC));
     }
 
     /**
@@ -280,12 +274,6 @@ class Competition
             ($minRuns <= $runsCount && $maxRuns >= $runsCount);
     }
 
-    public function setDateTimeConverter(DateTimeStorageInterface $dateTimeConverter): self
-    {
-        $this->dateTimeConverter = $dateTimeConverter;
-        return $this;
-    }
-
     public function hasRuns(): bool
     {
         return !$this->runs->isEmpty();
@@ -320,5 +308,11 @@ class Competition
             $competitionTeams = array_merge($competitionTeams, $newTeam);
         }
         return $competitionTeams;
+    }
+
+    public function __toString(): string
+    {
+        $year = $this->startDate->format('Y');
+        return $this->id . ' - ' . $this->name . ' (' . $this->country . ' ' . $year . ')';
     }
 }
