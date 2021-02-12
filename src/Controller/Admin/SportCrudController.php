@@ -29,7 +29,7 @@ class SportCrudController extends AbstractCrudController
     public function configureFields(string $pageName): iterable
     {
         yield Field\FormField::addPanel('Sport Details');
-        yield Field\IdField::new('id', 'ID')->onlyOnIndex();
+        yield Field\IdField::new('id', 'ID')->hideOnForm();
         yield Field\TextField::new('name', 'Name');
         yield Field\CountryField::new('country', 'Country');
         $runTypeValues = Sport::RUN_TYPES;

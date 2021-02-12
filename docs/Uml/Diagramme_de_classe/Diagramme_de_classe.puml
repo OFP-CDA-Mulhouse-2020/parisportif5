@@ -308,6 +308,7 @@ skinparam linetype ortho
         +hasTeams() : bool
         +getTeamsCount() : int
         +hasRequiredNumberOfTeams() : bool
+        +getBetCategories() : BetCategory[]
     }
     'Joueur ou sportif ou pilote
     class Member {

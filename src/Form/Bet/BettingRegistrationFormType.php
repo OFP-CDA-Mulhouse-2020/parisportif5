@@ -2,6 +2,8 @@
 
 namespace App\Form\Bet;
 
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\AbstractType;
 use App\Form\Model\BettingRegistrationFormModel;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -9,8 +11,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\FormEvent;
-use Symfony\Component\Form\FormEvents;
 
 class BettingRegistrationFormType extends AbstractType
 {

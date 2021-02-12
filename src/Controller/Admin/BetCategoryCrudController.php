@@ -29,7 +29,7 @@ class BetCategoryCrudController extends AbstractCrudController
     public function configureFields(string $pageName): iterable
     {
         yield Field\FormField::addPanel('Bet Category Details');
-        yield Field\IdField::new('id', 'ID')->onlyOnIndex();
+        yield Field\IdField::new('id', 'ID')->hideOnForm();
         yield Field\TextField::new('name', 'Name');
         yield Field\TextareaField::new('description', 'Description');
         $targetValues = BetCategory::TARGET_TYPES;

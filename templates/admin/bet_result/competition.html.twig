@@ -1,0 +1,12 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block page_title %}Bet Result - Competition{% endblock %}
+
+{% block page_content %}
+    <h2>{{ competition_title }}</h2>
+
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    {{ form_end(form) }}
+  
+{% endblock %}

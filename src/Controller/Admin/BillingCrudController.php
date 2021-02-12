@@ -29,7 +29,7 @@ class BillingCrudController extends AbstractCrudController
     public function configureFields(string $pageName): iterable
     {
         yield Field\FormField::addPanel('Billing Details');
-        yield Field\IdField::new('id', 'ID')->onlyOnIndex();
+        yield Field\IdField::new('id', 'ID')->hideOnForm();
         yield Field\AssociationField::new('user', 'User');
         yield Field\TextField::new('lastName', 'Last Name');
         yield Field\TextField::new('firstName', 'First Name');

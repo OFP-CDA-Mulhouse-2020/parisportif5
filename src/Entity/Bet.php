@@ -250,12 +250,12 @@ class Bet extends AbstractEntity
         return $this;
     }
 
-    public function getTarget(): object
+    public function getTarget(): AbstractEntity
     {
         return $this->run ?? $this->competition;
     }
 
-    public function getSelect(): ?object
+    public function getSelect(): ?AbstractEntity
     {
         return $this->teamMember ?? $this->team;
     }

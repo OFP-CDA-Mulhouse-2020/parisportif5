@@ -138,6 +138,15 @@ class Run extends AbstractEntity
         return $this;
     }
 
+    /** @return BetCategory[] */
+    public function getBetCategories(): array
+    {
+        if (!empty($this->competition) === true) {
+            return $this->competition->getBetCategoriesForRun();
+        }
+        return [];
+    }
+
     public function getLocation(): ?Location
     {
         return $this->location;
