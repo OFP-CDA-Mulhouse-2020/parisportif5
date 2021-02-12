@@ -11,22 +11,17 @@ use Symfony\Component\Routing\Annotation\Route;
 class SportsController extends AbstractController
 {
     /**
-     * @Route("/{sportSlug}/{id}", name="sport")
+     * @Route("/sports", name="sport")
      */
     public function redirectsToSportPage(
-        SportRepository $sportRepository,
-        CompetitionRepository $competitionRepository
+        SportRepository $sportRepository
     ): Response {
-        $sports = $sportRepository
-            ->findAll();
-
-        $competition = $competitionRepository
+        $sport = $sportRepository
             ->findAll();
         return $this->render('sports/sport.html.twig', [
             'site_title' => 'Paris Sportif',
             'page_title' => "Liste des sports",
-            'sports' => $sports,
-            'competition' => $competition
+            'sports' => $sport
         ]);
     }
 }
