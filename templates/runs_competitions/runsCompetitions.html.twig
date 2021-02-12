@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello ListingMatchsController!{% endblock %}
+{% block title %}{{page_title}}{% endblock %}
 
 {% block body %}
     <style>
@@ -23,7 +23,7 @@
             </div>
             <div>
                 {% for run in RunsCompetition %}
-{#                    <a href="{{ path('betCategories', {'competition_id': run.competition.id, 'competitionSlug': run.competition.name, 'sportSlug': run.competition.sport.name}) }}">{{ run.name }}</a>#}
+{#                    <a href="{{ path('betCategories', 'sportSlug': sport.name,'competitionSlug': competition.name,'eventSlug': event.name,'runSlug': run.name,'run_id':run.id) }}">{{ run.name }}</a>#}
                     <a>{{ run.name }}</a>
                     <br>
                 {% endfor %}
