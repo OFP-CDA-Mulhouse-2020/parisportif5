@@ -19,6 +19,8 @@ class RunRepository extends ServiceEntityRepository
         parent::__construct($registry, Run::class);
     }
 
+    // TODO : find all with valid teams
+
     // /**
     //  * @return Run[] Returns an array of Run objects
     //  */

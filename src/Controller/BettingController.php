@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Form\Model\BettingRegistrationFormModel;
 use App\Form\Handler\BettingRegistrationFormHandler;
+use App\Form\Model\BetChoiceGenerator;
 use App\Repository\CompetitionRepository;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -54,8 +55,12 @@ class BettingController extends AbstractController
                 . $request->attributes->get('competitionSlug') . "/" . ($competition->getId() ?? '');
             return new RedirectResponse($competitionUrl);
         }
-        $bettingRegistrationFormModel = new BettingRegistrationFormModel($oddsStorageDataConverter);
-        $bettingRegistrationFormModel->initializeWithRun($betCategory, $run);
+        $betChoiceGenerator = new BetChoiceGenerator($betCategory, $competition, $run, $oddsStorageDataConverter);
+        $bettingRegistrationFormModel = new BettingRegistrationFormModel(
+            $betChoiceGenerator->getChoices(),
+            $betChoiceGenerator->getCategoryLabel(),
+            $betChoiceGenerator->getCategoryId()
+        );
         $form = $this->createForm(BettingRegistrationFormType::class, $bettingRegistrationFormModel);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -128,8 +133,12 @@ class BettingController extends AbstractController
                 . ($competition->getSport()->getId() ?? '');
             return new RedirectResponse($sportUrl);
         }
-        $bettingRegistrationFormModel = new BettingRegistrationFormModel($oddsStorageDataConverter);
-        $bettingRegistrationFormModel->initializeWithCompetition($betCategory, $competition);
+        $betChoiceGenerator = new BetChoiceGenerator($betCategory, $competition, null, $oddsStorageDataConverter);
+        $bettingRegistrationFormModel = new BettingRegistrationFormModel(
+            $betChoiceGenerator->getChoices(),
+            $betChoiceGenerator->getCategoryLabel(),
+            $betChoiceGenerator->getCategoryId()
+        );
         $form = $this->createForm(BettingRegistrationFormType::class, $bettingRegistrationFormModel);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {

@@ -8,13 +8,10 @@ use App\Entity\Bet;
 use App\Entity\Team;
 use App\Entity\User;
 use App\Entity\Member;
-use App\Entity\Wallet;
-use App\Entity\BetCategory;
-use App\Repository\TeamRepository;
-use App\Repository\MemberRepository;
+use App\Entity\Billing;
 use Doctrine\Persistence\ObjectManager;
 use App\DataConverter\OddsStorageInterface;
-use App\Entity\Billing;
+use App\Entity\BetSaved;
 use App\Form\Model\AdminBetResultFormModel;
 
 final class AdminBetResultFormHandler
@@ -26,77 +23,109 @@ final class AdminBetResultFormHandler
         $this->adminBetResultFormModel = $adminBetResultFormModel;
     }
 
-    private function setBetResult(
-        Bet $bet,
-        TeamRepository $teamRepository,
-        MemberRepository $memberRepository
-    ): Bet {
-        $result = $this->adminBetResultFormModel->getResult();
-        $className = $result->className;
-        $choiceId =  $result->id;
-        if ($choiceId === 0) {
-            $className = '';
-        }
-        if ($className === Team::class) {
-            $choice = $teamRepository->find($choiceId);
-            $bet->setTeam($choice);
-        }
-        if ($className === Member::class) {
-            $choice = $memberRepository->find($choiceId);
-            $bet->setTeamMember($choice);
-            $bet->setTeam($choice->getTeam());
-        }
-        return $bet;
-    }
-
-    private function getSelectName(Bet $bet): string
+    private function saveBet(ObjectManager $entityManager, Bet $bet, int $profits): void
     {
-        $selectName = '';
-        $selectObject = $bet->getSelect();
-        if ($selectObject instanceof Team) {
-            $selectName = $selectObject->getName() ?? '';
-        }
-        if ($selectObject instanceof Member) {
-            $selectName = $selectObject->getFullName() ?? '';
-        }
-        if ($selectName === '') {
-            $betTarget = $bet->getBetCategory()->getTarget();
-            if ($betTarget === BetCategory::TEAM_TYPE) {
-                $selectName = 'Nul';
-            }
-            if ($betTarget === BetCategory::MEMBER_TYPE) {
-                $selectName = 'Auncun';
-            }
-        }
-        return $selectName;
+        $betUser = $bet->getUser();
+        $betSaved = $this->createBetSaved($bet);
+        $betSaved->setGains($profits);
+        $betSaved->setUser($betUser);
+        $entityManager->persist($betSaved);
+        $betUser->removeOnGoingBet($bet);
     }
 
-    //Match 1 vs2 (2021-03-01 09:00 UTC) : Paris sur Vainqueur avec AS Saint-Étienne
-    //Compétition championnat de fr - Pool n°1 - Match 1 vs2 (2021-03-01 09:00 UTC) : Paris sur Vainqueur avec AS Saint-Étienne
-    // pour facturation Designation
-    private function getDesignation(Bet $bet): string
+    private function createBetSaved(Bet $bet): BetSaved
+    {
+        $betSaved = new BetSaved();
+        $betCategory = $bet->getBetCategory();
+        $competition = $bet->getCompetition();
+        $competitionSport = $competition->getSport();
+        $betSaved
+            ->setDesignation($bet->getDesignation() ?? '')
+            ->setAmount($bet->getAmount() ?? 0)
+            ->setBetDate($bet->getBetDate())
+            ->setOdds($bet->getOdds() ?? 0)
+            ->setIsWinning($bet->isWinning())
+            ->setBetCategoryName($betCategory->getName() ?? '')
+            ->setCompetitionName($competition->getName() ?? '')
+            ->setCompetitionStartDate($competition->getStartDate())
+            ->setCompetitionCountry($competition->getCountry() ?? '')
+            ->setCompetitionSportName($competitionSport->getName() ?? '')
+            ->setCompetitionSportCountry($competitionSport->getCountry() ?? '')
+        ;
+        $run = $bet->getRun();
+        if (!is_null($run) === true) {
+            $betSaved
+                ->setRunEvent($run->getEvent() ?? '')
+                ->setRunName($run->getName() ?? '')
+                ->setRunStartDate($run->getStartDate())
+            ;
+        }
+        $team = $bet->getTeam();
+        if (!is_null($team) === true) {
+            $betSaved
+                ->setTeamName($team->getName() ?? '')
+                ->setTeamCountry($team->getCountry() ?? '')
+            ;
+        }
+        $member = $bet->getTeamMember();
+        if (!is_null($member) === true) {
+            $betSaved
+                ->setMemberFirstName($member->getFirstName() ?? '')
+                ->setMemberLastName($member->getLastName() ?? '')
+                ->setMemberCountry($member->getCountry() ?? '')
+            ;
+        }
+        return $betSaved;
+    }
+
+    // Compétition : championnat fr (2021-03-01) : Paris sur Vainqueur avec AS Saint-Étienne
+    // Run : championnat fr - Pool n°1 - Match 1 vs2 (2021-03-01 09:00 UTC) : Paris sur Vainqueur avec AS Saint-Étienne
+    private function getBillingDesignation(Bet $bet): string
     {
         $designation = '';
         $competition = $bet->getCompetition();
-        $startDate = $competition->getStartDate();
+        $competitionStartDate = $competition->getStartDate();
+        $startDate = $competitionStartDate->format('Y-m-d');
         $competitionName = $competition->getName();
         $designation .= (!empty($competitionName)) ? $competitionName : '' ;
         $run = $bet->getRun();
         if ($run !== null) {
-            $startDate = $run->getStartDate();
+            $runStartDate = $run->getStartDate();
+            $startDate = $runStartDate->format('Y-m-d H:i T');
             $eventName = $run->getEvent();
             $runName = $run->getName();
             $designation .= (!empty($eventName)) ? ' - ' . $eventName : '' ;
             $designation .= (!empty($runName)) ? ' - ' . $runName : '' ;
         }
-        $designation .= (!empty($startDate)) ? ' (' .  $startDate->format('Y-m-d H:i T') . ')' : '';
+        $designation .= (trim($startDate) != '') ? ' (' .  $startDate . ')' : '';
+        $designation .= (trim($designation) == '') ?: ' - ';
+        $designation .= $bet->getDesignation();
         return $designation;
     }
 
-    protected function makeBill(Billing $billing, User $betUser, string $designation, int $amount, string $commissionRate, int $betId, string $operationType): Billing
+    private function makeBill(ObjectManager $entityManager, Bet $bet, OddsStorageInterface $oddsStorageDataConverter): int
+    {
+        $bet->won();
+        $betUser = $bet->getUser();
+        $betUserWallet = $betUser->getWallet();
+        $amountStore = $bet->getAmount() ?? 0;
+        $oddsStore = $bet->getOdds() ?? 0;
+        $odds = $oddsStorageDataConverter->convertToOddsMultiplier($oddsStore);
+        $gains = $amountStore * $odds;
+        $profits = (int)(round($gains * ((100 - Billing::DEFAULT_COMMISSION_RATE) * 0.01), 0, PHP_ROUND_HALF_UP));
+        $betUserWallet->addAmount($profits);
+        $commissionRateStore = $oddsStorageDataConverter->convertOddsMultiplierToStoredData(Billing::DEFAULT_COMMISSION_RATE);
+        $billingDesignation = $this->getBillingDesignation($bet);
+        $billing = $this->createBilling($betUser, $billingDesignation, $profits, $commissionRateStore, $bet->getId(), Billing::CREDIT);
+        $entityManager->persist($billing);
+        return $profits;
+    }
+
+    private function createBilling(User $betUser, string $designation, int $amount, string $commissionRate, int $betId, string $operationType): Billing
     {
         $date = new \DateTimeImmutable("now", new \DateTimeZone(Bet::STORED_TIME_ZONE));
         //\uniqid("$betId", true)
+        $billing = new Billing();
         $billing
             ->setFirstName($betUser->getFirstName())
             ->setLastName($betUser->getLastName())
@@ -112,55 +141,55 @@ final class AdminBetResultFormHandler
             ->setInvoiceNumber($betId)
             ->setIssueDate($date)
             ->setDeliveryDate($date)
-            ->setOperationType($operationType);
+            ->setOperationType($operationType)
+        ;
         return $billing;
+    }
+
+    private function isValidBet(
+        Bet $bet,
+        ?int $resultId,
+        string $resultClassName
+    ): bool {
+        $valid = false;
+        if (is_null($resultId) === true) {
+            $resultClassName = '';
+            $team = $bet->getTeam();
+            $member = $bet->getTeamMember();
+            $valid = (is_null($member) && is_null($team));
+        }
+        if ($resultClassName === Team::class) {
+            $team = $bet->getTeam();
+            $teamId = ($team !== null) ? $team->getId() : null;
+            $valid = ($teamId === $resultId);
+        }
+        if ($resultClassName === Member::class) {
+            $member = $bet->getTeamMember();
+            $memberId = ($member !== null) ? $member->getId() : null;
+            $valid = ($memberId === $resultId);
+        }
+        return $valid;
     }
 
     /** @param iterable<Bet> $bets */
     public function handleForm(
         ObjectManager $entityManager,
         iterable $bets,
-        OddsStorageInterface $oddsStorageDataConverter,
-        TeamRepository $teamRepository,
-        MemberRepository $memberRepository
+        OddsStorageInterface $oddsStorageDataConverter
     ): void {
-        $winnerValue = 0;
-        //$winnerValue = !empty($data['winner']) ? (int)$data['winner'] : null;
+        // + retirer bet from ongoing bet
+        // + bet saved
+        $result = $this->adminBetResultFormModel->getResult();
+        $resultValue = $result->id;
+        $resultId = empty($resultValue) ? null : (int)$resultValue;
+        $resultClassName = $result->className;
         foreach ($bets as $bet) {
-            $valid = false;
-            $team = $bet->getTeam();
-            $teamValue = ($team !== null) ? $team->getId() : null;
-            $valid = ($teamValue === $winnerValue);
-            //
-            $billing = new Billing();
-            if ($valid === true) {
-                $bet->won();
-                $betUser = $bet->getUser();
-                if (!is_null($betUser)) {
-                    $betUserWallet = $betUser->getWallet();
-                    if (!is_null($betUserWallet)) {
-                        $amountStore = $bet->getAmount() ?? 0;
-                        $oddsStore = $bet->getOdds() ?? 0;
-                        $odds = $oddsStorageDataConverter->convertToOddsMultiplier($oddsStore);
-                        $gains = $amountStore * $odds;
-                        $profits = (int)(round($gains * ((100 - Billing::DEFAULT_COMMISSION_RATE) * 0.01), 0, PHP_ROUND_HALF_UP));
-                        $walletAmmount = $betUserWallet->getAmount() ?? 0;
-                        $newWalletAmount = (int)(($walletAmmount + $profits));
-                        $betUserWallet->setAmount($newWalletAmount);
-                        $commissionRateStore = $oddsStorageDataConverter->convertOddsMultiplierToStoredData(Billing::DEFAULT_COMMISSION_RATE);
-                        $billing = $this->makeBill($billing, $bet->getUser(), $bet->getDesignation(), $profits, $commissionRateStore, $bet->getId(), Billing::CREDIT);
-                        $entityManager->persist($billing);
-                    }
-                }
-            } else {
-                $bet->lost();
-                $betUser = $bet->getUser();
-                if (!is_null($betUser)) {
-                    $amountStore = $bet->getAmount() ?? 0;
-                    $billing = $this->makeBill($billing, $bet->getUser(), $bet->getDesignation(), $amountStore, '0', $bet->getId(), Billing::DEBIT);
-                    $entityManager->persist($billing);
-                }
+            $profits = 0;
+            if ($this->isValidBet($bet, $resultId, $resultClassName) === true) {
+                $profits = $this->makeBill($entityManager, $bet, $oddsStorageDataConverter);
             }
+            $this->saveBet($entityManager, $bet, $profits);
         }
+        $entityManager->flush();
     }
 }

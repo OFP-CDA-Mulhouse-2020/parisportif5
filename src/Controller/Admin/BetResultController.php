@@ -2,18 +2,15 @@
 
 namespace App\Controller\Admin;
 
-use App\Entity\Bet;
-use App\Form\Bet\AdminManyBetResultFormType;
+use App\Repository\BetRepository;
 use App\Repository\RunRepository;
+use App\Repository\CompetitionRepository;
 use App\Service\OddsStorageDataConverter;
-use App\Form\Bet\BettingRegistrationFormType;
+use App\Form\Bet\AdminManyBetResultFormType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use App\Form\Handler\AdminBetResultFormHandler;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Form\Model\BettingRegistrationFormModel;
-use App\Form\Handler\BettingRegistrationFormHandler;
-use App\Repository\BetRepository;
-use App\Repository\CompetitionRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
@@ -22,10 +19,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
  */
 class BetResultController extends AbstractController
 {
-    public function __construct()
-    {
-    }
-
     /**
      * @Route("/admin/run/bet-result/{runId}", name="admin_run_bet_result")
      */
@@ -46,8 +39,10 @@ class BetResultController extends AbstractController
             'data_list' => $betCategories,
             'required' => false
         ]);
-        $runTitle = $run->getEvent() . ' : ' . $run->getName();
-        // manage
+        $competition = $run->getCompetition();
+        $competitionTitle = $competition->getName();
+        $runTitle = $competitionTitle . ' : ' . $run->getEvent() . ' : ' . $run->getName();
+        // manage form
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             //dd($request, $form->getData());
@@ -57,7 +52,7 @@ class BetResultController extends AbstractController
                 [
                     'run' => $run,
                     'betCategory' => $betCategoryId,
-                    'competition' => $run->getCompetition()
+                    'competition' => $competition
                 ],
                 [
                     'user' => 'ASC',
@@ -66,10 +61,82 @@ class BetResultController extends AbstractController
                     'amount' => 'DESC'
                 ]
             );
+            $entityManager = $this->getDoctrine()->getManager();
+            $adminBetResultFormHandler = new AdminBetResultFormHandler($adminBetResultFormModel);
+            $adminBetResultFormHandler->handleForm(
+                $entityManager,
+                $betsForThisRun,
+                $oddsStorageDataConverter
+            );
+            // Add success message
+            $this->addFlash(
+                'success',
+                "Les paris concerné ont été modifé avec succès."
+            );
         }
         return $this->render('admin/bet_result/run.html.twig', [
             'run_title' => $runTitle,
             'run' => $run,
+            'data' => $betCategories,
+            'form' => $form->createView()
+        ]);
+    }
+
+    /**
+     * @Route("/admin/competition/bet-result/{competitionId}", name="admin_competition_bet_result")
+     */
+    public function bettingWithCompetition(
+        Request $request,
+        int $competitionId,
+        CompetitionRepository $competitionRepository,
+        BetRepository $betRepository,
+        OddsStorageDataConverter $oddsStorageDataConverter
+    ): Response {
+        $competition = $competitionRepository->find($competitionId);
+        if ($competition === null) {
+            return $this->redirectToRoute('admin');
+        }
+        $betCategories = $competition->getBetCategoriesForCompetition();
+        $form = $this->createForm(AdminManyBetResultFormType::class, null, [
+            'target' => $competition,
+            'data_list' => $betCategories,
+            'required' => false
+        ]);
+        $competitionTitle = $competition->getName() . ' : ' . $competition->getStartDate()->format('Y-m-d');
+        // manage form
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            //dd($request, $form->getData());
+            $adminBetResultFormModel = $form->getData();
+            $betCategoryId = $adminBetResultFormModel->getCategoryId();
+            $betsForThisCompetition = $betRepository->findBy(
+                [
+                    'run' => null,
+                    'betCategory' => $betCategoryId,
+                    'competition' => $competition
+                ],
+                [
+                    'user' => 'ASC',
+                    'competition' => 'ASC',
+                    'amount' => 'DESC'
+                ]
+            );
+            $entityManager = $this->getDoctrine()->getManager();
+            $adminBetResultFormHandler = new AdminBetResultFormHandler($adminBetResultFormModel);
+            $adminBetResultFormHandler->handleForm(
+                $entityManager,
+                $betsForThisCompetition,
+                $oddsStorageDataConverter
+            );
+            // Add success message
+            $this->addFlash(
+                'success',
+                "Les paris concerné ont été modifé avec succès."
+            );
+        }
+        return $this->render('admin/bet_result/competition.html.twig', [
+            'run_title' => $competitionTitle,
+            'run' => $competition,
             'data' => $betCategories,
             'form' => $form->createView()
         ]);

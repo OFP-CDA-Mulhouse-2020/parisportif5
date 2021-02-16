@@ -19,6 +19,8 @@ class CompetitionRepository extends ServiceEntityRepository
         parent::__construct($registry, Competition::class);
     }
 
+    // TODO : find all with valid runs
+
     // /**
     //  * @return Competition[] Returns an array of Competition objects
     //  */

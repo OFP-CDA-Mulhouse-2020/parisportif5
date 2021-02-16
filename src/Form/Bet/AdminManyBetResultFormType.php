@@ -2,10 +2,13 @@
 
 namespace App\Form\Bet;
 
-use App\Entity\Competition;
 use App\Entity\Run;
-use App\Form\Model\AdminBetResultFormModel;
+use App\Entity\BetCategory;
+use App\Entity\Competition;
+use App\Form\Model\BetChoiceGenerator;
 use Symfony\Component\Form\AbstractType;
+use App\DataConverter\OddsStorageInterface;
+use App\Form\Model\AdminBetResultFormModel;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -17,12 +20,13 @@ class AdminManyBetResultFormType extends AbstractType
         $betCategories = $options['data_list'];
         foreach ($betCategories as $betCategory) {
             $betCategoryId = $betCategory->getId();
-            $adminBetResultFormModel = new AdminBetResultFormModel();
+            $adminBetResultFormModel = null;
             if ($target instanceof Run) {
-                $adminBetResultFormModel->initializeWithRun($betCategory, $target);
+                $competition = $target->getCompetition();
+                $adminBetResultFormModel = $this->createAdminBetResultFormModel($betCategory, $competition, $target, null, true);
             }
             if ($target instanceof Competition) {
-                $adminBetResultFormModel->initializeWithCompetition($betCategory, $target);
+                $adminBetResultFormModel = $this->createAdminBetResultFormModel($betCategory, $target, null, null, true);
             }
             $builder
                 ->add('betCategoryId_' . $betCategoryId, AdminBetResultFormType::class, [
@@ -38,5 +42,26 @@ class AdminManyBetResultFormType extends AbstractType
             'target' => null,
             'data_list' => []
         ]);
+    }
+
+    protected function createAdminBetResultFormModel(
+        BetCategory $betCategory,
+        Competition $competition,
+        ?Run $run = null,
+        ?OddsStorageInterface $oddsStorageDataConverter = null,
+        bool $admin = false
+    ): AdminBetResultFormModel {
+        $betChoiceGenerator = new BetChoiceGenerator(
+            $betCategory,
+            $competition,
+            $run,
+            $oddsStorageDataConverter,
+            $admin
+        );
+        return new AdminBetResultFormModel(
+            $betChoiceGenerator->getChoices(),
+            $betChoiceGenerator->getCategoryLabel(),
+            $betChoiceGenerator->getCategoryId()
+        );
     }
 }
