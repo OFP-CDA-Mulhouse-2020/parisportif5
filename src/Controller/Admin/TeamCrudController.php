@@ -29,7 +29,7 @@ class TeamCrudController extends AbstractCrudController
     public function configureFields(string $pageName): iterable
     {
         yield Field\FormField::addPanel('Team Details');
-        yield Field\IdField::new('id', 'ID')->onlyOnIndex();
+        yield Field\IdField::new('id', 'ID')->hideOnForm();
         yield Field\TextField::new('name', 'Name');
         yield Field\CountryField::new('country', 'Country');
         yield Field\NumberField::new('odds', 'Odds')->setNumDecimals(2)->setStoredAsString(true);

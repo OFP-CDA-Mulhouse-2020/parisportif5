@@ -29,7 +29,7 @@ class MemberRoleCrudController extends AbstractCrudController
     public function configureFields(string $pageName): iterable
     {
         yield Field\FormField::addPanel('Member Role Details');
-        yield Field\IdField::new('id', 'ID')->onlyOnIndex();
+        yield Field\IdField::new('id', 'ID')->hideOnForm();
         yield Field\TextField::new('name', 'Name');
     }
 }

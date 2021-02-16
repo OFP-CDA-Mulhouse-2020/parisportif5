@@ -88,16 +88,16 @@ class Wallet extends AbstractEntity
 
     public function addAmount(int $amount): void
     {
-        if ($this->isValidAddition($amount) === true) {
+        //if ($this->isValidAddition($amount) === true) {
             $this->amount += $amount;
-        }
+        //}
     }
 
     public function subtractAmount(int $amount): void
     {
-        if ($this->isValidSubtraction($amount) === true) {
+        //if ($this->isValidSubtraction($amount) === true) {
             $this->amount -= $amount;
-        }
+        //}
     }
 
     public function __toString(): string

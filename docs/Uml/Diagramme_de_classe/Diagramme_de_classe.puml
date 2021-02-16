@@ -154,9 +154,9 @@ skinparam linetype ortho
         -plainPassword : string|null = null
         -roles : string[] = []
         -activatedStatus : bool = true
-        -activatedDate : DateTimeImmutable|null = \DateTimeImmutable()
+        -activatedDate : DateTimeImmutable|null = new DateTimeImmutable
         -suspendedStatus : bool = true
-        -suspendedDate : DateTimeImmutable|null = \DateTimeImmutable()
+        -suspendedDate : DateTimeImmutable|null = new DateTimeImmutable
         -deletedStatus : bool = false
         -deletedDate : DateTimeImmutable|null = null
         -civility : string|null = null
@@ -308,6 +308,7 @@ skinparam linetype ortho
         +hasTeams() : bool
         +getTeamsCount() : int
         +hasRequiredNumberOfTeams() : bool
+        +getBetCategories() : BetCategory[]
     }
     'Joueur ou sportif ou pilote
     class Member {

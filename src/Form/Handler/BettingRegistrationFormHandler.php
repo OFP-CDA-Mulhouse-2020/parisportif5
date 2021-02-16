@@ -8,7 +8,7 @@ use App\Entity\Bet;
 use App\Entity\Team;
 use App\Entity\User;
 use App\Entity\Member;
-use App\Entity\Wallet;
+use App\Entity\Billing;
 use App\Entity\BetCategory;
 use App\Repository\TeamRepository;
 use App\Repository\MemberRepository;
@@ -23,14 +23,6 @@ final class BettingRegistrationFormHandler
     public function __construct(BettingRegistrationFormModel $bettingRegistrationFormModel)
     {
         $this->bettingRegistrationFormModel = $bettingRegistrationFormModel;
-    }
-
-    private function changeWalletAmount(Wallet $wallet, int $amount): Wallet
-    {
-        $walletAmmount = $wallet->getAmount();
-        $newWalletAmount = (int)($walletAmmount - $amount);
-        $wallet->setAmount($newWalletAmount);
-        return $wallet;
     }
 
     private function setBetResult(
@@ -87,26 +79,71 @@ final class BettingRegistrationFormHandler
         return $selectName;
     }
 
-    //Match 1 vs2 (2021-03-01 09:00 UTC) : Paris sur Vainqueur avec AS Saint-Étienne
-    //Compétition championnat de fr - Pool n°1 - Match 1 vs2 (2021-03-01 09:00 UTC) : Paris sur Vainqueur avec AS Saint-Étienne
-    // pour facturation Designation
     private function getDesignation(Bet $bet): string
+    {
+        $designation = 'Paris sur la catégorie ' . $this->bettingRegistrationFormModel->getCategoryLabel();
+        $selectName = $this->getSelectName($bet);
+        $designation .= ' avec le résultat ' . $selectName;
+        return $designation;
+    }
+
+    // Compétition : championnat fr (2021-03-01) : Paris sur Vainqueur avec AS Saint-Étienne
+    // Run : championnat fr - Pool n°1 - Match 1 vs2 (2021-03-01 09:00 UTC) : Paris sur Vainqueur avec AS Saint-Étienne
+    private function getBillingDesignation(Bet $bet): string
     {
         $designation = '';
         $competition = $bet->getCompetition();
-        $startDate = $competition->getStartDate();
+        $competitionStartDate = $competition->getStartDate();
+        $startDate = $competitionStartDate->format('Y-m-d');
         $competitionName = $competition->getName();
         $designation .= (!empty($competitionName)) ? $competitionName : '' ;
         $run = $bet->getRun();
         if ($run !== null) {
-            $startDate = $run->getStartDate();
+            $runStartDate = $run->getStartDate();
+            $startDate = $runStartDate->format('Y-m-d H:i T');
             $eventName = $run->getEvent();
             $runName = $run->getName();
             $designation .= (!empty($eventName)) ? ' - ' . $eventName : '' ;
             $designation .= (!empty($runName)) ? ' - ' . $runName : '' ;
         }
-        $designation .= (!empty($startDate)) ? ' (' .  $startDate->format('Y-m-d H:i T') . ')' : '';
+        $designation .= (trim($startDate) != '') ? ' (' .  $startDate . ')' : '';
+        $designation .= (trim($designation) == '') ?: ' - ';
+        $designation .= $bet->getDesignation();
         return $designation;
+    }
+
+    private function makeBill(ObjectManager $entityManager, Bet $bet): void
+    {
+        $bet->lost();
+        $betUser = $bet->getUser();
+        $amountStore = $bet->getAmount() ?? 0;
+        $billingDesignation = $this->getBillingDesignation($bet);
+        $billing = $this->createBilling($betUser, $billingDesignation, $amountStore, '0', $bet->getId(), Billing::DEBIT);
+        $entityManager->persist($billing);
+    }
+
+    private function createBilling(User $betUser, string $designation, int $amount, string $commissionRate, int $betId, string $operationType): Billing
+    {
+        $date = new \DateTimeImmutable("now", new \DateTimeZone(Bet::STORED_TIME_ZONE));
+        //\uniqid("$betId", true)
+        $billing = new Billing();
+        $billing
+            ->setFirstName($betUser->getFirstName())
+            ->setLastName($betUser->getLastName())
+            ->setAddress($betUser->getBillingAddress())
+            ->setCity($betUser->getBillingCity())
+            ->setPostcode($betUser->getBillingPostcode())
+            ->setCountry($betUser->getBillingCountry())
+            ->setDesignation($designation)
+            ->setAmount($amount)
+            ->setCommissionRate($commissionRate)
+            ->setUser($betUser)
+            ->setOrderNumber($betId)
+            ->setInvoiceNumber($betId)
+            ->setIssueDate($date)
+            ->setDeliveryDate($date)
+            ->setOperationType($operationType);
+        return $billing;
     }
 
     public function handleForm(
@@ -119,15 +156,11 @@ final class BettingRegistrationFormHandler
     ): void {
         $wallet = $user->getWallet();
         $amount = $this->bettingRegistrationFormModel->getAmount() ?? 0;
-        $wallet = $this->changeWalletAmount($wallet, $amount);
+        $wallet->subtractAmount($amount);
         $bet = $this->setBetResult($bet, $teamRepository, $memberRepository);
-        //$designation = $this->getDesignation($bet);
-        //$designation .= ' : Paris sur ' . $this->bettingRegistrationFormModel->getCategoryLabel();
-        $designation = 'Paris sur la catégorie ' . $this->bettingRegistrationFormModel->getCategoryLabel();
-        $selectName = $this->getSelectName($bet);
-        $designation .= ' avec le résultat ' . $selectName;
         $user->addOnGoingBet($bet);
         $bet = $this->setBetDate($bet);
+        $designation = $this->getDesignation($bet);
         $result = $this->bettingRegistrationFormModel->getResult();
         $betOdds = $result->odds;
         $bet
@@ -135,7 +168,9 @@ final class BettingRegistrationFormHandler
             ->setOdds($oddsStorageDataConverter->convertOddsMultiplierToStoredData($betOdds))
             ->setUser($user)
             ->setDesignation($designation);
+        $this->makeBill($entityManager, $bet);
         $entityManager->persist($bet);
+        $user->addOnGoingBet($bet);
         $entityManager->flush();
     }
 }

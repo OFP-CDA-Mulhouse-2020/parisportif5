@@ -57,7 +57,7 @@ class BetSaved extends AbstractEntity
      * @ORM\Column(type="integer")
      * Les gains du paris en centimes
      */
-    private int $gains;
+    private int $gains = 0;
 
     /**
      * @ORM\Column(type="boolean", nullable=true)
@@ -305,6 +305,12 @@ class BetSaved extends AbstractEntity
     public function isWinning(): ?bool
     {
         return $this->isWinning;
+    }
+
+    public function setIsWinning(bool $isWinning): self
+    {
+        $this->isWinning = $isWinning;
+        return $this;
     }
 
     public function getBetCategoryName(): ?string
