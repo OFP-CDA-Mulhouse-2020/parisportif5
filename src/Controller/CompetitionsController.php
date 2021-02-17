@@ -18,10 +18,19 @@ class CompetitionsController extends AbstractController
     ): Response {
         $competitions = $competitionRepository
             ->findBy(['sport' => $sport_id]);
+        $competitionsWithUrl = [];
+        foreach ($competitions as $competition) {
+            $competitionUrl = $this->generateUrl('runsCompetitions', [
+                'sportSlug' => urlencode($competition->getSport()->getName()),
+                'competitionSlug' => urlencode($competition->getName()),
+                'competition_id' => $competition->getId()
+            ]);
+            $competitionsWithUrl[] = ['url' => $competitionUrl, 'entity' => $competition];
+        }
         return $this->render('competitions/competitions.html.twig', [
             'controller_name' => 'CompetitionsController',
             'page_title' => 'Listes des compétitions',
-            'competitions' => $competitions
+            'competitions' => $competitionsWithUrl
         ]);
     }
 }
