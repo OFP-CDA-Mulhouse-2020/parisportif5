@@ -37,15 +37,10 @@ class UserLoggedInterfaceController extends AbstractController
     }
 
     /**
-     * @Route("/main", name="main")
+     * @Route("/", name="main")
      */
-    public function main(CompetitionRepository $competitionRepository): Response
+    public function main(): Response
     {
-        /*$result = $competitionRepository->findOneBy([
-            'name' => 'Championnat de foot français',
-            'country' => 'FR'
-        ]);
-        dd($result);*/
         return $this->render('base.html.twig', [
             'page_title' => 'Accueil'
         ]);

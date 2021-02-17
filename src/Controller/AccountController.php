@@ -13,9 +13,13 @@ use Symfony\Component\Routing\Annotation\Route;
 use App\Form\Account\AccountPersonalDataFormType;
 use App\Form\Account\AccountUpdatePasswordFormType;
 use App\Form\Account\AccountUpdateIdentifierFormType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
+/**
+ * @IsGranted("ROLE_USER")
+ */
 class AccountController extends AbstractController
 {
     private EmailVerifier $emailVerifier;
@@ -31,7 +35,7 @@ class AccountController extends AbstractController
     public function editPersonalDatas(Request $request): Response
     {
         // usually you'll want to make sure the user is authenticated first
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        // $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
         // returns your User object, or null if the user is not authenticated
         // use inline documentation to tell your editor your exact User class
@@ -71,7 +75,7 @@ class AccountController extends AbstractController
     public function editPassword(Request $request, UserPasswordEncoderInterface $passwordEncoder): Response
     {
         // usually you'll want to make sure the user is authenticated first
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        //$this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
         // returns your User object, or null if the user is not authenticated
         // use inline documentation to tell your editor your exact User class
@@ -112,7 +116,7 @@ class AccountController extends AbstractController
     public function editIdentifier(Request $request): Response
     {
         // usually you'll want to make sure the user is authenticated first
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        //$this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
         // returns your User object, or null if the user is not authenticated
         // use inline documentation to tell your editor your exact User class
@@ -154,7 +158,7 @@ class AccountController extends AbstractController
     public function editDocuments(Request $request): Response
     {
         // usually you'll want to make sure the user is authenticated first
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        //$this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
         // returns your User object, or null if the user is not authenticated
         // use inline documentation to tell your editor your exact User class
@@ -194,7 +198,7 @@ class AccountController extends AbstractController
     public function editParameters(Request $request): Response
     {
         // usually you'll want to make sure the user is authenticated first
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        //$this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
         // returns your User object, or null if the user is not authenticated
         // use inline documentation to tell your editor your exact User class
