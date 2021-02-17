@@ -8,6 +8,7 @@ use App\Form\Registration\RegistrationFormType;
 use App\Repository\LanguageRepository;
 use App\Security\EmailVerifier;
 use App\Security\UserLoginAuthenticator;
+use App\Service\FileUploader;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -33,14 +34,15 @@ class RegistrationController extends AbstractController
         UserPasswordEncoderInterface $passwordEncoder,
         GuardAuthenticatorHandler $guardHandler,
         UserLoginAuthenticator $authenticator,
-        LanguageRepository $languageRepository
+        LanguageRepository $languageRepository,
+        FileUploader $fileUploader
     ): Response {
         $languagesCodes = $request->getLanguages();
         $registrationFormHandler = new RegistrationFormHandler($languagesCodes);
         $user = $registrationFormHandler->getUser();
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
-
+        //$this->getParameter('brochures_directory');
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
             $defaultLanguage = $languageRepository->languageByDefault();
@@ -49,7 +51,8 @@ class RegistrationController extends AbstractController
                 $defaultLanguage,
                 $entityManager,
                 $passwordEncoder,
-                $this->emailVerifier
+                $this->emailVerifier,
+                $fileUploader
             );
 
             // Add success message
