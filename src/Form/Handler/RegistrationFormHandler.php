@@ -8,9 +8,11 @@ use App\Entity\Language;
 use App\Entity\User;
 use App\Entity\Wallet;
 use App\Security\EmailVerifier;
+use App\Service\FileUploader;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
@@ -74,13 +76,20 @@ final class RegistrationFormHandler
         Language $userLanguage,
         ObjectManager $entityManager,
         UserPasswordEncoderInterface $passwordEncoder,
-        EmailVerifier $emailVerifier
+        EmailVerifier $emailVerifier,
+        FileUploader $fileUploader
     ): void {
         // get data from form
         $this->user = $form->getData();
         // files directories
-        $this->user->setIdentityDocument('filename.pdf');
-        $this->user->setResidenceProof('filename.pdf');
+        $identityDocument = $form->get("identityDocument")->getData();
+        $fileUploader->setTargetDirectory("identity_directory");
+        $identityDocumentFileName = $fileUploader->upload($identityDocument);
+        $this->user->setIdentityDocument($identityDocumentFileName);
+        $residenceProof = $form->get("residenceProof")->getData();
+        $fileUploader->setTargetDirectory("residence_directory");
+        $residenceProofFileName = $fileUploader->upload($residenceProof);
+        $this->user->setResidenceProof($residenceProofFileName);
         // encode the plain password
         $this->user->setPassword(
             $passwordEncoder->encodePassword(
