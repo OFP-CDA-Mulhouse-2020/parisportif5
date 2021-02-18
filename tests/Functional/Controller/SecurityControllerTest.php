@@ -48,39 +48,61 @@ class SecurityControllerTest extends WebTestCase
         $this->assertCount(1, $crawler->filter('button[type="submit"]'), "Il doit y avoir un et un seul bouton submit");
     }
 
-    // public function testIfFormSubmits(): void
-    // {
-    //     $client = static::createClient();
-    //     $crawler = $client->request('GET', '/connexion');
+    public function testLoginWithUnknowPassword(): void
+    {
+        $client = static::createClient();
+        $crawler = $client->request('GET', '/connexion');
 
-    //     $form = $crawler->filter('form')->form();
-    //     $form['user_login[email]'] = 'aaa123@mail.com';
-    //     $form['user_login[password]'] = 'Tssssss0';
+        $form = $crawler->filter('form')->form();
+        $form['email'] = 'tintin.dupont@test.fr';
+        $form['password'] = 'Tssssss0';
 
-    //     $crawler = $client->submit($form);
+        $crawler = $client->submit($form);
 
-    //     $this->assertEquals(200 || 300, $client->getResponse()->getStatusCode());
-    // }
+        $this->assertResponseStatusCodeSame(302);
+        $this->assertResponseRedirects('/connexion');
 
-    // public function testFormValidity(): void
-    // {
-    // }
+        $crawler = $client->followRedirect();
+        $this->assertSelectorTextContains('form[name=login_form]', "Invalid credentials.");
+    }
 
-    // public function testSuccessfulConnexion(): void
-    // {
-    //     $client = static::createClient();
-    //     $crawler = $client->request('GET', '/connexion');
+    public function testLoginWithUnknowEmail(): void
+    {
+        $client = static::createClient();
+        $crawler = $client->request('GET', '/connexion');
 
-    //     $form = $crawler->filter('form')->form();
-    //     $form['user_login[email]'] = 'tintin.dupont@test.com';
-    //     $form['user_login[password]'] = 'Hadock5';
+        $form = $crawler->filter('form')->form();
+        $form['email'] = 'aaa123@mail.com';
+        $form['password'] = '@Hadock5';
 
-    //     $crawler = $client->submit($form);
-    //     $this->assertResponseRedirects('/account/logged');
-    // }
+        $crawler = $client->submit($form);
 
+        $this->assertResponseStatusCodeSame(302);
+        $this->assertResponseRedirects('/connexion');
 
-    public function testIfUserExistsInDb(): void
+        $crawler = $client->followRedirect();
+        $this->assertSelectorTextContains('form[name=login_form]', "Email could not be found.");
+    }
+
+    public function testSuccessfulLogin(): void
+    {
+        $client = static::createClient();
+        $crawler = $client->request('GET', '/connexion');
+
+        $form = $crawler->filter('form')->form();
+        $form['email'] = 'tintin.dupont@test.fr';
+        $form['password'] = '@Hadock5';
+
+        $crawler = $client->submit($form);
+
+        $this->assertResponseStatusCodeSame(302);
+        $this->assertResponseRedirects('/');
+
+        $crawler = $client->followRedirect();
+        //$this->assertSelectorTextContains('li', 'connexion');
+    }
+
+    /*public function testIfUserExistsInDb(): void
     {
         $client = static::createClient();
 
@@ -91,9 +113,7 @@ class SecurityControllerTest extends WebTestCase
         $user = $this->entityManager
             ->getRepository(User::class)
             ->findOneBy(['email' => 'tintin.dupont@test.fr']);
-        // var_dump($user->getEmail());
-        // die();
-        //$this->assertSame('tintin.dupont@test.fr', $user->getEmail());
+
         $this->assertNotNull($user);
     }
 
@@ -108,19 +128,24 @@ class SecurityControllerTest extends WebTestCase
         $user = $this->entityManager
             ->getRepository(User::class)
             ->findOneBy(['email' => 'dodo.dupont@test.fr']);
-        //$this->assertNotSame('tonton.dupont@test.fr', $user->getEmail());
+
         $this->assertNull($user);
-    }
-
-    /*public function testLoginMessageIfUserDoesNotExistInDb(): void
-    {
-         $client = static::createClient();
-         $crawler = $client->request('GET', '/connexion');
-
-         $form = $crawler->filter('form')->form();
-         $form['user_login[email]'] = 'tonton.dupont@mail.com';
-         $form['user_login[password]'] = 'Tssssss0';
-         $crawler = $client->submit($form);
-         $this->assertSelectorTextContains('li', 'n\'est pas valide');
     }*/
+
+    public function testLoginWithUnknowUser(): void
+    {
+        $client = static::createClient();
+        $crawler = $client->request('GET', '/connexion');
+
+        $form = $crawler->filter('form')->form();
+        $form['email'] = 'tonton.dupont@mail.com';
+        $form['password'] = 'Tssssss0';
+        $crawler = $client->submit($form);
+
+        $this->assertResponseStatusCodeSame(302);
+        $this->assertResponseRedirects('/connexion');
+
+        $crawler = $client->followRedirect();
+        $this->assertSelectorTextContains('form[name=login_form]', "Email could not be found.");
+    }
 }

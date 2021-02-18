@@ -40,7 +40,7 @@ final class AccountControllerTest extends WebTestCase
         return $client;
     }
 
-    private function getUpdateUserData(): array
+    protected function getUpdateUserData(): array
     {
         return [
             'civility' => 'Madame',
@@ -51,20 +51,33 @@ final class AccountControllerTest extends WebTestCase
             'postcode' => "67000",
             'country' => "FR",
             'birthDate' => "2000-10-01",
-            'newPassword1' => "Azerty80",
-            'newPassword2' => "Azerty80",
-            'oldPassword' => "Azerty78",
+            'newPlainPassword1' => "Azerty80",
+            'newPlainPassword2' => "Azerty80",
+            'oldPlainPassword' => "Azerty78",
             'newEmail1' => "dupont@orange.fr",
             'newEmail2' => "dupont@orange.fr",
             'timezone' => "Europe/Paris",
-            'residence' => 'filename.pdf',
-            'identity' => 'filename.pdf',
+            'residence' => __DIR__ . '/../../../docs/Wireframe/WireframeParisSportifs.pdf',
+            'identity' => __DIR__ . '/../../../docs/Wireframe/WireframeParisSportifs.pdf',
             'accurate' => true,
             'newsletters' => true
         ];
     }
 
     // Tests fonctionnels d'intégrations
+
+    /**
+     * @dataProvider accountFormValidPageProvider
+     */
+    public function testIfPageIsRedirectWithoutUser(string $url): void
+    {
+        $client = static::createClient();
+
+        $client->request('GET', $url);
+
+        $this->assertResponseStatusCodeSame(302);
+        $this->assertResponseRedirects('/connexion');
+    }
 
     /**
      * @dataProvider accountFormValidPageProvider
@@ -79,12 +92,6 @@ final class AccountControllerTest extends WebTestCase
 
     public function accountFormValidPageProvider(): array
     {
-        /*
-            ['/mon-compte/mes-informations', "Données personnelles"],
-            ['/mon-compte/mes-newsletters', "Vos abonnements"],
-            ['/mon-compte/mes-documents', "Vos documents"],
-            ['/mon-compte/mes-options', "Vos options"]
-        */
         return [
             ['/mon-compte/mes-informations', "Données personnelles"],
             ['/mon-compte/mes-documents', "Vos documents"],
@@ -166,7 +173,7 @@ final class AccountControllerTest extends WebTestCase
         );
     }
 
-    public function getAccountPersonalDataForm(Crawler $crawler, array $formData): Form
+    protected function getAccountPersonalDataForm(Crawler $crawler, array $formData): Form
     {
         $form = $crawler->selectButton('account_personal_data_form[modify]')->form();
         $form['account_personal_data_form[civility]'] = $formData['civility'];
@@ -506,7 +513,7 @@ final class AccountControllerTest extends WebTestCase
         );
     }
 
-    /*public function getAccountDocumentForm(Crawler $crawler, array $formData): Form
+    /*protected function getAccountDocumentForm(Crawler $crawler, array $formData): Form
     {
         $form = $crawler->selectButton('account_document_form[add]')->form();
         $form['account_document_form[residenceProof]'] = $formData['residence'];
@@ -546,7 +553,7 @@ final class AccountControllerTest extends WebTestCase
         );
     }
 
-    public function getAccountIdentifierForm(Crawler $crawler, array $formData): Form
+    protected function getAccountIdentifierForm(Crawler $crawler, array $formData): Form
     {
         $form = $crawler->selectButton('account_update_identifier_form[modify]')->form();
         //$form['account_update_identifier_form[emailValidation]'] = $formData['emailValidationCode'];
@@ -658,12 +665,12 @@ final class AccountControllerTest extends WebTestCase
         );
     }
 
-    public function getAccountPasswordForm(Crawler $crawler, array $formData): Form
+    protected function getAccountPasswordForm(Crawler $crawler, array $formData): Form
     {
         $form = $crawler->selectButton('account_update_password_form[modify]')->form();
-        $form['account_update_password_form[oldPassword]'] = $formData['oldPassword'];
-        $form['account_update_password_form[plainPassword][first]'] = $formData['newPassword1'];
-        $form['account_update_password_form[plainPassword][second]'] = $formData['newPassword2'];
+        $form['account_update_password_form[oldPassword]'] = $formData['oldPlainPassword'];
+        $form['account_update_password_form[password][first]'] = $formData['newPlainPassword1'];
+        $form['account_update_password_form[password][second]'] = $formData['newPlainPassword2'];
         return $form;
     }
 
@@ -674,8 +681,8 @@ final class AccountControllerTest extends WebTestCase
         $formData = $this->getUpdateUserData();
         // set some values
         $password = 'Martin_Dupond';
-        $formData['newPassword1'] = $password;
-        $formData['newPassword2'] = $password;
+        $formData['newPlainPassword1'] = $password;
+        $formData['newPlainPassword2'] = $password;
         $form = $this->getAccountPasswordForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
@@ -695,7 +702,7 @@ final class AccountControllerTest extends WebTestCase
         $formData = $this->getUpdateUserData();
         // set some values
         $passwordOld = 'a9c456';
-        $formData['oldPassword'] = $passwordOld;
+        $formData['oldPlainPassword'] = $passwordOld;
         $form = $this->getAccountPasswordForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
@@ -708,15 +715,15 @@ final class AccountControllerTest extends WebTestCase
         );
     }*/
 
-    public function testAccountPasswordFormPasswordUnderMin(): void
+    /*public function testAccountPasswordFormPasswordUnderMin(): void
     {
         $client = $this->loginTestUser();
         $crawler = $client->request('GET', '/mon-compte/modifier/mot-de-passe');
         $formData = $this->getUpdateUserData();
         // set some values
         $password = 'a2c456';
-        $formData['newPassword1'] = $password;
-        $formData['newPassword2'] = $password;
+        $formData['newPlainPassword1'] = $password;
+        $formData['newPlainPassword2'] = $password;
         $form = $this->getAccountPasswordForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
@@ -735,8 +742,8 @@ final class AccountControllerTest extends WebTestCase
         $formData = $this->getUpdateUserData();
         // set some values
         $password = '12345678';
-        $formData['newPassword1'] = $password;
-        $formData['newPassword2'] = $password;
+        $formData['newPlainPassword1'] = $password;
+        $formData['newPlainPassword2'] = $password;
         $form = $this->getAccountPasswordForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
@@ -755,8 +762,8 @@ final class AccountControllerTest extends WebTestCase
         $formData = $this->getUpdateUserData();
         // set some values
         $password = 'azertyuiop';
-        $formData['newPassword1'] = $password;
-        $formData['newPassword2'] = $password;
+        $formData['newPlainPassword1'] = $password;
+        $formData['newPlainPassword2'] = $password;
         $form = $this->getAccountPasswordForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
@@ -775,7 +782,7 @@ final class AccountControllerTest extends WebTestCase
         $formData = $this->getUpdateUserData();
         // set some values
         $password = 'Azerty789';
-        $formData['newPassword2'] = $password;
+        $formData['newPlainPassword2'] = $password;
         $form = $this->getAccountPasswordForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
@@ -794,8 +801,8 @@ final class AccountControllerTest extends WebTestCase
         $formData = $this->getUpdateUserData();
         // set some values
         $password = ' ';
-        $formData['newPassword1'] = $password;
-        $formData['newPassword2'] = $password;
+        $formData['newPlainPassword1'] = $password;
+        $formData['newPlainPassword2'] = $password;
         $form = $this->getAccountPasswordForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
@@ -805,7 +812,7 @@ final class AccountControllerTest extends WebTestCase
             'form[name=account_update_password_form]',
             "Le mot de passe ne peut pas être vide."
         );
-    }
+    }*/
 
     public function testAccountParameterFormValidDisplay(): void
     {
@@ -814,34 +821,34 @@ final class AccountControllerTest extends WebTestCase
         // Balise form
         $this->assertCount(
             1,
-            $crawler->filter('form[name=user_update_parameter]'),
+            $crawler->filter('form[name=account_parameter_form]'),
             "Il doit y avoir une et une seule balise form dans ce formulaire"
         );
         // Fuseau horaire
         $this->assertCount(
             1,
-            $crawler->filter('form[name=user_update_parameter] *[name*=timeZoneSelected]'),
+            $crawler->filter('form[name=account_parameter_form] *[name*=timeZoneSelected]'),
             "Il doit y avoir un et un seul champ pour le fuseau horaire dans ce formulaire"
         );
         // Abonnement d'offre et de publicité (Newsletters)
         $this->assertCount(
             1,
-            $crawler->filter('form[name=user_update_parameter] *[name*=acceptNewsletters]'),
+            $crawler->filter('form[name=account_parameter_form] *[name*=acceptNewsletters]'),
             "Il doit y avoir un et un seul champ pour accepter la newsletters dans ce formulaire"
         );
         // Bouton submit
         $this->assertCount(
             1,
-            $crawler->filter('form[name=user_update_parameter] *[type=submit]'),
+            $crawler->filter('form[name=account_parameter_form] *[type=submit]'),
             "Il doit y avoir un et un seul bouton d'envoi dans ce formulaire"
         );
     }
 
-    public function getAccountParameterForm(Crawler $crawler, array $formData): Form
+    protected function getAccountParameterForm(Crawler $crawler, array $formData): Form
     {
-        $form = $crawler->selectButton('user_update_parameter[modify]')->form();
-        $form['user_update_parameter[timeZoneSelected]'] = $formData['timezone'];
-        $form['user_update_parameter[acceptNewsletters]'] = $formData['newsletters'];
+        $form = $crawler->selectButton('account_parameter_form[modify]')->form();
+        $form['account_parameter_form[timeZoneSelected]'] = $formData['timezone'];
+        $form['account_parameter_form[acceptNewsletters]'] = $formData['newsletters'];
         return $form;
     }
 }

@@ -9,28 +9,24 @@
 </style>
 
 <div class="example-wrapper">
+
     <h1>{{ page_title }}</h1>
-    
-    {% if app.user %}
+
+     {% if app.user %}
         <div class="mb-3">
-            You are logged in as {{ app.user.username }}.
+            You are logged in as {{ app.user.username }} 
         </div>
         </br>
-        <div>
-            <a>Porte monnaie actuel : {{ wallet_amount }}</a>
-        </div>
+        <a>Vos fonds ont bien été ajoutés au porte monnaie.</a>
         </br>
-    {% endif %}
-
-    {{ form(form, { 'attr': {'novalidate': 'novalidate'} }) }}
-
-    
-    {% if app.user %}
+        <a>Votre porte monnaie est crédité de {{ app.user.wallet.amount }} thunes.</a>
         </br>
+        <a href="{{ path('userloggedin') }}">Retour à l'accueil</a>
+        </br>
+        <a href="{{ path('account_addfunds') }}">Ajouter des fonds au porte monnaie</a>
         <div class="mb-3">
             <a href="{{ path('userlogout') }}">Se déconnecter</a>
         </div>
-
     {% endif %}
 
 </div>

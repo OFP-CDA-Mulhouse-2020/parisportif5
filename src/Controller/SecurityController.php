@@ -16,7 +16,7 @@ class SecurityController extends AbstractController
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
         if ($this->getUser()) {
-            return $this->redirectToRoute('userloggedin');//test redirection
+            return $this->redirectToRoute('main');//test redirection
         }
 
         $form = $this->createForm(SecurityType::class);

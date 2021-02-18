@@ -10,11 +10,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class CompetitionsController extends AbstractController
 {
     /**
-     * @Route("/{sportSlug}/{sport_id}", name="competitions")
+     * @Route("/{sportSlug}/sport-{sport_id}", name="competitions")
      */
-    public function index(
-        CompetitionRepository $competitionRepository,
-        int $sport_id
+    public function indexCompetitions(
+        int $sport_id,
+        CompetitionRepository $competitionRepository
     ): Response {
         $competitions = $competitionRepository
             ->findBy(['sport' => $sport_id]);
