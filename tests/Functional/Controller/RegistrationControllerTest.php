@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Controller;
 
+use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\DomCrawler\Form;
@@ -13,14 +14,14 @@ use Symfony\Component\DomCrawler\Form;
  */
 final class RegistrationControllerTest extends WebTestCase
 {
-    /*private function initializeKernel(): KernelInterface
+    /*protected function initializeKernel(): KernelInterface
     {
         $kernel = self::bootKernel();
         $kernel->boot();
         return $kernel;
     }*/
 
-    private function getValidUserData(): array
+    protected function getValidUserData(): array
     {
         return [
             'civility' => '',
@@ -36,16 +37,15 @@ final class RegistrationControllerTest extends WebTestCase
             'email1' => "dupond.m@orange.fr",
             'email2' => "dupond.m@orange.fr",
             'timezone' => "Europe/Paris",
-            'residence' => 'filename.pdf',
-            'identity' => 'filename.pdf',
+            'residence' => __DIR__ . '/../../../docs/Wireframe/WireframeParisSportifs.pdf',
+            'identity' => __DIR__ . '/../../../docs/Wireframe/WireframeParisSportifs.pdf',
             'accurate' => true,
             'newsletters' => false,
-            'acceptTerms' => true,
-
+            'acceptTerms' => true
         ];
     }
 
-    public function getRegistrationForm(Crawler $crawler, array $formData): Form
+    protected function getRegistrationForm(Crawler $crawler, array $formData): Form
     {
         $form = $crawler->selectButton('registration_form[register]')->form();
         $form['registration_form[newsletters]'] = $formData['newsletters'];
@@ -198,6 +198,9 @@ final class RegistrationControllerTest extends WebTestCase
         $client = static::createClient();
         $crawler = $client->request('GET', '/inscription');
         $formData = $this->getValidUserData();
+        $email = 'nouveau@gmail.com';
+        $formData['email1'] = $email;
+        $formData['email2'] = $email;
         // set some values
         $form = $this->getRegistrationForm($crawler, $formData);
         // submit the form
@@ -222,8 +225,8 @@ final class RegistrationControllerTest extends WebTestCase
         $formData = $this->getValidUserData();
         // set some values
         $password = 'a2c456';
-        $formData['password1'] = $password;
-        $formData['password2'] = $password;
+        $formData['plainPassword1'] = $password;
+        $formData['plainPassword2'] = $password;
         $form = $this->getRegistrationForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
@@ -242,8 +245,8 @@ final class RegistrationControllerTest extends WebTestCase
         $formData = $this->getValidUserData();
         // set some values
         $password = '12345678';
-        $formData['password1'] = $password;
-        $formData['password2'] = $password;
+        $formData['plainPassword1'] = $password;
+        $formData['plainPassword2'] = $password;
         $form = $this->getRegistrationForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
@@ -262,8 +265,8 @@ final class RegistrationControllerTest extends WebTestCase
         $formData = $this->getValidUserData();
         // set some values
         $password = 'azertyuiop';
-        $formData['password1'] = $password;
-        $formData['password2'] = $password;
+        $formData['plainPassword1'] = $password;
+        $formData['plainPassword2'] = $password;
         $form = $this->getRegistrationForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
@@ -281,9 +284,9 @@ final class RegistrationControllerTest extends WebTestCase
         $crawler = $client->request('GET', '/inscription');
         $formData = $this->getValidUserData();
         // set some values
-        $password = '';
-        $formData['password1'] = $password;
-        $formData['password2'] = $password;
+        $password = ' ';
+        $formData['plainPassword1'] = $password;
+        $formData['plainPassword2'] = $password;
         $form = $this->getRegistrationForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
@@ -302,7 +305,7 @@ final class RegistrationControllerTest extends WebTestCase
         $formData = $this->getValidUserData();
         // set some values
         $password = 'Azerty789';
-        $formData['password2'] = $password;
+        $formData['plainPassword2'] = $password;
         $form = $this->getRegistrationForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
@@ -321,8 +324,8 @@ final class RegistrationControllerTest extends WebTestCase
         $formData = $this->getValidUserData();
         // set some values
         $password = 'Martin_Dupond';
-        $formData['password1'] = $password;
-        $formData['password2'] = $password;
+        $formData['plainPassword1'] = $password;
+        $formData['plainPassword2'] = $password;
         $form = $this->getRegistrationForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
@@ -706,16 +709,16 @@ final class RegistrationControllerTest extends WebTestCase
         $client = static::createClient();
         $crawler = $client->request('GET', '/inscription');
         $formData = $this->getValidUserData();
-        $email = 'nouveau@gmail.com';
-        $formData['email1'] = $email;
-        $formData['email2'] = $email;
+        //$email = 'nouveau@gmail.com';
+        //$formData['email1'] = $email;
+        //$formData['email2'] = $email;
         // set some values
         $form = $this->getRegistrationForm($crawler, $formData);
         // submit the form
         $crawler = $client->submit($form);
         // asserts
         $this->assertResponseStatusCodeSame(302);
-        $this->assertResponseRedirects('/main');
+        $this->assertResponseRedirects('/');
         $crawler = $client->followRedirect();
         $this->assertSelectorTextContains(
             'div.flash-success',
@@ -743,30 +746,3 @@ final class RegistrationControllerTest extends WebTestCase
         );
     }
 }
-
-/*
-        // Justificatif de domicile
-        $this->assertCount(
-            1,
-            $crawler->filter('form[name=user_profile_address] *[name*=residenceProof]'),
-            "Il doit y avoir un et un seul champ pour le justificatif de domicile dans ce formulaire"
-        );
-        // Certifie l'exactitude des informations
-        $this->assertCount(
-            1,
-            $crawler->filter('form[name=user_profile_address] *[name*=certifiesAccurate]'),
-            "Il doit y avoir un et un seul champ pour certifier l'exactitude des informations dans ce formulaire"
-        );
-        // Justificatif d'identité
-        $this->assertCount(
-            1,
-            $crawler->filter('form[name=user_profile_name] *[name*=identityDocument]'),
-            "Il doit y avoir un et un seul champ pour le justificatif d'identité dans ce formulaire"
-        );
-        // Certifie l'exactitude des informations
-        $this->assertCount(
-            1,
-            $crawler->filter('form[name=user_profile_name] *[name*=certifiesAccurate]'),
-            "Il doit y avoir un et un seul champ pour certifier l'exactitude des informations dans ce formulaire"
-        );
-*/

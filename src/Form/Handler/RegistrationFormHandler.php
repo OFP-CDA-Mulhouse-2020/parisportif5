@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace App\Form\Handler;
 
-use App\Entity\Language;
 use App\Entity\User;
 use App\Entity\Wallet;
-use App\Security\EmailVerifier;
+use App\Entity\Language;
 use App\Service\FileUploader;
-use Doctrine\Persistence\ObjectManager;
-use Symfony\Bridge\Twig\Mime\TemplatedEmail;
-use Symfony\Component\Form\FormInterface;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use App\Security\EmailVerifier;
 use Symfony\Component\Mime\Address;
+use Doctrine\Persistence\ObjectManager;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 final class RegistrationFormHandler
@@ -71,23 +71,27 @@ final class RegistrationFormHandler
         return $icuPreferredLanguages[0] ?? null;
     }
 
+    /** @param string[] $filesDirectory */
     public function handleForm(
         FormInterface $form,
         Language $userLanguage,
         ObjectManager $entityManager,
         UserPasswordEncoderInterface $passwordEncoder,
         EmailVerifier $emailVerifier,
-        FileUploader $fileUploader
+        FileUploader $fileUploader,
+        array $filesDirectory
     ): void {
         // get data from form
         $this->user = $form->getData();
-        // files directories
+        // files
         $identityDocument = $form->get("identityDocument")->getData();
-        $fileUploader->setTargetDirectory("identity_directory");
+        $identityDocumentDirectory = $filesDirectory["identity_directory"];
+        $fileUploader->setTargetDirectory($identityDocumentDirectory);
         $identityDocumentFileName = $fileUploader->upload($identityDocument);
         $this->user->setIdentityDocument($identityDocumentFileName);
         $residenceProof = $form->get("residenceProof")->getData();
-        $fileUploader->setTargetDirectory("residence_directory");
+        $residenceProofDirectory = $filesDirectory["residence_directory"];
+        $fileUploader->setTargetDirectory($residenceProofDirectory);
         $residenceProofFileName = $fileUploader->upload($residenceProof);
         $this->user->setResidenceProof($residenceProofFileName);
         // encode the plain password

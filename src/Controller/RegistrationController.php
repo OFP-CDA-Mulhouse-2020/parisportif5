@@ -10,6 +10,7 @@ use App\Security\EmailVerifier;
 use App\Security\UserLoginAuthenticator;
 use App\Service\FileUploader;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -42,17 +43,19 @@ class RegistrationController extends AbstractController
         $user = $registrationFormHandler->getUser();
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
-        //$this->getParameter('brochures_directory');
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
             $defaultLanguage = $languageRepository->languageByDefault();
+            $filesDirectory["identity_directory"] = $this->getParameter("identity_directory");
+            $filesDirectory["residence_directory"] = $this->getParameter("residence_directory");
             $registrationFormHandler->handleForm(
                 $form,
                 $defaultLanguage,
                 $entityManager,
                 $passwordEncoder,
                 $this->emailVerifier,
-                $fileUploader
+                $fileUploader,
+                $filesDirectory
             );
 
             // Add success message
