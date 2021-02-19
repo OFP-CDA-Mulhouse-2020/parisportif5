@@ -2,14 +2,11 @@
 
 namespace App\Form\Account;
 
-use App\Entity\User;
+use App\Form\Model\UserFormModel;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
-use Symfony\Component\Form\Extension\Core\Type\PasswordType;
-use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type as FieldType;
 use Symfony\Component\Security\Core\Validator\Constraints\UserPassword;
 
 class AccountUpdatePasswordFormType extends AbstractType
@@ -17,37 +14,21 @@ class AccountUpdatePasswordFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('firstName', HiddenType::class, [
-                'required' => true,
-                'trim' => true,
-                'invalid_message' => "Le prénom n'est défini."
-            ])
-            ->add('lastName', HiddenType::class, [
-                'required' => true,
-                'trim' => true,
-                'invalid_message' => "Le nom de famille n'est défini."
-            ])
-            ->add('oldPassword', PasswordType::class, [
+            ->add('password', FieldType\PasswordType::class, [
                 'required' => true,
                 'trim' => false,
-                'mapped' => false,
                 'invalid_message' => "Veuillez saisir votre ancien mot de passe.",
-                'label' => "Ancien mot de passe",
-                'constraints' => [
-                    new UserPassword([
-                        'message' => "Votre ancien mot de passe n'est pas reconnu."
-                    ])
-                ]
+                'label' => "Ancien mot de passe"
             ])
-            ->add('password', RepeatedType::class, [
-                'type' => PasswordType::class,
+            ->add('plainPassword', FieldType\RepeatedType::class, [
+                'type' => FieldType\PasswordType::class,
                 'required' => true,
                 'trim' => false,
                 'invalid_message' => "Veuillez saisir un nouveau mot de passe valide.",
                 'first_options'  => ['label' => "Nouveau mot de passe"],
                 'second_options' => ['label' => "Confirmer le nouveau mot de passe"]
             ])
-            ->add('modify', SubmitType::class, [
+            ->add('modify', FieldType\SubmitType::class, [
                 'label' => "Modifier"
             ])
         ;
@@ -56,7 +37,7 @@ class AccountUpdatePasswordFormType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => User::class,
+            'data_class' => UserFormModel::class,
             'validation_groups' => ['password_update']
         ]);
     }

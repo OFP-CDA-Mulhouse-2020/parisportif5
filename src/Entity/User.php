@@ -237,11 +237,11 @@ class User extends AbstractEntity implements UserInterface
      * @Assert\NotBlank(
      *     message="Le fuseau horaire sélectionné ne peut pas être vide.",
      *     normalizer="trim",
-     *     groups={"parameter"}
+     *     groups={"registration", "parameter"}
      * )
      * @Assert\Timezone(
      *     message="Le fuseau horaire sélectionné {{ value }} n'est pas valide.",
-     *     groups={"parameter"}
+     *     groups={"registration", "parameter"}
      * )
      */
     private string $timeZoneSelected;

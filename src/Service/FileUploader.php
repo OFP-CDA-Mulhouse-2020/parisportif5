@@ -7,6 +7,7 @@ namespace App\Service;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\String\AbstractUnicodeString;
 
 class FileUploader
 {
@@ -21,18 +22,24 @@ class FileUploader
         $this->slugger = $slugger;
     }
 
-    public function getFileName(UploadedFile $file): string
+    public function getSafeFileName(UploadedFile $file): AbstractUnicodeString
     {
         $originalFileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
         // this is needed to safely include the file name as part of the URL
         $safeFileName = $this->slugger->slug($originalFileName);
+        return $safeFileName;
+    }
+
+    public function getFormatedFileName(UploadedFile $file): string
+    {
+        $safeFileName = $this->getSafeFileName($file);
         $newFileName = $safeFileName . '-' . uniqid() . '.' . $file->guessExtension();
         return $newFileName;
     }
 
     public function upload(UploadedFile $file): string
     {
-        $fileName = $this->getFileName($file);
+        $fileName = $this->getFormatedFileName($file);
         $targetDirectory = $this->getTargetDirectory();
 
         try {

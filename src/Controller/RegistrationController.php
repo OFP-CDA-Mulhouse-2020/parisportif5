@@ -3,19 +3,19 @@
 namespace App\Controller;
 
 use App\Entity\User;
-use App\Form\Handler\RegistrationFormHandler;
-use App\Form\Registration\RegistrationFormType;
-use App\Repository\LanguageRepository;
-use App\Security\EmailVerifier;
-use App\Security\UserLoginAuthenticator;
 use App\Service\FileUploader;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use App\Security\EmailVerifier;
+use App\Form\Model\UserFormModel;
+use App\Repository\LanguageRepository;
+use App\Security\UserLoginAuthenticator;
+use App\Form\Handler\RegistrationFormHandler;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use App\Form\Registration\RegistrationFormType;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 
 class RegistrationController extends AbstractController
@@ -39,16 +39,17 @@ class RegistrationController extends AbstractController
         FileUploader $fileUploader
     ): Response {
         $languagesCodes = $request->getLanguages();
-        $registrationFormHandler = new RegistrationFormHandler($languagesCodes);
-        $user = $registrationFormHandler->getUser();
-        $form = $this->createForm(RegistrationFormType::class, $user);
+        $registrationFormHandler = new RegistrationFormHandler();
+        $userFormModel = new UserFormModel();
+        $userFormModel = $registrationFormHandler->initializeUserFormModel($userFormModel, $languagesCodes);
+        $form = $this->createForm(RegistrationFormType::class, $userFormModel);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
             $defaultLanguage = $languageRepository->languageByDefault();
             $filesDirectory["identity_directory"] = $this->getParameter("identity_directory");
             $filesDirectory["residence_directory"] = $this->getParameter("residence_directory");
-            $registrationFormHandler->handleForm(
+            $user = $registrationFormHandler->handleForm(
                 $form,
                 $defaultLanguage,
                 $entityManager,
@@ -65,7 +66,7 @@ class RegistrationController extends AbstractController
             );
 
             $authentifiedUserResponse = $guardHandler->authenticateUserAndHandleSuccess(
-                $registrationFormHandler->getUser(),
+                $user,
                 $request,
                 $authenticator,
                 'main' // firewall name in security.yaml
