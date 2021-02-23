@@ -3,16 +3,15 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Service\FileUploader;
 use App\Security\EmailVerifier;
-use App\Form\Handler\AccountFormHandler;
-use App\Form\Account\AccountDocumentFormType;
+use App\Form\Model\UserFormModel;
+use App\Form\Account as AccountForm;
+use App\Form\Handler as FormHandler;
 use Symfony\Component\HttpFoundation\Request;
-use App\Form\Account\AccountParameterFormType;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Form\Account\AccountPersonalDataFormType;
-use App\Form\Account\AccountUpdatePasswordFormType;
-use App\Form\Account\AccountUpdateIdentifierFormType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
@@ -29,6 +28,12 @@ class AccountController extends AbstractController
         $this->emailVerifier = $emailVerifier;
     }
 
+    protected function initializeUserFormModel(User $user): UserFormModel
+    {
+        $userFormModel = UserFormModel::createFromUser($user);
+        return $userFormModel;
+    }
+
     /**
      * @Route("/mon-compte/mes-informations", name="account_profile")
      */
@@ -42,15 +47,17 @@ class AccountController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        $form = $this->createForm(AccountPersonalDataFormType::class, $user);
+        $userFormModel = $this->initializeUserFormModel($user);
+
+        $form = $this->createForm(AccountForm\AccountPersonalDataFormType::class, $userFormModel);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             //return new RedirectResponse('/mon-compte/mes-informations');
-            $accountFormHandler = new AccountFormHandler();
+            $accountPersonalDataFormHandler = new FormHandler\AccountPersonalDataFormHandler();
             $entityManager = $this->getDoctrine()->getManager();
-            $accountFormHandler->handleForm(
+            $accountPersonalDataFormHandler->handleForm(
                 $form,
                 $user,
                 $entityManager
@@ -82,13 +89,15 @@ class AccountController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        $form = $this->createForm(AccountUpdatePasswordFormType::class, $user);
+        $userFormModel = $this->initializeUserFormModel($user);
+
+        $form = $this->createForm(AccountForm\AccountUpdatePasswordFormType::class, $userFormModel);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             //return new RedirectResponse('/mon-compte/mes-informations');
-            $accountFormHandler = new AccountFormHandler();
+            $accountFormHandler = new FormHandler\AccountUpdatePasswordFormHandler();
             $entityManager = $this->getDoctrine()->getManager();
             $accountFormHandler->handleForm(
                 $form,
@@ -123,19 +132,20 @@ class AccountController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        $form = $this->createForm(AccountUpdateIdentifierFormType::class, $user);
+        $userFormModel = $this->initializeUserFormModel($user);
+
+        $form = $this->createForm(AccountForm\AccountUpdateIdentifierFormType::class, $userFormModel);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             //return new RedirectResponse('/mon-compte/mes-informations');
-            $accountFormHandler = new AccountFormHandler();
+            $accountFormHandler = new FormHandler\AccountUpdateIdentifierFormHandler();
             $entityManager = $this->getDoctrine()->getManager();
             $accountFormHandler->handleForm(
                 $form,
                 $user,
                 $entityManager,
-                null,
                 $this->emailVerifier
             );
 
@@ -155,7 +165,7 @@ class AccountController extends AbstractController
     /**
      * @Route("/mon-compte/mes-documents", name="account_document")
      */
-    public function editDocuments(Request $request): Response
+    public function editDocuments(Request $request, FileUploader $fileUploader): Response
     {
         // usually you'll want to make sure the user is authenticated first
         //$this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
@@ -165,18 +175,24 @@ class AccountController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        $form = $this->createForm(AccountDocumentFormType::class, $user);
+        $userFormModel = $this->initializeUserFormModel($user);
+
+        $form = $this->createForm(AccountForm\AccountDocumentFormType::class, $userFormModel);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             //return new RedirectResponse('/mon-compte/mes-documents');
-            $accountFormHandler = new AccountFormHandler();
+            $accountFormHandler = new FormHandler\AccountDocumentFormHandler();
             $entityManager = $this->getDoctrine()->getManager();
+            $filesDirectory["identity_directory"] = $this->getParameter("identity_directory");
+            $filesDirectory["residence_directory"] = $this->getParameter("residence_directory");
             $accountFormHandler->handleForm(
                 $form,
                 $user,
-                $entityManager
+                $entityManager,
+                $fileUploader,
+                $filesDirectory
             );
 
              // Add success message
@@ -205,13 +221,15 @@ class AccountController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        $form = $this->createForm(AccountParameterFormType::class, $user);
+        $userFormModel = $this->initializeUserFormModel($user);
+
+        $form = $this->createForm(AccountForm\AccountParameterFormType::class, $userFormModel);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             //return new RedirectResponse('/mon-compte/mes-parametres');
-            $accountFormHandler = new AccountFormHandler();
+            $accountFormHandler = new FormHandler\AccountParameterFormHandler();
             $entityManager = $this->getDoctrine()->getManager();
             $accountFormHandler->handleForm(
                 $form,

@@ -3,11 +3,6 @@
 namespace App\Form\Model;
 
 use App\Entity\Bet;
-use App\Entity\Run;
-use App\Entity\Team;
-use App\Entity\Member;
-use App\Entity\BetCategory;
-use App\Entity\Competition;
 use App\Validator\UniqueBet;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -112,5 +107,10 @@ final class BettingRegistrationFormModel
     public function getSubmitDate(): ?\DateTimeImmutable
     {
         return $this->submitDate;
+    }
+
+    public function getCategoryId(): int
+    {
+        return $this->categoryId;
     }
 }

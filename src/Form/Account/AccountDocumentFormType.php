@@ -2,45 +2,66 @@
 
 namespace App\Form\Account;
 
+use App\Form\Model\UserFormModel;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
-use Symfony\Component\Form\Extension\Core\Type\FormType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type as FieldType;
 
 class AccountDocumentFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+            ->add('certifiesAccurate', FieldType\CheckboxType::class, [
+                'label' => "Je certifie sur l'honneur que les données fournies sont exactes",
+                'required' => true
+            ])
             ->add(
-                $builder->create('identityDocuments', FormType::class, [
+                $builder->create('identityDocumentFile', FieldType\FormType::class, [
                     'inherit_data' => true,
-                    'label' => "Justificatif(s) d'identité"
+                    'label' => "Justificatif d'identité"
                 ])
-                ->add('identityDocumentFile', FileType::class, [
-                    'label' => "Chercher le document (carte d'identité, passeport, permis de conduire, carte vitale)",
-                    'mapped' => false,
+                ->add('identityDocumentFileName', FieldType\TextType::class, [
+                    'label' => "Fichier actuel",
+                    'disabled' => true,
                     'required' => false
                 ])
-                ->add('identityDocumentReplace', SubmitType::class, [
-                    'label' => "Remplacer"
+                ->add('userIdentityDocumentReplace', FieldType\SubmitType::class, [
+                    'label' => "Remplacer le document d'identité",
+                    'validation_groups' => ['identity_document']
+                ])
+                ->add('identityDocument', FieldType\FileType::class, [
+                    'label' => "Chercher le document (carte d'identité, passeport, permis de conduire, carte vitale)",
+                    'required' => false
                 ])
             )
             ->add(
-                $builder->create('residenceProofs', FormType::class, [
+                $builder->create('residenceProofFile', FieldType\FormType::class, [
                     'inherit_data' => true,
-                    'label' => "Justificatif(s) de domicile"
+                    'label' => "Justificatif de domicile"
                 ])
-                ->add('residenceProofFile', FileType::class, [
-                    'label' => "Chercher le document (facture d'énergie, avis d'imposition)",
-                    'mapped' => false,
+                ->add('residenceProofFileName', FieldType\TextType::class, [
+                    'label' => "Fichier actuel",
+                    'disabled' => true,
                     'required' => false
                 ])
-                ->add('residenceProofReplace', SubmitType::class, [
-                    'label' => "Remplacer"
+                ->add('userResidenceProofReplace', FieldType\SubmitType::class, [
+                    'label' => "Remplacer le document de résidence",
+                    'validation_groups' => ['residence_document']
+                ])
+                ->add('residenceProof', FieldType\FileType::class, [
+                    'label' => "Chercher le document (facture d'énergie, avis d'imposition)",
+                    'required' => false
                 ])
             )
         ;
+    }
+
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => UserFormModel::class
+        ]);
     }
 }

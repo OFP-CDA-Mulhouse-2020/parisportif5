@@ -4,6 +4,9 @@
 /.env.*.local
 /config/secrets/prod/prod.decrypt.private.php
 /public/bundles/
+/public/uploads/WireframeParisSportifs*.pdf
+/public/uploads/identities/WireframeParisSportifs*.pdf
+/public/uploads/residences/WireframeParisSportifs*.pdf
 /var/
 /vendor/
 /.idea/

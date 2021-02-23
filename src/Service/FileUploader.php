@@ -7,10 +7,12 @@ namespace App\Service;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\String\AbstractUnicodeString;
 
 class FileUploader
 {
     private string $targetDirectory;
+    private string $defaultDirectory;
     private SluggerInterface $slugger;
 
     public function __construct(
@@ -18,21 +20,28 @@ class FileUploader
         string $targetDirectory
     ) {
         $this->targetDirectory = $targetDirectory;
+        $this->defaultDirectory = $targetDirectory;
         $this->slugger = $slugger;
     }
 
-    public function getFileName(UploadedFile $file): string
+    public function getSafeFileName(UploadedFile $file): AbstractUnicodeString
     {
         $originalFileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
         // this is needed to safely include the file name as part of the URL
         $safeFileName = $this->slugger->slug($originalFileName);
+        return $safeFileName;
+    }
+
+    public function getFormatedFileName(UploadedFile $file): string
+    {
+        $safeFileName = $this->getSafeFileName($file);
         $newFileName = $safeFileName . '-' . uniqid() . '.' . $file->guessExtension();
         return $newFileName;
     }
 
     public function upload(UploadedFile $file): string
     {
-        $fileName = $this->getFileName($file);
+        $fileName = $this->getFormatedFileName($file);
         $targetDirectory = $this->getTargetDirectory();
 
         try {
@@ -52,7 +61,7 @@ class FileUploader
 
     private function isValidDirectory(string $testedDirectory): bool
     {
-        if (\mb_strpos($testedDirectory, '\\uploads\\') === false) {
+        if (\mb_strpos($testedDirectory, $this->defaultDirectory) === false) {
             return false;
         }
         return \file_exists($testedDirectory);
@@ -60,6 +69,7 @@ class FileUploader
 
     public function setTargetDirectory(string $targetDirectoryInUploads): void
     {
+        $this->targetDirectory = $this->defaultDirectory;
         if ($this->isValidDirectory($targetDirectoryInUploads) === true) {
             $this->targetDirectory = $targetDirectoryInUploads;
         }

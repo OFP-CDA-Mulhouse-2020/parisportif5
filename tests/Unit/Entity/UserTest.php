@@ -117,7 +117,7 @@ final class UserTest extends WebTestCase
             ["mr"],
             ["Madame"],
             ["Monsieur"],
-            ["tlonguecivilité"]
+            ["vraiementlonguecivilité"]
         ];
     }
 
@@ -125,7 +125,7 @@ final class UserTest extends WebTestCase
     {
         $civility1 = "";
         $civility2 = "    ";
-        $civility3 = "trlonguecivilité";
+        $civility3 = "vraiementtrèssslongueeecivilitéeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
         $user = $this->createValidUser();
         $user->setCivility($civility1);
         $violations = $this->validator->validate($user, null, ['registration', 'login', 'profile', 'password_update', 'identifier_update', 'parameter']);

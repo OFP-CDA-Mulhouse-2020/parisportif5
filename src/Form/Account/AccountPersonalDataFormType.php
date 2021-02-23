@@ -2,97 +2,84 @@
 
 namespace App\Form\Account;
 
-use App\Entity\User;
+use App\Form\Model\UserFormModel;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\CountryType;
-use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type as FieldType;
 
 class AccountPersonalDataFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('civility', ChoiceType::class, [
+            ->add('civility', FieldType\ChoiceType::class, [
                 'required' => false,
                 'label' => "Civilité",
-                //'invalid_message' => "Veuillez sélectionner une civilité",
-                'placeholder' => 'Aucune', //'Choisissez une civilité',
+                'placeholder' => 'Aucune',
+                'invalid_message' => "La valeur n'est pas valide.",
                 'choices' => [
                     'Madame' => 'Madame',
                     'Monsieur' => 'Monsieur'
                 ]
             ])
-            ->add('email', EmailType::class, [
+            ->add('email', FieldType\EmailType::class, [
                 'required' => false,
                 'label' => "Email",
                 'disabled' => true
             ])
-            ->add('zeroPassword', TextType::class, [
+            ->add('zeroPassword', FieldType\TextType::class, [
                 'required' => false,
                 'mapped' => false,
                 'label' => "Mot de passe",
                 'data' => "********",
                 'disabled' => true
             ])
-            ->add('firstName', TextType::class, [
+            ->add('firstName', FieldType\TextType::class, [
                 'required' => true,
                 'label' => "Prénom",
                 'trim' => true,
                 'invalid_message' => "Veuillez saisir un prénom."
             ])
-            ->add('lastName', TextType::class, [
+            ->add('lastName', FieldType\TextType::class, [
                 'required' => true,
                 'label' => "Nom",
                 'trim' => true,
                 'invalid_message' => "Veuillez saisir un nom de famille."
             ])
-            ->add('billingAddress', TextType::class, [
+            ->add('billingAddress', FieldType\TextType::class, [
                 'required' => true,
                 'label' => "Adresse de facturation",
                 'trim' => true,
                 'invalid_message' => "Veuillez saisir une adresse de facturation."
             ])
-            ->add('billingCity', TextType::class, [
+            ->add('billingCity', FieldType\TextType::class, [
                 'required' => true,
                 'label' => "Ville de facturation",
                 'trim' => true,
                 'invalid_message' => "Veuillez saisir une ville de facturation."
             ])
-            ->add('billingPostcode', TextType::class, [
+            ->add('billingPostcode', FieldType\TextType::class, [
                 'required' => true,
                 'label' => "Code Postal de facturation",
                 'trim' => true,
                 'invalid_message' => "Veuillez saisir un code postal de facturation."
             ])
-            ->add('billingCountry', CountryType::class, [
+            ->add('billingCountry', FieldType\CountryType::class, [
                 'required' => true,
                 'label' => "Pays de facturation",
-                'invalid_message' => "Veuillez saisir un pays de facturation.",
-                'data' => 'FR'
+                'invalid_message' => "Veuillez saisir un pays de facturation."
             ])
-            ->add('modify', SubmitType::class, [
-                'label' => "Modifier"
+            ->add('modifyUserProfile', FieldType\SubmitType::class, [
+                'label' => "Modifier votre profil"
             ])
         ;
-        /*
-            ->add('modifyEmail', ButtonType::class, [
-                'label' => "Modifier l'adresse email"
-            ])
-            ->add('modifyPassword', ButtonType::class, [
-                'label' => "Modifier le mot de passe"
-            ])
-        */
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => User::class,
+            'data_class' => UserFormModel::class,
             'validation_groups' => ['profile']
         ]);
     }
