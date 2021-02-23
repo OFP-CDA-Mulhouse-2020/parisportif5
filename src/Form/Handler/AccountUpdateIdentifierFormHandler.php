@@ -6,10 +6,11 @@ namespace App\Form\Handler;
 
 use App\Entity\User;
 use App\Security\EmailVerifier;
-use Doctrine\Persistence\ObjectManager;
-use Symfony\Bridge\Twig\Mime\TemplatedEmail;
-use Symfony\Component\Form\FormInterface;
+use App\Form\Model\UserFormModel;
 use Symfony\Component\Mime\Address;
+use Doctrine\Persistence\ObjectManager;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 
 final class AccountUpdateIdentifierFormHandler
 {
@@ -20,6 +21,7 @@ final class AccountUpdateIdentifierFormHandler
         EmailVerifier $emailVerifier
     ): void {
         // Get data from form
+        /** @var UserFormModel $userFormModel */
         $userFormModel = $form->getData();
         // Save email
         $user->setEmail($userFormModel->getNewEmail());

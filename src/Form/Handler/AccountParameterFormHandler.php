@@ -31,6 +31,7 @@ final class AccountParameterFormHandler
         ObjectManager $entityManager
     ): void {
         // Get data from form
+        /** @var UserFormModel $userFormModel */
         $userFormModel = $form->getData();
         // Hydrate User
         $this->updateUser($user, $userFormModel);

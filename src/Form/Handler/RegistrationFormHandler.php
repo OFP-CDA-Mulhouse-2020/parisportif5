@@ -14,6 +14,7 @@ use Symfony\Component\Mime\Address;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 final class RegistrationFormHandler
@@ -78,27 +79,31 @@ final class RegistrationFormHandler
         return $user;
     }
 
-    /** @param string[] $filesDirectory */
-    private function saveFiles(
+    private function saveIdentityDocumentFile(
         User $user,
+        UploadedFile $identityDocument,
         FileUploader $fileUploader,
-        UserFormModel $userFormModel,
-        array $filesDirectory
+        string $identityDocumentDirectory
     ): User {
-        $identityDocument = $userFormModel->getIdentityDocument();
-        $identityDocumentDirectory = $filesDirectory["identity_directory"];
         $fileUploader->setTargetDirectory($identityDocumentDirectory);
         $identityDocumentFileName = $fileUploader->upload($identityDocument);
         $user->setIdentityDocument($identityDocumentFileName);
-        $residenceProof = $userFormModel->getResidenceProof();
-        $residenceProofDirectory = $filesDirectory["residence_directory"];
+        return $user;
+    }
+
+    private function saveResidenceProofFile(
+        User $user,
+        UploadedFile $residenceProof,
+        FileUploader $fileUploader,
+        string $residenceProofDirectory
+    ): User {
         $fileUploader->setTargetDirectory($residenceProofDirectory);
         $residenceProofFileName = $fileUploader->upload($residenceProof);
         $user->setResidenceProof($residenceProofFileName);
         return $user;
     }
 
-    /** @param string[] $filesDirectory */
+    /** @param string[] $filesDirectories */
     public function handleForm(
         FormInterface $form,
         Language $userLanguage,
@@ -106,15 +111,29 @@ final class RegistrationFormHandler
         UserPasswordEncoderInterface $passwordEncoder,
         EmailVerifier $emailVerifier,
         FileUploader $fileUploader,
-        array $filesDirectory
+        array $filesDirectories
     ): User {
         // Get data from form
+        /** @var UserFormModel $userFormModel */
         $userFormModel = $form->getData();
         $user = new User();
         // Hydrate User
         $user = $this->initializeUser($user, $userFormModel);
         // Save files
-        $user = $this->saveFiles($user, $fileUploader, $userFormModel, $filesDirectory);
+        $identityDocument = $userFormModel->getIdentityDocument();
+        $user = $this->saveIdentityDocumentFile(
+            $user,
+            $identityDocument,
+            $fileUploader,
+            $filesDirectories["identity_directory"]
+        );
+        $residenceProof = $userFormModel->getResidenceProof();
+        $user = $this->saveResidenceProofFile(
+            $user,
+            $residenceProof,
+            $fileUploader,
+            $filesDirectories["residence_directory"]
+        );
         // Encode the plain password
         $user->setPassword(
             $passwordEncoder->encodePassword(
