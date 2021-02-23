@@ -47,8 +47,8 @@ class RegistrationController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
             $defaultLanguage = $languageRepository->languageByDefault();
-            $filesDirectory["identity_directory"] = $this->getParameter("identity_directory");
-            $filesDirectory["residence_directory"] = $this->getParameter("residence_directory");
+            $filesDirectories["identity_directory"] = $this->getParameter("identity_directory");
+            $filesDirectories["residence_directory"] = $this->getParameter("residence_directory");
             $user = $registrationFormHandler->handleForm(
                 $form,
                 $defaultLanguage,
@@ -56,7 +56,7 @@ class RegistrationController extends AbstractController
                 $passwordEncoder,
                 $this->emailVerifier,
                 $fileUploader,
-                $filesDirectory
+                $filesDirectories
             );
 
             // Add success message

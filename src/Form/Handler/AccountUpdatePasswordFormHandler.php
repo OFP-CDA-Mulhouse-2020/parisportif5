@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Form\Handler;
 
 use App\Entity\User;
+use App\Form\Model\UserFormModel;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
@@ -18,6 +19,7 @@ final class AccountUpdatePasswordFormHandler
         UserPasswordEncoderInterface $passwordEncoder
     ): void {
         // Get data from form
+        /** @var UserFormModel $userFormModel */
         $userFormModel = $form->getData();
         // encode the plain password
         $user->setPassword(

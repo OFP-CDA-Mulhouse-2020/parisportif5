@@ -6,6 +6,7 @@ namespace App\Form\Model;
 
 use App\Entity\User;
 use App\Validator\UniqueUser;
+use App\Form\Handler\AccountDocumentFormHandler;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Security\Core\Validator\Constraints as SecurityAssert;
@@ -358,8 +359,18 @@ final class UserFormModel
         $dto->activatedStatus = $user->getActivatedStatus();
         $dto->isVerified = $user->isVerified();
         $dto->newsletters = $user->getNewsletters();
-        $dto->identityDocumentFileName = $user->getIdentityDocument();
-        $dto->residenceProofFileName = $user->getResidenceProof();
+        //$dto->identityDocumentFileName = $user->getIdentityDocument();
+        //$dto->residenceProofFileName = $user->getResidenceProof();
+        $dto->identityDocumentFileName =
+            AccountDocumentFormHandler::getBasenameFromFormated(
+                $user->getIdentityDocument()
+            )
+        ;
+        $dto->residenceProofFileName =
+            AccountDocumentFormHandler::getBasenameFromFormated(
+                $user->getResidenceProof()
+            )
+        ;
         $dto->acceptTerms = false;
         $dto->certifiesAccurate = false;
 

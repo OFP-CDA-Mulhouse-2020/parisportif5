@@ -10,7 +10,6 @@ use App\Form\Account as AccountForm;
 use App\Form\Handler as FormHandler;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -40,7 +39,7 @@ class AccountController extends AbstractController
     public function editPersonalDatas(Request $request): Response
     {
         // usually you'll want to make sure the user is authenticated first
-        // $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
         // returns your User object, or null if the user is not authenticated
         // use inline documentation to tell your editor your exact User class
@@ -82,7 +81,7 @@ class AccountController extends AbstractController
     public function editPassword(Request $request, UserPasswordEncoderInterface $passwordEncoder): Response
     {
         // usually you'll want to make sure the user is authenticated first
-        //$this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
         // returns your User object, or null if the user is not authenticated
         // use inline documentation to tell your editor your exact User class
@@ -125,7 +124,7 @@ class AccountController extends AbstractController
     public function editIdentifier(Request $request): Response
     {
         // usually you'll want to make sure the user is authenticated first
-        //$this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
         // returns your User object, or null if the user is not authenticated
         // use inline documentation to tell your editor your exact User class
@@ -168,7 +167,7 @@ class AccountController extends AbstractController
     public function editDocuments(Request $request, FileUploader $fileUploader): Response
     {
         // usually you'll want to make sure the user is authenticated first
-        //$this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
         // returns your User object, or null if the user is not authenticated
         // use inline documentation to tell your editor your exact User class
@@ -176,6 +175,16 @@ class AccountController extends AbstractController
         $user = $this->getUser();
 
         $userFormModel = $this->initializeUserFormModel($user);
+        /*$userFormModel->setIdentityDocumentFileName(
+            FormHandler\AccountDocumentFormHandler::getBasenameFromFormated(
+                $userFormModel->getIdentityDocumentFileName()
+            )
+        );
+        $userFormModel->setResidenceProofFileName(
+            FormHandler\AccountDocumentFormHandler::getBasenameFromFormated(
+                $userFormModel->getResidenceProofFileName()
+            )
+        );*/
 
         $form = $this->createForm(AccountForm\AccountDocumentFormType::class, $userFormModel);
 
@@ -185,14 +194,14 @@ class AccountController extends AbstractController
             //return new RedirectResponse('/mon-compte/mes-documents');
             $accountFormHandler = new FormHandler\AccountDocumentFormHandler();
             $entityManager = $this->getDoctrine()->getManager();
-            $filesDirectory["identity_directory"] = $this->getParameter("identity_directory");
-            $filesDirectory["residence_directory"] = $this->getParameter("residence_directory");
+            $filesDirectories["identity_directory"] = $this->getParameter("identity_directory");
+            $filesDirectories["residence_directory"] = $this->getParameter("residence_directory");
             $accountFormHandler->handleForm(
                 $form,
                 $user,
                 $entityManager,
                 $fileUploader,
-                $filesDirectory
+                $filesDirectories
             );
 
              // Add success message
@@ -214,7 +223,7 @@ class AccountController extends AbstractController
     public function editParameters(Request $request): Response
     {
         // usually you'll want to make sure the user is authenticated first
-        //$this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
         // returns your User object, or null if the user is not authenticated
         // use inline documentation to tell your editor your exact User class
