@@ -23,7 +23,7 @@ final class AccountUpdatePasswordFormHandler
         $user->setPassword(
             $passwordEncoder->encodePassword(
                 $user,
-                $userFormModel->getPlainPassword()
+                $userFormModel->getNewPassword()
             )
         );
         // Delete the plain password

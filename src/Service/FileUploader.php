@@ -12,6 +12,7 @@ use Symfony\Component\String\AbstractUnicodeString;
 class FileUploader
 {
     private string $targetDirectory;
+    private string $defaultDirectory;
     private SluggerInterface $slugger;
 
     public function __construct(
@@ -19,6 +20,7 @@ class FileUploader
         string $targetDirectory
     ) {
         $this->targetDirectory = $targetDirectory;
+        $this->defaultDirectory = $targetDirectory;
         $this->slugger = $slugger;
     }
 
@@ -59,7 +61,7 @@ class FileUploader
 
     private function isValidDirectory(string $testedDirectory): bool
     {
-        if (\mb_strpos($testedDirectory, '\\uploads\\') === false) {
+        if (\mb_strpos($testedDirectory, $this->defaultDirectory) === false) {
             return false;
         }
         return \file_exists($testedDirectory);
@@ -67,6 +69,7 @@ class FileUploader
 
     public function setTargetDirectory(string $targetDirectoryInUploads): void
     {
+        $this->targetDirectory = $this->defaultDirectory;
         if ($this->isValidDirectory($targetDirectoryInUploads) === true) {
             $this->targetDirectory = $targetDirectoryInUploads;
         }

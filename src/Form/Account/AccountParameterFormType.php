@@ -36,8 +36,8 @@ class AccountParameterFormType extends AbstractType
                     'placeholder' => 'Choisissez un fuseau horaire'
                 ])
             )
-            ->add('modify', FieldType\SubmitType::class, [
-                'label' => "Modifier"
+            ->add('modifyUserParameters', FieldType\SubmitType::class, [
+                'label' => "Modifier paramètre(s)"
             ])
         ;
     }

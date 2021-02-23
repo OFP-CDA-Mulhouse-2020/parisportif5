@@ -22,13 +22,18 @@ class AccountDocumentFormType extends AbstractType
                     'inherit_data' => true,
                     'label' => "Justificatif d'identité"
                 ])
+                ->add('identityDocumentFileName', FieldType\TextType::class, [
+                    'label' => "Fichier actuel",
+                    'disabled' => true,
+                    'required' => false
+                ])
+                ->add('userIdentityDocumentReplace', FieldType\SubmitType::class, [
+                    'label' => "Remplacer le document d'identité",
+                    'validation_groups' => ['identity_document']
+                ])
                 ->add('identityDocument', FieldType\FileType::class, [
                     'label' => "Chercher le document (carte d'identité, passeport, permis de conduire, carte vitale)",
                     'required' => false
-                ])
-                ->add('identityDocumentReplace', FieldType\SubmitType::class, [
-                    'label' => "Remplacer",
-                    'validation_groups' => ['identity_document']
                 ])
             )
             ->add(
@@ -36,13 +41,18 @@ class AccountDocumentFormType extends AbstractType
                     'inherit_data' => true,
                     'label' => "Justificatif de domicile"
                 ])
+                ->add('residenceProofFileName', FieldType\TextType::class, [
+                    'label' => "Fichier actuel",
+                    'disabled' => true,
+                    'required' => false
+                ])
+                ->add('userResidenceProofReplace', FieldType\SubmitType::class, [
+                    'label' => "Remplacer le document de résidence",
+                    'validation_groups' => ['residence_document']
+                ])
                 ->add('residenceProof', FieldType\FileType::class, [
                     'label' => "Chercher le document (facture d'énergie, avis d'imposition)",
                     'required' => false
-                ])
-                ->add('residenceProofReplace', FieldType\SubmitType::class, [
-                    'label' => "Remplacer",
-                    'validation_groups' => ['residence_document']
                 ])
             )
         ;

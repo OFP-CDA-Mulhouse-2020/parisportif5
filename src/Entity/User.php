@@ -102,7 +102,7 @@ class User extends AbstractEntity implements UserInterface
      *     groups={"profile"}
      * )
      * @Assert\Length(
-     *      max = 15,
+     *      max = 60,
      *      maxMessage = "La civilité ne peut pas être plus longue que {{ limit }} caractères.",
      *      groups={"profile"}
      * )

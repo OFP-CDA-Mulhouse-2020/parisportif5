@@ -22,7 +22,7 @@ class RegistrationFormType extends AbstractType
                 'first_options'  => ['label' => "Email"],
                 'second_options' => ['label' => "Confirmer l'email"]
             ])
-            ->add('plainPassword', FieldType\RepeatedType::class, [
+            ->add('newPassword', FieldType\RepeatedType::class, [
                 'type' => FieldType\PasswordType::class,
                 'required' => true,
                 'trim' => false,
@@ -101,7 +101,7 @@ class RegistrationFormType extends AbstractType
                 'label' => "Je certifie sur l'honneur que les données fournies sont exactes",
                 'required' => true
             ])
-            ->add('register', FieldType\SubmitType::class, [
+            ->add('registerNewUser', FieldType\SubmitType::class, [
                 'label' => "S'inscrire"
             ])
         ;

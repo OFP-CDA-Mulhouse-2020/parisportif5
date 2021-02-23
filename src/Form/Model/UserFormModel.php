@@ -16,7 +16,7 @@ final class UserFormModel
 
     /**
      * @UniqueUser(
-     *    message="Inscription impossible avec cette adresse email {{ value }} ! Veuillez en donner une autre pour vous inscrire.",
+     *    message="Inscription impossible avec cette adresse email ! Veuillez en donner une autre pour vous inscrire.",
      *    groups={"registration"}
      * )
      * @Assert\NotBlank(
@@ -34,7 +34,7 @@ final class UserFormModel
 
     /**
      * @UniqueUser(
-     *    message="Modification impossible avec cette nouvelle adresse email {{ value }} ! Veuillez en donner une autre pour vous la modifier.",
+     *    message="Modification impossible avec cette nouvelle adresse email ! Veuillez en donner une autre pour vous la modifier.",
      *    groups={"identifier_update"}
      * )
      * @Assert\NotBlank(
@@ -85,7 +85,7 @@ final class UserFormModel
      *     groups={"registration", "password_update"}
      * )
      */
-    private ?string $plainPassword = null;
+    private ?string $newPassword = null;
 
     /**
      * @Assert\NotBlank(
@@ -108,7 +108,7 @@ final class UserFormModel
      *     groups={"profile"}
      * )
      * @Assert\Length(
-     *      max = 15,
+     *      max = 60,
      *      maxMessage = "La civilité ne peut pas être plus longue que {{ limit }} caractères.",
      *      groups={"profile"}
      * )
@@ -291,11 +291,11 @@ final class UserFormModel
      *     groups={"registration", "identity_document"}
      * )
      * @Assert\File(
-     *     maxSize = "1024k",
+     *     maxSize = "1Mi",
      *     mimeTypes = {"application/pdf", "application/x-pdf", "image/jpeg", "image/png"},
      *     mimeTypesMessage = "Seule les fichiers au format PDF, PNG, JPG et JPEG sont accepté.",
      *     disallowEmptyMessage = "Le fichier spécifier est vide.",
-     *     maxSizeMessage = "La taille maximale autorisée est de {{ limit }} {{ suffix }}.",
+     *     maxSizeMessage = "Le fichier est trop volumineux. La taille maximale autorisée est de 1 Mio.",
      *     groups={"registration", "identity_document"}
      * )
      */
@@ -308,11 +308,11 @@ final class UserFormModel
      *     groups={"registration", "residence_document"}
      * )
      * @Assert\File(
-     *     maxSize = "1024k",
+     *     maxSize = "1Mi",
      *     mimeTypes = {"application/pdf", "application/x-pdf", "image/jpeg", "image/png"},
      *     mimeTypesMessage = "Seule les fichiers au format PDF, PNG, JPG et JPEG sont accepté.",
      *     disallowEmptyMessage = "Le fichier spécifier est vide.",
-     *     maxSizeMessage = "La taille maximale autorisée est de {{ limit }} {{ suffix }}.",
+     *     maxSizeMessage = "Le fichier est trop volumineux. La taille maximale autorisée est de 1 Mio.",
      *     groups={"registration", "residence_document"}
      * )
      */
@@ -376,7 +376,7 @@ final class UserFormModel
         return $this->email;
     }
 
-    public function setEmail(string $email): self
+    public function setEmail(?string $email): self
     {
         $this->email = $email;
         $this->isVerified = false;
@@ -388,21 +388,21 @@ final class UserFormModel
         return $this->newEmail;
     }
 
-    public function setNewEmail(string $newEmail): self
+    public function setNewEmail(?string $newEmail): self
     {
         $this->newEmail = $newEmail;
         $this->isVerified = false;
         return $this;
     }
 
-    public function getPlainPassword(): ?string
+    public function getNewPassword(): ?string
     {
-        return $this->plainPassword;
+        return $this->newPassword;
     }
 
-    public function setPlainPassword(string $plainPassword): self
+    public function setNewPassword(?string $newPassword): self
     {
-        $this->plainPassword = $plainPassword;
+        $this->newPassword = $newPassword;
         return $this;
     }
 
@@ -411,7 +411,7 @@ final class UserFormModel
         return $this->password;
     }
 
-    public function setPassword(string $password): self
+    public function setPassword(?string $password): self
     {
         $this->password = $password;
         return $this;
@@ -420,7 +420,7 @@ final class UserFormModel
     public function erasePasswords(): self
     {
         $this->password = null;
-        $this->plainPassword = null;
+        $this->newPassword = null;
         return $this;
     }
 
@@ -430,10 +430,10 @@ final class UserFormModel
      *     groups={"password_update", "registration"}
      * )
      */
-    public function isPasswordSafe(): bool
+    public function isNewPasswordSafe(): bool
     {
-        return (stripos($this->plainPassword ?? '', $this->lastName ?? '') === false
-            && stripos($this->plainPassword ?? '', $this->firstName ?? '') === false);
+        return (stripos($this->newPassword ?? '', $this->lastName ?? '') === false
+            && stripos($this->newPassword ?? '', $this->firstName ?? '') === false);
     }
 
     public function getCivility(): ?string
@@ -452,7 +452,7 @@ final class UserFormModel
         return $this->firstName;
     }
 
-    public function setFirstName(string $firstName): self
+    public function setFirstName(?string $firstName): self
     {
         $this->firstName = $firstName;
         return $this;
@@ -463,7 +463,7 @@ final class UserFormModel
         return $this->lastName;
     }
 
-    public function setLastName(string $lastName): self
+    public function setLastName(?string $lastName): self
     {
         $this->lastName = $lastName;
         return $this;
@@ -474,7 +474,7 @@ final class UserFormModel
         return $this->billingAddress;
     }
 
-    public function setBillingAddress(string $billingAddress): self
+    public function setBillingAddress(?string $billingAddress): self
     {
         $this->billingAddress = $billingAddress;
         return $this;
@@ -485,7 +485,7 @@ final class UserFormModel
         return $this->billingCity;
     }
 
-    public function setBillingCity(string $billingCity): self
+    public function setBillingCity(?string $billingCity): self
     {
         $this->billingCity = $billingCity;
         return $this;
@@ -496,7 +496,7 @@ final class UserFormModel
         return $this->billingPostcode;
     }
 
-    public function setBillingPostcode(string $billingPostcode): self
+    public function setBillingPostcode(?string $billingPostcode): self
     {
         $this->billingPostcode = $billingPostcode;
         return $this;
@@ -507,7 +507,7 @@ final class UserFormModel
         return $this->billingCountry;
     }
 
-    public function setBillingCountry(string $billingCountry): self
+    public function setBillingCountry(?string $billingCountry): self
     {
         $this->billingCountry = $billingCountry;
         return $this;
@@ -518,7 +518,7 @@ final class UserFormModel
         return $this->birthDate;
     }
 
-    public function setBirthDate(\DateTimeImmutable $birthDate): self
+    public function setBirthDate(?\DateTimeImmutable $birthDate): self
     {
         $this->birthDate = $birthDate;
         return $this;
@@ -529,7 +529,7 @@ final class UserFormModel
         return $this->timeZoneSelected;
     }
 
-    public function setTimeZoneSelected(string $timeZoneSelected): self
+    public function setTimeZoneSelected(?string $timeZoneSelected): self
     {
         $this->timeZoneSelected = $timeZoneSelected;
         return $this;
@@ -592,7 +592,7 @@ final class UserFormModel
         return $this->identityDocument;
     }
 
-    public function setIdentityDocument(UploadedFile $identityDocument): self
+    public function setIdentityDocument(?UploadedFile $identityDocument): self
     {
         $this->identityDocument = $identityDocument;
         return $this;
@@ -603,7 +603,7 @@ final class UserFormModel
         return $this->residenceProof;
     }
 
-    public function setResidenceProof(UploadedFile $residenceProof): self
+    public function setResidenceProof(?UploadedFile $residenceProof): self
     {
         $this->residenceProof = $residenceProof;
         return $this;
@@ -614,7 +614,7 @@ final class UserFormModel
         return $this->identityDocumentFileName;
     }
 
-    public function setIdentityDocumentFileName(string $identityDocumentFileName): self
+    public function setIdentityDocumentFileName(?string $identityDocumentFileName): self
     {
         $this->identityDocumentFileName = $identityDocumentFileName;
         return $this;
@@ -625,7 +625,7 @@ final class UserFormModel
         return $this->residenceProofFileName;
     }
 
-    public function setResidenceProofFileName(string $residenceProofFileName): self
+    public function setResidenceProofFileName(?string $residenceProofFileName): self
     {
         $this->residenceProofFileName = $residenceProofFileName;
         return $this;

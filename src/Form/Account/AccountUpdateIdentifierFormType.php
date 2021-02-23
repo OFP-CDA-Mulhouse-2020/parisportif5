@@ -23,12 +23,12 @@ class AccountUpdateIdentifierFormType extends AbstractType
                 'type' => FieldType\EmailType::class,
                 'required' => true,
                 'trim' => true,
-                'invalid_message' => "Veuillez saisir une nouvelle adresse email valide.",
+                'invalid_message' => "Veuillez saisir votre nouvelle adresse email de façon identique aux deux endroits spécifiés.",
                 'first_options'  => ['label' => "Nouvelle adresse email"],
                 'second_options' => ['label' => "Confirmer la nouvelle adresse email"]
             ])
-            ->add('modify', FieldType\SubmitType::class, [
-                'label' => "Modifier"
+            ->add('modifyUserIdentifier', FieldType\SubmitType::class, [
+                'label' => "Modifier identifiant"
             ])
         ;
     }

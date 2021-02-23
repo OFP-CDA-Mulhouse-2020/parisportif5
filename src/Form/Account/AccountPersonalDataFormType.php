@@ -17,6 +17,7 @@ class AccountPersonalDataFormType extends AbstractType
                 'required' => false,
                 'label' => "Civilité",
                 'placeholder' => 'Aucune',
+                'invalid_message' => "La valeur n'est pas valide.",
                 'choices' => [
                     'Madame' => 'Madame',
                     'Monsieur' => 'Monsieur'
@@ -69,8 +70,8 @@ class AccountPersonalDataFormType extends AbstractType
                 'label' => "Pays de facturation",
                 'invalid_message' => "Veuillez saisir un pays de facturation."
             ])
-            ->add('modify', FieldType\SubmitType::class, [
-                'label' => "Modifier"
+            ->add('modifyUserProfile', FieldType\SubmitType::class, [
+                'label' => "Modifier votre profil"
             ])
         ;
     }
