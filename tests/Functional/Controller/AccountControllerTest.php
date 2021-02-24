@@ -5,12 +5,10 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Controller;
 
 use App\Repository\UserRepository;
+use Symfony\Component\DomCrawler\Form;
+use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\DomCrawler\Crawler;
-use Symfony\Component\DomCrawler\Form;
-
-// paramètre test
 
 /**
  * @covers \AccountController
@@ -559,25 +557,36 @@ final class AccountControllerTest extends WebTestCase
         );
     }
 
-    protected function getAccountDocumentForm(Crawler $crawler, array $formData): Form
+    protected function getAccountDocumentForm(Crawler $crawler, array $formData, string $buttonName): Form
     {
-        $form = $crawler->filter('form *[name*=userIdentityDocumentReplace][type=submit]')->form();
+        $form = $crawler->filter('form *[name*=' . $buttonName . '][type=submit]')->form();
         $formName = $form->getName();
         $form[$formName . '[certifiesAccurate]'] = $formData['accurate'];
-        $form[$formName . '[residenceProof]'] = $formData['residence'];
-        $form[$formName . '[identityDocument]'] = $formData['identity'];
+        $form[$formName . '[residenceProofFile][residenceProof]'] = $formData['residence'];
+        $form[$formName . '[identityDocumentFile][identityDocument]'] = $formData['identity'];
         return $form;
+    }
+
+    protected function getIdentityDocumentButtonName(): string
+    {
+        return 'userIdentityDocumentReplace';
+    }
+
+    protected function getResidenceProofButtonName(): string
+    {
+        return 'userResidenceProofReplace';
     }
 
     public function testAccountDocumentFormCertifiesAccurateNotCheck(): void
     {
-        $client = static::createClient();
+        $client = $this->loginTestUser();
         $crawler = $client->request('GET', $this->getDocumentPageUrl());
         $formData = $this->getUpdateUserData();
         // set some values
         $certifiesAccurate = false;
         $formData['accurate'] = $certifiesAccurate;
-        $form = $this->getAccountDocumentForm($crawler, $formData);
+        $buttonName = $this->getIdentityDocumentButtonName();
+        $form = $this->getAccountDocumentForm($crawler, $formData, $buttonName);
         $formName = $form->getName();
         // submit the form
         $crawler = $client->submit($form);
@@ -585,19 +594,20 @@ final class AccountControllerTest extends WebTestCase
         // asserts
         $this->assertSelectorTextContains(
             'form[name=' . $formName . ']',
-            "Vous devez certifier sur l'honneur que les données fournies sont exactes"
+            "Vous devez certifier sur l'honneur que les données fournies sont exactes."
         );
     }
 
     public function testAccountDocumentFormIdentityDocumentEmpty(): void
     {
-        $client = static::createClient();
+        $client = $this->loginTestUser();
         $crawler = $client->request('GET', $this->getDocumentPageUrl());
         $formData = $this->getUpdateUserData();
         // set some values
         $identityDocument = '';
         $formData['identity'] = $identityDocument;
-        $form = $this->getAccountDocumentForm($crawler, $formData);
+        $buttonName = $this->getIdentityDocumentButtonName();
+        $form = $this->getAccountDocumentForm($crawler, $formData, $buttonName);
         $formName = $form->getName();
         // submit the form
         $crawler = $client->submit($form);
@@ -611,13 +621,14 @@ final class AccountControllerTest extends WebTestCase
 
     public function testAccountDocumentFormIdentityDocumentSizeNotValid(): void
     {
-        $client = static::createClient();
+        $client = $this->loginTestUser();
         $crawler = $client->request('GET', $this->getDocumentPageUrl());
         $formData = $this->getUpdateUserData();
         // set some values
         $identityDocument = __DIR__ . '/../../../docs/Wireframe/WireframeParisSportifs.zip';
         $formData['identity'] = $identityDocument;
-        $form = $this->getAccountDocumentForm($crawler, $formData);
+        $buttonName = $this->getIdentityDocumentButtonName();
+        $form = $this->getAccountDocumentForm($crawler, $formData, $buttonName);
         $formName = $form->getName();
         // submit the form
         $crawler = $client->submit($form);
@@ -631,13 +642,14 @@ final class AccountControllerTest extends WebTestCase
 
     public function testAccountDocumentFormIdentityDocumentFormatNotValid(): void
     {
-        $client = static::createClient();
+        $client = $this->loginTestUser();
         $crawler = $client->request('GET', $this->getDocumentPageUrl());
         $formData = $this->getUpdateUserData();
         // set some values
         $identityDocument = __DIR__ . '/../../../docs/Wireframe/WireframeParisSportifs.bmpr';
         $formData['identity'] = $identityDocument;
-        $form = $this->getAccountDocumentForm($crawler, $formData);
+        $buttonName = $this->getIdentityDocumentButtonName();
+        $form = $this->getAccountDocumentForm($crawler, $formData, $buttonName);
         $formName = $form->getName();
         // submit the form
         $crawler = $client->submit($form);
@@ -651,13 +663,14 @@ final class AccountControllerTest extends WebTestCase
 
     public function testAccountDocumentFormResidenceProofEmpty(): void
     {
-        $client = static::createClient();
+        $client = $this->loginTestUser();
         $crawler = $client->request('GET', $this->getDocumentPageUrl());
         $formData = $this->getUpdateUserData();
         // set some values
         $residenceProof = '';
         $formData['residence'] = $residenceProof;
-        $form = $this->getAccountDocumentForm($crawler, $formData);
+        $buttonName = $this->getResidenceProofButtonName();
+        $form = $this->getAccountDocumentForm($crawler, $formData, $buttonName);
         $formName = $form->getName();
         // submit the form
         $crawler = $client->submit($form);
@@ -671,13 +684,14 @@ final class AccountControllerTest extends WebTestCase
 
     public function testAccountDocumentFormResidenceProofSizeNotValid(): void
     {
-        $client = static::createClient();
+        $client = $this->loginTestUser();
         $crawler = $client->request('GET', $this->getDocumentPageUrl());
         $formData = $this->getUpdateUserData();
         // set some values
         $residenceProof = __DIR__ . '/../../../docs/Wireframe/WireframeParisSportifs.zip';
         $formData['residence'] = $residenceProof;
-        $form = $this->getAccountDocumentForm($crawler, $formData);
+        $buttonName = $this->getResidenceProofButtonName();
+        $form = $this->getAccountDocumentForm($crawler, $formData, $buttonName);
         $formName = $form->getName();
         // submit the form
         $crawler = $client->submit($form);
@@ -691,13 +705,14 @@ final class AccountControllerTest extends WebTestCase
 
     public function testAccountDocumentFormResidenceProofFormatNotValid(): void
     {
-        $client = static::createClient();
+        $client = $this->loginTestUser();
         $crawler = $client->request('GET', $this->getDocumentPageUrl());
         $formData = $this->getUpdateUserData();
         // set some values
         $residenceProof = __DIR__ . '/../../../docs/Wireframe/WireframeParisSportifs.bmpr';
         $formData['residence'] = $residenceProof;
-        $form = $this->getAccountDocumentForm($crawler, $formData);
+        $buttonName = $this->getResidenceProofButtonName();
+        $form = $this->getAccountDocumentForm($crawler, $formData, $buttonName);
         $formName = $form->getName();
         // submit the form
         $crawler = $client->submit($form);
@@ -1057,8 +1072,49 @@ final class AccountControllerTest extends WebTestCase
     {
         $form = $crawler->filter('form *[name*=modifyUserParameters][type=submit]')->form();
         $formName = $form->getName();
-        $form[$formName . '[timeZoneSelected]'] = $formData['timezone'];
-        $form[$formName . '[newsletters]'] = $formData['newsletters'];
+        $form->disableValidation();
+        $form[$formName . '[options][timeZoneSelected]'] = $formData['timezone'];
+        $form[$formName . '[acceptNewsletters][newsletters]'] = $formData['newsletters'];
         return $form;
+    }
+
+    public function testAccountParameterFormTimezoneEmpty(): void
+    {
+        $client = $this->loginTestUser();
+        $crawler = $client->request('GET', $this->getParameterPageUrl());
+        $formData = $this->getUpdateUserData();
+        // set some values
+        $timezone = '';
+        $formData['timezone'] = $timezone;
+        $form = $this->getAccountParameterForm($crawler, $formData);
+        $formName = $form->getName();
+        // submit the form
+        $crawler = $client->submit($form);
+        $this->assertResponseIsSuccessful();
+        // asserts
+        $this->assertSelectorTextContains(
+            'form[name=' . $formName . ']',
+            "Le fuseau horaire sélectionné ne peut pas être vide."
+        );
+    }
+
+    public function testAccountParameterFormTimezoneNotValid(): void
+    {
+        $client = $this->loginTestUser();
+        $crawler = $client->request('GET', $this->getParameterPageUrl());
+        $formData = $this->getUpdateUserData();
+        // set some values
+        $timezone = "Paris";
+        $formData['timezone'] = $timezone;
+        $form = $this->getAccountParameterForm($crawler, $formData);
+        $formName = $form->getName();
+        // submit the form
+        $crawler = $client->submit($form);
+        $this->assertResponseIsSuccessful();
+        // asserts
+        $this->assertSelectorTextContains(
+            'form[name=' . $formName . ']',
+            "Veuillez sélectionner un fuseau horaire valide."
+        );
     }
 }

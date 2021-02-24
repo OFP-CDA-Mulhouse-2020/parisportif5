@@ -9,7 +9,12 @@
 </style>
 
 <div class="example-wrapper">
-    <h1>{{ run.name }}</h1>
+    <h1>
+        {{ competition.name }}
+        {% if run is defined %}
+            {{ ' - ' ~ run.name }}
+        {% endif %}
+    </h1>
 
     <div>
         <p>Infos</p>

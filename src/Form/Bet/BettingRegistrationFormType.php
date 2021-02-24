@@ -37,7 +37,7 @@ class BettingRegistrationFormType extends AbstractType
                 FormEvents::SUBMIT,
                 [$this, 'onSubmit']
             )
-            ->add('betting', SubmitType::class, [
+            ->add('bettingOn', SubmitType::class, [
                 'label' => "Parier"
             ])
         ;

@@ -23,7 +23,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class BettingController extends AbstractController
 {
     /**
-     * @Route("/{sportSlug}/{competitionSlug}/{eventSlug}/{runSlug}-{runId}/{betCategorySlug}-{betCategoryId}", name="run_betting")
+     * @Route("/{sportSlug}/{competitionSlug}/{eventSlug}/{runSlug}-{runId}/paris-{betCategorySlug}-{betCategoryId}", name="run_betting")
      */
     public function bettingWithRun(
         Request $request,
@@ -35,9 +35,7 @@ class BettingController extends AbstractController
         TeamRepository $teamRepository,
         MemberRepository $memberRepository
     ): Response {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
-        /** @var User $user */
-        $user = $this->getUser();
+
         $run = $runRepository->find($runId);
         if ($run === null) {
             return $this->redirectToRoute('userlogin');
@@ -64,6 +62,11 @@ class BettingController extends AbstractController
         $form = $this->createForm(BettingRegistrationFormType::class, $bettingRegistrationFormModel);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            // verification
+            $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+            /** @var User $user */
+            $user = $this->getUser();
+            // process
             $bettingRegistrationFormModel = $form->getData();
             $betAmount = $bettingRegistrationFormModel->getAmount() ?? 0;
             $wallet = $user->getWallet();
@@ -105,7 +108,7 @@ class BettingController extends AbstractController
     }
 
     /**
-     * @Route("/{sportSlug}/{competitionSlug}-{competitionId}/{betCategorySlug}-{betCategoryId}", name="competition_betting")
+     * @Route("/{sportSlug}/{competitionSlug}-{competitionId}/paris-{betCategorySlug}-{betCategoryId}", name="competition_betting")
      */
     public function bettingWithCompetition(
         Request $request,
@@ -117,9 +120,6 @@ class BettingController extends AbstractController
         TeamRepository $teamRepository,
         MemberRepository $memberRepository
     ): Response {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
-        /** @var User $user */
-        $user = $this->getUser();
         $competition = $competitionRepository->find($competitionId);
         if ($competition === null) {
             return $this->redirectToRoute('userlogin');
@@ -142,6 +142,11 @@ class BettingController extends AbstractController
         $form = $this->createForm(BettingRegistrationFormType::class, $bettingRegistrationFormModel);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            // verification
+            $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+            /** @var User $user */
+            $user = $this->getUser();
+            // process
             $bettingRegistrationFormModel = $form->getData();
             $betAmount = $bettingRegistrationFormModel->getAmount() ?? 0;
             $wallet = $user->getWallet();
@@ -177,7 +182,6 @@ class BettingController extends AbstractController
         return $this->render('bet/index.html.twig', [
             'betCategory' => $betCategory,
             'competition' => $competition,
-            'run' => '',
             'form' => $form->createView()
         ]);
     }

@@ -78,7 +78,7 @@ class RegistrationFormType extends AbstractType
                 'required' => true,
                 'label' => "Sélection du fuseau horaire",
                 'trim' => true,
-                'invalid_message' => "Veuillez sélectionner un fuseau horaire.",
+                'invalid_message' => "Veuillez sélectionner un fuseau horaire valide.",
                 'placeholder' => 'Choisissez un fuseau horaire'
             ])
             ->add('acceptTerms', FieldType\CheckboxType::class, [
@@ -90,11 +90,13 @@ class RegistrationFormType extends AbstractType
                 'required' => false
             ])
             ->add('identityDocument', FieldType\FileType::class, [
-                'label' => "Document d'identité (carte ID, passeport, permis de conduire ...)",
+                'label' => "Document d'identité",
+                'help' => "Documents acceptés : carte d'identité, passeport, permis de conduire, carte vitale.",
                 'required' => true
             ])
             ->add('residenceProof', FieldType\FileType::class, [
-                'label' => "Justificatif de domicile (Facture, avis d'imposition ...)",
+                'label' => "Justificatif de domicile",
+                'help' => "Documents acceptés : facture d'énergie, avis d'imposition.",
                 'required' => true
             ])
             ->add('certifiesAccurate', FieldType\CheckboxType::class, [

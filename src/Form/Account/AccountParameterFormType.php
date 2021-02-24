@@ -32,7 +32,7 @@ class AccountParameterFormType extends AbstractType
                     'required' => true,
                     'label' => "Sélection du fuseau horaire",
                     'trim' => true,
-                    'invalid_message' => "Veuillez sélectionner un fuseau horaire.",
+                    'invalid_message' => "Veuillez sélectionner un fuseau horaire valide.",
                     'placeholder' => 'Choisissez un fuseau horaire'
                 ])
             )

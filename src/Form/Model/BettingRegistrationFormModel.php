@@ -12,8 +12,8 @@ final class BettingRegistrationFormModel
      * @Assert\NotNull(
      *     message="Le montant du paris ne peut pas être vide."
      * )
-     * @Assert\PositiveOrZero(
-     *     message="Le montant du paris ne peut pas être négatif."
+     * @Assert\Positive(
+     *     message="Le montant du paris ne peut pas être négatif ou zéro."
      * )
      */
     private ?int $amount = null;

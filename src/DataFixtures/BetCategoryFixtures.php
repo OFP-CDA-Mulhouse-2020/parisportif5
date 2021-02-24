@@ -19,6 +19,13 @@ final class BetCategoryFixtures extends Fixture
                 'onCompetition' => false
             ],
             [
+                'name' => "result",
+                'description' => null,
+                'allowDraw' => false,
+                'target' => "teams",
+                'onCompetition' => true
+            ],
+            [
                 'name' => "score",
                 'description' => null,
                 'allowDraw' => true,
