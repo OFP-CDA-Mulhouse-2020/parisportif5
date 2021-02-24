@@ -27,6 +27,8 @@ class AccountController extends AbstractController
         $this->emailVerifier = $emailVerifier;
     }
 
+    //todo : ajouter fond et historique paris
+
     protected function initializeUserFormModel(User $user): UserFormModel
     {
         $userFormModel = UserFormModel::createFromUser($user);

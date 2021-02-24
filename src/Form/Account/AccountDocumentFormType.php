@@ -32,7 +32,8 @@ class AccountDocumentFormType extends AbstractType
                     'validation_groups' => ['identity_document']
                 ])
                 ->add('identityDocument', FieldType\FileType::class, [
-                    'label' => "Chercher le document (carte d'identité, passeport, permis de conduire, carte vitale)",
+                    'label' => "Chercher le document",
+                    'help' => "Documents acceptés : carte d'identité, passeport, permis de conduire, carte vitale.",
                     'required' => false
                 ])
             )
@@ -51,7 +52,8 @@ class AccountDocumentFormType extends AbstractType
                     'validation_groups' => ['residence_document']
                 ])
                 ->add('residenceProof', FieldType\FileType::class, [
-                    'label' => "Chercher le document (facture d'énergie, avis d'imposition)",
+                    'label' => "Chercher le document",
+                    'help' => "Documents acceptés : facture d'énergie, avis d'imposition.",
                     'required' => false
                 ])
             )

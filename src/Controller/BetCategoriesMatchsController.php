@@ -10,7 +10,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class BetCategoriesMatchsController extends AbstractController
 {
     /**
-     * @Route("/{sportSlug}/{competitionSlug}/{eventSlug}/{runSlug}/{run_id}", name="bet_categories_matchs")
+     * @Route("/{sportSlug}/{competitionSlug}/{eventSlug}/{runSlug}-{run_id}", name="bet_categories_matchs")
      */
     public function index(
         RunRepository $runRepository,

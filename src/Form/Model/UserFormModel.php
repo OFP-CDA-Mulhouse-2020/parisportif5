@@ -330,7 +330,7 @@ final class UserFormModel
     /**
      * @Assert\IsTrue(
      *     message="Vous devez certifier sur l'honneur que les données fournies sont exactes.",
-     *     groups={"registration", "parameter"}
+     *     groups={"registration", "identity_document", "residence_document"}
      * )
      */
     private bool $certifiesAccurate = false;

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\DomCrawler\Form;
+use Symfony\Component\DomCrawler\Crawler;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
  * @covers \RegistrationController
@@ -48,6 +48,7 @@ final class RegistrationControllerTest extends WebTestCase
     {
         $form = $crawler->filter('form *[name*=registerNewUser][type=submit]')->form();
         $formName = $form->getName();
+        $form->disableValidation();
         $form[$formName . '[newsletters]'] = $formData['newsletters'];
         $form[$formName . '[acceptTerms]'] = $formData['acceptTerms'];
         $form[$formName . '[certifiesAccurate]'] = $formData['accurate'];
@@ -769,7 +770,7 @@ final class RegistrationControllerTest extends WebTestCase
         // asserts
         $this->assertSelectorTextContains(
             'form[name=' . $formName . ']',
-            "Vous devez certifier sur l'honneur que les données fournies sont exactes"
+            "Vous devez certifier sur l'honneur que les données fournies sont exactes."
         );
     }
 
@@ -890,6 +891,46 @@ final class RegistrationControllerTest extends WebTestCase
         $this->assertSelectorTextContains(
             'form[name=' . $formName . ']',
             "Seule les fichiers au format PDF, PNG, JPG et JPEG sont accepté."
+        );
+    }
+
+    public function testRegistrationFormTimezoneEmpty(): void
+    {
+        $client = static::createClient();
+        $crawler = $client->request('GET', $this->getRegisterPageUrl());
+        $formData = $this->getValidUserData();
+        // set some values
+        $timezone = '';
+        $formData['timezone'] = $timezone;
+        $form = $this->getRegistrationForm($crawler, $formData);
+        $formName = $form->getName();
+        // submit the form
+        $crawler = $client->submit($form);
+        $this->assertResponseIsSuccessful();
+        // asserts
+        $this->assertSelectorTextContains(
+            'form[name=' . $formName . ']',
+            "Le fuseau horaire sélectionné ne peut pas être vide."
+        );
+    }
+
+    public function testRegistrationFormTimezoneNotValid(): void
+    {
+        $client = static::createClient();
+        $crawler = $client->request('GET', $this->getRegisterPageUrl());
+        $formData = $this->getValidUserData();
+        // set some values
+        $timezone = "Paris";
+        $formData['timezone'] = $timezone;
+        $form = $this->getRegistrationForm($crawler, $formData);
+        $formName = $form->getName();
+        // submit the form
+        $crawler = $client->submit($form);
+        $this->assertResponseIsSuccessful();
+        // asserts
+        $this->assertSelectorTextContains(
+            'form[name=' . $formName . ']',
+            "Veuillez sélectionner un fuseau horaire valide."
         );
     }
 

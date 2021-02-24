@@ -304,7 +304,7 @@ class Competition extends AbstractEntity
         }
         $competitionTeams = [];
         foreach ($this->runs as $run) {
-            $newTeam = array_diff($competitionTeams, $run->getTeams()->toArray());
+            $newTeam = array_diff($run->getTeams()->toArray(), $competitionTeams);
             $competitionTeams = array_merge($competitionTeams, $newTeam);
         }
         return $competitionTeams;
