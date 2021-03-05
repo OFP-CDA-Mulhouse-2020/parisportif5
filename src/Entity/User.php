@@ -737,6 +737,7 @@ class User extends AbstractEntity implements UserInterface
 
     public function setWallet(Wallet $wallet): self
     {
+        $wallet->setUser($this);
         $this->wallet = $wallet;
         return $this;
     }

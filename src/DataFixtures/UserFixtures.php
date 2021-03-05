@@ -92,6 +92,9 @@ final class UserFixtures extends Fixture implements DependentFixtureInterface
             if (is_null($userLanguage)) {
                 $userLanguage = $this->languageRepository->languageByDefault();
             }
+            $userWallet
+                ->setUser($user)
+                ->setAmount(20000);
             $user
                 ->setCivility($testData[$i]['civility'])
                 ->setFirstName($testData[$i]['firstname'])
@@ -114,9 +117,6 @@ final class UserFixtures extends Fixture implements DependentFixtureInterface
                 ))
                 ->setWallet($userWallet)
                 ->setLanguage($userLanguage);
-            $userWallet
-                ->setUser($user)
-                ->setAmount(20000);
             $manager->persist($user);
         }
         $manager->flush();

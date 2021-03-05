@@ -29,7 +29,10 @@ final class CompetitionFixtures extends Fixture implements DependentFixtureInter
                 'name' => "Championnat1",
                 'start' => "2021-04-01 08:00",
                 'country' => "FR",
-                'betCategoryName' => "result",
+                'category' => [
+                    'name' => "result",
+                    'onCompetition' => false
+                ],
                 'sport' => [
                     'name' => "Football",
                     'country' => "FR"
@@ -43,7 +46,8 @@ final class CompetitionFixtures extends Fixture implements DependentFixtureInter
                 'country' => $testData[$i]['sport']['country']
             ]);
             $betCategory = $this->betCategoryRepository->findOneBy([
-                "name" => $testData[$i]['betCategoryName']
+                "name" => $testData[$i]['category']['name'],
+                "onCompetition" => $testData[$i]['category']['onCompetition']
             ]);
             $competition = new Competition();
             $competition
