@@ -216,6 +216,51 @@ final class BetSavedTest extends WebTestCase
         $this->assertCount(1, $violations);
     }
 
+    /**
+     * @dataProvider startDateUnconformityProvider
+     */
+    public function testCompetitionStartDatePropertyUnconformity(\DateTimeInterface $startDate): void
+    {
+        $betSaved = $this->createValidBetSaved();
+        $betSaved->setCompetitionStartDate($startDate);
+        $violations = $this->validator->validate($betSaved);
+        $this->assertCount(1, $violations);
+    }
+
+    /**
+     * @dataProvider startDateConformityProvider
+     */
+    public function testCompetitionStartDatePropertyConformity(\DateTimeInterface $startDate): void
+    {
+        $betSaved = $this->createValidBetSaved();
+        $betSaved->setCompetitionStartDate($startDate);
+        $violations = $this->validator->validate($betSaved);
+        $this->assertCount(0, $violations);
+    }
+
+    /**
+     * @dataProvider countryCompatibleProvider
+     * ISO 3166-1 alpha-2 => 2 lettres majuscules
+     */
+    public function testCompetitionCountryPropertyCompatible(string $country): void
+    {
+        $betSaved = $this->createValidBetSaved();
+        $betSaved->setCompetitionCountry($country);
+        $violations = $this->validator->validate($betSaved);
+        $this->assertCount(0, $violations);
+    }
+
+    /**
+     * @dataProvider countryUncompatibleProvider
+     */
+    public function testCompetitionCountryPropertyUncompatible(string $country): void
+    {
+        $betSaved = $this->createValidBetSaved();
+        $betSaved->setCompetitionCountry($country);
+        $violations = $this->validator->validate($betSaved);
+        $this->assertGreaterThanOrEqual(1, count($violations));
+    }
+
     public function testIfCompetitionSportNameIsNotEmpty(): void
     {
         $competitionSportName = "foot";
@@ -235,12 +280,39 @@ final class BetSavedTest extends WebTestCase
     }
 
     /**
+     * @dataProvider countryCompatibleProvider
+     * ISO 3166-1 alpha-2 => 2 lettres majuscules
+     */
+    public function testCompetitionSportCountryPropertyCompatible(string $country): void
+    {
+        $betSaved = $this->createValidBetSaved();
+        $betSaved->setCompetitionSportCountry($country);
+        $violations = $this->validator->validate($betSaved);
+        $this->assertCount(0, $violations);
+    }
+
+    /**
+     * @dataProvider countryUncompatibleProvider
+     */
+    public function testCompetitionSportCountryPropertyUncompatible(string $country): void
+    {
+        $betSaved = $this->createValidBetSaved();
+        $betSaved->setCompetitionSportCountry($country);
+        $violations = $this->validator->validate($betSaved);
+        $this->assertGreaterThanOrEqual(1, count($violations));
+    }
+
+    /**
      * @dataProvider runNamePropertyCompatibleProvider
      */
     public function testRunNamePropertyCompatible(string $runName): void
     {
+        $timeZone = $this->createDefaultTimeZone();
+        $runStartDate = new \DateTimeImmutable('now', $timeZone);
         $betSaved = $this->createValidBetSaved();
         $betSaved->setRunName($runName);
+        $betSaved->setRunEvent('Pool 1');
+        $betSaved->setRunStartDate($runStartDate);
         $violations = $this->validator->validate($betSaved);
         $this->assertCount(0, $violations);
     }
@@ -257,13 +329,17 @@ final class BetSavedTest extends WebTestCase
     {
         $runName1 = '';
         $runName2 = '   ';
+        $timeZone = $this->createDefaultTimeZone();
+        $runStartDate = new \DateTimeImmutable('now', $timeZone);
         $betSaved = $this->createValidBetSaved();
+        $betSaved->setRunEvent('Pool 1');
+        $betSaved->setRunStartDate($runStartDate);
         $betSaved->setRunName($runName1);
         $violations = $this->validator->validate($betSaved);
-        $this->assertCount(1, $violations);
+        $this->assertGreaterThanOrEqual(1, count($violations));
         $betSaved->setRunName($runName2);
         $violations = $this->validator->validate($betSaved);
-        $this->assertCount(1, $violations);
+        $this->assertGreaterThanOrEqual(1, count($violations));
     }
 
     /**
@@ -271,7 +347,11 @@ final class BetSavedTest extends WebTestCase
      */
     public function testRunEventPropertyCompatible(string $runEvent): void
     {
+        $timeZone = $this->createDefaultTimeZone();
+        $runStartDate = new \DateTimeImmutable('now', $timeZone);
         $betSaved = $this->createValidBetSaved();
+        $betSaved->setRunName('Match 1 vs 2');
+        $betSaved->setRunStartDate($runStartDate);
         $betSaved->setRunEvent($runEvent);
         $violations = $this->validator->validate($betSaved);
         $this->assertCount(0, $violations);
@@ -289,22 +369,75 @@ final class BetSavedTest extends WebTestCase
     {
         $runEvent1 = '';
         $runEvent2 = '   ';
+        $timeZone = $this->createDefaultTimeZone();
+        $runStartDate = new \DateTimeImmutable('now', $timeZone);
         $betSaved = $this->createValidBetSaved();
+        $betSaved->setRunName('Match 1 vs 2');
+        $betSaved->setRunStartDate($runStartDate);
         $betSaved->setRunEvent($runEvent1);
         $violations = $this->validator->validate($betSaved);
-        $this->assertCount(1, $violations);
+        $this->assertGreaterThanOrEqual(1, count($violations));
         $betSaved->setRunEvent($runEvent2);
+        $violations = $this->validator->validate($betSaved);
+        $this->assertGreaterThanOrEqual(1, count($violations));
+    }
+
+    /**
+     * @dataProvider startDateUnconformityProvider
+     */
+    public function testRunStartDatePropertyUnconformity(\DateTimeInterface $startDate): void
+    {
+        $betSaved = $this->createValidBetSaved();
+        $betSaved->setRunStartDate($startDate);
+        $betSaved->setRunEvent('Pool 1');
+        $betSaved->setRunName('Match 1 vs 2');
         $violations = $this->validator->validate($betSaved);
         $this->assertCount(1, $violations);
     }
 
-        /**
+    /**
+     * @dataProvider startDateConformityProvider
+     */
+    public function testRunStartDatePropertyConformity(\DateTimeInterface $startDate): void
+    {
+        $betSaved = $this->createValidBetSaved();
+        $betSaved->setRunStartDate($startDate);
+        $betSaved->setRunEvent('Pool 1');
+        $betSaved->setRunName('Match 1 vs 2');
+        $violations = $this->validator->validate($betSaved);
+        $this->assertCount(0, $violations);
+    }
+
+    public function startDateUnconformityProvider(): array
+    {
+        $timeZone = $this->createDefaultTimeZone();
+        $startDate = new \DateTimeImmutable('now', $timeZone);
+        return [
+            [$startDate->modify("+1 day")],
+            [$startDate->modify("+1 month")]
+        ];
+    }
+
+    public function startDateConformityProvider(): array
+    {
+        $timeZone = $this->createDefaultTimeZone();
+        $startDate = new \DateTimeImmutable('now', $timeZone);
+        return [
+            [$startDate],
+            [$startDate->modify('-1 hour')],
+            [$startDate->modify('-1 day')->setTime(23, 59, 59, 999999)],
+            [$startDate->modify('-1 year')]
+        ];
+    }
+
+    /**
      * @dataProvider validTeamNameProvider
      */
     public function testIfTeamNameIsValid(string $teamName): void
     {
         $betSaved = $this->createValidBetSaved();
         $betSaved->setTeamName($teamName);
+        $betSaved->setTeamCountry('FR');
         $violations = $this->validator->validate($betSaved);
         $this->assertCount(0, $violations);
     }
@@ -330,6 +463,7 @@ final class BetSavedTest extends WebTestCase
     {
         $betSaved = $this->createValidBetSaved();
         $betSaved->setTeamName($teamName);
+        $betSaved->setTeamCountry('FR');
         $violations = $this->validator->validate($betSaved);
         $this->assertGreaterThanOrEqual(1, count($violations));
     }
@@ -351,12 +485,39 @@ final class BetSavedTest extends WebTestCase
     }
 
     /**
+     * @dataProvider countryCompatibleProvider
+     * ISO 3166-1 alpha-2 => 2 lettres majuscules
+     */
+    public function testTeamCountryPropertyCompatible(string $country): void
+    {
+        $betSaved = $this->createValidBetSaved();
+        $betSaved->setTeamName('Paris Saint-Germain Football Club');
+        $betSaved->setTeamCountry($country);
+        $violations = $this->validator->validate($betSaved);
+        $this->assertCount(0, $violations);
+    }
+
+    /**
+     * @dataProvider countryUncompatibleProvider
+     */
+    public function testTeamCountryPropertyUncompatible(string $country): void
+    {
+        $betSaved = $this->createValidBetSaved();
+        $betSaved->setTeamName('Paris Saint-Germain Football Club');
+        $betSaved->setTeamCountry($country);
+        $violations = $this->validator->validate($betSaved);
+        $this->assertGreaterThanOrEqual(1, count($violations));
+    }
+
+    /**
      * @dataProvider validMemberLastNameProvider
      */
     public function testIfMemberLastNameIsValid(string $memberLastName): void
     {
         $betSaved = $this->createValidBetSaved();
         $betSaved->setMemberLastName($memberLastName);
+        $betSaved->setMemberFirstName('Pierre');
+        $betSaved->setMemberCountry('FR');
         $violations = $this->validator->validate($betSaved);
         $this->assertCount(0, $violations);
     }
@@ -381,6 +542,8 @@ final class BetSavedTest extends WebTestCase
     {
         $betSaved = $this->createValidBetSaved();
         $betSaved->setMemberLastName($memberLastName);
+        $betSaved->setMemberFirstName('Pierre');
+        $betSaved->setMemberCountry('FR');
         $violations = $this->validator->validate($betSaved);
         $this->assertGreaterThanOrEqual(1, count($violations));
     }
@@ -401,6 +564,8 @@ final class BetSavedTest extends WebTestCase
     {
         $betSaved = $this->createValidBetSaved();
         $betSaved->setMemberFirstName($memberFirstName);
+        $betSaved->setMemberLastName('Deschamps');
+        $betSaved->setMemberCountry('FR');
         $violations = $this->validator->validate($betSaved);
         $this->assertCount(0, $violations);
     }
@@ -425,6 +590,8 @@ final class BetSavedTest extends WebTestCase
     {
         $betSaved = $this->createValidBetSaved();
         $betSaved->setMemberFirstName($memberFirstName);
+        $betSaved->setMemberLastName('Deschamps');
+        $betSaved->setMemberCountry('FR');
         $violations = $this->validator->validate($betSaved);
         $this->assertGreaterThanOrEqual(1, count($violations));
     }
@@ -441,64 +608,30 @@ final class BetSavedTest extends WebTestCase
     }
 
     /**
-     * @dataProvider startDateUnconformityProvider
-     */
-    public function testStartDateUnconformity(\DateTimeInterface $startDate): void
-    {
-        $betSaved = $this->createValidBetSaved();
-        $betSaved->setCompetitionStartDate($startDate);
-        $betSaved->setRunStartDate($startDate);
-        $violations = $this->validator->validate($betSaved);
-        $this->assertGreaterThanOrEqual(2, count($violations));
-    }
-
-    public function startDateUnconformityProvider(): array
-    {
-        $timeZone = $this->createDefaultTimeZone();
-        $startDate = new \DateTimeImmutable('now', $timeZone);
-        return [
-            [$startDate->modify("+1 day")],
-            [$startDate->modify("+1 month")]
-        ];
-    }
-
-    /**
-     * @dataProvider startDateConformityProvider
-     */
-    public function testStartDateConformity(\DateTimeInterface $startDate): void
-    {
-        $betSaved = $this->createValidBetSaved();
-        $betSaved->setCompetitionStartDate($startDate);
-        $betSaved->setRunStartDate($startDate);
-        $violations = $this->validator->validate($betSaved);
-        $this->assertCount(0, $violations);
-    }
-
-    public function startDateConformityProvider(): array
-    {
-        $timeZone = $this->createDefaultTimeZone();
-        $startDate = new \DateTimeImmutable('now', $timeZone);
-        return [
-            [$startDate],
-            [$startDate->modify('-1 hour')],
-            [$startDate->modify('-1 day')->setTime(23, 59, 59, 999999)],
-            [$startDate->modify('-1 year')]
-        ];
-    }
-
-    /**
      * @dataProvider countryCompatibleProvider
      * ISO 3166-1 alpha-2 => 2 lettres majuscules
      */
-    public function testCountryCompatible(string $country): void
+    public function testMemberCountryPropertyCompatible(string $country): void
     {
         $betSaved = $this->createValidBetSaved();
-        $betSaved->setCompetitionSportCountry($country);
-        $betSaved->setCompetitionCountry($country);
-        $betSaved->setTeamCountry($country);
         $betSaved->setMemberCountry($country);
+        $betSaved->setMemberLastName('Deschamps');
+        $betSaved->setMemberFirstName('Pierre');
         $violations = $this->validator->validate($betSaved);
         $this->assertCount(0, $violations);
+    }
+
+    /**
+     * @dataProvider countryUncompatibleProvider
+     */
+    public function testMemberCountryPropertyUncompatible(string $country): void
+    {
+        $betSaved = $this->createValidBetSaved();
+        $betSaved->setMemberCountry($country);
+        $betSaved->setMemberLastName('Deschamps');
+        $betSaved->setMemberFirstName('Pierre');
+        $violations = $this->validator->validate($betSaved);
+        $this->assertGreaterThanOrEqual(1, count($violations));
     }
 
     public function countryCompatibleProvider(): array
@@ -507,20 +640,6 @@ final class BetSavedTest extends WebTestCase
             ["FR"],
             ["DE"]
         ];
-    }
-
-    /**
-     * @dataProvider countryUncompatibleProvider
-     */
-    public function testCountryUncompatible(string $country): void
-    {
-        $betSaved = $this->createValidBetSaved();
-        $betSaved->setCompetitionSportCountry($country);
-        $betSaved->setCompetitionCountry($country);
-        $betSaved->setTeamCountry($country);
-        $betSaved->setMemberCountry($country);
-        $violations = $this->validator->validate($betSaved);
-        $this->assertGreaterThanOrEqual(4, count($violations));
     }
 
     public function countryUncompatibleProvider(): array
@@ -532,6 +651,103 @@ final class BetSavedTest extends WebTestCase
             ["fr"],
             [''],
             ['   ']
+        ];
+    }
+
+    public function testRunCompatible(): void
+    {
+        $timeZone = $this->createDefaultTimeZone();
+        $runStartDate = new \DateTimeImmutable('now', $timeZone);
+        $betSaved = $this->createValidBetSaved();
+        $betSaved->setRunEvent('Pool 1');
+        $betSaved->setRunName('Match 1 vs 2');
+        $betSaved->setRunStartDate($runStartDate);
+        $violations = $this->validator->validate($betSaved);
+        $this->assertCount(0, $violations);
+    }
+
+    /**
+     * @dataProvider runUncompatibleProvider
+     */
+    public function testRunIncompatible(?string $name, ?string $event, ?string $date): void
+    {
+        $timeZone = $this->createDefaultTimeZone();
+        $runStartDate = empty($date) ? null : new \DateTimeImmutable($date, $timeZone);
+        $betSaved = $this->createValidBetSaved();
+        $betSaved->setRunEvent($name);
+        $betSaved->setRunName($event);
+        $betSaved->setRunStartDate($runStartDate);
+        $violations = $this->validator->validate($betSaved);
+        $this->assertCount(1, $violations);
+    }
+
+    public function runUncompatibleProvider(): array
+    {
+        return [
+            ['Match 1 vs 2', 'Pool 1', null],
+            ['Match 1 vs 2', null, '2021-03-08 08:15:01'],
+            [null, 'Pool 1', '2021-03-08 08:15:01']
+        ];
+    }
+
+    public function testTeamCompatible(): void
+    {
+        $betSaved = $this->createValidBetSaved();
+        $betSaved->setTeamName('Paris Saint-Germain Football Club');
+        $betSaved->setTeamCountry('FR');
+        $violations = $this->validator->validate($betSaved);
+        $this->assertCount(0, $violations);
+    }
+
+    /**
+     * @dataProvider teamUncompatibleProvider
+     */
+    public function testTeamIncompatible(?string $name, ?string $country): void
+    {
+        $betSaved = $this->createValidBetSaved();
+        $betSaved->setTeamName($name);
+        $betSaved->setTeamCountry($country);
+        $violations = $this->validator->validate($betSaved);
+        $this->assertCount(1, $violations);
+    }
+
+    public function teamUncompatibleProvider(): array
+    {
+        return [
+            ['Paris Saint-Germain Football Club', null],
+            [null, 'FR']
+        ];
+    }
+
+    public function testMemberCompatible(): void
+    {
+        $betSaved = $this->createValidBetSaved();
+        $betSaved->setMemberLastName('Deschamps');
+        $betSaved->setMemberFirstName('Pierre');
+        $betSaved->setMemberCountry('FR');
+        $violations = $this->validator->validate($betSaved);
+        $this->assertCount(0, $violations);
+    }
+
+    /**
+     * @dataProvider memberUncompatibleProvider
+     */
+    public function testMemberIncompatible(?string $firstName, ?string $lastName, ?string $country): void
+    {
+        $betSaved = $this->createValidBetSaved();
+        $betSaved->setMemberLastName($lastName);
+        $betSaved->setMemberFirstName($firstName);
+        $betSaved->setMemberCountry($country);
+        $violations = $this->validator->validate($betSaved);
+        $this->assertCount(1, $violations);
+    }
+
+    public function memberUncompatibleProvider(): array
+    {
+        return [
+            ['Pierre', 'Deschamps', null],
+            ['Pierre', null, 'FR'],
+            [null, 'Deschamps', 'FR']
         ];
     }
 }
