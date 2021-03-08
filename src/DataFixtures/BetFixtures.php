@@ -41,6 +41,7 @@ final class BetFixtures extends Fixture implements DependentFixtureInterface
                 'designation' => "Paris test",
                 'amount' => 10000,
                 'odds' => '2',
+                'winning' => null,
                 'betdate' => "now",
                 'user' => "tintin.dupont@test.fr",
                 'category' => [
@@ -73,21 +74,20 @@ final class BetFixtures extends Fixture implements DependentFixtureInterface
                 "name" => $testData[$i]['teamName']
             ]);
             $betUser = $this->userRepository->findOneByEmail($testData[$i]['user']);
-            if (!is_null($betCompetition) && !is_null($betUser) && !is_null($betCategory)) {
-                $bet = new Bet();
-                $bet
-                    ->setDesignation($testData[$i]['designation'])
-                    ->setAmount($testData[$i]['amount'])
-                    ->setOdds($testData[$i]['odds'])
-                    ->setCompetition($betCompetition)
-                    ->setUser($betUser)
-                    ->setBetCategory($betCategory)
-                    ->setRun($betRun)
-                    ->setTeam($betTeam)
-                    ->setBetDate(new \DateTimeImmutable($testData[$i]['betdate'], new \DateTimeZone("UTC")))
-                    ;
-                $manager->persist($bet);
-            }
+            $bet = new Bet();
+            $bet
+                ->setDesignation($testData[$i]['designation'])
+                ->setAmount($testData[$i]['amount'])
+                ->setOdds($testData[$i]['odds'])
+                ->setIsWinning($testData[$i]['winning'])
+                ->setCompetition($betCompetition)
+                ->setUser($betUser)
+                ->setBetCategory($betCategory)
+                ->setRun($betRun)
+                ->setTeam($betTeam)
+                ->setBetDate(new \DateTimeImmutable($testData[$i]['betdate'], new \DateTimeZone("UTC")))
+                ;
+            $manager->persist($bet);
         }
         $manager->flush();
     }

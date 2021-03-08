@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=BetSavedRepository::class)
+ * @Assert\Callback({"App\Validator\BetSavedValidator", "validate"})
  */
 class BetSaved extends AbstractEntity
 {
@@ -385,7 +386,7 @@ class BetSaved extends AbstractEntity
         return $this->runName;
     }
 
-    public function setRunName(string $runName): self
+    public function setRunName(?string $runName): self
     {
         $this->runName = $runName;
         return $this;
@@ -396,7 +397,7 @@ class BetSaved extends AbstractEntity
         return $this->runEvent;
     }
 
-    public function setRunEvent(string $runEvent): self
+    public function setRunEvent(?string $runEvent): self
     {
         $this->runEvent = $runEvent;
         return $this;
@@ -407,9 +408,11 @@ class BetSaved extends AbstractEntity
         return $this->runStartDate;
     }
 
-    public function setRunStartDate(\DateTimeInterface $runStartDate): self
+    public function setRunStartDate(?\DateTimeInterface $runStartDate): self
     {
-        $runStartDate = $this->convertedToStoreDateTime($runStartDate);
+        if (!is_null($runStartDate) === true) {
+            $runStartDate = $this->convertedToStoreDateTime($runStartDate);
+        }
         $this->runStartDate = $runStartDate;
         return $this;
     }
@@ -430,7 +433,7 @@ class BetSaved extends AbstractEntity
         return $this->teamCountry;
     }
 
-    public function setTeamCountry(string $teamCountry): self
+    public function setTeamCountry(?string $teamCountry): self
     {
         $this->teamCountry = $teamCountry;
         return $this;
@@ -441,7 +444,7 @@ class BetSaved extends AbstractEntity
         return $this->memberLastName;
     }
 
-    public function setMemberLastName(string $memberLastName): self
+    public function setMemberLastName(?string $memberLastName): self
     {
         $this->memberLastName = $memberLastName;
         return $this;
@@ -452,7 +455,7 @@ class BetSaved extends AbstractEntity
         return $this->memberFirstName;
     }
 
-    public function setMemberFirstName(string $memberFirstName): self
+    public function setMemberFirstName(?string $memberFirstName): self
     {
         $this->memberFirstName = $memberFirstName;
         return $this;
@@ -469,7 +472,7 @@ class BetSaved extends AbstractEntity
         return $this->memberCountry;
     }
 
-    public function setMemberCountry(string $memberCountry): self
+    public function setMemberCountry(?string $memberCountry): self
     {
         $this->memberCountry = $memberCountry;
         return $this;
