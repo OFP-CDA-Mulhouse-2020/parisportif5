@@ -10,7 +10,9 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=BetSavedRepository::class)
- * @Assert\Callback({"App\Validator\BetSavedValidator", "validate"})
+ * @Assert\Callback({"App\Validator\BetSavedRunValidator", "validate"})
+ * @Assert\Callback({"App\Validator\BetSavedTeamValidator", "validate"})
+ * @Assert\Callback({"App\Validator\BetSavedMemberValidator", "validate"})
  */
 class BetSaved extends AbstractEntity
 {
