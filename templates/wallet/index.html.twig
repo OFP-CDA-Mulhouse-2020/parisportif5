@@ -13,20 +13,17 @@
     <h1>{{ page_title }}</h1>
 
      {% if app.user %}
-        <div class="mb-3">
-            You are logged in as {{ app.user.username }} 
-        </div>
         </br>
-        <a>Vos fonds ont bien été ajoutés au porte monnaie.</a>
+        <p>Fonds disponible à la date du {{ wallet_datas.date | format_datetime('full', 'full', locale='fr') }}</p>
         </br>
-        <a>Votre porte monnaie est crédité de {{ app.user.wallet.amount }} thunes.</a>
+        <p>Votre porte monnaie est crédité de {{ wallet_datas.amount | format_currency(wallet_datas.currency, locale='fr') }}.</p>
         </br>
-        <a href="{{ path('userloggedin') }}">Retour à l'accueil</a>
         </br>
-        <a href="{{ path('account_addfunds') }}">Ajouter des fonds au porte monnaie</a>
-        <div class="mb-3">
-            <a href="{{ path('userlogout') }}">Se déconnecter</a>
-        </div>
+        <a href="{{ path('account_wallet_add') }}">Ajouter des fonds au porte monnaie</a>
+        </br>
+        <a href="{{ path('account_wallet_retire') }}">Retirer des fonds au porte monnaie</a>
+        </br>
+        <a href="{{ path('account_wallet_history') }}">Historiques des transactions du porte monnaie</a>
     {% endif %}
 
 </div>

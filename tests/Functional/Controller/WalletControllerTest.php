@@ -95,7 +95,7 @@ class WalletControllerTest extends WebTestCase
         $form['add_funds[amount]'] = 10;
 
         $crawler = $client->submit($form);
-        $this->assertResponseRedirects('/mon-compte/porte-monnaie');
+        $this->assertResponseRedirects('/mon-compte/mes-finances');
     }
 
     public function testIfInputIsInvalid(): void

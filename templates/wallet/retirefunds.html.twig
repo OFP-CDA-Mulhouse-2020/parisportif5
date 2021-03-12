@@ -16,12 +16,12 @@
             You are logged in as {{ app.user.username }}.
         </div>
         </br>
-
+    
         {{ form_start(form) }}
         {{ form_widget(form) }}
         {{ form_end(form) }}
         {# form(form, { 'attr': {'novalidate': 'novalidate'} }) #}
-    
+        
         <div class="mb-3">
             <a href="{{ path('account_wallet_index') }}">Annuler</a>
         </div>

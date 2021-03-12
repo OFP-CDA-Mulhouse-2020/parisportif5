@@ -28,7 +28,7 @@ class Wallet extends AbstractEntity
     /**
      * @ORM\Column(type="integer")
      * @Assert\PositiveOrZero(
-     *     message="Le montant du porte monnaie ne peut pas être négatif"
+     *     message="Le montant du porte monnaie ne peut pas être négatif."
      * )
      */
     private int $amount = 0;
@@ -88,16 +88,12 @@ class Wallet extends AbstractEntity
 
     public function addAmount(int $amount): void
     {
-        //if ($this->isValidAddition($amount) === true) {
-            $this->amount += $amount;
-        //}
+        $this->amount += $amount;
     }
 
     public function subtractAmount(int $amount): void
     {
-        //if ($this->isValidSubtraction($amount) === true) {
-            $this->amount -= $amount;
-        //}
+        $this->amount -= $amount;
     }
 
     public function __toString(): string

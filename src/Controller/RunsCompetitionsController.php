@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class RunsCompetitionsController extends AbstractController
 {
 
-    /** @Route ("/{sportSlug}/{competitionSlug}/{competition_id}", name="runsCompetitions")*/
+    /** @Route ("/{sportSlug}/competition-{competitionSlug}/{competition_id}", name="runsCompetitions")*/
     public function index(
         CompetitionRepository $competitionRepository,
         RunRepository $runRepository,

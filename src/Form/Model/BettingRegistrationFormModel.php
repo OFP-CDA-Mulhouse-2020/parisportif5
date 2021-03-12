@@ -42,6 +42,8 @@ final class BettingRegistrationFormModel
      */
     private ?\DateTimeImmutable $submitDate = null;
 
+    private string $currency = "EUR";
+
     /** @param Object[] $choices */
     public function __construct(array $choices, string $categoryLabel, int $categoryId)
     {
@@ -112,5 +114,10 @@ final class BettingRegistrationFormModel
     public function getCategoryId(): int
     {
         return $this->categoryId;
+    }
+
+    public function getCurrency(): string
+    {
+        return $this->currency;
     }
 }
