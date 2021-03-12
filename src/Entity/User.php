@@ -786,6 +786,22 @@ class User extends AbstractEntity implements UserInterface
         return $this;
     }
 
+    /** @return array<mixed> */
+    public function getPersonalDatas(): array
+    {
+        return [
+            'civility' => $this->civility,
+            'fistName' => $this->firstName,
+            'lastName' => $this->lastName,
+            'email' => $this->email,
+            'address' => $this->billingAddress,
+            'postcode' => $this->billingPostcode,
+            'city' => $this->billingCity,
+            'country' => $this->billingCountry,
+            'birthDate' => $this->birthDate
+        ];
+    }
+
     public function __toString(): string
     {
         return $this->id . ' - ' . $this->getFullName() . ' (' . $this->email . ')';

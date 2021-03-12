@@ -11,9 +11,22 @@
 <div class="example-wrapper">
     <h1>{{ page_title }}</h1>
 
-    {{ form_start(form) }}
-    {{ form_widget(form) }}
-    {{ form_end(form) }}
+    <div class="mb-3">
+        <a href="{{ path('account_profile_update') }}">Modifier votre profil</a>
+    </div> 
+
+    <div class="mb-3">
+        <a href="{{ path('account_password_update') }}">Modifier votre mot de passe</a>
+    </div>
+
+    {{ user_personal_datas.email }}
+
+    <div class="mb-3">
+        <a href="{{ path('account_identifier_update') }}">Modifier votre identifiant</a>
+    </div>
+
+    {{ user_personal_datas.birthDate | format_datetime('full', 'full', locale='fr') }}
+    {{ user_personal_datas.civility }}
 
 </div>
 {% endblock %}

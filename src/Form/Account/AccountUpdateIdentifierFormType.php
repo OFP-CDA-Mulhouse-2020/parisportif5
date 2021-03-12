@@ -28,7 +28,7 @@ class AccountUpdateIdentifierFormType extends AbstractType
                 'second_options' => ['label' => "Confirmer la nouvelle adresse email"]
             ])
             ->add('modifyUserIdentifier', FieldType\SubmitType::class, [
-                'label' => "Modifier identifiant"
+                'label' => "Valider la modification"
             ])
         ;
     }

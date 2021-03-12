@@ -9,7 +9,7 @@ use App\Form\Model\UserFormModel;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\Form\FormInterface;
 
-final class AccountPersonalDataFormHandler
+final class AccountUpdatePersonalDataFormHandler
 {
     private function updateUser(
         User $user,
