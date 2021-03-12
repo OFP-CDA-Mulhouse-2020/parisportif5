@@ -28,7 +28,7 @@ class AccountUpdatePasswordFormType extends AbstractType
                 'second_options' => ['label' => "Confirmer le nouveau mot de passe"]
             ])
             ->add('modifyUserPassword', FieldType\SubmitType::class, [
-                'label' => "Modifier mot de passe"
+                'label' => "Valider la modification"
             ])
         ;
     }

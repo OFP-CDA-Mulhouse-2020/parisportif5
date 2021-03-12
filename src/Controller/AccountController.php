@@ -38,7 +38,28 @@ class AccountController extends AbstractController
     /**
      * @Route("/mon-compte/mes-informations", name="account_profile")
      */
-    public function editPersonalDatas(Request $request): Response
+    public function viewPersonalDatas(Request $request): Response
+    {
+        // usually you'll want to make sure the user is authenticated first
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+
+        // returns your User object, or null if the user is not authenticated
+        // use inline documentation to tell your editor your exact User class
+        /** @var User $user */
+        $user = $this->getUser();
+
+        $userPersonalDatas = $user->getPersonalDatas();
+
+        return $this->render('account/index.html.twig', [
+            'page_title' => "Données personnelles",
+            'user_personal_datas' => $userPersonalDatas
+        ]);
+    }
+
+    /**
+     * @Route("/mon-compte/modifier/mes-informations", name="account_profile_update")
+     */
+    public function updatePersonalDatas(Request $request): Response
     {
         // usually you'll want to make sure the user is authenticated first
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
@@ -50,15 +71,15 @@ class AccountController extends AbstractController
 
         $userFormModel = $this->initializeUserFormModel($user);
 
-        $form = $this->createForm(AccountForm\AccountPersonalDataFormType::class, $userFormModel);
+        $form = $this->createForm(AccountForm\AccountUpdatePersonalDataFormType::class, $userFormModel);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             //return new RedirectResponse('/mon-compte/mes-informations');
-            $accountPersonalDataFormHandler = new FormHandler\AccountPersonalDataFormHandler();
+            $accountUpdatePersonalDataFormHandler = new FormHandler\AccountUpdatePersonalDataFormHandler();
             $entityManager = $this->getDoctrine()->getManager();
-            $accountPersonalDataFormHandler->handleForm(
+            $accountUpdatePersonalDataFormHandler->handleForm(
                 $form,
                 $user,
                 $entityManager
@@ -71,16 +92,16 @@ class AccountController extends AbstractController
              );
         }
 
-        return $this->render('account/index.html.twig', [
-            'page_title' => "Données personnelles",
+        return $this->render('account/update.html.twig', [
+            'page_title' => "Modifier mes données personnelles",
             'form' => $form->createView()
         ]);
     }
 
     /**
-     * @Route("/mon-compte/modifier/mot-de-passe", name="account_password")
+     * @Route("/mon-compte/modifier/mot-de-passe", name="account_password_update")
      */
-    public function editPassword(Request $request, UserPasswordEncoderInterface $passwordEncoder): Response
+    public function updatePassword(Request $request, UserPasswordEncoderInterface $passwordEncoder): Response
     {
         // usually you'll want to make sure the user is authenticated first
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
@@ -121,9 +142,9 @@ class AccountController extends AbstractController
     }
 
     /**
-     * @Route("/mon-compte/modifier/identifiant", name="account_identifier")
+     * @Route("/mon-compte/modifier/identifiant", name="account_identifier_update")
      */
-    public function editIdentifier(Request $request): Response
+    public function updateIdentifier(Request $request): Response
     {
         // usually you'll want to make sure the user is authenticated first
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
@@ -213,7 +234,7 @@ class AccountController extends AbstractController
              );
         }
 
-        return $this->render('account/index.html.twig', [
+        return $this->render('account/edit.html.twig', [
             'page_title' => "Vos documents",
             'form' => $form->createView()
         ]);
@@ -255,7 +276,7 @@ class AccountController extends AbstractController
              );
         }
 
-        return $this->render('account/index.html.twig', [
+        return $this->render('account/edit.html.twig', [
             'page_title' => "Vos paramètres",
             'form' => $form->createView()
         ]);

@@ -188,6 +188,7 @@ skinparam linetype ortho
         +valid() : bool
         +isVerified() : bool
         +isAdmin() : bool
+        +getPersonalDatas() : array<mixed>
     }
     'Langue d'affichage de l'utilisateur
     class Language {

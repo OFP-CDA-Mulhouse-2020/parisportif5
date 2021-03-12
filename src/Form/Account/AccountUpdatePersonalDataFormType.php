@@ -8,7 +8,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type as FieldType;
 
-class AccountPersonalDataFormType extends AbstractType
+class AccountUpdatePersonalDataFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -22,18 +22,6 @@ class AccountPersonalDataFormType extends AbstractType
                     'Madame' => 'Madame',
                     'Monsieur' => 'Monsieur'
                 ]
-            ])
-            ->add('email', FieldType\EmailType::class, [
-                'required' => false,
-                'label' => "Email",
-                'disabled' => true
-            ])
-            ->add('zeroPassword', FieldType\TextType::class, [
-                'required' => false,
-                'mapped' => false,
-                'label' => "Mot de passe",
-                'data' => "********",
-                'disabled' => true
             ])
             ->add('firstName', FieldType\TextType::class, [
                 'required' => true,
@@ -71,7 +59,7 @@ class AccountPersonalDataFormType extends AbstractType
                 'invalid_message' => "Veuillez saisir un pays de facturation."
             ])
             ->add('modifyUserProfile', FieldType\SubmitType::class, [
-                'label' => "Modifier votre profil"
+                'label' => "Valider vos modifications"
             ])
         ;
     }
