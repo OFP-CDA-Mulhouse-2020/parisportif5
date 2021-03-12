@@ -27,8 +27,6 @@ class AccountController extends AbstractController
         $this->emailVerifier = $emailVerifier;
     }
 
-    //todo : ajouter fond et historique paris
-
     protected function initializeUserFormModel(User $user): UserFormModel
     {
         $userFormModel = UserFormModel::createFromUser($user);
@@ -36,7 +34,7 @@ class AccountController extends AbstractController
     }
 
     /**
-     * @Route("/mon-compte/mes-informations", name="account_profile")
+     * @Route("/mon-compte/mes-informations", name="account_profile_index")
      */
     public function viewPersonalDatas(Request $request): Response
     {
@@ -185,7 +183,7 @@ class AccountController extends AbstractController
     }
 
     /**
-     * @Route("/mon-compte/mes-documents", name="account_document")
+     * @Route("/mon-compte/mes-documents", name="account_document_edit")
      */
     public function editDocuments(Request $request, FileUploader $fileUploader): Response
     {
@@ -241,7 +239,7 @@ class AccountController extends AbstractController
     }
 
     /**
-     * @Route("/mon-compte/mes-parametres", name="account_parameter")
+     * @Route("/mon-compte/mes-parametres", name="account_parameter_edit")
      */
     public function editParameters(Request $request): Response
     {

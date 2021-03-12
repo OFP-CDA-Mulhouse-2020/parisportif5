@@ -30,7 +30,7 @@ class BettingRegistrationFormType extends AbstractType
                 'required' => true,
                 'label' => "Montant",
                 'divisor' => 100,
-                'currency' => false,
+                'currency' => $options['data']->getCurrency() ?? false,
                 'invalid_message' => "Veuillez saisir un montant avec des chiffres."
             ])
             ->addEventListener(

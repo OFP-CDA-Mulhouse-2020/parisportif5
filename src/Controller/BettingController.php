@@ -92,7 +92,7 @@ class BettingController extends AbstractController
                     "Votre paris a été pris et validé avec succès."
                 );
             } else {
-                // Add missing founds message
+                // Add missing funds message
                 $this->addFlash(
                     'warning',
                     "Vous manquez de fonds pour poser votre paris."
@@ -172,7 +172,7 @@ class BettingController extends AbstractController
                     "Votre paris a été pris et validé avec succès."
                 );
             } else {
-                // Add missing founds message
+                // Add missing funds message
                 $this->addFlash(
                     'warning',
                     "Vous manquez de fonds pour poser votre paris."

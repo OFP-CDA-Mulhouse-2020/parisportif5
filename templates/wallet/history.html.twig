@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ page_title }}{% endblock %}
+{% block title %} - {{ page_title }}{% endblock %}
 
 {% block body %}
 <style>
@@ -10,17 +10,14 @@
 
 <div class="example-wrapper">
     <h1>{{ page_title }}</h1>
-    
-    {% if app.user %}
-        <div class="mb-3">
-            You are logged in as {{ app.user.username }}.
-        </div>
-        </br>
 
-        {{ form_start(form) }}
-        {{ form_widget(form) }}
-        {{ form_end(form) }}
-        {# form(form, { 'attr': {'novalidate': 'novalidate'} }) #}
+    {% if app.user %}
+        
+        {% for billing in wallet_history %}
+            <div>
+                {{ billing.amount }}
+            </div>
+        {% endfor %}
     
         <div class="mb-3">
             <a href="{{ path('account_wallet_index') }}">Annuler</a>

@@ -10,15 +10,19 @@
 
 <div class="example-wrapper">
     <h1>{{ page_title }}</h1>
-    
-    {{ form_start(form) }}
-    {{ form_widget(form) }}
-    {{ form_end(form) }}
-    {# {{ form(form, { 'attr': {'novalidate': 'novalidate'} }) }} #}
 
-    <div class="mb-3">
-        <a href="{{ path('account_profile') }}">Annuler</a>
-    </div>
+    {% if app.user %}
+        
+        {{ form_start(form) }}
+        {{ form_widget(form) }}
+        {{ form_end(form) }}
+        {# {{ form(form, { 'attr': {'novalidate': 'novalidate'} }) }} #}
+
+        <div class="mb-3">
+            <a href="{{ path('account_profile_index') }}">Annuler</a>
+        </div>
+        
+    {% endif %}
 
 </div>
 {% endblock %}
