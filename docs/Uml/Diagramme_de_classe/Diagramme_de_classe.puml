@@ -124,6 +124,7 @@ skinparam linetype ortho
         +isWinning() : bool|null
         +getTargetName() : string
         +getSelectName() : string|null
+        +toListItem() : array<mixed>
     }
     'Rôle du membre (pilote, co-pilote, joueur)
     class MemberRole {
@@ -228,6 +229,7 @@ skinparam linetype ortho
         +getFullAddress() : string
         +deleteUser() : void
         +hasUser() : bool
+        +toListItem() : array<mixed>
     }
     'Un paris
     class Bet {
@@ -243,6 +245,7 @@ skinparam linetype ortho
         +restoreWithoutResult() : void
         +getTarget() : Run|Competition
         +getSelect() : Member|Team
+        +toListItem() : array<mixed>
     }
     'Catégorie de paris (ex: Paris sur le résultat)
     class BetCategory {

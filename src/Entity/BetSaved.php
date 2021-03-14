@@ -501,6 +501,22 @@ class BetSaved extends AbstractEntity
         return $this;
     }
 
+    /** @return array<mixed> */
+    public function toListItem(): array
+    {
+        return [
+            'id' => $this->id,
+            'designation' => $this->designation,
+            'amount' => $this->amount,
+            'gains' => $this->gains,
+            'odds' => $this->odds,
+            'betDate' => $this->betDate,
+            'sportName' => $this->competitionSportName,
+            'sportCountry' => $this->competitionSportCountry,
+            'status' => $this->isWinning
+        ];
+    }
+
     public function __toString(): string
     {
         return $this->id . ' - ' . $this->designation;

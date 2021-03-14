@@ -791,7 +791,7 @@ class User extends AbstractEntity implements UserInterface
     {
         return [
             'civility' => $this->civility,
-            'fistName' => $this->firstName,
+            'firstName' => $this->firstName,
             'lastName' => $this->lastName,
             'email' => $this->email,
             'address' => $this->billingAddress,

@@ -1,0 +1,15 @@
+
+<ul class="nav nav-pills">
+  <li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="{{ path('account_profile_index') }}" role="button" aria-expanded="false">Mon compte</a>
+    <ul class="dropdown-menu">
+      <li><a class="dropdown-item" href="{{ path('account_profile_index') }}">Mes informations</a></li>
+      <li><a class="dropdown-item" href="{{ path('account_document_edit') }}">Mes documents</a></li>
+      <li><a class="dropdown-item" href="{{ path('account_parameter_edit') }}">Mes paramètres</a></li>
+      <li><a class="dropdown-item" href="{{ path('account_wallet_index') }}">Mes finances</a></li>
+      <li><a class="dropdown-item" href="{{ path('account_bets_index') }}">Mes paris</a></li>
+      <li><hr class="dropdown-divider"></li>
+      <li><a class="dropdown-item" href="{{ path('userlogout') }}">Déconnexion</a></li>
+    </ul>
+  </li>
+</ul>
