@@ -260,6 +260,20 @@ class Bet extends AbstractEntity
         return $this->teamMember ?? $this->team;
     }
 
+    /** @return array<mixed> */
+    public function toListItem(): array
+    {
+        return [
+            'id' => $this->id,
+            'designation' => $this->designation,
+            'amount' => $this->amount,
+            'odds' => $this->odds,
+            'betDate' => $this->betDate,
+            'sportName' => $this->competition->getSport()->getName(),
+            'sportCountry' => $this->competition->getSport()->getCountry()
+        ];
+    }
+
     public function __toString(): string
     {
         return $this->id . ' - ' . $this->designation;

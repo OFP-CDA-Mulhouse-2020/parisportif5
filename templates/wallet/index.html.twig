@@ -3,28 +3,25 @@
 {% block title %}{{ page_title }}{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+<div class="container">
+    <div class="row">
+        <div class="col">
+        
+            {% include 'menu/account_menu.html.twig' %}
 
-<div class="example-wrapper">
+            <h2>{{ page_title }}</h2>
 
-    <h1>{{ page_title }}</h1>
-
-     {% if app.user %}
-        </br>
-        <p>Fonds disponible à la date du {{ wallet_datas.date | format_datetime('full', 'full', locale='fr') }}</p>
-        </br>
-        <p>Votre porte monnaie est crédité de {{ wallet_datas.amount | format_currency(wallet_datas.currency, locale='fr') }}.</p>
-        </br>
-        </br>
-        <a href="{{ path('account_wallet_add') }}">Ajouter des fonds au porte monnaie</a>
-        </br>
-        <a href="{{ path('account_wallet_retire') }}">Retirer des fonds au porte monnaie</a>
-        </br>
-        <a href="{{ path('account_wallet_history') }}">Historiques des transactions du porte monnaie</a>
-    {% endif %}
-
+            {% if app.user %}
+                <p>Fonds disponible à la date du {{ wallet_datas.date | format_datetime(locale='fr') }}</p>
+                <p>Votre porte monnaie est crédité de {{ wallet_datas.amount | format_currency(wallet_datas.currency, locale='fr') }}.</p>
+                <div class="d-grid gap-2 d-md-flex">
+                    <a href="{{ path('account_wallet_add') }}" class="btn btn-primary" role="button">Ajouter des fonds au porte monnaie</a>
+                    <a href="{{ path('account_wallet_retire') }}" class="btn btn-primary" role="button">Retirer des fonds au porte monnaie</a>
+                    <a href="{{ path('account_wallet_history') }}" class="btn btn-primary" role="button">Historiques des transactions du porte monnaie</a>
+                </div>
+            {% endif %}
+            
+        </div>
+    </div>
 </div>
 {% endblock %}

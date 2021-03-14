@@ -431,6 +431,22 @@ class Billing extends AbstractEntity
         $this->user = null;
     }
 
+    /** @return array<mixed> */
+    public function toListItem(): array
+    {
+        return [
+            'id' => $this->id,
+            'invoiceNumber' => $this->invoiceNumber,
+            'orderNumber' => $this->orderNumber,
+            'designation' => $this->designation,
+            'amount' => $this->amount,
+            'commissionRate' => $this->commissionRate,
+            'issueDate' => $this->issueDate,
+            'deliveryDate' => $this->deliveryDate,
+            'operationType' => $this->operationType
+        ];
+    }
+
     public function __toString(): string
     {
         return $this->id . ' - ' . $this->invoiceNumber;

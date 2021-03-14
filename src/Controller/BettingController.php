@@ -99,7 +99,7 @@ class BettingController extends AbstractController
                 );
             }
         }
-        return $this->render('bet/index.html.twig', [
+        return $this->render('bet/betting.html.twig', [
             'betCategory' => $betCategory,
             'competition' => $competition,
             'run' => $run,
@@ -179,7 +179,7 @@ class BettingController extends AbstractController
                 );
             }
         }
-        return $this->render('bet/index.html.twig', [
+        return $this->render('bet/betting.html.twig', [
             'betCategory' => $betCategory,
             'competition' => $competition,
             'form' => $form->createView()

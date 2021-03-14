@@ -3,32 +3,73 @@
 {% block title %} - {{ page_title }}{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+<div class="container">
+    <div class="row">
+        <div class="col">
 
-<div class="example-wrapper">
-    <h1>{{ page_title }}</h1>
+            {% include 'menu/account_menu.html.twig' %}
 
-    {% if app.user %}
-        <div class="mb-3">
-            <a href="{{ path('account_profile_update') }}">Modifier votre profil</a>
-        </div> 
+            <h2>{{ page_title }}</h2>
 
-        <div class="mb-3">
-            <a href="{{ path('account_password_update') }}">Modifier votre mot de passe</a>
+            {% if app.user %}
+
+                <table class="table table-borderless">
+                    <tbody>
+                        <tr>
+                            <th scope="row">Identifiant :</th>
+                            <td>{{ user_personal_datas.email }}</td>
+                            <td>
+                                <a href="{{ path('account_identifier_update') }}" class="btn btn-primary" role="button">Modifier votre identifiant</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Mot de passe :</th>
+                            <td></td>
+                            <td>
+                                <a href="{{ path('account_password_update') }}" class="btn btn-primary" role="button">Modifier votre mot de passe</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Civilité :</th>
+                            <td colspan="2">{{ user_personal_datas.civility }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Prénom :</th>
+                            <td colspan="2">{{ user_personal_datas.firstName }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Nom de famille :</th>
+                            <td colspan="2">{{ user_personal_datas.lastName }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Date de naissance :</th>
+                            <td colspan="2">{{ user_personal_datas.birthDate | format_datetime('short', 'none', locale='fr') }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Adresse :</th>
+                            <td colspan="2">{{ user_personal_datas.address }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Ville :</th>
+                            <td colspan="2">{{ user_personal_datas.city }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Code postal :</th>
+                            <td colspan="2">{{ user_personal_datas.postcode }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Pays :</th>
+                            <td colspan="2">{{ user_personal_datas.country | country_name('fr') }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="mb-3">
+                    <a href="{{ path('account_profile_update') }}" class="btn btn-primary" role="button">Modifier votre profil</a>
+                </div> 
+            {% endif %}
+
         </div>
-
-        {{ user_personal_datas.email }}
-
-        <div class="mb-3">
-            <a href="{{ path('account_identifier_update') }}">Modifier votre identifiant</a>
-        </div>
-
-        {{ user_personal_datas.birthDate | format_datetime('full', 'full', locale='fr') }}
-        {{ user_personal_datas.civility }}
-    {% endif %}
-
+    </div>
 </div>
 {% endblock %}
